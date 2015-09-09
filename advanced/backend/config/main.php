@@ -11,7 +11,7 @@ return [
         'modules' => [
                 'user' => [
                     // following line will restrict access to admin page
-                    'as backend' => 'dektrium\user\filters\BackendFilter',
+                    //'as backend' => 'dektrium\user\filters\BackendFilter',
                 ],
         ],
         'components'          => [
@@ -20,13 +20,6 @@ return [
                                 'name'     => '_backendIdentity',
                                 'path'     => '/admin',
                                 'httpOnly' => true,
-                        ],
-                ],
-                'session'      => [
-                        //'name'         => 'BACKENDSESSID',
-                        'cookieParams' => [
-                                'httpOnly' => true,
-                                'path'     => '/admin',
                         ],
                 ],
                 'log'          => [
@@ -40,6 +33,14 @@ return [
                 ],
                 'errorHandler' => [
                         'errorAction' => 'site/error',
+                ],
+
+                'view' => [
+                        'theme' => [
+                                'pathMap' => [
+                                        '@app/views' => '@vendor/prawee/yii2-adminlte-theme/views'
+                                ],
+                        ],
                 ],
         ],
         'params'              => $params,

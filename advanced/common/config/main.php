@@ -5,22 +5,23 @@ return [
                 'user' => [
                         'class'                    => 'dektrium\user\Module',
                         'mailer'                   => [
-                                'sender'                => 'no-reply@myhost.com',
+                                'sender'                => '6202551@qq.com',
                                 // or ['no-reply@myhost.com' => 'Sender name']
-                                'welcomeSubject'        => 'Welcome subject',
-                                'confirmationSubject'   => 'Confirmation subject',
-                                'reconfirmationSubject' => 'Email change subject',
-                                'recoverySubject'       => 'Recovery subject',
+                                'welcomeSubject'        => 'æ¬¢è¿æ³¨å†Œ',
+                                'confirmationSubject'   => 'è´¦å·æ¿€æ´»é‚®ä»¶',
+                                'reconfirmationSubject' => 'æ›´æ”¹é‚®ä»¶åœ°å€',
+                                'recoverySubject'       => 'æ›´æ”¹å¯†ç ',
 
                         ],
+                        'enableFlashMessages'      => false,
                         'enableUnconfirmedLogin'   => true,
                         'confirmWithin'            => 86400,
                         'cost'                     => 12,
-                        'enableGeneratingPassword' => false,#×Ô¶¯Éú³ÉÃÜÂë£¬²¢Í¨¹ıÓÊ¼ş·¢ËÍ
-                        'enableConfirmation'       => true, #¿ªÆôÓÊ¼şÈ·ÈÏ
-                        'enableUnconfirmedLogin'   => true, #Î´ÈÏÖ¤ÓÃ»§ÊÇ·ñ¿ÉÒÔµÇÂ½
-                        'rememberFor'              => 1209600, #cookieÓĞĞ§ÆÚ£¬2ÖÜ
-                        'admins'                   => ['admin'],#¹ÜÀíÔ±ÕËºÅ
+                        'enableGeneratingPassword' => false,#è‡ªåŠ¨ç”Ÿæˆå¯†ç ï¼Œå¹¶é€šè¿‡é‚®ä»¶å‘é€
+                        'enableConfirmation'       => true, #å¼€å¯é‚®ä»¶ç¡®è®¤
+                        'enableUnconfirmedLogin'   => true, #æœªè®¤è¯ç”¨æˆ·æ˜¯å¦å¯ä»¥ç™»é™†
+                        'rememberFor'              => 1209600, #cookieæœ‰æ•ˆæœŸï¼Œ2å‘¨
+                        'admins'                   => ['admin'],#ç®¡ç†å‘˜è´¦å·
 
                 ],
                 'rbac' => [
@@ -38,13 +39,13 @@ return [
                         'cookieParams' => [
                                 'domain'   => '.yii2.com',
                                 'httponly' => true,
-                                'path'     => '/admin',
+                                'path'     => '/',
                         ],
 
                 ],
                 'mailer'  => [
                         'class'            => 'yii\swiftmailer\Mailer',
-                        'useFileTransport' => false,//Õâ¾äÒ»¶¨ÓĞ£¬false·¢ËÍÓÊ¼ş£¬trueÖ»ÊÇÉú³ÉÓÊ¼şÔÚruntimeÎÄ¼ş¼ĞÏÂ£¬²»·¢ÓÊ¼ş
+                        'useFileTransport' => false,//è¿™å¥ä¸€å®šæœ‰ï¼Œfalseå‘é€é‚®ä»¶ï¼Œtrueåªæ˜¯ç”Ÿæˆé‚®ä»¶åœ¨runtimeæ–‡ä»¶å¤¹ä¸‹ï¼Œä¸å‘é‚®ä»¶
                         'transport'        => [
                                 'class'      => 'Swift_SmtpTransport',
                                 'host'       => 'smtp.163.com',
@@ -56,7 +57,7 @@ return [
                         ],
                         'messageConfig'    => [
                                 'charset' => 'UTF-8',
-                                'from'    => ['admin@qq.com' => 'admin']
+                                //'from'    => ['admin@qq.com' => 'admin']
                         ],
                 ],
         ],
