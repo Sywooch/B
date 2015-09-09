@@ -1,0 +1,5 @@
+{
+    "require": {
+        "dektrium/yii2-user": "0.9.*@dev"
+    }
+}
