@@ -1,9 +1,16 @@
 <?php
+$redis = array_merge(require(__DIR__ . '/../../common/config/redis.php'),
+        require(__DIR__ . '/../../common/config/redis-local.php'));
+
 return [
         'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
         'modules'    => [
-                'user' => [
+
+                'user'    => [
                         'class'                    => 'dektrium\user\Module',
+                        'modelMap'                 => [
+                                'User' => 'common\models\User', #使用自定义的User模型
+                        ],
                         'mailer'                   => [
                                 'sender'                => '6202551@qq.com',
                                 // or ['no-reply@myhost.com' => 'Sender name']
@@ -24,8 +31,13 @@ return [
                         'admins'                   => ['admin'],#管理员账号
 
                 ],
-                'rbac' => [
+                'rbac'    => [
                         'class' => 'dektrium\rbac\Module',
+                ],
+                #站点设置
+                'setting' => [
+                        'class'               => 'funson86\setting\Module',
+                        'controllerNamespace' => 'funson86\setting\controllers'
                 ],
         ],
         'components' => [
@@ -43,6 +55,7 @@ return [
                         ],
 
                 ],
+                #邮件发送配置
                 'mailer'  => [
                         'class'            => 'yii\swiftmailer\Mailer',
                         'useFileTransport' => false,//这句一定有，false发送邮件，true只是生成邮件在runtime文件夹下，不发邮件
@@ -59,6 +72,16 @@ return [
                                 'charset' => 'UTF-8',
                                 //'from'    => ['admin@qq.com' => 'admin']
                         ],
+                ],
+                #redis定义
+                'redis'   => [
+                        'class'  => 'common\components\redis\Connection',
+                        'prefix' => 'YIIREDIS',
+                        'config' => $redis,
+                ],
+                #站点设置
+                'setting' => [
+                        'class' => 'common\components\setting\Setting',
                 ],
         ],
 ];

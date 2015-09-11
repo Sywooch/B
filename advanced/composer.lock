@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1627d01333d9de4242ab6ed9e943a8c6",
+    "hash": "2dc3c36a23deeeb16bcd68d7cb2fd481",
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
@@ -153,7 +153,7 @@
                 "shasum": ""
             },
             "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.cn/downloads/",
             "license": [
                 "MIT"
             ],
@@ -928,6 +928,50 @@
             "time": "2013-11-30 08:25:19"
         },
         {
+            "name": "funson86/yii2-setting",
+            "version": "0.01",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/funson86/yii2-setting.git",
+                "reference": "4488822bb7ae5bcdf3d80f32fecceb398a3a22ea"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/funson86/yii2-setting/zipball/4488822bb7ae5bcdf3d80f32fecceb398a3a22ea",
+                "reference": "4488822bb7ae5bcdf3d80f32fecceb398a3a22ea",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "bootstrap": "funson86\\setting\\Bootstrap"
+            },
+            "autoload": {
+                "psr-4": {
+                    "funson86\\setting\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Funson Lee",
+                    "email": "funson86@gmail.com"
+                }
+            ],
+            "description": "Yii2 Setting for other application",
+            "keywords": [
+                "extension",
+                "setting",
+                "yii2"
+            ],
+            "time": "2015-01-27 00:39:55"
+        },
+        {
             "name": "kartik-v/yii2-krajee-base",
             "version": "v1.7.7",
             "source": {
@@ -996,7 +1040,7 @@
                     "kartik\\alert\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.cn/downloads/",
             "license": [
                 "BSD 3-Clause"
             ],
@@ -1098,7 +1142,7 @@
                     "prawee\\themes\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.cn/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -1148,7 +1192,7 @@
                     "rmrevin\\yii\\fontawesome\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.cn/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1504,6 +1548,54 @@
                 "yii2"
             ],
             "time": "2015-05-10 22:09:43"
+        },
+        {
+            "name": "yiisoft/yii2-redis",
+            "version": "2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-redis.git",
+                "reference": "af2c2f91cd61c201c537d18f9c2338258c821918"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-redis/zipball/af2c2f91cd61c201c537d18f9c2338258c821918",
+                "reference": "af2c2f91cd61c201c537d18f9c2338258c821918",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": ">=2.0.4"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\redis\\": ""
+                }
+            },
+            "notification-url": "http://packagist.cn/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Carsten Brandt",
+                    "email": "mail@cebe.cc"
+                }
+            ],
+            "description": "Redis Cache, Session and ActiveRecord for the Yii framework",
+            "keywords": [
+                "active-record",
+                "cache",
+                "redis",
+                "session",
+                "yii2"
+            ],
+            "time": "2015-05-10 22:10:19"
         },
         {
             "name": "yiisoft/yii2-swiftmailer",
