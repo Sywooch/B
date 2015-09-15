@@ -119,7 +119,7 @@ class Connection extends Component
     public function __call($action, $params)
     {
         if (!isset($params[0]) || !is_array($params[0])) {
-            throw new Exception('redis参数1不得为空，必须为数组格式!');
+            throw new Exception('redis参数1不得为空，且为数组格式!');
         }
 
         $this->params = $params;

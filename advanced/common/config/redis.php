@@ -7,24 +7,26 @@
  */
 
 $servers = [
-        'master' => [
-                'hostname' => '127.0.0.1',
-                'port'     => 6379,
-                'database' => 0,
-                'auth' => '',
-        ]
+    #主服务器
+    'master' => [
+            'hostname' => '127.0.0.1',
+            'port'     => 6379,
+            'database' => 0,
+            'auth'     => '',
+    ]
 ];
 
 return [
-        'setting' => [
-                'server' => $servers['master'],
-                'key'    => 'app_setting',
-                'expire' => 86400,
-        ],
-
-        'abc' => [
-                'server' => $servers['master'],
-                'key'    => 'test_abc',
-                'expire' => 5,
-        ],
+    #应用设置
+    'setting' => [
+            'server' => $servers['master'],
+            'key'    => 'app_setting',
+            'expire' => 8640000,
+    ],
+    #临时测试类的缓存
+    'abc'     => [
+            'server' => $servers['master'],
+            'key'    => 'test_abc',
+            'expire' => 5,
+    ],
 ];

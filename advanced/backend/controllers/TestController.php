@@ -9,14 +9,37 @@
 namespace backend\controllers;
 
 use Yii;
-use yii\web\Controller;
+use common\controllers\BaseController;
+use yii\helpers\ArrayHelper;
 
 
-class TestController extends Controller
+class TestController extends BaseController
 {
+    /*public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        return ArrayHelper::merge($behaviors, [
+                [
+                        'class'    => 'yii\filters\HttpCache',
+                        'only'     => ['index'],
+                        //'cacheControlHeader' => 'public, max-age=3600',
+                        'etagSeed' => function ($action, $params) {
+                            $data = md5('abc');
+                            return $data;
+                        },
+                ]
+        ]);
+    }*/
+
     public function actionIndex()
     {
-        echo Yii::$app->setting->get('test');
-
+        sleep(0.5);
+        $this->setPerformanceRecordAnchor('action index');
+        sleep(0.5);
+        /*$data = Yii::$app->error->common;
+        print_r($data);*/
+        //$this->errorParam();
+        //echo Yii::$app->setting->get('test');
+        $this->render('index');
     }
 }
