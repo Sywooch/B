@@ -75,6 +75,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         ['prompt' => '请选择区']) ?>
 
 
+                <?= $form->field($model, 'address') ?>
+
                 <?= $form->field($model, 'bio')->textarea() ?>
 
                 <div class="form-group">

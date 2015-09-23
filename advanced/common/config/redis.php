@@ -7,26 +7,45 @@
  */
 
 $servers = [
-    #Ö÷·þÎñÆ÷
+    #ä¸»æœåŠ¡å™¨
     'master' => [
             'hostname' => '127.0.0.1',
             'port'     => 6379,
             'database' => 0,
             'auth'     => '',
+    ],
+    'slave'  => [
+            'hostname' => '127.0.0.1',
+            'port'     => 6380,
+            'database' => 0,
+            'auth'     => '',
     ]
 ];
 
+/**
+ * æ³¨æ„ï¼Œè¿”å›žçš„ keyã€€ä¸å¾—ä¸ºæ•°å­—ï¼Œå¿…é¡»ä¸ºå­—ç¬¦ä¸²
+ */
 return [
-    #Ó¦ÓÃÉèÖÃ
+    #åº”ç”¨è®¾ç½®
     'setting' => [
             'server' => $servers['master'],
             'key'    => 'app_setting',
             'expire' => 8640000,
     ],
-    #ÁÙÊ±²âÊÔÀàµÄ»º´æ
-    'abc'     => [
+    #ä¸´æ—¶æµ‹è¯•ç±»çš„ç¼“å­˜
+    'abcd'    => [
             'server' => $servers['master'],
-            'key'    => 'test_abc',
-            'expire' => 5,
+            'key'    => 'aa',
+            'expire' => 500,
+    ],
+    'master'    => [
+            'server' => $servers['master'],
+            'key'    => 'test_master',
+            'expire' => 500,
+    ],
+    'slave'    => [
+            'server' => $servers['slave'],
+            'key'    => 'test_slave',
+            'expire' => 500,
     ],
 ];

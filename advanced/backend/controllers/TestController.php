@@ -33,9 +33,9 @@ class TestController extends BaseController
 
     public function actionIndex()
     {
-        sleep(0.5);
+        /*sleep(0.5);
         $this->setPerformanceRecordAnchor('action index');
-        sleep(0.5);
+        sleep(0.5);*/
         /*$data = Yii::$app->error->common;
         print_r($data);*/
         //$this->errorParam();

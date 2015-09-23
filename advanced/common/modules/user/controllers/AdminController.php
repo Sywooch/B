@@ -6,7 +6,7 @@
  * Time: 18:22
  */
 
-namespace common\controllers\user;
+namespace common\modules\user\controllers;
 
 use dektrium\user\controllers\AdminController as BaseAdminController;
 

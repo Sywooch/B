@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2dc3c36a23deeeb16bcd68d7cb2fd481",
+    "hash": "5a57ff9f157e795e24e86b2e157fab62",
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
@@ -137,6 +137,128 @@
                 "yii2"
             ],
             "time": "2015-04-12 22:21:58"
+        },
+        {
+            "name": "2amigos/yii2-qrcode-helper",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/2amigos/yii2-qrcode-helper.git",
+                "reference": "827a79d0e498026119c8cdcf724d81be2e0daa5f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/2amigos/yii2-qrcode-helper/zipball/827a79d0e498026119c8cdcf724d81be2e0daa5f",
+                "reference": "827a79d0e498026119c8cdcf724d81be2e0daa5f",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*",
+                "scrutinizer/ocular": "~1.1"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "dosamigos\\qrcode\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "2amigOS! Consulting Group",
+                    "email": "hola@2amigos.us",
+                    "homepage": "http://2amigos.us",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Create QrCodes based on libqrencode C library.",
+            "keywords": [
+                "2amigos",
+                "extension",
+                "helper",
+                "qrcode",
+                "yii",
+                "yii 2",
+                "yii2"
+            ],
+            "time": "2015-03-16 21:26:14"
+        },
+        {
+            "name": "2amigos/yii2-selectize-widget",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/2amigos/yii2-selectize-widget.git",
+                "reference": "bc997df0769084f45dbdcaef95a028f5ca3fd028"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/2amigos/yii2-selectize-widget/zipball/bc997df0769084f45dbdcaef95a028f5ca3fd028",
+                "reference": "bc997df0769084f45dbdcaef95a028f5ca3fd028",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/selectize": "~0.12.0",
+                "yiisoft/yii2": "~2.0.0",
+                "yiisoft/yii2-bootstrap": "~2.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "asset-installer-paths": {
+                    "npm-asset-library": "vendor/npm",
+                    "bower-asset-library": "vendor/bower"
+                },
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "dosamigos\\selectize\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "2amigOS! Consulting Group",
+                    "email": "hola@2amigos.us",
+                    "homepage": "http://2amigos.us",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Alexander Kochetov",
+                    "email": "creocoder@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "The selectize.js widget for the Yii framework",
+            "homepage": "https://github.com/2amigos/yii2-selectize-widget",
+            "keywords": [
+                "2amigos",
+                "selectize",
+                "widget",
+                "yii",
+                "yii 2",
+                "yii2"
+            ],
+            "time": "2015-03-20 18:56:41"
         },
         {
             "name": "almasaeed2010/adminlte",
@@ -491,6 +613,75 @@
             ]
         },
         {
+            "name": "bower-asset/emojify.js",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Ranks/emojify.js.git",
+                "reference": "230b992b2754000b52da2542fa7a4fa730dc9a24"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Ranks/emojify.js/zipball/230b992b2754000b52da2542fa7a4fa730dc9a24",
+                "reference": "230b992b2754000b52da2542fa7a4fa730dc9a24",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "dist/js/emojify.js",
+                "bower-asset-ignore": [
+                    "src",
+                    "**/.*",
+                    "node_modules",
+                    "tests"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A Javascript module to convert Emoji keywords to images http://hassankhan.github.io/emojify.js/",
+            "keywords": [
+                "emoji"
+            ]
+        },
+        {
+            "name": "bower-asset/font-awesome",
+            "version": "v4.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FortAwesome/Font-Awesome.git",
+                "reference": "e554555d73a44e0a7d11b0361ad7a5325a5f551c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/e554555d73a44e0a7d11b0361ad7a5325a5f551c",
+                "reference": "e554555d73a44e0a7d11b0361ad7a5325a5f551c",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "less/font-awesome.less",
+                    "scss/font-awesome.scss"
+                ],
+                "bower-asset-ignore": [
+                    "*/.*",
+                    "*.json",
+                    "src",
+                    "*.yml",
+                    "Gemfile",
+                    "Gemfile.lock",
+                    "*.md"
+                ]
+            },
+            "license": [
+                "OFL-1.1",
+                "MIT",
+                "CC-BY-3.0"
+            ],
+            "description": "Font Awesome"
+        },
+        {
             "name": "bower-asset/fontawesome",
             "version": "v4.3.0",
             "source": {
@@ -526,6 +717,34 @@
                 "CC-BY-3.0"
             ],
             "description": "Font Awesome"
+        },
+        {
+            "name": "bower-asset/highlightjs",
+            "version": "8.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/components/highlightjs.git",
+                "reference": "950ac24569cbadfd82fd4fe2a7b60e5fbd14fef6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/components/highlightjs/zipball/950ac24569cbadfd82fd4fe2a7b60e5fbd14fef6",
+                "reference": "950ac24569cbadfd82fd4fe2a7b60e5fbd14fef6",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "highlight.pack.js",
+                    "styles/default.css"
+                ],
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "node_modules",
+                    "vendor",
+                    "components"
+                ]
+            }
         },
         {
             "name": "bower-asset/jquery",
@@ -569,6 +788,79 @@
                 "javascript",
                 "jquery",
                 "library"
+            ]
+        },
+        {
+            "name": "bower-asset/jquery-colorbox",
+            "version": "1.5.15",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jackmoore/colorbox.git",
+                "reference": "3aa68e4da7be6a60f41933f76f0eda80e0403f80"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jackmoore/colorbox/zipball/3aa68e4da7be6a60f41933f76f0eda80e0403f80",
+                "reference": "3aa68e4da7be6a60f41933f76f0eda80e0403f80",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.3.2"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "jquery.colorbox.js",
+                "bower-asset-ignore": [
+                    "colorbox.jquery.json",
+                    "colorbox.ai",
+                    "content",
+                    "example1/index.html",
+                    "example2/index.html",
+                    "example3/index.html",
+                    "example4/index.html",
+                    "example5/index.html"
+                ]
+            },
+            "description": "jQuery lightbox and modal window plugin",
+            "keywords": [
+                "gallery",
+                "jquery-plugin",
+                "lightbox",
+                "modal",
+                "popup",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/jquery-textcomplete",
+            "version": "v0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yuku-t/jquery-textcomplete.git",
+                "reference": "31cf39f6c201569e63434d5ed650f1a9eebb29c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yuku-t/jquery-textcomplete/zipball/31cf39f6c201569e63434d5ed650f1a9eebb29c6",
+                "reference": "31cf39f6c201569e63434d5ed650f1a9eebb29c6",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.7.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "dist/jquery.textcomplete.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "node_modules",
+                    "bower_components",
+                    "test",
+                    "tests"
+                ]
+            },
+            "license": [
+                "MIT"
             ]
         },
         {
@@ -649,6 +941,217 @@
             ]
         },
         {
+            "name": "bower-asset/localforage",
+            "version": "1.2.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mozilla/localForage.git",
+                "reference": "da84e056c9097bfe452fadfd34bd2522588a51e6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mozilla/localForage/zipball/da84e056c9097bfe452fadfd34bd2522588a51e6",
+                "reference": "da84e056c9097bfe452fadfd34bd2522588a51e6",
+                "shasum": ""
+            },
+            "require-dev": {
+                "bower-asset/assert": "~0.1.0",
+                "bower-asset/es6-promise": "~1.0.0",
+                "bower-asset/expect": "~0.3.1",
+                "bower-asset/mocha": "~1.18.2",
+                "bower-asset/modernizr": "~2.8.1",
+                "bower-asset/requirejs": "~2.1.10"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/localforage.js"
+                ],
+                "bower-asset-ignore": [
+                    ".travis.yml",
+                    "CONTRIBUTING.md",
+                    "config.rb",
+                    "Gemfile",
+                    "Gemfile.lock",
+                    "Rakefile",
+                    "LICENSE",
+                    "docs*",
+                    "examples*",
+                    "test*",
+                    "site*"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/marked",
+            "version": "v0.3.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/chjj/marked.git",
+                "reference": "88ce4df47c4d994dc1b1df1477a21fb893e11ddc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/chjj/marked/zipball/88ce4df47c4d994dc1b1df1477a21fb893e11ddc",
+                "reference": "88ce4df47c4d994dc1b1df1477a21fb893e11ddc",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "lib/marked.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "node_modules",
+                    "bower_components",
+                    "app/bower_components",
+                    "test",
+                    "tests"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A markdown parser built for speed",
+            "keywords": [
+                "html",
+                "markdown",
+                "markup"
+            ]
+        },
+        {
+            "name": "bower-asset/metisMenu",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/onokumus/metisMenu.git",
+                "reference": "97aae34647b46ca2f27ced27d0a7cb286dec549b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/onokumus/metisMenu/zipball/97aae34647b46ca2f27ced27d0a7cb286dec549b",
+                "reference": "97aae34647b46ca2f27ced27d0a7cb286dec549b",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": "~2.1.4"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/metisMenu.js",
+                    "dist/metisMenu.css"
+                ],
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "node_modules",
+                    "bower_components",
+                    "test",
+                    "tests",
+                    "src",
+                    "composer.json"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A jQuery menu plugin",
+            "keywords": [
+                "accordion",
+                "bootstrap",
+                "jquery",
+                "menu",
+                "metis",
+                "metisMenu",
+                "toggle",
+                "twbs",
+                "twitter"
+            ]
+        },
+        {
+            "name": "bower-asset/microplugin",
+            "version": "v0.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brianreavis/microplugin.js.git",
+                "reference": "d8671e6cc769938648f8735610534427cdeeaf67"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brianreavis/microplugin.js/zipball/d8671e6cc769938648f8735610534427cdeeaf67",
+                "reference": "d8671e6cc769938648f8735610534427cdeeaf67",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "src/microplugin.js"
+                ],
+                "bower-asset-ignore": [
+                    "Makefile",
+                    "test",
+                    ".travis.yml",
+                    ".npmignore.yml"
+                ]
+            },
+            "license": [
+                "Apache License, Version 2.0"
+            ],
+            "description": "A lightweight plugin / dependency system for javascript libraries.",
+            "keywords": [
+                "architecture",
+                "dependencies",
+                "extensibility",
+                "plugins",
+                "require"
+            ]
+        },
+        {
+            "name": "bower-asset/pace",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/HubSpot/pace.git",
+                "reference": "c6846cbf6b928e9903b569269fa9fbf32f2554f4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/HubSpot/pace/zipball/c6846cbf6b928e9903b569269fa9fbf32f2554f4",
+                "reference": "c6846cbf6b928e9903b569269fa9fbf32f2554f4",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "pace.js",
+                "bower-asset-ignore": [
+                    ".*",
+                    "Gruntfile.coffee",
+                    "bower_components",
+                    "docs",
+                    "node_modules",
+                    "package.json",
+                    "templates",
+                    "tests"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Automatic page load progress bar",
+            "keywords": [
+                "activity",
+                "ajax",
+                "automatic",
+                "bar",
+                "client-side",
+                "load",
+                "loading",
+                "pageload",
+                "progress",
+                "progress",
+                "spinner"
+            ]
+        },
+        {
             "name": "bower-asset/punycode",
             "version": "v1.3.2",
             "source": {
@@ -675,6 +1178,148 @@
                     "package.json"
                 ]
             }
+        },
+        {
+            "name": "bower-asset/sb-admin-2-assets",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/forecho/sb-admin-2-assets.git",
+                "reference": "84b162298c6cb31c06851868bf1b8e1724cd59b7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/forecho/sb-admin-2-assets/zipball/84b162298c6cb31c06851868bf1b8e1724cd59b7",
+                "reference": "84b162298c6cb31c06851868bf1b8e1724cd59b7",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/css/sb-admin-2.css",
+                    "dist/js/sb-admin-2.js"
+                ],
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "node_modules",
+                    "bower_components",
+                    "test",
+                    "tests"
+                ],
+                "bower-asset-private": true
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A free, open source, Bootstrap admin theme created by Start Bootstra",
+            "keywords": [
+                "bootstrap",
+                "theme"
+            ]
+        },
+        {
+            "name": "bower-asset/selectize",
+            "version": "v0.12.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brianreavis/selectize.js.git",
+                "reference": "3dc07d40047cd98de8a8f8beacca06a73970139d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brianreavis/selectize.js/zipball/3dc07d40047cd98de8a8f8beacca06a73970139d",
+                "reference": "3dc07d40047cd98de8a8f8beacca06a73970139d",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.7.0",
+                "bower-asset/microplugin": "dev-0.0.x|0.0.x",
+                "bower-asset/sifter": "dev-0.4.x|0.4.x"
+            },
+            "require-dev": {
+                "bower-asset/bootstrap-2": "2",
+                "bower-asset/bootstrap-3.2": "3.2"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/css/selectize.css",
+                    "dist/js/selectize.js"
+                ],
+                "bower-asset-ignore": [
+                    "Makefile",
+                    "Gruntfile.js",
+                    "examples",
+                    "node_modules",
+                    "bower_components",
+                    "docs",
+                    "src",
+                    "test",
+                    ".travis.yml",
+                    "testem.json",
+                    "selectize.jquery.json",
+                    "*.sh",
+                    "package.json"
+                ]
+            },
+            "license": [
+                "Apache License, Version 2.0"
+            ],
+            "description": "Selectize is a jQuery-based custom <select> UI control. Useful for tagging, contact lists, country selectors, etc.",
+            "keywords": [
+                "autocomplete",
+                "control",
+                "form",
+                "input",
+                "select",
+                "tag",
+                "tagging",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/sifter",
+            "version": "v0.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brianreavis/sifter.js.git",
+                "reference": "bdd2badbce30396ed9a12951b13e8e23d2adf43a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brianreavis/sifter.js/zipball/bdd2badbce30396ed9a12951b13e8e23d2adf43a",
+                "reference": "bdd2badbce30396ed9a12951b13e8e23d2adf43a",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "sifter.js"
+                ],
+                "bower-asset-ignore": [
+                    "Makefile",
+                    "test",
+                    "lib",
+                    "bin",
+                    "benchmark",
+                    "node_modules",
+                    ".travis.yml"
+                ]
+            },
+            "license": [
+                "Apache License, Version 2.0"
+            ],
+            "description": "A library for textually searching arrays and hashes of objects by property (or multiple properties). Designed specifically for autocomplete.",
+            "keywords": [
+                "autocomplete",
+                "data",
+                "filter",
+                "match",
+                "results",
+                "search",
+                "sift",
+                "sort"
+            ]
         },
         {
             "name": "bower-asset/yii2-pjax",
@@ -770,17 +1415,55 @@
             "time": "2015-03-06 05:28:07"
         },
         {
+            "name": "components/flag-icon-css",
+            "version": "0.8.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lipis/flag-icon-css.git",
+                "reference": "63b89f891914b589d12c6e71989a0eb54d35a7a3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lipis/flag-icon-css/zipball/63b89f891914b589d12c6e71989a0eb54d35a7a3",
+                "reference": "63b89f891914b589d12c6e71989a0eb54d35a7a3",
+                "shasum": ""
+            },
+            "type": "component",
+            "extra": {
+                "component": {
+                    "name": "flag-icon-css",
+                    "files": [
+                        "less/**",
+                        "css/**",
+                        "flags/**"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Panayiotis Lipiridis (Lipis)",
+                    "email": "lipiridis@gmail.com"
+                }
+            ],
+            "description": "CSS for vector based country flags",
+            "time": "2015-09-05 08:34:56"
+        },
+        {
             "name": "dektrium/yii2-rbac",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dektrium/yii2-rbac.git",
-                "reference": "c4c9f8e5e289f1807eea5213b62f1051608cf4af"
+                "reference": "41a5c26b551eb6331c9c1ae222f41e6248b9936f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dektrium/yii2-rbac/zipball/c4c9f8e5e289f1807eea5213b62f1051608cf4af",
-                "reference": "c4c9f8e5e289f1807eea5213b62f1051608cf4af",
+                "url": "https://api.github.com/repos/dektrium/yii2-rbac/zipball/41a5c26b551eb6331c9c1ae222f41e6248b9936f",
+                "reference": "41a5c26b551eb6331c9c1ae222f41e6248b9936f",
                 "shasum": ""
             },
             "require": {
@@ -817,7 +1500,7 @@
                 "yii2",
                 "yii2-rbac"
             ],
-            "time": "2015-07-27 18:54:47"
+            "time": "2015-09-14 19:49:30"
         },
         {
             "name": "dektrium/yii2-user",
@@ -884,6 +1567,54 @@
             "time": "2015-04-06 09:21:39"
         },
         {
+            "name": "devgroup/yii2-tag-dependency-helper",
+            "version": "0.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DevGroup-ru/yii2-tag-dependency-helper.git",
+                "reference": "eb9b64783954080fea49cb44cb6f226a22fe780d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DevGroup-ru/yii2-tag-dependency-helper/zipball/eb9b64783954080fea49cb44cb6f226a22fe780d",
+                "reference": "eb9b64783954080fea49cb44cb6f226a22fe780d",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "~2.0.0"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "devgroup\\TagDependencyHelper\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Kozhevnikov",
+                    "email": "b37hr3z3n@gmail.com"
+                },
+                {
+                    "name": "Evgeny Dubovitsky",
+                    "email": "flynn068@gmail.com"
+                },
+                {
+                    "name": "Pavel Fedotov",
+                    "email": "fps.06@mail.ru"
+                }
+            ],
+            "description": "Helper for unifying cache tag names with invalidation support in yii2",
+            "keywords": [
+                "cache",
+                "yii2"
+            ],
+            "time": "2015-07-01 09:08:43"
+        },
+        {
             "name": "ezyang/htmlpurifier",
             "version": "v4.6.0",
             "source": {
@@ -926,6 +1657,54 @@
                 "html"
             ],
             "time": "2013-11-30 08:25:19"
+        },
+        {
+            "name": "fortawesome/font-awesome",
+            "version": "v4.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FortAwesome/Font-Awesome.git",
+                "reference": "e554555d73a44e0a7d11b0361ad7a5325a5f551c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/e554555d73a44e0a7d11b0361ad7a5325a5f551c",
+                "reference": "e554555d73a44e0a7d11b0361ad7a5325a5f551c",
+                "shasum": ""
+            },
+            "require-dev": {
+                "jekyll": "1.0.2",
+                "lessc": "1.4.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OFL-1.1",
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dave Gandy",
+                    "email": "dave@fontawesome.io",
+                    "homepage": "http://twitter.com/davegandy",
+                    "role": "Developer"
+                }
+            ],
+            "description": "The iconic font and CSS framework",
+            "homepage": "http://fontawesome.io/",
+            "keywords": [
+                "FontAwesome",
+                "awesome",
+                "bootstrap",
+                "font",
+                "icon"
+            ],
+            "time": "2015-07-28 21:55:03"
         },
         {
             "name": "funson86/yii2-setting",
@@ -972,6 +1751,441 @@
             "time": "2015-01-27 00:39:55"
         },
         {
+            "name": "fxp/composer-asset-plugin",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/francoispluchino/composer-asset-plugin.git",
+                "reference": "c2b0406ac19e9ea2d9556987e827d4e7f6924fde"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/francoispluchino/composer-asset-plugin/zipball/c2b0406ac19e9ea2d9556987e827d4e7f6924fde",
+                "reference": "c2b0406ac19e9ea2d9556987e827d4e7f6924fde",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "composer/composer": "~1.0@dev"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Fxp\\Composer\\AssetPlugin\\FxpAssetPlugin",
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Fxp\\Composer\\AssetPlugin\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "François Pluchino",
+                    "email": "francois.pluchino@gmail.com"
+                }
+            ],
+            "description": "NPM/Bower Dependency Manager for Composer",
+            "homepage": "https://github.com/francoispluchino/composer-asset-plugin",
+            "keywords": [
+                "asset",
+                "bower",
+                "composer",
+                "dependency manager",
+                "nodejs",
+                "npm",
+                "package"
+            ],
+            "time": "2015-07-29 12:23:21"
+        },
+        {
+            "name": "hightman/xunsearch",
+            "version": "1.4.10-beta3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hightman/xs-sdk-php.git",
+                "reference": "9d1b9980d8f0d20571df056d644dd7287c6ffa36"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hightman/xs-sdk-php/zipball/9d1b9980d8f0d20571df056d644dd7287c6ffa36",
+                "reference": "9d1b9980d8f0d20571df056d644dd7287c6ffa36",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "lib-pcre": "*",
+                "php": ">=5.3.0"
+            },
+            "bin": [
+                "util/xs"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "lib/",
+                    "wrapper/yii-ext/"
+                ],
+                "psr-4": {
+                    "hightman\\xunsearch\\": "wrapper/yii2-ext/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "hightman",
+                    "email": "hightman@twomice.net",
+                    "role": "Founder and project leader"
+                }
+            ],
+            "description": "xunsearch php sdk, include yii, yii2 supports",
+            "homepage": "http://www.xunsearch.com/",
+            "keywords": [
+                "search engine",
+                "xunsearch",
+                "yii",
+                "yii2"
+            ],
+            "time": "2015-08-05 07:43:01"
+        },
+        {
+            "name": "himiklab/yii2-colorbox-widget",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/himiklab/yii2-colorbox-widget.git",
+                "reference": "a715cd1147b1199d2c7a2cb6df8b1abeb5816e29"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/himiklab/yii2-colorbox-widget/zipball/a715cd1147b1199d2c7a2cb6df8b1abeb5816e29",
+                "reference": "a715cd1147b1199d2c7a2cb6df8b1abeb5816e29",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery-colorbox": "1.5.*",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "himiklab\\colorbox\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "HimikLab",
+                    "homepage": "https://github.com/himiklab/"
+                }
+            ],
+            "description": "Customizable lightbox widget for Yii2",
+            "keywords": [
+                "colorbox",
+                "lightbox",
+                "widget",
+                "yii2"
+            ],
+            "time": "2015-01-23 10:10:39"
+        },
+        {
+            "name": "imagine/imagine",
+            "version": "v0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/avalanche123/Imagine.git",
+                "reference": "f64ec666baaa800edcbf237db41121a569230709"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/avalanche123/Imagine/zipball/f64ec666baaa800edcbf237db41121a569230709",
+                "reference": "f64ec666baaa800edcbf237db41121a569230709",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "sami/sami": "dev-master"
+            },
+            "suggest": {
+                "ext-gd": "to use the GD implementation",
+                "ext-gmagick": "to use the Gmagick implementation",
+                "ext-imagick": "to use the Imagick implementation"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Imagine": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bulat Shakirzyanov",
+                    "email": "mallluhuct@gmail.com",
+                    "homepage": "http://avalanche123.com"
+                }
+            ],
+            "description": "Image processing for PHP 5.3",
+            "homepage": "http://imagine.readthedocs.org/",
+            "keywords": [
+                "drawing",
+                "graphics",
+                "image manipulation",
+                "image processing"
+            ],
+            "time": "2013-07-10 17:25:36"
+        },
+        {
+            "name": "kartik-v/bootstrap-fileinput",
+            "version": "v4.2.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/bootstrap-fileinput.git",
+                "reference": "0468bbba9c28c1250aca83eba9b33e32ec135f78"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/0468bbba9c28c1250aca83eba9b33e32ec135f78",
+                "reference": "0468bbba9c28c1250aca83eba9b33e32ec135f78",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\plugins\\fileinput\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "An enhanced HTML 5 file input for Bootstrap 3.x with features for file preview for many file types, multiple selection, ajax uploads, and more.",
+            "homepage": "https://github.com/kartik-v/bootstrap-fileinput",
+            "keywords": [
+                "ajax",
+                "bootstrap",
+                "delete",
+                "file",
+                "image",
+                "input",
+                "jquery",
+                "multiple",
+                "preview",
+                "progress",
+                "upload"
+            ],
+            "time": "2015-09-13 17:39:44"
+        },
+        {
+            "name": "kartik-v/bootstrap-popover-x",
+            "version": "v1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/bootstrap-popover-x.git",
+                "reference": "ce1d165af25f6e6caaf97083e20b5a3ad7c7b7c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-popover-x/zipball/ce1d165af25f6e6caaf97083e20b5a3ad7c7b7c6",
+                "reference": "ce1d165af25f6e6caaf97083e20b5a3ad7c7b7c6",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\plugins\\popover\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "Bootstrap Popover Extended - Popover with modal behavior, styling enhancements and more.",
+            "homepage": "https://github.com/kartik-v/bootstrap-popover-x",
+            "keywords": [
+                "bootstrap",
+                "extended",
+                "jquery",
+                "modal",
+                "modal-popover",
+                "popover",
+                "popover-x"
+            ],
+            "time": "2015-03-18 13:08:39"
+        },
+        {
+            "name": "kartik-v/bootstrap-tabs-x",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/bootstrap-tabs-x.git",
+                "reference": "e85a731d79f030fb7f7742e3e2e0ac828c3233a1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-tabs-x/zipball/e85a731d79f030fb7f7742e3e2e0ac828c3233a1",
+                "reference": "e85a731d79f030fb7f7742e3e2e0ac828c3233a1",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\plugins\\tabs\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "Extended Bootstrap Tabs with ability to align tabs in multiple ways, add borders, rotated titles, and more.",
+            "homepage": "https://github.com/kartik-v/bootstrap-tabs-x",
+            "keywords": [
+                "bootstrap",
+                "extended",
+                "jquery",
+                "modal",
+                "modal-tabs",
+                "tabs",
+                "tabs-x"
+            ],
+            "time": "2015-06-26 14:48:16"
+        },
+        {
+            "name": "kartik-v/dependent-dropdown",
+            "version": "v1.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/dependent-dropdown.git",
+                "reference": "03b086d7ec51fc773aab064d7204adbbaa807ec4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/dependent-dropdown/zipball/03b086d7ec51fc773aab064d7204adbbaa807ec4",
+                "reference": "03b086d7ec51fc773aab064d7204adbbaa807ec4",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\plugins\\depdrop\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "A multi level dependent dropdown JQuery plugin that allows nested dependencies.",
+            "homepage": "https://github.com/kartik-v/dependent-dropdown",
+            "keywords": [
+                "dependent",
+                "dropdown",
+                "jquery",
+                "option",
+                "select"
+            ],
+            "time": "2015-07-14 09:54:25"
+        },
+        {
+            "name": "kartik-v/yii2-icons",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-icons.git",
+                "reference": "719af14be1bcb3581855ddfd8b389792383a905a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-icons/zipball/719af14be1bcb3581855ddfd8b389792383a905a",
+                "reference": "719af14be1bcb3581855ddfd8b389792383a905a",
+                "shasum": ""
+            },
+            "require": {
+                "components/flag-icon-css": "*",
+                "fortawesome/font-awesome": "*",
+                "kartik-v/yii2-krajee-base": "*",
+                "yiisoft/yii2-jui": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\icons\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://demos.krajee.com/"
+                }
+            ],
+            "description": "Set of icon frameworks for use in Yii Framework 2.0",
+            "homepage": "https://github.com/kartik-v/yii2-icons",
+            "keywords": [
+                "extension",
+                "font",
+                "icon",
+                "yii",
+                "yii2"
+            ],
+            "time": "2015-04-20 16:17:56"
+        },
+        {
             "name": "kartik-v/yii2-krajee-base",
             "version": "v1.7.7",
             "source": {
@@ -1016,6 +2230,54 @@
                 "yii2"
             ],
             "time": "2015-06-16 05:19:57"
+        },
+        {
+            "name": "kartik-v/yii2-popover-x",
+            "version": "v1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-popover-x.git",
+                "reference": "6a21af40c66dd10588fede392d7458f80890cac3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-popover-x/zipball/6a21af40c66dd10588fede392d7458f80890cac3",
+                "reference": "6a21af40c66dd10588fede392d7458f80890cac3",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/bootstrap-popover-x": "~1.4",
+                "kartik-v/yii2-krajee-base": "~1.7"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\popover\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "An extended bootstrap 3.0 popover widget which combines both the bootstrap popover and modal features and includes various new styling enhancements.",
+            "homepage": "https://github.com/kartik-v/yii2-popover-x",
+            "keywords": [
+                "bootstrap",
+                "extended",
+                "jquery",
+                "modal",
+                "modal-popover",
+                "popover",
+                "popover-x"
+            ],
+            "time": "2015-07-01 16:51:32"
         },
         {
             "name": "kartik-v/yii2-widget-alert",
@@ -1068,17 +2330,116 @@
             "time": "2014-11-19 06:44:12"
         },
         {
-            "name": "kartik-v/yii2-widget-select2",
-            "version": "v2.0.2",
+            "name": "kartik-v/yii2-widget-depdrop",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/kartik-v/yii2-widget-select2.git",
-                "reference": "585e8797d7982e0c9d09370b98b451a028a59439"
+                "url": "https://github.com/kartik-v/yii2-widget-depdrop.git",
+                "reference": "40bbe95d8d5afe4eef5eecc4c2f1a5a21f9edf43"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-select2/zipball/585e8797d7982e0c9d09370b98b451a028a59439",
-                "reference": "585e8797d7982e0c9d09370b98b451a028a59439",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-depdrop/zipball/40bbe95d8d5afe4eef5eecc4c2f1a5a21f9edf43",
+                "reference": "40bbe95d8d5afe4eef5eecc4c2f1a5a21f9edf43",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/dependent-dropdown": "~1.4",
+                "kartik-v/yii2-krajee-base": "~1.7"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\depdrop\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "Widget that enables setting up dependent dropdowns with nested dependencies (sub repo split from yii2-widgets)",
+            "homepage": "https://github.com/kartik-v/yii2-widget-depdrop",
+            "keywords": [
+                "dependent",
+                "dropdown",
+                "extension",
+                "form",
+                "jquery",
+                "plugin",
+                "widget",
+                "yii2"
+            ],
+            "time": "2015-06-26 20:20:32"
+        },
+        {
+            "name": "kartik-v/yii2-widget-fileinput",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-widget-fileinput.git",
+                "reference": "bfed1b4201cc5fb3ac11563e1269f0ca64071e0b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-fileinput/zipball/bfed1b4201cc5fb3ac11563e1269f0ca64071e0b",
+                "reference": "bfed1b4201cc5fb3ac11563e1269f0ca64071e0b",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/bootstrap-fileinput": "~4.2",
+                "kartik-v/yii2-krajee-base": "~1.7"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\file\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "An enhanced FileInput widget for Bootstrap 3.x with file preview, multiple selection, and more features (sub repo split from yii2-widgets)",
+            "homepage": "https://github.com/kartik-v/yii2-widget-fileinput",
+            "keywords": [
+                "extension",
+                "file",
+                "form",
+                "input",
+                "jquery",
+                "plugin",
+                "upload",
+                "widget",
+                "yii2"
+            ],
+            "time": "2015-06-26 20:23:24"
+        },
+        {
+            "name": "kartik-v/yii2-widget-select2",
+            "version": "v2.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-widget-select2.git",
+                "reference": "e72880e7e8dfc845c112ed7df275bf1c929be6db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-select2/zipball/e72880e7e8dfc845c112ed7df275bf1c929be6db",
+                "reference": "e72880e7e8dfc845c112ed7df275bf1c929be6db",
                 "shasum": ""
             },
             "require": {
@@ -1113,7 +2474,104 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-07-01 15:20:59"
+            "time": "2015-09-12 19:56:48"
+        },
+        {
+            "name": "kop/yii2-scroll-pager",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kop/yii2-scroll-pager.git",
+                "reference": "9e2f1a53db8bb5f50b906a0874b21a071a6215fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kop/yii2-scroll-pager/zipball/9e2f1a53db8bb5f50b906a0874b21a071a6215fc",
+                "reference": "9e2f1a53db8bb5f50b906a0874b21a071a6215fc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "webcreate/jquery-ias": "~2.2.0",
+                "yiisoft/yii2": "*"
+            },
+            "require-dev": {
+                "codeception/codeception": "~2.0"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kop\\y2sp\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ivan Koptiev",
+                    "email": "ivan.koptiev@codex.systems",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Infinite AJAX scrolling for Yii2 ListView widget",
+            "homepage": "http://kop.github.io/yii2-scroll-pager/",
+            "keywords": [
+                "pager",
+                "pagination",
+                "scroll",
+                "scrolling",
+                "yii",
+                "yii2"
+            ],
+            "time": "2015-08-13 19:58:46"
+        },
+        {
+            "name": "nemmo/yii2-attachments",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Nemmo/yii2-attachments.git",
+                "reference": "fb117b083324f3f60ac6a2a50469a72e6aa8340a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Nemmo/yii2-attachments/zipball/fb117b083324f3f60ac6a2a50469a72e6aa8340a",
+                "reference": "fb117b083324f3f60ac6a2a50469a72e6aa8340a",
+                "shasum": ""
+            },
+            "require": {
+                "himiklab/yii2-colorbox-widget": "*",
+                "kartik-v/yii2-widget-fileinput": "*",
+                "php": ">=5.4.0",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "nemmo\\attachments\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-4-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Alimzhan Abuov aka Nemmo",
+                    "email": "alimzhan.abu@yandex.kz"
+                }
+            ],
+            "description": "Extension for file uploading and attaching to the models",
+            "keywords": [
+                "attachment",
+                "extension",
+                "file",
+                "upload",
+                "yii2"
+            ],
+            "time": "2015-08-17 08:02:41"
         },
         {
             "name": "prawee/yii2-adminlte-theme",
@@ -1265,6 +2723,88 @@
                 "mailer"
             ],
             "time": "2015-06-06 14:19:39"
+        },
+        {
+            "name": "webcreate/jquery-ias",
+            "version": "v2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webcreate/infinite-ajax-scroll.git",
+                "reference": "7380f74fca64180a4c5da18d01065a8aef0494b7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webcreate/infinite-ajax-scroll/zipball/7380f74fca64180a4c5da18d01065a8aef0494b7",
+                "reference": "7380f74fca64180a4c5da18d01065a8aef0494b7",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary",
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "fieg",
+                    "email": "jeroen@fieg.nl",
+                    "homepage": "http://webcreate.nl"
+                }
+            ],
+            "description": "Infinite AJAX Scroll: A jQuery plugin that turns your server-side pagination into an infinite scrolling one using AJAX",
+            "homepage": "http://infiniteajaxscroll.com",
+            "keywords": [
+                "ajax",
+                "ias",
+                "infinite",
+                "jquery",
+                "pagination",
+                "scroll",
+                "scrolling"
+            ],
+            "time": "2015-05-08 14:58:16"
+        },
+        {
+            "name": "yiier/yii2-backup",
+            "version": "v1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiier/yii2-backup.git",
+                "reference": "b659dcf0646e0f2d9668dea1923658d36336fafe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiier/yii2-backup/zipball/b659dcf0646e0f2d9668dea1923658d36336fafe",
+                "reference": "b659dcf0646e0f2d9668dea1923658d36336fafe",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "yiier\\backup\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "forecho",
+                    "email": "caizhenghai@gmail.com"
+                }
+            ],
+            "description": "Database Backup and Restore functionality",
+            "keywords": [
+                "backup",
+                "extension",
+                "yii2",
+                "yii2-backup"
+            ],
+            "time": "2015-06-29 14:02:21"
         },
         {
             "name": "yiisoft/yii2",
@@ -1500,6 +3040,54 @@
             "time": "2015-03-01 06:22:44"
         },
         {
+            "name": "yiisoft/yii2-imagine",
+            "version": "2.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-imagine.git",
+                "reference": "0961343138b65bba447de84b2b300899617e6acc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-imagine/zipball/0961343138b65bba447de84b2b300899617e6acc",
+                "reference": "0961343138b65bba447de84b2b300899617e6acc",
+                "shasum": ""
+            },
+            "require": {
+                "imagine/imagine": "0.5.*",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\imagine\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Antonio Ramirez",
+                    "email": "amigo.cobos@gmail.com"
+                }
+            ],
+            "description": "The Imagine integration for the Yii framework",
+            "keywords": [
+                "helper",
+                "image",
+                "imagine",
+                "yii2"
+            ],
+            "time": "2015-03-01 06:22:44"
+        },
+        {
             "name": "yiisoft/yii2-jui",
             "version": "2.0.4",
             "source": {
@@ -1646,6 +3234,56 @@
                 "yii2"
             ],
             "time": "2015-05-10 22:12:32"
+        },
+        {
+            "name": "yzalis/identicon",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yzalis/Identicon.git",
+                "reference": "a99fc2a3d018512f7914bc6f972952536c0f309b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yzalis/Identicon/zipball/a99fc2a3d018512f7914bc6f972952536c0f309b",
+                "reference": "a99fc2a3d018512f7914bc6f972952536c0f309b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "fzaninotto/faker": "1.2.*@dev"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Identicon": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Laugueux",
+                    "email": "benjamin@yzalis.com"
+                }
+            ],
+            "description": "Create awesome unique avatar.",
+            "homepage": "http://identicon-php.org",
+            "keywords": [
+                "avatar",
+                "identicon",
+                "image"
+            ],
+            "time": "2014-07-13 09:19:12"
         }
     ],
     "packages-dev": [
@@ -1727,64 +3365,6 @@
                 "fixtures"
             ],
             "time": "2015-05-29 06:29:14"
-        },
-        {
-            "name": "hightman/xunsearch",
-            "version": "1.4.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hightman/xs-sdk-php.git",
-                "reference": "02b1dd8a8a693d8ec70a9a5230eee20769129d88"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hightman/xs-sdk-php/zipball/02b1dd8a8a693d8ec70a9a5230eee20769129d88",
-                "reference": "02b1dd8a8a693d8ec70a9a5230eee20769129d88",
-                "shasum": ""
-            },
-            "require": {
-                "ext-mbstring": "*",
-                "lib-pcre": "*",
-                "php": ">=5.3.0"
-            },
-            "bin": [
-                "util/xs"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.4.x-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "lib/",
-                    "wrapper/yii-ext/"
-                ],
-                "psr-4": {
-                    "hightman\\xunsearch\\": "wrapper/yii2-ext/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "hightman",
-                    "email": "hightman@twomice.net",
-                    "role": "Founder and project leader"
-                }
-            ],
-            "description": "xunsearch php sdk, include yii, yii2 supports",
-            "homepage": "http://www.xunsearch.com/",
-            "keywords": [
-                "search engine",
-                "xunsearch",
-                "yii",
-                "yii2"
-            ],
-            "time": "2015-04-02 13:31:53"
         },
         {
             "name": "linslin/yii2-curl",
@@ -2059,8 +3639,13 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "dektrium/yii2-user": 20,
         "dektrium/yii2-rbac": 20,
+        "dektrium/yii2-user": 20,
+        "hightman/xunsearch": 10,
+        "kartik-v/bootstrap-tabs-x": 20,
+        "kartik-v/yii2-widget-depdrop": 20,
+        "kop/yii2-scroll-pager": 20,
+        "nemmo/yii2-attachments": 20,
         "prawee/yii2-adminlte-theme": 20
     },
     "prefer-stable": false,

@@ -13,9 +13,8 @@ use yii\base\Exception;
 class Connection extends Component
 {
 
-    public $config, $prefix;
-    public static $instance = null;
-    private $params;
+    public $config, $prefix, $instance_key, $params;
+    public static $instance;
 
     #需要设置过期时间的方法，此方法有待完善
     public $redisSetCommands = [
@@ -39,13 +38,17 @@ class Connection extends Component
     /**
      * 修饰缓存KEY
      * @param $key
-     * @param null $sign
+     * @param null $identifier
      * @return string
      */
-    public function buildCallParams($key, $sign = null)
+    public function buildCallParams($key, $identifier = null)
     {
-        if ($this->prefix && $sign) {
-            $this->params[0] = implode(':', [$this->prefix, $key, $sign]);
+        if ($this->prefix) {
+            $this->params[0] = implode(':', [$this->prefix, $key]);
+        }
+
+        if ($identifier) {
+            $this->params[0] = implode(':', [$this->params[0], $identifier]);
         }
     }
 
@@ -57,7 +60,7 @@ class Connection extends Component
     public function buildCackeKeyExpire($action, $expire = null)
     {
         if ($expire && in_array(strtoupper($action), $this->redisSetCommands)) {
-            self::$instance->setTimeout($this->params[0], $expire);
+            self::$instance[$this->instance_key]->setTimeout($this->params[0], $expire);
         }
     }
 
@@ -83,11 +86,15 @@ class Connection extends Component
 
     public function createInstance($config)
     {
-        if (is_null(self::$instance)) {
 
-            if (empty($config['server']['hostname']) || empty($config['server']['port'])) {
-                throw new Exception("找不到key {$config['name']}的redis的配置信息!");
-            }
+        if (empty($config['server']['hostname']) || empty($config['server']['port'])) {
+            throw new Exception("找不到key {$config['name']}的redis的配置信息!");
+        }
+
+        #创建instance key
+        $this->instance_key = md5($config['server']['hostname'] . ':' . $config['server']['port']);
+
+        if (!isset(self::$instance[$this->instance_key])) {
 
             $redis = new \Redis();
             if (!$redis->connect($config['server']['hostname'], $config['server']['port'], 1)) {
@@ -105,7 +112,7 @@ class Connection extends Component
             #自动序列化，用igbinary会节约很多内存
             $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_IGBINARY);
 
-            self::$instance = $redis;
+            self::$instance[$this->instance_key] = $redis;
         }
     }
 
@@ -118,13 +125,19 @@ class Connection extends Component
      */
     public function __call($action, $params)
     {
-        if (!isset($params[0]) || !is_array($params[0])) {
+        if (!isset($params[0])) {
             throw new Exception('redis参数1不得为空，且为数组格式!');
         }
 
-        $this->params = $params;
+        #判断第一个参数是否为数组格式，数组格式则为 prefix:array[0]:array[1]，否则为 prefix:array
+        if (is_array($params[0])) {
+            list($key, $identifier) = $params[0];
+        } else {
+            $key = $params[0];
+            $identifier = null;
+        }
 
-        list($key, $sign) = $params[0];
+        $this->params = $params;
 
         #获取单项缓存配置
         $config = $this->getCacheConfig($key);
@@ -133,10 +146,10 @@ class Connection extends Component
         $this->createInstance($config);
 
         #建立请求参数
-        $this->buildCallParams($config['key'], $sign);
+        $this->buildCallParams($config['key'], $identifier);
 
         #执行动作
-        $result = call_user_func_array([self::$instance, $action], $this->params);
+        $result = call_user_func_array([self::$instance[$this->instance_key], $action], $this->params);
 
         #设置缓存时间
         $this->buildCackeKeyExpire($action, $config['expire']);

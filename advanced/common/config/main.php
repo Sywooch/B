@@ -8,17 +8,16 @@ return [
         'language'   => 'zh-cn',
         'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
         'modules'    => [
-
             #yii2 user 模块设置
             'user'    => [
-                    'class'                    => 'dektrium\user\Module',
+                    'class'                    => 'common\modules\user\Module',
                     'modelMap'                 => [
-                            'User'    => 'common\models\user\User', #使用自定义的User模型
-                            'Profile' => 'common\models\user\Profile', #使用自定义的User模型
+                            'User'    => 'common\modules\user\models\User', #使用自定义的User模型
+                            'Profile' => 'common\modules\user\models\Profile', #使用自定义的User模型
                     ],
                     'controllerMap'            => [
-                            'admin'   => 'common\controllers\user\AdminController',
-                            'settings' => 'common\controllers\user\SettingsController',
+                            'admin'    => 'common\modules\user\controllers\AdminController',
+                            'settings' => 'common\modules\user\controllers\SettingsController',
                     ],
                     'mailer'                   => [
                             'sender'                => '6202551@qq.com',
@@ -118,7 +117,7 @@ return [
                         'theme' => [
                                 'pathMap' => [
                                     #用户模板
-                                    '@dektrium/user/views' => '@common/views/user'
+                                    '@dektrium/user/views' => '@common/modules/user/views'
                                 ],
                         ],
                 ],

@@ -24,12 +24,36 @@
     "yiisoft/yii2-bootstrap": "*",
     "yiisoft/yii2-swiftmailer": "*",
     "yiisoft/yii2-redis": "~2.0.0",
-    "dektrium/yii2-user": "0.9.*@dev",
-    "dektrium/yii2-rbac": "dev-master",
+    "yiisoft/yii2-authclient": "*",
+    "yiisoft/yii2-imagine": "^2.0",
     "2amigos/yii2-file-upload-widget": "~1.0",
+    "2amigos/yii2-qrcode-helper": "~1.0",
+    "2amigos/yii2-selectize-widget": "*",
+    "bower-asset/emojify.js": "*",
+    "bower-asset/font-awesome": "*",
+    "bower-asset/highlightjs": "*",
+    "bower-asset/jquery-textcomplete": "*",
+    "bower-asset/localforage": "*",
+    "bower-asset/marked": "*",
+    "bower-asset/metisMenu": "*",
+    "bower-asset/PACE": "*",
+    "bower-asset/sb-admin-2-assets": "*",
+    "dektrium/yii2-rbac": "dev-master",
+    "dektrium/yii2-user": "0.9.*@dev",
+    "devgroup/yii2-tag-dependency-helper": "*",
     "funson86/yii2-setting": "*",
+    "fxp/composer-asset-plugin": "~1.0",
+    "hightman/xunsearch": "*@beta",
+    "kartik-v/bootstrap-tabs-x": "dev-master",
+    "kartik-v/yii2-icons": "*",
+    "kartik-v/yii2-popover-x": "*",
+    "kartik-v/yii2-widget-depdrop": "@dev",
+    "kartik-v/yii2-widget-select2": "*",
+    "kop/yii2-scroll-pager": "dev-master",
+    "nemmo/yii2-attachments": "dev-master",
     "prawee/yii2-adminlte-theme": "dev-master",
-    "xezzus/yii2-redis": "*"
+    "yiier/yii2-backup": "*",
+    "yzalis/identicon": "*"
   },
   "require-dev": {
     "yiisoft/yii2-codeception": "*",
@@ -47,14 +71,5 @@
       "npm-asset-library": "vendor/npm",
       "bower-asset-library": "vendor/bower"
     }
-  },
-  "repositories": [
-    {
-      "packagist": false
-    },
-    {
-      "type": "composer",
-      "url": "http://packagist.cn"
-    }
-  ]
+  }
 }

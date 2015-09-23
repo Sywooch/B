@@ -6,12 +6,20 @@
  * Time: 14:12
  */
 
-namespace common\models\user;
+namespace common\modules\user\models;
 
 use \dektrium\user\models\User as BaseUser;
-
+use Yii;
+/**
+ * Class User
+ * @package common\modules\user\models
+ * @property  common\modules\user\models\Profile $profile
+ */
 class User extends BaseUser
 {
+
+
+    public $avatar;
 
     public function attributeLabels()
     {
@@ -23,7 +31,7 @@ class User extends BaseUser
     }
 
     /**
-     * 场景约束
+     * 鍦烘櫙绾︽潫
      * @return array
      */
     public function scenarios()
@@ -37,7 +45,7 @@ class User extends BaseUser
     }
 
     /**
-     * 字段规则
+     * 瀛楁瑙勫垯
      * @return array
      */
     public function rules()
@@ -49,4 +57,5 @@ class User extends BaseUser
 
         return $rules;
     }
+
 }
