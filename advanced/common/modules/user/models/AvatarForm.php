@@ -27,14 +27,14 @@ class AvatarForm extends Model
     public function rules()
     {
         return [
-                [['avatar'], 'required'],
-                [
-                        ['avatar'],
-                        'file',
-                        'extensions' => 'gif, jpg, png',
-                        'maxSize'    => 1024 * 1024 * 2,
-                        'tooBig'     => \Yii::t('app', 'File has to be smaller than 2MB')
-                ],
+            [['avatar'], 'required'],
+            [
+                ['avatar'],
+                'file',
+                'extensions' => 'gif, jpg, png',
+                'maxSize' => 1024 * 1024 * 2,
+                'tooBig' => \Yii::t('app', 'File has to be smaller than 2MB')
+            ],
         ];
     }
 
@@ -42,7 +42,7 @@ class AvatarForm extends Model
     public function attributeLabels()
     {
         return [
-                'avatar' => '上传头像',
+            'avatar' => '上传头像',
         ];
     }
 
@@ -72,7 +72,10 @@ class AvatarForm extends Model
         if (!$avatar) {
             $avatar = $this->avatar;
         }
-        return $avatar ? \Yii::$app->basePath . \Yii::$app->params['avatarPath'] . $avatar : null;
+
+        $avatar = $avatar ? \Yii::$app->basePath . \Yii::$app->params['avatarPath'] . $avatar : null;
+
+        return $avatar;
     }
 
     /**
@@ -93,7 +96,15 @@ class AvatarForm extends Model
         }
 
         // generate a unique file name
-        $this->avatar = \Yii::$app->security->generateRandomString() . ".{$image->extension}";
+        $date_dir = date('Ym');
+
+        $dir = \Yii::$app->basePath . \Yii::$app->params['avatarPath'] . $date_dir;
+
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        $this->avatar = $date_dir . '/' . \Yii::$app->security->generateRandomString() . ".{$image->extension}";
 
         // the uploaded image instance
         return $image;

@@ -23,13 +23,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Html::encode($this->title) ?>
             </div>
             <div class="panel-body">
-                <?php $form = ActiveForm::begin([
-                        'id'      => 'account-form',
-                        'options' => ['enctype' => 'multipart/form-data'],
-                ]); ?>
-                <?= Html::img($model->user->profile->getAvatar(200, true)); ?>
-                <?= Html::img($model->user->profile->getAvatar(50, true)); ?>
-                <?= Html::img($model->user->profile->getAvatar(24, true)); ?>
+                <?php $form = ActiveForm::begin(
+                        [
+                                'id'      => 'account-form',
+                                'options' => ['enctype' => 'multipart/form-data'],
+                        ]
+                ); ?>
+                <?= Html::img($model->user->getAvatar(200, true)); ?>
+                <?= Html::img($model->user->getAvatar(50, true)); ?>
+                <?= Html::img($model->user->getAvatar(24, true)); ?>
                 <br>
                 <br>
                 <?= $form->field($model, 'avatar')->fileInput(); ?>

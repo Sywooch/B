@@ -8,6 +8,7 @@
 
 namespace common\controllers;
 
+use console\modules\crawler\services\CrawlerService;
 use Yii;
 use yii\web\Response;
 

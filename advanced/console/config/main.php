@@ -11,6 +11,11 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'console\controllers',
+    'modules' => [
+        'crawler' => [
+            'class' => 'console\modules\crawler\Module',
+        ],
+    ],
     'components' => [
         'log' => [
             'targets' => [
@@ -19,6 +24,13 @@ return [
                     'levels' => ['error', 'warning'],
                 ],
             ],
+        ],
+        'db'     => [
+            'class'    => 'yii\db\Connection',
+            'dsn'      => 'mysql:host=127.0.0.1;dbname=yii2advanced',
+            'username' => 'root',
+            'password' => '',
+            'charset'  => 'utf8',
         ],
     ],
     'params' => $params,

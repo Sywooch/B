@@ -8,9 +8,11 @@
 
 namespace backend\controllers;
 
+use console\modules\crawler\controllers\crawlers\CrawlerBase;
 use Yii;
 use common\controllers\BaseController;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Inflector;
 
 
 class TestController extends BaseController
@@ -33,6 +35,23 @@ class TestController extends BaseController
 
     public function actionIndex()
     {
+        $crawler_sign = Inflector::camelize('sz_ben_di_bao');
+
+        $crawler = Yii::createObject(
+                [
+                        'class'      => 'console\\modules\\crawler\\controllers\\crawlers\\' . $crawler_sign,
+                        'id' => 1
+                ]
+        );
+
+        print_r($crawler);
+
+        if ($crawler instanceof CrawlerBase) {
+            //$crawler->up();
+            $crawler->launch();
+            //$crawler->down();
+        }
+
         /*sleep(0.5);
         $this->setPerformanceRecordAnchor('action index');
         sleep(0.5);*/
@@ -40,6 +59,6 @@ class TestController extends BaseController
         print_r($data);*/
         //$this->errorParam();
         //echo Yii::$app->setting->get('test');
-        $this->render('index');
+        #$this->render('index');
     }
 }

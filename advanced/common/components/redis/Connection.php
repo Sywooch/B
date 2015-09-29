@@ -6,6 +6,7 @@ use yii\base\Component;
 use yii\base\Exception;
 
 /**
+ * 参考：yii\redis\Connection
  * Class Connection
  * @property \Redis $instance
  * @package common\components\redis
@@ -109,7 +110,7 @@ class Connection extends Component
                 $redis->select($config['server']['database']);
             }
 
-            #自动序列化，用igbinary会节约很多内存
+            #自动序列化，用 igbinary 会节约很多内存
             $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_IGBINARY);
 
             self::$instance[$this->instance_key] = $redis;
