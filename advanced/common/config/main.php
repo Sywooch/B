@@ -144,7 +144,7 @@ return [
                         'class'   => 'yii\authclient\Collection',
                         'clients' => [
                                 'qq' => [
-                                        'class'        => 'common\components\QqOAuth',
+                                        'class'        => 'common\components\authclients\QqOAuth',
                                         'clientId'     => 'your_qq_clientid',
                                         'clientSecret' => 'your_qq_secret'
                                 ],

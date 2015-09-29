@@ -8,14 +8,13 @@
 
 namespace common\controllers;
 
+use common\services\QuestionService;
 use console\modules\crawler\services\CrawlerService;
 use Yii;
 use yii\web\Response;
 
 class BaseController extends PerformanceRecordController
 {
-
-
     /**
      * JSON输出
      * @param array $response ['code'=> '', 'msg' => '', 'data' => '']
@@ -43,7 +42,6 @@ class BaseController extends PerformanceRecordController
         }
 
 
-
         Yii::$app->getResponse()->clear();
         Yii::$app->response->format = Response::FORMAT_JSON;
         Yii::$app->response->setStatusCode(200);
@@ -62,5 +60,21 @@ class BaseController extends PerformanceRecordController
         $data = Yii::$app->error->error_param;
         Yii::$app->response->data = $data;
         Yii::$app->end();
+    }
+
+    /**
+     * @return object
+     * @throws \yii\base\InvalidConfigException
+     */
+    /*protected function getQuestionService()
+    {
+        return Yii::createObject(QuestionService::className());
+    }*/
+
+    public function __call($action, $params)
+    {
+        var_dump($action, $params);
+        exit('~~~~~');
+        //parent::__call($action, $params);
     }
 }
