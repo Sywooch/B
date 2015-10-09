@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8513e8b6e54b441eef0e685cd9319e44",
+    "hash": "6874a9ea63630a716d59c9bfd39c9e11",
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
@@ -942,16 +942,16 @@
         },
         {
             "name": "bower-asset/localforage",
-            "version": "1.2.10",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mozilla/localForage.git",
-                "reference": "da84e056c9097bfe452fadfd34bd2522588a51e6"
+                "reference": "690c73df5e2263b171a23e440d285a642cdc6af4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mozilla/localForage/zipball/da84e056c9097bfe452fadfd34bd2522588a51e6",
-                "reference": "da84e056c9097bfe452fadfd34bd2522588a51e6",
+                "url": "https://api.github.com/repos/mozilla/localForage/zipball/690c73df5e2263b171a23e440d285a642cdc6af4",
+                "reference": "690c73df5e2263b171a23e440d285a642cdc6af4",
                 "shasum": ""
             },
             "require-dev": {
@@ -1279,16 +1279,16 @@
         },
         {
             "name": "bower-asset/sifter",
-            "version": "v0.4.3",
+            "version": "v0.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brianreavis/sifter.js.git",
-                "reference": "bdd2badbce30396ed9a12951b13e8e23d2adf43a"
+                "reference": "ef7d170a617715cbedd8c70f9fdc5f3b5a0c1e98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brianreavis/sifter.js/zipball/bdd2badbce30396ed9a12951b13e8e23d2adf43a",
-                "reference": "bdd2badbce30396ed9a12951b13e8e23d2adf43a",
+                "url": "https://api.github.com/repos/brianreavis/sifter.js/zipball/ef7d170a617715cbedd8c70f9fdc5f3b5a0c1e98",
+                "reference": "ef7d170a617715cbedd8c70f9fdc5f3b5a0c1e98",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -1453,17 +1453,63 @@
             "time": "2015-09-05 08:34:56"
         },
         {
+            "name": "daixianceng/yii2-smser",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/daixianceng/yii2-smser.git",
+                "reference": "ef2d072afd887f5ab3a699c35d23a155c98d0781"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/daixianceng/yii2-smser/zipball/ef2d072afd887f5ab3a699c35d23a155c98d0781",
+                "reference": "ef2d072afd887f5ab3a699c35d23a155c98d0781",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "daixianceng\\smser\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Cosmo",
+                    "email": "daixianceng@gmail.com",
+                    "homepage": "http://www.microwall.cn/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Yii2 SMS extension",
+            "homepage": "https://github.com/daixianceng/yii2-smser",
+            "keywords": [
+                "extension",
+                "plugin",
+                "sms",
+                "smser",
+                "yii2"
+            ],
+            "time": "2015-07-29 05:06:29"
+        },
+        {
             "name": "dektrium/yii2-rbac",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dektrium/yii2-rbac.git",
-                "reference": "41a5c26b551eb6331c9c1ae222f41e6248b9936f"
+                "reference": "0c7ab2575d2856aa3e7b140432ec65c8a50216cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dektrium/yii2-rbac/zipball/41a5c26b551eb6331c9c1ae222f41e6248b9936f",
-                "reference": "41a5c26b551eb6331c9c1ae222f41e6248b9936f",
+                "url": "https://api.github.com/repos/dektrium/yii2-rbac/zipball/0c7ab2575d2856aa3e7b140432ec65c8a50216cb",
+                "reference": "0c7ab2575d2856aa3e7b140432ec65c8a50216cb",
                 "shasum": ""
             },
             "require": {
@@ -1500,7 +1546,7 @@
                 "yii2",
                 "yii2-rbac"
             ],
-            "time": "2015-09-14 19:49:30"
+            "time": "2015-10-03 18:34:36"
         },
         {
             "name": "dektrium/yii2-user",
@@ -1567,16 +1613,16 @@
         },
         {
             "name": "devgroup/yii2-tag-dependency-helper",
-            "version": "1.2.1",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DevGroup-ru/yii2-tag-dependency-helper.git",
-                "reference": "a554756d4f0acea39efa410ee8920f397f2af258"
+                "reference": "5375a9001f95b0fdb4eb46f21881b9408396ddf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DevGroup-ru/yii2-tag-dependency-helper/zipball/a554756d4f0acea39efa410ee8920f397f2af258",
-                "reference": "a554756d4f0acea39efa410ee8920f397f2af258",
+                "url": "https://api.github.com/repos/DevGroup-ru/yii2-tag-dependency-helper/zipball/5375a9001f95b0fdb4eb46f21881b9408396ddf0",
+                "reference": "5375a9001f95b0fdb4eb46f21881b9408396ddf0",
                 "shasum": ""
             },
             "require": {
@@ -1615,7 +1661,7 @@
                 "cache",
                 "yii2"
             ],
-            "time": "2015-09-28 14:10:24"
+            "time": "2015-10-02 13:40:30"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -3364,6 +3410,75 @@
             "time": "2015-08-13 19:58:46"
         },
         {
+            "name": "kucha/ueditor",
+            "version": "1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BigKuCha/yii2-ueditor-widget.git",
+                "reference": "b41439ee0c69efc800a53087c20d8bfcea0f9507"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BigKuCha/yii2-ueditor-widget/zipball/b41439ee0c69efc800a53087c20d8bfcea0f9507",
+                "reference": "b41439ee0c69efc800a53087c20d8bfcea0f9507",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "kucha\\ueditor\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "null"
+            ],
+            "authors": [
+                {
+                    "name": "BigKuCha",
+                    "email": "nevermore1989@vip.qq.com"
+                }
+            ],
+            "description": "desc",
+            "time": "2015-02-06 02:01:30"
+        },
+        {
+            "name": "moontoast/math",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ramsey/moontoast-math.git",
+                "reference": "fce28a9d1e73e73376cb44e5e581675d15fbe2f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packagist.phpcomposer.com/files/ramsey/moontoast-math/fce28a9d1e73e73376cb44e5e581675d15fbe2f3.zip",
+                "reference": "fce28a9d1e73e73376cb44e5e581675d15fbe2f3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-bcmath": "*",
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Moontoast\\Math": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "A mathematics library, providing functionality for large numbers",
+            "homepage": "https://github.com/moontoast/math",
+            "keywords": [
+                "bcmath",
+                "math"
+            ],
+            "time": "2013-01-19 17:42:34"
+        },
+        {
             "name": "nemmo/yii2-attachments",
             "version": "dev-master",
             "source": {
@@ -3454,6 +3569,80 @@
                 "yii2"
             ],
             "time": "2015-05-20 04:54:56"
+        },
+        {
+            "name": "ramsey/uuid",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ramsey/uuid.git",
+                "reference": "0c0ac34e867219bb9936cc5b823f8a5af840d7eb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packagist.phpcomposer.com/files/ramsey/uuid/0c0ac34e867219bb9936cc5b823f8a5af840d7eb.zip",
+                "reference": "0c0ac34e867219bb9936cc5b823f8a5af840d7eb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "replace": {
+                "rhumsaa/uuid": "self.version"
+            },
+            "require-dev": {
+                "apigen/apigen": "^4.1",
+                "ircmaxell/random-lib": "^1.1",
+                "jakub-onderka/php-parallel-lint": "^0.9.0",
+                "moontoast/math": "^1.1",
+                "phpunit/phpunit": "^4.7",
+                "satooshi/php-coveralls": "^0.6.1",
+                "squizlabs/php_codesniffer": "^2.3"
+            },
+            "suggest": {
+                "ircmaxell/random-lib": "Provides RandomLib to use with the RandomLibAdapter",
+                "moontoast/math": "Support for converting UUID to 128-bit integer (in string form).",
+                "ramsey/uuid-console": "A console application for generating UUIDs with ramsey/uuid",
+                "ramsey/uuid-doctrine": "Allow the use of a UUID as Doctrine field type."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ramsey\\Uuid\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marijn Huizendveld",
+                    "email": "marijn.huizendveld@gmail.com"
+                },
+                {
+                    "name": "Thibaud Fabre",
+                    "email": "thibaud@aztech.io"
+                },
+                {
+                    "name": "Ben Ramsey",
+                    "email": "ben@benramsey.com",
+                    "homepage": "https://benramsey.com"
+                }
+            ],
+            "description": "Formerly rhumsaa/uuid. A PHP 5.4+ library for generating RFC 4122 version 1, 3, 4, and 5 universally unique identifiers (UUID).",
+            "homepage": "https://github.com/ramsey/uuid",
+            "keywords": [
+                "guid",
+                "identifier",
+                "uuid"
+            ],
+            "time": "2015-09-28 16:27:51"
         },
         {
             "name": "rmrevin/yii2-fontawesome",
@@ -3561,6 +3750,113 @@
             "time": "2015-06-06 14:19:39"
         },
         {
+            "name": "thamtech/yii2-uuid",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thamtech/yii2-uuid.git",
+                "reference": "21d00efa3b7270e87274c71967cc7183f469c3f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packagist.phpcomposer.com/files/thamtech/yii2-uuid/21d00efa3b7270e87274c71967cc7183f469c3f5.zip",
+                "reference": "21d00efa3b7270e87274c71967cc7183f469c3f5",
+                "shasum": ""
+            },
+            "require": {
+                "moontoast/math": "~1.1.0",
+                "php": ">=5.4.0",
+                "ramsey/uuid": "~3.0.0",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "thamtech\\uuid\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Tyler Ham",
+                    "email": "tyler@thamtech.com"
+                }
+            ],
+            "description": "Yii 2 UUID Helper",
+            "keywords": [
+                "guid",
+                "uuid",
+                "yii",
+                "yii2"
+            ],
+            "time": "2015-10-08 23:22:24"
+        },
+        {
+            "name": "vova07/yii2-imperavi-widget",
+            "version": "1.2.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vova07/yii2-imperavi-widget.git",
+                "reference": "afb59bff9a4ce18f5ecd144cf1fe224bf939ec15"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vova07/yii2-imperavi-widget/zipball/afb59bff9a4ce18f5ecd144cf1fe224bf939ec15",
+                "reference": "afb59bff9a4ce18f5ecd144cf1fe224bf939ec15",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "~1",
+                "phpunit/phpunit": "4.*",
+                "scrutinizer/ocular": "~1.1"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                },
+                "asset-installer-paths": {
+                    "bower-asset-library": "vendor/bower"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "vova07\\imperavi\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Crudu Vasile",
+                    "email": "bazillio07@yandex.ru",
+                    "homepage": "https://github.com/vova07",
+                    "role": "Developer"
+                }
+            ],
+            "description": "The imperavi redactor widget for Yii 2 framework.",
+            "homepage": "https://github.com/vova07/yii2-imperavi-widget",
+            "keywords": [
+                "Redactor",
+                "extension",
+                "imperavi",
+                "widget",
+                "wysiwyg",
+                "yii",
+                "yii 2",
+                "yii2"
+            ],
+            "time": "2015-08-21 11:36:17"
+        },
+        {
             "name": "webcreate/jquery-ias",
             "version": "v2.2.1",
             "source": {
@@ -3599,6 +3895,50 @@
                 "scrolling"
             ],
             "time": "2015-05-08 14:58:16"
+        },
+        {
+            "name": "yiidoc/yii2-redactor",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiidoc/yii2-redactor.git",
+                "reference": "c4c80c19c68728e88d135f4eec5c51352fbbaa37"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiidoc/yii2-redactor/zipball/c4c80c19c68728e88d135f4eec5c51352fbbaa37",
+                "reference": "c4c80c19c68728e88d135f4eec5c51352fbbaa37",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "yii\\redactor\\": "/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nghia Nguyen",
+                    "email": "zinzinday@gmail.com"
+                }
+            ],
+            "description": "Extension redactor for Yii2 Framework.",
+            "keywords": [
+                "Redactor",
+                "extension",
+                "html editor",
+                "imperavi",
+                "wysiwyg",
+                "yii2"
+            ],
+            "time": "2015-06-02 21:47:24"
         },
         {
             "name": "yiier/yii2-backup",
@@ -4478,9 +4818,9 @@
         "dektrium/yii2-rbac": 20,
         "dektrium/yii2-user": 20,
         "hightman/xunsearch": 10,
+        "kop/yii2-scroll-pager": 20,
         "kartik-v/bootstrap-tabs-x": 20,
         "kartik-v/yii2-widget-depdrop": 20,
-        "kop/yii2-scroll-pager": 20,
         "nemmo/yii2-attachments": 20,
         "prawee/yii2-adminlte-theme": 20
     },

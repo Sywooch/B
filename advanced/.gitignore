@@ -32,3 +32,10 @@ phpunit.phar
 
 #custom ignore file
 */config/main-local.php
+
+backend/runtime/*
+
+console/runtime/*
+
+frontend/runtime/*
+frontend/web/uploads/avatars/*

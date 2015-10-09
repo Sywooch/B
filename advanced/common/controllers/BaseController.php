@@ -71,10 +71,10 @@ class BaseController extends PerformanceRecordController
         return Yii::createObject(QuestionService::className());
     }*/
 
-    public function __call($action, $params)
+    /*public function __call($action, $params)
     {
         var_dump($action, $params);
         exit('~~~~~');
         //parent::__call($action, $params);
-    }
+    }*/
 }

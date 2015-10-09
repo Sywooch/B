@@ -7324,7 +7324,6 @@ iframe.loading {
 }
 
 .note-record .container, .blog-write .container, .qa-ask .container, .qa-editQuestion .container, .qa-editAnswer .container {
-    padding: 0 30px !important;
     width: 100%;
     max-width: 1600px
 }
@@ -8444,7 +8443,8 @@ li > .widget-codetool {
 .editor-preview {
     position: absolute;
     padding: 10px 20px;
-    margin-top: 31px;
+    /*margin-top: 31px;*/
+    margin-top: 0px;
     border-left: 1px solid #CCC;
     background-color: #f6f6f6;
     top: 0;

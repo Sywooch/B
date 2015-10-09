@@ -1,7 +1,5 @@
-assets/*
-!assets/.gitignore
+﻿assets/*
 protected/runtime/*
-!protected/runtime/.gitignore
 protected/data/*.db
 themes/classic/views/
 
@@ -56,3 +54,4 @@ resources/db model/db.mwb.bak
 *.bak
 resources/docs/QQ相关的账号信息.txt
 resources/db model/db.mwb.bak
+advanced/composer.lock

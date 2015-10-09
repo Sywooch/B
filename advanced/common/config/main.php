@@ -11,51 +11,59 @@ return [
         'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
         'modules'    => [
             #yii2 user 模块设置
-                'user'    => [
-                        'class'                    => 'common\modules\user\Module',
-                        'modelMap'                 => [
-                                'User'    => 'common\modules\user\models\User',
+            'user'     => [
+                    'class'                    => 'common\modules\user\Module',
+                    'modelMap'                 => [
+                            'User'    => 'common\modules\user\models\User',
                             #使用自定义的User模型
-                                'Profile' => 'common\modules\user\models\Profile',
+                            'Profile' => 'common\modules\user\models\Profile',
                             #使用自定义的User模型
-                        ],
-                        'controllerMap'            => [
-                                'admin'    => 'common\modules\user\controllers\AdminController',
-                                'settings' => 'common\modules\user\controllers\SettingsController',
-                        ],
-                        'mailer'                   => [
-                                'sender'                => '6202551@qq.com',
+                    ],
+                    'controllerMap'            => [
+                            'admin'    => 'common\modules\user\controllers\AdminController',
+                            'settings' => 'common\modules\user\controllers\SettingsController',
+                    ],
+                    'mailer'                   => [
+                            'sender'                => '6202551@qq.com',
                             // or ['no-reply@myhost.com' => 'Sender name']
-                                'welcomeSubject'        => '欢迎注册',
-                                'confirmationSubject'   => '账号激活邮件',
-                                'reconfirmationSubject' => '更改邮件地址',
-                                'recoverySubject'       => '更改密码',
+                            'welcomeSubject'        => '欢迎注册',
+                            'confirmationSubject'   => '账号激活邮件',
+                            'reconfirmationSubject' => '更改邮件地址',
+                            'recoverySubject'       => '更改密码',
 
-                        ],
-                        'enableFlashMessages'      => false,
-                        'enableUnconfirmedLogin'   => true,
-                        'confirmWithin'            => 86400,
-                        'cost'                     => 12,
-                        'enableGeneratingPassword' => false,
+                    ],
+                    'enableFlashMessages'      => false,
+                    'enableUnconfirmedLogin'   => true,
+                    'confirmWithin'            => 86400,
+                    'cost'                     => 12,
+                    'enableGeneratingPassword' => false,
                     #自动生成密码，并通过邮件发送
-                        'enableConfirmation'       => true,
+                    'enableConfirmation'       => true,
                     #开启邮件确认
-                        'enableUnconfirmedLogin'   => true,
+                    'enableUnconfirmedLogin'   => true,
                     #未认证用户是否可以登陆
-                        'rememberFor'              => 1209600,
+                    'rememberFor'              => 1209600,
                     #cookie有效期，2周
-                        'admins'                   => ['admin'],
+                    'admins'                   => ['admin'],
                     #管理员账号
 
-                ],
-                'rbac'    => [
-                        'class' => 'dektrium\rbac\Module',
-                ],
+            ],
+            'rbac'     => [
+                    'class' => 'dektrium\rbac\Module',
+            ],
             #站点设置
-                'setting' => [
-                        'class'               => 'funson86\setting\Module',
-                        'controllerNamespace' => 'funson86\setting\controllers',
-                ],
+            'setting'  => [
+                    'class'               => 'funson86\setting\Module',
+                    'controllerNamespace' => 'funson86\setting\controllers',
+            ],
+            #redactor编辑器
+            'redactor' => [
+                    'class'                => 'yii\redactor\RedactorModule',
+                    'uploadDir'            => '@webroot/path/to/uploadfolder',
+                    'uploadUrl'            => '@web/path/to/uploadfolder',
+                    'imageAllowExtensions' => ['jpg', 'png', 'gif']
+            ],
+
         ],
         'components' => [
                 'cache'                => [
@@ -72,7 +80,7 @@ return [
                         ],
 
                 ],
-            #日志设置
+                #日志设置
                 'log'                  => [
                         'traceLevel' => YII_DEBUG ? 3 : 0,
                         'targets'    => [
@@ -96,11 +104,11 @@ return [
                                 ],
                         ],
                 ],
-            #邮件发送配置
+                #邮件发送配置
                 'mailer'               => [
                         'class'            => 'yii\swiftmailer\Mailer',
                         'useFileTransport' => false,
-                    //这句一定有，false发送邮件，true只是生成邮件在runtime文件夹下，不发邮件
+                        //这句一定有，false发送邮件，true只是生成邮件在runtime文件夹下，不发邮件
                         'transport'        => [
                                 'class'      => 'Swift_SmtpTransport',
                                 'host'       => 'smtp.163.com',
@@ -112,34 +120,34 @@ return [
                         ],
                         'messageConfig'    => [
                                 'charset' => 'UTF-8',
-                            //'from'    => ['admin@qq.com' => 'admin']
+                                //'from'    => ['admin@qq.com' => 'admin']
                         ],
                 ],
-            #redis定义
+                #redis定义
                 'redis'                => [
                         'class'  => 'common\components\redis\Connection',
                         'prefix' => 'YIIREDIS',
                         'config' => $redis,
                 ],
-            #站点设置
+                #站点设置
                 'setting'              => [
                         'class' => 'common\components\setting\Setting',
                 ],
-            #自定义模板目录
+                #自定义模板目录
                 'view'                 => [
                         'theme' => [
                                 'pathMap' => [
                                     #用户模板
-                                        '@dektrium/user/views' => '@common/modules/user/views'
+                                    '@dektrium/user/views' => '@common/modules/user/views'
                                 ],
                         ],
                 ],
-            #错误代码
+                #错误代码
                 'error'                => [
                         'class'  => 'common\components\error\ErrorResponse',
                         'config' => $error
                 ],
-            #第三方接入
+                #第三方接入
                 'authClientCollection' => [
                         'class'   => 'yii\authclient\Collection',
                         'clients' => [

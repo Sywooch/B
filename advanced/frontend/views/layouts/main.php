@@ -95,7 +95,7 @@ switch ($controller_name) {
                     'encodeLabels' => false
             ]
     );
-    $notifyCount = 1;
+
     if (Yii::$app->user->isGuest) {
         $menuItems[] = [
                 'label'   => '<span class="sr-only">消息</span><span id="messageCount" class="glyphicon glyphicon-envelope"></span>',
@@ -121,7 +121,7 @@ switch ($controller_name) {
                 'items'   => [
                         [
                                 'label' => '提问',
-                                'url'   => ['/user/default']
+                                'url'   => ['/question/create']
                         ],
                 ],
                 'options' => [
@@ -139,30 +139,9 @@ switch ($controller_name) {
 
         ];
 
-
-        /* $menuItems[] = [
-                 'label'       => Html::tag('i', '', ['class' => 'fa fa-bell']) . Html::tag(
-                                 'span',
-                                 $notifyCount ? $notifyCount : null
-                         ),
-                 'url'         => ['/notification/index'],
-                 'linkOptions' => ['class' => $notifyCount ? 'new' : null],
-                 'options'     => ['class' => 'notification-count'],
-         ];*/
-
-
         // 个人中心
         $menuItems[] = [
-                'label'   => Yii::$app->user->identity->username/* . ' ' . Html::img(
-                                Yii::$app->user->identity->getAvatar(
-                                        24,
-                                        true
-                                )
-                        )*/,
-                /*'linkOptions' => [
-                        'class' => 'user-avatar',
-                        'style' => 'background-image: url(' .  . ')'
-                ],*/
+                'label'   => Yii::$app->user->identity->username,
                 'items'   => [
                         [
                                 'label' => '我的主页',

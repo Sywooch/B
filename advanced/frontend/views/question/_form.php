@@ -1,5 +1,8 @@
 <?php
 
+use common\widgets\UEditor\UEditor;
+use dosamigos\selectize\SelectizeTextInput;
+
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -7,6 +10,7 @@ use yii\widgets\ActiveForm;
 /* @var $model common\models\Question */
 /* @var $form yii\widgets\ActiveForm */
 ?>
+<link rel="stylesheet" href="/BachEditor/build/build.css">
 
 <div class="question-form">
 
@@ -33,17 +37,34 @@ use yii\widgets\ActiveForm;
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="tags" class="sr-only">标签：至少1个，最多5个</label>
-        <input class="tagsInput form-control"
-               data-tags="null" name="tags" type="text"
-               placeholder="标签，如：php" data-role="tagsinput"/>
-    </div>
+    <?= SelectizeTextInput::widget(
+            [
+                    'name'          => 'Topic[tags]',
+                    'value'         => $model->tags,
+                    'loadUrl'       => ['/tag/search'],
+                    'clientOptions' => [
+                            'placeholder'      => '标签：至少1个，最多5个',
+                            'allowEmptyOption' => false,
+                            'delimiter'        => ',',
+                            'valueField'       => 'name',
+                            'labelField'       => 'name',
+                            'searchField'      => 'name',
+                            'maxItems'         => 5,
+                            'plugins'          => ['remove_button'],
+                            'persist'          => false,
+                            'create'           => true,
+                    ],
+            ]
+    ) ?>
+
+    <!--<div id="questionText" class="editor">-->
+        <?= $form->field($model, 'content')->label(false)->widget(UEditor::className(), []); ?>
+    <!--</div>-->
 
 
-    <div id="questionText" class="editor">
-        <textarea id="myEditor" class="hidden"></textarea>
-    </div>
+    <div id="md-preview"><?= \yii\helpers\HtmlPurifier::process(
+                \yii\helpers\Markdown::process($model->content, 'gfm')
+        ) ?></div>
 
     <div class="operations mt20">
         <div class="pull-right">
@@ -60,7 +81,5 @@ use yii\widgets\ActiveForm;
         </div>
     </div>
 
-
     <?php ActiveForm::end(); ?>
-
 </div>

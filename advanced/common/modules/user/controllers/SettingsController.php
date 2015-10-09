@@ -25,29 +25,29 @@ class SettingsController extends BaseSettingsController
     public function behaviors()
     {
         return [
-                'verbs'  => [
-                        'class'   => VerbFilter::className(),
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'disconnect' => ['post']
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
                         'actions' => [
-                                'disconnect' => ['post']
+                            'profile',
+                            'account',
+                            'avatar',
+                            'confirm',
+                            'networks',
+                            'disconnect'
                         ],
-                ],
-                'access' => [
-                        'class' => AccessControl::className(),
-                        'rules' => [
-                                [
-                                        'allow'   => true,
-                                        'actions' => [
-                                                'profile',
-                                                'account',
-                                                'avatar',
-                                                'confirm',
-                                                'networks',
-                                                'disconnect'
-                                        ],
-                                        'roles'   => ['@']
-                                ],
-                        ]
-                ],
+                        'roles' => ['@']
+                    ],
+                ]
+            ],
         ];
     }
 
@@ -61,30 +61,26 @@ class SettingsController extends BaseSettingsController
         $this->performAjaxValidation($model);
 
         if ($model->load(\Yii::$app->request->post()) && $model->save()) {
-
-
             \Yii::$app->getSession()->setFlash('success', \Yii::t('user', 'Your profile has been updated'));
             return $this->refresh();
         }
-
-
         $provinces = Area::find()->where(['grade' => 1])->asArray()->all();
 
         $cities = $model->province ? Area::find()->Where([
-                'grade'     => 2,
-                'parent_id' => $model->province
+            'grade' => 2,
+            'parent_id' => $model->province
         ])->asArray()->all() : [];
 
         $districts = $model->province ? Area::find()->Where([
-                'grade'     => 3,
-                'parent_id' => $model->city
+            'grade' => 3,
+            'parent_id' => $model->city
         ])->asArray()->all() : [];
 
         return $this->render('profile', [
-                'model'     => $model,
-                'provinces' => $provinces,
-                'cities'    => $cities,
-                'districts' => $districts,
+            'model' => $model,
+            'provinces' => $provinces,
+            'cities' => $cities,
+            'districts' => $districts,
         ]);
     }
 
@@ -99,7 +95,7 @@ class SettingsController extends BaseSettingsController
 
         if ($model->load(Yii::$app->request->post())) {
             #删除头像
-            if($model->user->profile->avatar){
+            if ($model->user->profile->avatar) {
                 $model->deleteOldAvatar();
             }
 
@@ -117,7 +113,7 @@ class SettingsController extends BaseSettingsController
         }
 
         return $this->render('avatar', [
-                'model' => $model,
+            'model' => $model,
         ]);
     }
 }
