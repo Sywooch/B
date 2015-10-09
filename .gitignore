@@ -1,9 +1,4 @@
-﻿assets/*
-protected/runtime/*
-protected/data/*.db
-themes/classic/views/
-
-# =========================
+﻿# =========================
 # Operating System Files
 # =========================
 
