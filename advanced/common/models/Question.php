@@ -27,6 +27,7 @@ use Yii;
  * @property QuestionHasTag[] $questionHasTags
  * @property Tag[] $tags0
  * @property QuestionVersion[] $questionVersions
+ * @property mixed maxTagsLength
  */
 class Question extends \yii\db\ActiveRecord
 {

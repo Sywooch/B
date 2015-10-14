@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\entities\QuestionEntity;
 use Yii;
 use common\models\Question;
 use common\models\QuestionSearch;
@@ -60,7 +61,7 @@ class QuestionController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Question();
+        $model = new QuestionEntity();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -80,6 +81,12 @@ class QuestionController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        /*if(Yii::$app->request->isPost){
+            $model->load(Yii::$app->request->post());
+            $model->validate();
+            print_r($model->getAttributes());
+            exit('dd');
+        }*/
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -112,7 +119,7 @@ class QuestionController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Question::findOne($id)) !== null) {
+        if (($model = QuestionEntity::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

@@ -8,6 +8,7 @@
 
 namespace common\modules\user\models;
 
+use common\helpers\AvatarHelper;
 use \dektrium\user\models\User as BaseUser;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -21,14 +22,19 @@ use yii\helpers\FileHelper;
 class User extends BaseUser
 {
     public $avatar;
+    #注册用户名正则，允许中英文
+    public static $usernameRegexp = '/^[_-a-zA-Z0-9\.\x{4e00}-\x{9fa5}]+$/u';
 
     public function attributeLabels()
     {
         $attributes = parent::attributeLabels();
-        return ArrayHelper::merge($attributes, [
-            'last_login_at' => \Yii::t('user', 'Last login at'),
-            'login_times' => \Yii::t('user', 'Login times'),
-        ]);
+        return ArrayHelper::merge(
+                $attributes,
+                [
+                        'last_login_at' => \Yii::t('user', 'Last login at'),
+                        'login_times'   => \Yii::t('user', 'Login times'),
+                ]
+        );
     }
 
     /**
@@ -54,8 +60,7 @@ class User extends BaseUser
         $rules = parent::rules();
         // add some rules
         //$rules['fieldRequired'] = ['field', 'required'];
-        //$rules['fieldLength']   = ['field', 'string', 'max' => 10];
-
+        //$rules['usernameLength']=['username', 'string', 'min' => 2, 'max' => 255];
         return $rules;
     }
 
@@ -82,15 +87,18 @@ class User extends BaseUser
             if (!file_exists($avatarCachePath . $size . '_' . $this->profile->avatar)) {
                 #不存在小图，则生成一个
                 try {
-                    $avatar_dir = $avatarCachePath.$size . '_' . dirname($this->profile->avatar);
+                    $avatar_dir = $avatarCachePath . $size . '_' . dirname($this->profile->avatar);
 
                     #print_r($avatar_dir);exit;
 
                     if (!file_exists($avatar_dir)) {
                         mkdir($avatar_dir, 0777, true);
                     }
-                    \yii\imagine\Image::thumbnail($avatarPath . $this->profile->avatar, $size,
-                        $size)->save($avatarCachePath . $size . '_' . $this->profile->avatar, ['quality' => 100]);
+                    \yii\imagine\Image::thumbnail(
+                            $avatarPath . $this->profile->avatar,
+                            $size,
+                            $size
+                    )->save($avatarCachePath . $size . '_' . $this->profile->avatar, ['quality' => 100]);
                     $avatar = Yii::$app->params['avatarCacheUrl'] . $size . '_' . $this->profile->avatar;
                 } catch (\Imagine\Exception\InvalidArgumentException $e) {
                     $avatar = null;

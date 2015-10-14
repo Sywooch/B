@@ -56,7 +56,7 @@ class UEditor extends \kucha\ueditor\UEditor
                                 'blockquote', //引用
                                 'pasteplain', //纯文本粘贴模式
 
-                                'preview', //预览
+                                //'preview', //预览
                                 'horizontal', //分隔线
                                 'removeformat', //清除格式
 
@@ -112,7 +112,7 @@ class UEditor extends \kucha\ueditor\UEditor
                                 'splittorows', //拆分成行
                                 'splittocols', //拆分成列
                                 'splittocells', //完全拆分单元格
-                                'deletecaption', //删除表格标题
+                                //'deletecaption', //删除表格标题
                                 'inserttitle', //插入标题
                                 'mergecells', //合并多个单元格
                                 'deletetable', //删除表格
@@ -120,11 +120,11 @@ class UEditor extends \kucha\ueditor\UEditor
                                 '|',
                                 'insertimage', //多图上传
                                 //'snapscreen', //截图
-                                'wordimage', //图片转存
+                                //'wordimage', //图片转存
                                 'attachment', //附件
-                                '|',
+                                //'|',
                                 //'source', //源代码
-                                'preview', //预览
+                                //'preview', //预览
                         ],
                 ]
         ];

@@ -68,6 +68,8 @@
     "vova07/yii2-imperavi-widget": "*",
     "kucha/ueditor": "*",
 
+    "budyaga/yii2-cropper": "*",
+
     "thamtech/yii2-uuid": "*",
     "yeesoft/yii2-comments": "*",
     "crazydb/yii2-ueditor": "*",

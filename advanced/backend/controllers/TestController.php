@@ -39,8 +39,8 @@ class TestController extends BaseController
 
         $crawler = Yii::createObject(
                 [
-                        'class'      => 'console\\modules\\crawler\\controllers\\crawlers\\' . $crawler_sign,
-                        'id' => 1
+                        'class' => 'console\\modules\\crawler\\controllers\\crawlers\\' . $crawler_sign,
+                        'id'    => 1
                 ]
         );
 
@@ -60,5 +60,14 @@ class TestController extends BaseController
         //$this->errorParam();
         //echo Yii::$app->setting->get('test');
         #$this->render('index');
+    }
+
+    public function actionMail()
+    {
+        $result =  Yii::$app->mailer->compose()->setFrom(Yii::$app->params['senderEmail'])->setTo(
+                '6202551@qq.com'
+        )->setSubject('This is a test mail ')->send();
+
+        var_dump($result);
     }
 }
