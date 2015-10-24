@@ -172,7 +172,7 @@ class Counter extends Object
         self::addSet($table);
 
         return Yii::$app->redis->rPush(
-            ['counter', $table],
+            [REDIS_KEY_COUNTER, $table],
             [
                 'table'            => $table,
                 'primary_key_name' => $primary_key_name,
@@ -186,17 +186,17 @@ class Counter extends Object
 
     public static function popUpQueue($table)
     {
-        return Yii::$app->redis->lPop(['counter', $table]);
+        return Yii::$app->redis->lPop([REDIS_KEY_COUNTER, $table]);
     }
 
     public static function getSet()
     {
-        return Yii::$app->redis->SMEMBERS('counter_set');
+        return Yii::$app->redis->SMEMBERS(REDIS_KEY_COUNTER_SET);
     }
 
     private static function addSet($table)
     {
-        return Yii::$app->redis->sAdd('counter_set', $table);;
+        return Yii::$app->redis->sAdd(REDIS_KEY_COUNTER_SET, $table);;
     }
     
 }

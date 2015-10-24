@@ -199,7 +199,7 @@ class Notifier extends Object
         self::addSet($type);
 
         return Yii::$app->redis->rPush(
-            ['notifier', $type],
+            [REDIS_KEY_NOTIFIER, $type],
             [
                 'from_user_id' => $from_user_id,
                 'to_user_id'   => $to_user_id,
@@ -213,16 +213,16 @@ class Notifier extends Object
 
     public static function popUpQueue($table)
     {
-        return Yii::$app->redis->lPop(['notifier', $table]);
+        return Yii::$app->redis->lPop([REDIS_KEY_NOTIFIER, $table]);
     }
 
     public static function getSet()
     {
-        return Yii::$app->redis->SMEMBERS('notifier_set');
+        return Yii::$app->redis->SMEMBERS(REDIS_KEY_NOTIFIER_SET);
     }
 
     private static function addSet($table)
     {
-        return Yii::$app->redis->sAdd('notifier_set', $table);;
+        return Yii::$app->redis->sAdd(REDIS_KEY_NOTIFIER_SET, $table);;
     }
 }

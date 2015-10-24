@@ -81,7 +81,7 @@ class TestController extends BaseController
 
     public function actionAbc()
     {
-        $data = Yii::$app->redis->lRange(['notifier', 200], 0, 10);
+        $data = Yii::$app->redis->lRange([REDIS_KEY_NOTIFIER, 200], 0, 10);
 
         print_r($data);
 
@@ -103,7 +103,7 @@ class TestController extends BaseController
 
         var_dump($result);
 
-        $data = Yii::$app->redis->lRange(['notifier', NotificationEntity::TYPE_ANSWER_AT_ME], 0, 10);
+        $data = Yii::$app->redis->lRange([REDIS_KEY_NOTIFIER, NotificationEntity::TYPE_ANSWER_AT_ME], 0, 10);
 
         print_r($data);
 
@@ -121,7 +121,7 @@ class TestController extends BaseController
             1
         )->execute();
 
-        $data = Yii::$app->redis->lRange(['counter', 'user_profile'], 0, 10);
+        $data = Yii::$app->redis->lRange([REDIS_KEY_COUNTER, 'user_profile'], 0, 10);
 
         print_r($data);
 
@@ -138,7 +138,7 @@ class TestController extends BaseController
 
         print_r($result);
 
-        $data = Yii::$app->redis->lRange(['updater', QuestionEntity::tableName()], 0, 10);
+        $data = Yii::$app->redis->lRange([REDIS_KEY_UPDATER, QuestionEntity::tableName()], 0, 10);
 
         print_r($data);
 

@@ -163,7 +163,7 @@ class Updater extends Object
         self::addSet($table);
 
         return Yii::$app->redis->rPush(
-            ['updater', $table],
+            [REDIS_KEY_UPDATER, $table],
             [
                 'table' => $table,
                 'set'   => $set,
@@ -175,16 +175,16 @@ class Updater extends Object
 
     public static function popUpQueue($table)
     {
-        return Yii::$app->redis->lPop(['updater', $table]);
+        return Yii::$app->redis->lPop([REDIS_KEY_UPDATER, $table]);
     }
 
     public static function getSet()
     {
-        return Yii::$app->redis->SMEMBERS('updater_set');
+        return Yii::$app->redis->SMEMBERS(REDIS_KEY_UPDATER_SET);
     }
 
     private static function addSet($table)
     {
-        return Yii::$app->redis->sAdd('updater_set', $table);;
+        return Yii::$app->redis->sAdd(REDIS_KEY_UPDATER_SET, $table);;
     }
 }

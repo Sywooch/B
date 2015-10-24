@@ -191,7 +191,7 @@ class UserEntity extends User
 
     private function getUserCacheByUserId(array $user_id)
     {
-        $cache_hit_data = Yii::$app->redis->mget(['user', $user_id]);
+        $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USER, $user_id]);
         $cache_miss_key = Yii::$app->redis->getMissKey($user_id, $cache_hit_data);
 
         if (count($cache_miss_key)) {
@@ -221,10 +221,10 @@ class UserEntity extends User
 
             if ($cache_miss_data) {
                 #cache user miss databases data
-                Yii::$app->redis->mset(['user', $cache_miss_data]);
+                Yii::$app->redis->mset([REDIS_KEY_USER, $cache_miss_data]);
 
                 #cache usename id relation data
-                Yii::$app->redis->mset(['username', $username_id_data]);
+                Yii::$app->redis->mset([REDIS_KEY_USERNAME, $username_id_data]);
 
                 #padding miss data
                 $cache_hit_data = Yii::$app->redis->paddingMissData(
@@ -240,7 +240,7 @@ class UserEntity extends User
 
     private function getUserIdCacheByUsername(array $username)
     {
-        $cache_hit_data = Yii::$app->redis->mget(['username', $username]);
+        $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USERNAME, $username]);
         $cache_miss_key = Yii::$app->redis->getMissKey($username, $cache_hit_data);
 
         if (count($cache_miss_key)) {
@@ -289,13 +289,13 @@ class UserEntity extends User
 
     public function updateUserCache($user_id, $user_data)
     {
-        $user_cache_data = Yii::$app->redis->get(['user', $user_id]);
+        $user_cache_data = Yii::$app->redis->get([REDIS_KEY_USER, $user_id]);
         if ($user_cache_data) {
             $user_data = array_merge($user_cache_data, $user_data);
         }
 
         $data = (new CacheUserModel())->filterAttributes($user_data);
 
-        return Yii::$app->redis->set(['user', $user_id], $data);
+        return Yii::$app->redis->set([REDIS_KEY_USER, $user_id], $data);
     }
 }

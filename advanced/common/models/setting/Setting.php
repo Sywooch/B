@@ -17,7 +17,7 @@ class Setting extends \funson86\setting\models\Setting
     {
         if (parent::updateAll($attributes, $condition, $params)) {
             #更新缓存
-            Yii::$app->redis->set(['setting', $condition['code']], $attributes['value']);
+            Yii::$app->redis->set([REDIS_KEY_SETTING, $condition['code']], $attributes['value']);
         }
 
         return true;

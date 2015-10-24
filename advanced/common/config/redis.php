@@ -22,7 +22,18 @@ $servers = [
     ],
 ];
 
+/*应用级缓存*/
 const REDIS_KEY_USER = 'user';
+const REDIS_KEY_USERNAME = 'username';
+
+/*系统级缓存*/
+const REDIS_KEY_SETTING = 'setting';
+const REDIS_KEY_COUNTER = 'counter';
+const REDIS_KEY_COUNTER_SET = 'counter_set';
+const REDIS_KEY_NOTIFIER = 'notifier';
+const REDIS_KEY_NOTIFIER_SET = 'notifier_set';
+const REDIS_KEY_UPDATER = 'updater';
+const REDIS_KEY_UPDATER_SET = 'updater_set';
 
 /**
  * 注意，返回的 key　不得为数字，必须为字符串, expire = 0 表示永久存在
@@ -30,81 +41,80 @@ const REDIS_KEY_USER = 'user';
 return [
     /************************************************/
     #应用设置
-    'setting'      => [
+    REDIS_KEY_SETTING          => [
         'server' => $servers['master'],
         'key'    => 'app_setting',
         'expire' => 8640000,
     ],
     #打点器队列
-    'counter'      => [
+    REDIS_KEY_COUNTER          => [
         'server' => $servers['master'],
         'key'    => 'counter_queue',
         'expire' => 0,
     ],
-    'counter_set'  => [
+    REDIS_KEY_COUNTER_SET      => [
         'server' => $servers['master'],
         'key'    => 'counter_set',
         'expire' => 0,
     ],
     #通知器队列
-    'notifier'     => [
+    REDIS_KEY_NOTIFIER         => [
         'server' => $servers['master'],
         'key'    => 'notifier_queue',
         'expire' => 0,
     ],
-    'notifier_set' => [
+    REDIS_KEY_NOTIFIER_SET     => [
         'server' => $servers['master'],
         'key'    => 'notifier_set',
         'expire' => 0,
     ],
     #更新器队列
-    'updater'      => [
+    REDIS_KEY_UPDATER          => [
         'server' => $servers['master'],
         'key'    => 'updater_queue',
         'expire' => 0,
     ],
-    'updater_set'  => [
+    REDIS_KEY_UPDATER_SET      => [
         'server' => $servers['master'],
         'key'    => 'updater_set',
         'expire' => 0,
     ],
-
     /***************************************************/
     #用户数据
-    'user'         => [
+    REDIS_KEY_USER     => [
         'server' => $servers['master'],
         'key'    => 'user',
         'expire' => 43200, #半天有效期
     ],
     #用户名与用户ID间的关系
-    'username'         => [
+    REDIS_KEY_USERNAME => [
         'server' => $servers['master'],
         'key'    => 'username',
         'expire' => 43200, #半天有效期
     ],
     /*************************************************************/
     #临时测试类的缓存
-    'abcd'         => [
+    'abcd'             => [
         'server' => $servers['master'],
         'key'    => 'aa',
         'expire' => 500,
     ],
-    's'         => [
+    's'                => [
         'server' => $servers['master'],
         'key'    => 's',
         'expire' => 500,
     ],
-    'm'         => [
+    'm'                => [
         'server' => $servers['master'],
         'key'    => 'm',
         'expire' => 500,
     ],
-    'master'       => [
+    'master'           => [
         'server' => $servers['master'],
         'key'    => 'test_master',
         'expire' => 500,
     ],
-    'slave'        => [
+    'slave'            => [
         'server' => $servers['slave'],
         'key'    => 'test_slave',
         'expire' => 500,
