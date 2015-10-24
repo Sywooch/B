@@ -9,19 +9,19 @@ class NotificationService extends BaseService
 
     public static function questionModify()
     {
-        Yii::trace('问题修改通知', 'notification');
+        Yii::trace('闂淇敼閫氱煡', 'notification');
     }
 
 
     public static function questionDelete($user_id, $question_id)
     {
-        Yii::trace('问题删除通知', 'notification');
+        Yii::trace('闂鍒犻櫎閫氱煡', 'notification');
     }
 
 
     public static function removeFollowQuestion($user_id)
     {
-        Yii::trace('取消问题关注通知', 'notification');
+        Yii::trace('鍙栨秷闂鍏虫敞閫氱煡', 'notification');
     }
 
 }

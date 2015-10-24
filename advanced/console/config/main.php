@@ -7,31 +7,34 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-console',
-    'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'id'                  => 'app-console',
+    'basePath'            => dirname(__DIR__),
+    'bootstrap'           => ['log'],
     'controllerNamespace' => 'console\controllers',
-    'modules' => [
+    'modules'             => [
         'crawler' => [
             'class' => 'console\modules\crawler\Module',
         ],
+        'user'    => null,
     ],
-    'components' => [
+    'components'          => [
         'log' => [
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class'  => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
             ],
         ],
-        'db'     => [
+        /*'db'  => [
             'class'    => 'yii\db\Connection',
             'dsn'      => 'mysql:host=127.0.0.1;dbname=yii2advanced',
             'username' => 'root',
             'password' => '',
             'charset'  => 'utf8',
-        ],
+        ],*/
     ],
-    'params' => $params,
+    'controllerMap'       => null,
+    'params'              => $params,
+    //'i18n'                => null,
 ];

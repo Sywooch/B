@@ -38,8 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'count_follow',
             'create_at',
             'create_by',
-            'modify_at',
-            'modify_by',
+            'active_at',
             'tags',
         ],
     ]) ?>

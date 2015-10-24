@@ -1,6 +1,6 @@
 <?php
 /**
- * Description: ×Ô¶¯Ìí¼Ó²Ù×÷ÕßIP
+ * Description: ï¿½Ô¶ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½IP
  * License:
  * User: Keen
  * Date: 2015/10/11
@@ -33,7 +33,7 @@ class IpBehavior extends AttributeBehavior
 
         if (empty($this->attributes)) {
             $this->attributes = [
-                    BaseActiveRecord::EVENT_BEFORE_INSERT => $this->ipAttribute,
+                BaseActiveRecord::EVENT_BEFORE_INSERT => $this->ipAttribute,
             ];
         }
     }
@@ -43,7 +43,7 @@ class IpBehavior extends AttributeBehavior
      */
     protected function getValue($event)
     {
-        $this->value = Yii::$app->request->userIP;
+        $this->value = Yii::$app->request->userIP ? ip2long(Yii::$app->request->userIP) : null;
 
         Yii::trace('GetValue ' . $this->value, 'behavior');
 

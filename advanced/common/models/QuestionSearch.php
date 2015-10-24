@@ -18,7 +18,7 @@ class QuestionSearch extends Question
     public function rules()
     {
         return [
-            [['id', 'count_views', 'count_answer', 'count_favorite', 'count_follow', 'create_at', 'create_by', 'modify_at', 'modify_by'], 'integer'],
+            [['id', 'count_views', 'count_answer', 'count_favorite', 'count_follow', 'create_at', 'create_by', 'active_at'], 'integer'],
             [['subject', 'alias', 'content', 'tags'], 'safe'],
         ];
     }
@@ -63,8 +63,7 @@ class QuestionSearch extends Question
             'count_follow' => $this->count_follow,
             'create_at' => $this->create_at,
             'create_by' => $this->create_by,
-            'modify_at' => $this->modify_at,
-            'modify_by' => $this->modify_by,
+            'active_at' => $this->active_at,
         ]);
 
         $query->andFilterWhere(['like', 'subject', $this->subject])

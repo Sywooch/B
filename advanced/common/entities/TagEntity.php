@@ -17,26 +17,29 @@ use yii\helpers\ArrayHelper;
 class TagEntity extends Tag
 {
 
+    const STATUS_ENABLE = 'enable';
+    const STATUS_DISABLE = 'disable';
+
     public function behaviors()
     {
         return [
-            'operator' => [
-                'class' => OperatorBehavior::className(),
+            'operator'  => [
+                'class'      => OperatorBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_VALIDATE => 'create_by',
-                    ActiveRecord::EVENT_BEFORE_UPDATE => 'modify_by',
+                    ActiveRecord::EVENT_BEFORE_UPDATE   => 'modify_by',
                 ],
             ],
             'timestamp' => [
-                'class' => TimestampBehavior::className(),
+                'class'      => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
                     ActiveRecord::EVENT_BEFORE_UPDATE => 'modify_at',
                 ],
             ],
-            'tag' => [
-                'class' => TagBehavior::className()
-            ]
+            'tag'       => [
+                'class' => TagBehavior::className(),
+            ],
         ];
     }
 
@@ -49,15 +52,20 @@ class TagEntity extends Tag
     {
         $data = [];
         foreach ($tags as $tag_name) {
-            $tag_model = self::findOne(['name' => $tag_name]);
+            $model = self::findOne(['name' => $tag_name]);
 
-            if (!$tag_model) {
-                $tag_model = new TagEntity();
-                $tag_model->name = $tag_name;
-                $tag_model->save();
+            if (!$model) {
+                $model = new TagEntity();
+                $model->name = $tag_name;
+                if (!$model->save()) {
+                    Yii::error($model->getErrors(), __FUNCTION__);
+                }
+            } elseif ($model->status == self::STATUS_DISABLE) {
+                #如果存在，但被禁用,则跳过
+                continue;
             }
 
-            $data[$tag_name] = $tag_model->id;
+            $data[$tag_name] = $model->id;
         }
 
         return $data;
@@ -70,7 +78,8 @@ class TagEntity extends Tag
      */
     public function batchGetTagIds(array $tags)
     {
-        $model = self::find()->where(['name' => $tags])->asArray()->all();
+        $model = self::find()->where(['name' => $tags, 'status' => SELF::STATUS_ENABLE])->asArray()->all();
+
         return $model;
     }
 
@@ -81,14 +90,13 @@ class TagEntity extends Tag
 
     /**
      * add question tag
-     * @param $user_id
-     * @param $question_id
+     * @param       $user_id
+     * @param       $question_id
      * @param array $tag_ids
      * @throws ParamsInvalidException
      */
     public function addQuestionTag($user_id, $question_id, array $tag_ids)
     {
-
         if (empty($user_id) || empty($question_id) || empty($tag_ids)) {
             throw new ParamsInvalidException(['user_id', 'question_id', 'tag_ids']);
         }
@@ -106,33 +114,41 @@ class TagEntity extends Tag
             ['question_id', 'tag_id', 'create_by', 'create_at'],
             $data
         )->execute();
-    }
 
-    /**
-     * add question modify event
-     * @param $event such as modify, add_tag, delete_tag ...
-     * @param $question_id
-     */
-    public function addQuestionHistoryEvent($event, $question_id)
-    {
-
+        return $this->addFollowTag($user_id, $tag_ids);
     }
 
     /**
      * remove question tag
-     * @param $user_id
-     * @param $question_id
+     * @param       $user_id
+     * @param       $question_id
      * @param array $tag_ids
+     * @return int
      */
     public function removeQuestionTag($user_id, $question_id, array $tag_ids)
     {
-        self::getDb()->createCommand()->delete(
+        $result = self::getDb()->createCommand()->delete(
             'question_has_tag',
             [
-                'create_by' => $user_id,
+                'create_by'   => $user_id,
                 'question_id' => $question_id,
-                'tag_id' => $tag_ids,
+                'tag_id'      => $tag_ids,
             ]
         )->execute();
+
+        return $result;
+        //$this->removeFollowTag($user_id, $tag_ids);
+    }
+
+    public function addFollowTag($user_id, array $tag_ids)
+    {
+        $followTagEntity = Yii::createObject(FollowTagEntity::className());
+
+        return $followTagEntity->addFollowTag($user_id, $tag_ids);
+    }
+
+    public function removeFollowTag($user_id, array $tag_ids)
+    {
+        #when user remove tag, don't remove follow tag!
     }
 }

@@ -9,6 +9,7 @@ use common\models\FollowQuestion;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 class FollowQuestionEntity extends FollowQuestion
 {
@@ -16,27 +17,26 @@ class FollowQuestionEntity extends FollowQuestion
     public function behaviors()
     {
         return [
-            'operator' => [
-                'class' => OperatorBehavior::className(),
+            'operator'        => [
+                'class'      => OperatorBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_VALIDATE => 'user_id',
                 ],
             ],
-            'timestamp' => [
-                'class' => TimestampBehavior::className(),
+            'timestamp'       => [
+                'class'      => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
                 ],
             ],
-
             'follow_question' => [
-                'class' => FollowQuestionBehavior::className()
-            ]
+                'class' => FollowQuestionBehavior::className(),
+            ],
         ];
     }
 
     /**
-     * Ìí¼Ó¹Ø×¢
+     * ï¿½ï¿½Ó¹ï¿½×¢
      * @param $user_id
      * @param $question_id
      * @return bool
@@ -50,8 +50,8 @@ class FollowQuestionEntity extends FollowQuestion
 
         if (!self::findOne(
             [
-                'user_id' => $user_id,
-                'follow_question_id' => $question_id
+                'user_id'            => $user_id,
+                'follow_question_id' => $question_id,
             ]
         )
         ) {
@@ -60,6 +60,7 @@ class FollowQuestionEntity extends FollowQuestion
             if ($this->save()) {
                 return true;
             } else {
+                Yii::error($this->getErrors(), __FUNCTION__);
                 return false;
             }
         } else {
@@ -68,7 +69,7 @@ class FollowQuestionEntity extends FollowQuestion
     }
 
     /**
-     * @param $question_id
+     * @param      $question_id
      * @param null $user_id is null, delete all follow
      * @return bool
      * @throws ParamsInvalidException
@@ -83,7 +84,7 @@ class FollowQuestionEntity extends FollowQuestion
         #delete
         $model = self::find(
             [
-                'follow_question_id' => $question_id
+                'follow_question_id' => $question_id,
             ]
         )->filterWhere(['user_id' => $user_id])->one();
 
@@ -92,6 +93,35 @@ class FollowQuestionEntity extends FollowQuestion
         } else {
             return false;
         }
+    }
+
+    public function getFollowUser($question_id)
+    {
+        if (empty($question_id)) {
+            throw new ParamsInvalidException(['user_id', 'question_id']);
+        }
+
+        $model = self::find(
+            [
+                'follow_question_id' => $question_id,
+            ]
+        )->asArray()->all();
+
+        return $model;
+    }
+
+    public function getFollowUserIds($question_id)
+    {
+        $data = $this->getFollowUser($question_id);
+
+        if ($data) {
+            $result = ArrayHelper::getColumn($data, 'id');
+        } else {
+            $result = [];
+        }
+
+
+        return $result;
     }
 
     /*public function beforeSave($insert)

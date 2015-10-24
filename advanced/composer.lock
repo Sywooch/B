@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6874a9ea63630a716d59c9bfd39c9e11",
+    "hash": "774c4671f5eadd40805c8cdce6010caf",
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
@@ -299,6 +299,68 @@
                 "web"
             ],
             "time": "2015-08-17 01:49:41"
+        },
+        {
+            "name": "bower-asset/angular",
+            "version": "v1.3.20",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/angular/bower-angular.git",
+                "reference": "0cd10f27471310fe07167b00f8a4242c6bba4df2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/angular/bower-angular/zipball/0cd10f27471310fe07167b00f8a4242c6bba4df2",
+                "reference": "0cd10f27471310fe07167b00f8a4242c6bba4df2",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "./angular.js",
+                "bower-asset-ignore": []
+            }
+        },
+        {
+            "name": "bower-asset/angular-drag-and-drop-lists",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/marceljuenemann/angular-drag-and-drop-lists.git",
+                "reference": "7b4307d63ebb0bd4e6231b00ae20e8ca6731e8f7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/marceljuenemann/angular-drag-and-drop-lists/zipball/7b4307d63ebb0bd4e6231b00ae20e8ca6731e8f7",
+                "reference": "7b4307d63ebb0bd4e6231b00ae20e8ca6731e8f7",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "angular-drag-and-drop-lists.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "node_modules",
+                    "bower_components",
+                    "demo",
+                    "*.json",
+                    "test",
+                    "tests"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Angular directives for sorting nested lists using the HTML5 Drag & Drop API",
+            "keywords": [
+                "angular",
+                "dnd",
+                "drag",
+                "drop",
+                "html5",
+                "lists",
+                "nested",
+                "sortable"
+            ]
         },
         {
             "name": "bower-asset/blueimp-canvas-to-blob",
@@ -889,6 +951,44 @@
             }
         },
         {
+            "name": "bower-asset/jquery.fileapi",
+            "version": "0.4.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RubaXa/jquery.fileapi.git",
+                "reference": "5fc1013e103bb0931f5fbd18f15a9194ddf573d4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RubaXa/jquery.fileapi/zipball/5fc1013e103bb0931f5fbd18f15a9194ddf573d4",
+                "reference": "5fc1013e103bb0931f5fbd18f15a9194ddf573d4",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "jquery.fileapi.js",
+                "bower-asset-ignore": [
+                    "node_modules",
+                    "bower_components",
+                    "test",
+                    "tests"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "jQuery plugin for FileAPI (multiupload, image upload, crop, resize and etc.)",
+            "keywords": [
+                "FileAPI",
+                "chunked",
+                "file",
+                "html5",
+                "jquery",
+                "multiupload",
+                "upload"
+            ]
+        },
+        {
             "name": "bower-asset/jquery.inputmask",
             "version": "3.1.63",
             "source": {
@@ -1355,6 +1455,140 @@
             ]
         },
         {
+            "name": "budyaga/yii2-cropper",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/budyaga/yii2-cropper.git",
+                "reference": "7f87b5d7afffb97c21e7149c30242c97ce846c29"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/budyaga/yii2-cropper/zipball/7f87b5d7afffb97c21e7149c30242c97ce846c29",
+                "reference": "7f87b5d7afffb97c21e7149c30242c97ce846c29",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*",
+                "yiisoft/yii2-imagine": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "budyaga\\cropper\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Krivochenko",
+                    "email": "budyaga@gmail.com"
+                }
+            ],
+            "description": "Yii-Framework widget for uploading and cropping images",
+            "keywords": [
+                "crop",
+                "extension",
+                "upload",
+                "yii2"
+            ],
+            "time": "2015-05-10 23:57:28"
+        },
+        {
+            "name": "callmez/yii2-wechat",
+            "version": "0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/callmez/yii2-wechat.git",
+                "reference": "88343db0d68c9781582dfe80fed237bb98b4b0de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/callmez/yii2-wechat/zipball/88343db0d68c9781582dfe80fed237bb98b4b0de",
+                "reference": "88343db0d68c9781582dfe80fed237bb98b4b0de",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/angular": "1.2.*@stable | 1.3.*@stable",
+                "bower-asset/angular-drag-and-drop-lists": "1.*",
+                "bower-asset/font-awesome": "4.*",
+                "bower-asset/jquery.fileapi": "~0.4",
+                "callmez/yii2-wechat-sdk": "*",
+                "symfony/yaml": "*",
+                "yiisoft/yii2": "*",
+                "yiisoft/yii2-bootstrap": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "callmez\\wechat\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CallMeZ",
+                    "email": "callme-z@qq.com"
+                }
+            ],
+            "description": "The wechat module for the Yii framework",
+            "keywords": [
+                "module",
+                "wechat",
+                "weixin",
+                "yii2"
+            ],
+            "time": "2015-05-07 05:33:56"
+        },
+        {
+            "name": "callmez/yii2-wechat-sdk",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/callmez/yii2-wechat-sdk.git",
+                "reference": "62e2ff882d50f615b1214bf3b82aadf63a47ed49"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/callmez/yii2-wechat-sdk/zipball/62e2ff882d50f615b1214bf3b82aadf63a47ed49",
+                "reference": "62e2ff882d50f615b1214bf3b82aadf63a47ed49",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "callmez\\wechat\\sdk\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CallMeZ",
+                    "email": "callme-z@qq.com"
+                }
+            ],
+            "description": "The wechat api for the Yii framework",
+            "keywords": [
+                "sdk",
+                "wechat",
+                "weixin",
+                "yii2"
+            ],
+            "time": "2015-05-12 06:01:39"
+        },
+        {
             "name": "cebe/markdown",
             "version": "1.1.0",
             "source": {
@@ -1451,6 +1685,47 @@
             ],
             "description": "CSS for vector based country flags",
             "time": "2015-09-05 08:34:56"
+        },
+        {
+            "name": "crazydb/yii2-ueditor",
+            "version": "1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/xbzbing/Yii2-UEditor.git",
+                "reference": "25561ea36f835cf224e674bba3469583da4494c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/xbzbing/Yii2-UEditor/zipball/25561ea36f835cf224e674bba3469583da4494c1",
+                "reference": "25561ea36f835cf224e674bba3469583da4494c1",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*",
+                "yiisoft/yii2-imagine": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "crazydb\\ueditor\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "疯狂的dabing",
+                    "email": "xbzbing@gmail.com"
+                }
+            ],
+            "description": "Yii2的百度UEditor扩展",
+            "keywords": [
+                "ueditor",
+                "yii2"
+            ],
+            "time": "2015-09-17 08:19:57"
         },
         {
             "name": "daixianceng/yii2-smser",
@@ -1708,6 +1983,52 @@
             "time": "2013-11-30 08:25:19"
         },
         {
+            "name": "fedemotta/yii2-cronjob",
+            "version": "v1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fedemotta/yii2-cronjob.git",
+                "reference": "351b893f66e8758933183bfafb653d72a109e053"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fedemotta/yii2-cronjob/zipball/351b893f66e8758933183bfafb653d72a109e053",
+                "reference": "351b893f66e8758933183bfafb653d72a109e053",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "fedemotta\\cronjob\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Federico Nicolás Motta",
+                    "email": "fedemotta@gmail.com"
+                }
+            ],
+            "description": "Yii2 extension to help in the creation of automated console scripts",
+            "keywords": [
+                "console",
+                "cron",
+                "crontab",
+                "extension",
+                "job",
+                "schedule",
+                "script",
+                "yii2"
+            ],
+            "time": "2015-10-07 20:47:12"
+        },
+        {
             "name": "fortawesome/font-awesome",
             "version": "v4.4.0",
             "source": {
@@ -1801,16 +2122,16 @@
         },
         {
             "name": "fxp/composer-asset-plugin",
-            "version": "v1.0.3",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/francoispluchino/composer-asset-plugin.git",
-                "reference": "c2b0406ac19e9ea2d9556987e827d4e7f6924fde"
+                "reference": "8e22c18bbe6a5b7831a9b8488e02b85398048c04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/francoispluchino/composer-asset-plugin/zipball/c2b0406ac19e9ea2d9556987e827d4e7f6924fde",
-                "reference": "c2b0406ac19e9ea2d9556987e827d4e7f6924fde",
+                "url": "https://api.github.com/repos/francoispluchino/composer-asset-plugin/zipball/8e22c18bbe6a5b7831a9b8488e02b85398048c04",
+                "reference": "8e22c18bbe6a5b7831a9b8488e02b85398048c04",
                 "shasum": ""
             },
             "require": {
@@ -1824,7 +2145,7 @@
             "extra": {
                 "class": "Fxp\\Composer\\AssetPlugin\\FxpAssetPlugin",
                 "branch-alias": {
-                    "dev-master": "1.0-dev"
+                    "dev-master": "1.1-dev"
                 }
             },
             "autoload": {
@@ -1853,7 +2174,7 @@
                 "npm",
                 "package"
             ],
-            "time": "2015-07-29 12:23:21"
+            "time": "2015-10-17 09:47:56"
         },
         {
             "name": "hightman/xunsearch",
@@ -3452,7 +3773,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/ramsey/moontoast-math/fce28a9d1e73e73376cb44e5e581675d15fbe2f3.zip",
+                "url": "https://api.github.com/repos/ramsey/moontoast-math/zipball/fce28a9d1e73e73376cb44e5e581675d15fbe2f3",
                 "reference": "fce28a9d1e73e73376cb44e5e581675d15fbe2f3",
                 "shasum": ""
             },
@@ -3580,7 +3901,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/ramsey/uuid/0c0ac34e867219bb9936cc5b823f8a5af840d7eb.zip",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/0c0ac34e867219bb9936cc5b823f8a5af840d7eb",
                 "reference": "0c0ac34e867219bb9936cc5b823f8a5af840d7eb",
                 "shasum": ""
             },
@@ -3750,6 +4071,55 @@
             "time": "2015-06-06 14:19:39"
         },
         {
+            "name": "symfony/yaml",
+            "version": "v2.7.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
+                "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Yaml\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Yaml Component",
+            "homepage": "https://symfony.com",
+            "time": "2015-09-14 14:14:09"
+        },
+        {
             "name": "thamtech/yii2-uuid",
             "version": "v1.0.1",
             "source": {
@@ -3759,7 +4129,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/thamtech/yii2-uuid/21d00efa3b7270e87274c71967cc7183f469c3f5.zip",
+                "url": "https://api.github.com/repos/thamtech/yii2-uuid/zipball/21d00efa3b7270e87274c71967cc7183f469c3f5",
                 "reference": "21d00efa3b7270e87274c71967cc7183f469c3f5",
                 "shasum": ""
             },

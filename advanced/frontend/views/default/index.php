@@ -8,6 +8,8 @@
  * Version:
  * Created by PhpStorm.
  */
+use yii\bootstrap\Tabs;
+use yii\helpers\Url;
 
 ?>
 
@@ -18,6 +20,29 @@
             今天，你在开发时遇到了什么问题呢？
             <a id="goAsk" href="/ask" class="btn btn-primary">我要提问</a>
         </p>
+
+        <?php
+        echo Tabs::widget(
+                [
+                        'items' => [
+                                [
+                                        'label'   => '最新的',
+                                        'content' => 'Anim pariatur cliche...',
+                                        'active'  => true,
+                                ],
+                                [
+                                        'label' => '热门的',
+                                        'url'   => Url::to(['/question/index/hottest']),
+                                ],
+                                [
+                                        'label' => '未回答的',
+                                        'url'   => Url::to(['/question/index/unanswered']),
+                                ],
+                        ],
+                ]
+        );
+        ?>
+
 
         <ul class="nav nav-tabs nav-tabs-zen mb10">
             <li class="active"><a href="/questions/newest">最新的</a></li>
@@ -89,7 +114,7 @@
                         </li>
                     </ul>
                     <h2 class="title"><a href="/q/1010000003798842">用Xcode7上传archive的时候报unexpected
-                            CFBundleExecutable Key的错误。</a></h2>
+                                                                    CFBundleExecutable Key的错误。</a></h2>
                     <ul class="taglist--inline ib">
                         <li class="tagPopup"><a class="tag tag-sm" href="/t/xcode7" data-toggle="popover"
                                                 data-original-title="xcode7"
@@ -133,9 +158,9 @@
             <p>最前沿的技术问答，最纯粹的技术切磋。让你不知不觉中开拓眼界，提高技能，认识更多朋友。</p>
             <ul class="list-unstyled">
                 <li><a href="/user/oauth/google" class="3rdLogin btn btn-default btn-block btn-sn-google"><span
-                            class="icon-sn-google"></span> Google 账号登录</a></li>
+                                class="icon-sn-google"></span> Google 账号登录</a></li>
                 <li><a href="/user/oauth/weibo" class="3rdLogin btn btn-default btn-block btn-sn-weibo"><span
-                            class="icon-sn-weibo"></span> 微博账号登录</a></li>
+                                class="icon-sn-weibo"></span> 微博账号登录</a></li>
             </ul>
         </aside>
 

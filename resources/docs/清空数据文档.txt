@@ -1,0 +1,9 @@
+TRUNCATE TABLE `question_has_tag`;
+TRUNCATE TABLE `question_event_history`;
+
+TRUNCATE TABLE `follow_tag`;
+TRUNCATE TABLE `follow_question`;
+TRUNCATE TABLE `follow_user`;
+
+TRUNCATE TABLE `tag`;
+TRUNCATE TABLE `question`;

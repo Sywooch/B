@@ -5,7 +5,7 @@ return [
     'backendUrl'                    => 'http://b.yii2.com',
     #管理员信息
     'senderEmail'                    => ['admin@bo-u.cn'=>'Admin Email'],
-    'adminEmail'                    => '6202553@qq.com',
+    'adminEmail'                    => '6202552@qq.com',
     'supportEmail'                  => '6202552@qq.com',
     'user.passwordResetTokenExpire' => 3600,
     #头像相关

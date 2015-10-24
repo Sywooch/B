@@ -8,13 +8,13 @@ use Yii;
  * This is the model class for table "follow_tag".
  *
  * @property integer $user_id
- * @property string $follow_tag_id
+ * @property string $tag_id
  * @property string $count_follow
  * @property string $create_at
  * @property string $modify_at
  *
  * @property User $user
- * @property Tag $followTag
+ * @property Tag $tag
  */
 class FollowTag extends \common\models\BaseActiveRecord
 {
@@ -32,8 +32,8 @@ class FollowTag extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'follow_tag_id'], 'required'],
-            [['user_id', 'follow_tag_id', 'count_follow', 'create_at', 'modify_at'], 'integer']
+            [['user_id', 'tag_id'], 'required'],
+            [['user_id', 'tag_id', 'count_follow', 'create_at', 'modify_at'], 'integer']
         ];
     }
 
@@ -44,7 +44,7 @@ class FollowTag extends \common\models\BaseActiveRecord
     {
         return [
             'user_id' => 'User ID',
-            'follow_tag_id' => 'Follow Tag ID',
+            'tag_id' => 'Tag ID',
             'count_follow' => '关注次数',
             'create_at' => '创建时间',
             'modify_at' => '修改时间',
@@ -62,17 +62,8 @@ class FollowTag extends \common\models\BaseActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFollowTag()
+    public function getTag()
     {
-        return $this->hasOne(Tag::className(), ['id' => 'follow_tag_id']);
-    }
-
-    /**
-     * @inheritdoc
-     * @return FollowTagQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new FollowTagQuery(get_called_class());
+        return $this->hasOne(Tag::className(), ['id' => 'tag_id']);
     }
 }

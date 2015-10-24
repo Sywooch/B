@@ -18,7 +18,7 @@ class ParamsInvalidException extends Exception
 {
     public function __construct($params, $code = 500)
     {
-        $message = sprintf('参数: %s 无效', is_array($params) ? implode(', ', $params) : $params);
+        $message = sprintf('鍙傛暟: %s 鏃犳晥', is_array($params) ? implode(', ', $params) : $params);
         parent::__construct($message, $code);
     }
 }

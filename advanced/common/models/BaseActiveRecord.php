@@ -14,15 +14,4 @@ use yii\db\ActiveRecord;
 
 class BaseActiveRecord extends ActiveRecord
 {
-    /*public function behaviors()
-    {
-        return [
-                [
-                        'class'              => TimestampBehavior::className(),
-                        'createdAtAttribute' => 'create_at',
-                        'updatedAtAttribute' => 'modify_at',
-                        'value'              => new Expression('NOW()'),
-                ]
-        ];
-    }*/
 }

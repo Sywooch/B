@@ -11,23 +11,25 @@ use Yii;
  * @property string $subject
  * @property string $alias
  * @property string $content
+ * @property string $tags
  * @property string $count_views
  * @property string $count_answer
  * @property string $count_favorite
  * @property string $count_follow
  * @property string $create_at
  * @property integer $create_by
- * @property integer $modify_at
- * @property integer $modify_by
- * @property string $tags
+ * @property integer $active_at
+ * @property string $is_anonymous
+ * @property string $is_lock
+ * @property string $status
  *
  * @property FollowQuestion[] $followQuestions
- * @property User[] $createBies
+ * @property User[] $users
  * @property User $createBy
+ * @property QuestionEventHistory[] $questionEventHistories
  * @property QuestionHasTag[] $questionHasTags
  * @property Tag[] $tags0
  * @property QuestionVersion[] $questionVersions
- * @property mixed maxTagsLength
  */
 class Question extends \yii\db\ActiveRecord
 {
@@ -46,8 +48,8 @@ class Question extends \yii\db\ActiveRecord
     {
         return [
             [['subject', 'create_by'], 'required'],
-            [['content'], 'string'],
-            [['count_views', 'count_answer', 'count_favorite', 'count_follow', 'create_at', 'create_by', 'modify_at', 'modify_by'], 'integer'],
+            [['content', 'is_anonymous', 'is_lock', 'status'], 'string'],
+            [['count_views', 'count_answer', 'count_favorite', 'count_follow', 'create_at', 'create_by', 'active_at'], 'integer'],
             [['subject', 'alias'], 'string', 'max' => 45],
             [['tags'], 'string', 'max' => 255]
         ];
@@ -63,15 +65,17 @@ class Question extends \yii\db\ActiveRecord
             'subject' => '主题',
             'alias' => '主题别名',
             'content' => '补充',
+            'tags' => '标签，多个用,分隔，冗余，给sphinx用',
             'count_views' => '查看数',
             'count_answer' => '回答数',
             'count_favorite' => '收藏数',
             'count_follow' => '关注数',
-            'create_at' => 'Create At',
-            'create_by' => 'Create By',
-            'modify_at' => 'Modify At',
-            'modify_by' => '修改用户',
-            'tags' => '标签，多个用,分隔，冗余，给sphinx用',
+            'create_at' => '创建时间',
+            'create_by' => '创建用户',
+            'active_at' => '最后活跃时间',
+            'is_anonymous' => '是否匿名发表',
+            'is_lock' => '是否锁定',
+            'status' => 'enable启用 disable禁用 lock 锁定 draft草稿 close关闭',
         ];
     }
 
@@ -86,9 +90,9 @@ class Question extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreateBies()
+    public function getUsers()
     {
-        return $this->hasMany(User::className(), ['id' => 'create_by'])->viaTable('follow_question', ['follow_question_id' => 'id']);
+        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('follow_question', ['follow_question_id' => 'id']);
     }
 
     /**
@@ -97,6 +101,14 @@ class Question extends \yii\db\ActiveRecord
     public function getCreateBy()
     {
         return $this->hasOne(User::className(), ['id' => 'create_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestionEventHistories()
+    {
+        return $this->hasMany(QuestionEventHistory::className(), ['associate_id' => 'id']);
     }
 
     /**

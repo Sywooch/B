@@ -1,6 +1,6 @@
 <?php
 /**
- * Description: 自动添加操作者
+ * Description:
  * License:
  * User: Keen
  * Date: 2015/10/11

@@ -1,0 +1,2 @@
+#计划任务
+yii migrate --migrationPath=@fedemotta/cronjob/migrations

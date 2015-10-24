@@ -71,10 +71,11 @@
     "budyaga/yii2-cropper": "*",
 
     "thamtech/yii2-uuid": "*",
-    "yeesoft/yii2-comments": "*",
-    "crazydb/yii2-ueditor": "*",
-    "callmez/yii2-wechat": "^0.2.0"
 
+    "callmez/yii2-wechat": "^0.2.0",
+    "crazydb/yii2-ueditor": "*",
+
+    "fedemotta/yii2-cronjob": "*"
   },
   "require-dev": {
     "yiisoft/yii2-codeception": "*",

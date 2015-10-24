@@ -8,10 +8,13 @@
 
 namespace common\behaviors;
 
+use common\components\Counter;
+use common\entities\AttachmentEntity;
 use common\entities\FollowQuestionEntity;
-use common\entities\QuestionEntity;
+use common\entities\QuestionEventHistoryEntity;
 use common\entities\TagEntity;
-use common\services\NotificationService;
+use common\entities\UserProfileEntity;
+use common\modules\user\models\Profile;
 use Yii;
 use yii\base\Behavior;
 use yii\db\ActiveRecord;
@@ -24,36 +27,48 @@ use yii\helpers\ArrayHelper;
  */
 class QuestionBehavior extends Behavior
 {
+    public $dirtyAttributes;
+
     public function events()
     {
         Yii::trace('Begin ' . $this->className(), 'behavior');
+
         return [
-            ActiveRecord::EVENT_AFTER_INSERT => 'afterQuestionInsert',
-            ActiveRecord::EVENT_AFTER_UPDATE => 'afterQuestionUpdate',
-            ActiveRecord::EVENT_AFTER_DELETE => 'afterQuestionDelete',
+            ActiveRecord::EVENT_AFTER_INSERT  => 'afterQuestionInsert',
+            ActiveRecord::EVENT_AFTER_UPDATE  => 'afterQuestionUpdate',
+            ActiveRecord::EVENT_AFTER_DELETE  => 'afterQuestionDelete',
+            ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeQuestionSave',
         ];
+    }
+
+    public function beforeQuestionValidate($event)
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+    }
+
+    public function beforeQuestionSave($event)
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        $this->dirtyAttributes = $this->owner->getDirtyAttributes();
     }
 
     public function afterQuestionInsert($event)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-
-        //$this->dealWithTags();
-        //$this->dealWithCounter();
-        //$this->dealWithAttachments();
+        $this->dealWithAddQuestionEventHistory();
+        $this->dealWithInsertTags();
+        $this->dealWithCounter();
         $this->dealWithAddFollowQuestion();
-
+        $this->dealWithAddAttachments();
     }
 
     public function afterQuestionUpdate($event)
     {
-        $owner = $this->owner;
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-
-
-        $this->dealWithTags();
-        //$this->dealWithAttachments();
-
+        $this->dealWithQuestionUpdateEvent();
+        $this->dealWithUpdateTags();
+        $this->dealWithAddAttachments();
     }
 
     public function afterQuestionDelete($event)
@@ -62,9 +77,34 @@ class QuestionBehavior extends Behavior
         $this->dealWithRemoveFollowQuestion();
 
         # delete notify if operator is not delete by others.
-        if ($this->owner->create_by != Yii::$app->user->id) {
-            NotificationService::questionDelete($this->owner->create_by, $this->owner->id);
+    }
+
+    /**
+     * @return mixed
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function dealWithAddQuestionEventHistory()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        /* @var $questionEventHistoryEntity QuestionEventHistoryEntity */
+        $questionEventHistoryEntity = Yii::createObject(
+            [
+                'class'       => QuestionEventHistoryEntity::className(),
+                'question_id' => $this->owner->id,
+                'create_by'   => $this->owner->create_by,
+            ]
+        );
+
+        $event_content = $this->owner->subject;
+        if ($this->owner->content) {
+            $event_content = implode('<decollator></decollator>', [$this->owner->subject, $this->owner->content]);
         }
+
+        $result = $questionEventHistoryEntity->addQuestion($event_content);
+        Yii::trace(sprintf('Add Question Event History: %s', $result), 'behavior');
+
+        return $result;
     }
 
     /**
@@ -72,20 +112,73 @@ class QuestionBehavior extends Behavior
      */
     public function dealWithAddFollowQuestion()
     {
+        /* @var $model FollowQuestionEntity */
         $model = Yii::createObject(FollowQuestionEntity::className());
-        $model->addFollow($this->owner->id, $this->owner->create_by);
+        $result = $model->addFollow($this->owner->id, $this->owner->create_by);
+
+        Yii::trace(sprintf('Add Question Follow: %s', $result), 'behavior');
+
+        return $result;
     }
 
     public function dealWithRemoveFollowQuestion()
     {
+        /* @var $model FollowQuestionEntity */
         $model = Yii::createObject(FollowQuestionEntity::className());
         $model->removeFollow($this->owner->id);
+    }
+
+    public function dealWithInsertTags()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        $owner = $this->owner;
+
+        $new_tags = $owner->tags ? explode(',', $owner->tags) : [];
+        $add_tags = $new_tags;
+
+        if ($add_tags) {
+            /* @var $tag_model TagEntity */
+            $tag_model = Yii::createObject(TagEntity::className());
+
+            $tag_relation = $tag_model->batchAddTags($add_tags);
+            if ($tag_relation) {
+                $tag_ids = array_values($tag_relation);
+                $tag_model->addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
+            }
+        }
+    }
+
+    public function dealWithQuestionUpdateEvent()
+    {
+        //if ($this->owner->create_by != Yii::$app->user->id) {
+        #print_r($this->dirtyAttributes);exit;
+
+        if ($this->dirtyAttributes) {
+            /* @var $questionEventHistoryEntity QuestionEventHistoryEntity */
+            $questionEventHistoryEntity = Yii::createObject(
+                [
+                    'class'       => QuestionEventHistoryEntity::className(),
+                    'question_id' => $this->owner->id,
+                    'create_by'   => $this->owner->create_by,
+                ]
+            );
+
+            if (array_key_exists('subject', $this->dirtyAttributes)) {
+                $questionEventHistoryEntity->modifyQuestionSubject($this->dirtyAttributes['subject']);
+            }
+
+            if (array_key_exists('content', $this->dirtyAttributes)) {
+                $questionEventHistoryEntity->modifyQuestionContent($this->dirtyAttributes['content']);
+            }
+        }
+
+        //}
     }
 
     /**
      * @var $tag_model \common\entities\TagEntity
      */
-    public function dealWithTags()
+    public function dealWithUpdateTags()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $owner = $this->owner;
@@ -94,14 +187,11 @@ class QuestionBehavior extends Behavior
         $new_tags = $owner->tags ? explode(',', $owner->tags) : [];
         $old_tags = $add_tags = $remove_tags = [];
 
-        #print_r($this->owner);exit;
-        $tags = $this->owner->questionTags;
+        $tags = $this->owner->getQuestionTagsByQuestionId($this->owner->id);
 
-        //var_dump($tags);
-        //exit;
         if (!empty($tags)) {
             foreach ($tags as $tag) {
-                $old_tags[] = $tag->name;
+                $old_tags[] = $tag['name'];
             }
 
             $add_tags = array_diff($new_tags, $old_tags);
@@ -110,10 +200,18 @@ class QuestionBehavior extends Behavior
             $add_tags = $new_tags;
         }
 
-        //print_r($add_tags);exit;
+        /* @var $questionEventHistoryEntity QuestionEventHistoryEntity */
+        $questionEventHistoryEntity = Yii::createObject(
+            [
+                'class'       => QuestionEventHistoryEntity::className(),
+                'question_id' => $this->owner->id,
+                'create_by'   => $this->owner->create_by,
+            ]
+        );
 
 
         if ($add_tags) {
+            /* @var $tag_model TagEntity */
             $tag_model = Yii::createObject(TagEntity::className());
 
             $tag_relation = $tag_model->batchAddTags($add_tags);
@@ -122,45 +220,93 @@ class QuestionBehavior extends Behavior
                 $tag_model->addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
             }
 
-
-            #todo check whether need to log
-            $tag_model->addQuestionHistoryEvent('add_tag',  $this->owner->id);
+            $questionEventHistoryEntity->addTag($add_tags);
         }
 
         if ($remove_tags) {
+            /* @var $tag_model TagEntity */
             $tag_model = Yii::createObject(TagEntity::className());
             $tag_relation = $tag_model->batchGetTagIds($remove_tags);
-
 
             $tag_ids = ArrayHelper::getColumn($tag_relation, 'id');
             if ($tag_ids) {
                 $tag_model->removeQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
             }
 
-            #todo check whether need to log
-            $tag_model->addQuestionHistoryEvent('remove_tag', $this->owner->id);
-
+            $questionEventHistoryEntity->removeTag($remove_tags);
         }
-
-        //print_r($owner->tags);
-
     }
 
     public function dealWithCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        Counter::build()->set(UserProfileEntity::tableName(), 1, 'user_id')->value('count_question', 1)->execute();
     }
 
     /**
-     *
+     * todo 未完成
+     * 将临时上传的图片，转移目录，并写入attachment表
      */
-    public function dealWithAttachments()
+    public function dealWithAddAttachments()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $owner = $this->owner;
 
-        print_r($owner->content);
+        #print_r($owner->content);
+        if (strpos($owner->content, AttachmentEntity::TEMP_ATTACHMENT_PATH) && preg_match_all(
+                AttachmentEntity::TEMP_FILE_MATCH_REGULAR,
+                $owner->content,
+                $file_paths
+            )
+        ) {
+            $search_rules = $replace_rules = [];
 
+
+            foreach ($file_paths[1] as $key => $file_path) {
+                $old_file_physical_path = Yii::$app->basePath . $file_path;
+
+
+                if (file_exists($old_file_physical_path)) {
+
+                    $new_file_path_without_attachment_dir = substr(
+                        $file_path,
+                        strlen(AttachmentEntity::TEMP_ATTACHMENT_PATH)
+                    );
+
+                    $new_file_path = '/' . AttachmentEntity::ATTACHMENT_PATH . '/' . Yii::$app->user->id . $new_file_path_without_attachment_dir;
+                    $new_file_physical_path = Yii::$app->basePath . $new_file_path;
+
+
+                    $file_size = filesize($old_file_physical_path);
+
+                    $attachment = new AttachmentEntity;
+                    $attachment->addQuestionAttachment(
+                        $this->owner->id,
+                        Yii::$app->user->id,
+                        $new_file_path,
+                        $file_size
+                    );
+                    if ($attachment->save()) {
+                        $attachment->moveAttachmentFile(
+                            $this->owner->id,
+                            $old_file_physical_path,
+                            $new_file_physical_path
+                        );
+
+                        #
+                        $search_rules[] = $file_path;
+                        $replace_rules[] = $new_file_path;
+                    }
+                }
+            }
+
+            $this->owner->content = str_replace($search_rules, $replace_rules, $this->owner->content);
+            $this->owner->updateContent($this->owner->id, $this->owner->content);
+
+        } else {
+            Yii::trace('No matching data', 'attachment');
+        }
     }
 
 }
