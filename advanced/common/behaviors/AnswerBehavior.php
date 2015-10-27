@@ -59,6 +59,7 @@ class AnswerBehavior extends Behavior
 
     public function afterAnswerDelete($event)
     {
+        
     }
 
     public function dealWithUpdateQuestionActiveTime()
