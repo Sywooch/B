@@ -137,7 +137,6 @@ class TagEntity extends Tag
         )->execute();
 
         return $result;
-        //$this->removeFollowTag($user_id, $tag_ids);
     }
 
     public function addFollowTag($user_id, array $tag_ids)
@@ -145,11 +144,6 @@ class TagEntity extends Tag
         $followTagEntity = Yii::createObject(FollowTagEntity::className());
 
         return $followTagEntity->addFollowTag($user_id, $tag_ids);
-    }
-
-    public function removeFollowTag($user_id, array $tag_ids)
-    {
-        #when user remove tag, don't remove follow tag!
     }
 
     public function getTagNameById($tag_id)

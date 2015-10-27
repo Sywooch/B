@@ -13,8 +13,10 @@ use common\components\Counter;
 use common\components\Notifier;
 use common\entities\AnswerVersionEntity;
 use common\entities\FollowQuestionEntity;
+use common\entities\FollowTagPassiveEntity;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
+use common\entities\TagEntity;
 use common\entities\UserProfileEntity;
 use Yii;
 use yii\base\Behavior;
@@ -42,6 +44,7 @@ class AnswerBehavior extends Behavior
         $this->dealWithNotification(NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER);
         $this->dealWithAddCounter();
         $this->dealWithUpdateQuestionActiveTime();
+        $this->dealWithAddPassiveFollowTag();
     }
 
     public function afterAnswerUpdate($event)
@@ -104,10 +107,31 @@ class AnswerBehavior extends Behavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         #check whether has exist version
-        /* @var $answerVersionEntity AnswerVersionEntity */
-        $answerVersionEntity = Yii::createObject(AnswerVersionEntity::className());
-        $result = $answerVersionEntity->addNewVersion($this->owner->id, $this->owner->content, $this->owner->reason);
+        /* @var $answer_version_entity AnswerVersionEntity */
+        $answer_version_entity = Yii::createObject(AnswerVersionEntity::className());
+        $result = $answer_version_entity->addNewVersion($this->owner->id, $this->owner->content, $this->owner->reason);
 
         Yii::trace(sprintf('add New Version: %s', $result), 'behavior');
+    }
+
+    public function dealWithAddPassiveFollowTag()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        $question = $this->owner->question;
+
+        /* @var $tag_entity TagEntity */
+        $tag_entity = Yii::createObject(TagEntity::className());
+        $tag_ids = $tag_entity->getTagIdByName($question->tags);
+        if ($tag_ids) {
+            /* @var $follow_tag_passive_entity FollowTagPassiveEntity */
+            $follow_tag_passive_entity = Yii::createObject(FollowTagPassiveEntity::className());
+            $result = $follow_tag_passive_entity->addFollowTag(
+                $this->owner->create_by,
+                $tag_ids
+            );
+
+            Yii::trace(sprintf('Add Passive Follow Tag: %s', $result), 'behavior');
+        }
     }
 }

@@ -246,7 +246,7 @@ class UserEntity extends User
                 Yii::$app->redis->mset([REDIS_KEY_USER, $cache_miss_data]);
 
                 #cache username id relation data
-                Yii::$app->redis->mset([REDIS_KEY_USERNAME, $username_id_data]);
+                Yii::$app->redis->mset([REDIS_KEY_USER_USERNAME_ID, $username_id_data]);
 
                 #padding miss data
                 $cache_hit_data = Yii::$app->redis->paddingMissData(
@@ -262,7 +262,7 @@ class UserEntity extends User
 
     private function getUserIdByUsernameUseCache(array $username)
     {
-        $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USERNAME, $username]);
+        $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USER_USERNAME_ID, $username]);
         $cache_miss_key = Yii::$app->redis->getMissKey($username, $cache_hit_data);
 
         if (count($cache_miss_key)) {
@@ -288,7 +288,7 @@ class UserEntity extends User
             if ($cache_miss_data) {
 
                 #add to redis cache
-                Yii::$app->redis->mset([REDIS_KEY_USERNAME, $cache_miss_data]);
+                Yii::$app->redis->mset([REDIS_KEY_USER_USERNAME_ID, $cache_miss_data]);
 
                 $cache_hit_data = Yii::$app->redis->paddingMissData(
                     $cache_hit_data,

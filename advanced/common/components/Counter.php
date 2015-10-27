@@ -101,10 +101,14 @@ class Counter extends Object
 
         #priority = true 为马上执行
         if ($this->priority) {
-            return $this->immediately();
+            $result = $this->immediately();
         } else {
-            return $this->simpleQueue();
+            $result = $this->simpleQueue();
         }
+
+        Yii::error(sprintf('Counter Result %s', $result), 'counter');
+
+        return $result;
     }
     
     private function immediately()

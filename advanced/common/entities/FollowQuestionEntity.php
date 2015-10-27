@@ -3,6 +3,7 @@
 namespace common\entities;
 
 use common\behaviors\FollowQuestionBehavior;
+use common\components\Counter;
 use Yii;
 use common\exceptions\ParamsInvalidException;
 use common\models\FollowQuestion;
@@ -13,6 +14,7 @@ use yii\helpers\ArrayHelper;
 
 class FollowQuestionEntity extends FollowQuestion
 {
+    const MAX_FOLLOW_NUMBER = 5000;
 
     public function behaviors()
     {
@@ -29,17 +31,15 @@ class FollowQuestionEntity extends FollowQuestion
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
                 ],
             ],
-            'follow_question' => [
-                'class' => FollowQuestionBehavior::className(),
-            ],
         ];
     }
 
     /**
      * ��ӹ�ע
-     * @param $user_id
      * @param $question_id
+     * @param $user_id
      * @return bool
+     * @throws ErrorException
      * @throws ParamsInvalidException
      */
     public function addFollow($question_id, $user_id)
@@ -47,6 +47,14 @@ class FollowQuestionEntity extends FollowQuestion
         if (empty($user_id) || empty($question_id)) {
             throw new ParamsInvalidException(['user_id', 'question_id']);
         }
+
+
+        $follow_question_count = Yii::$app->user->profile->count_follow;
+
+        if ($follow_question_count > self::MAX_FOLLOW_NUMBER) {
+            throw new ErrorException(sprintf('你当前的关注问题数量已超过限制，最多%d个，请先清理一下。', self::MAX_FOLLOW_NUMBER));
+        }
+
 
         if (!self::findOne(
             [
@@ -58,9 +66,14 @@ class FollowQuestionEntity extends FollowQuestion
             $this->create_at = $user_id;
             $this->follow_question_id = $question_id;
             if ($this->save()) {
+                Counter::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
+                    'count_follow_question',
+                    1
+                )->execute();
                 return true;
             } else {
                 Yii::error($this->getErrors(), __FUNCTION__);
+
                 return false;
             }
         } else {
@@ -86,13 +99,18 @@ class FollowQuestionEntity extends FollowQuestion
             [
                 'follow_question_id' => $question_id,
             ]
-        )->filterWhere(['user_id' => $user_id])->one();
+        )->filterWhere(['user_id' => $user_id])->all();
 
-        if ($model && $model->delete()) {
-            return true;
-        } else {
-            return false;
+        foreach ($model as $follow_question) {
+            if ($follow_question->delete()) {
+                Counter::build()->set(UserProfileEntity::tableName(), $follow_question->user_id, 'user_id')->value(
+                    'count_follow_question',
+                    -1
+                )->execute();
+            }
         }
+
+        return true;
     }
 
     public function getFollowUser($question_id)
@@ -123,25 +141,4 @@ class FollowQuestionEntity extends FollowQuestion
 
         return $result;
     }
-
-    /*public function beforeSave($insert)
-    {
-        if (parent::beforeSave($insert)) {
-            $this->create_by = Yii::$app->user->identity->getId();
-            $this->create_at = time();
-        }
-
-        return true;
-    }*/
-
-
-    /*public function afterSave($insert, $changedAttributes)
-    {
-
-        if (parent::afterSave($insert, $changedAttributes)) {
-        }
-
-        return true;
-    }*/
-
 }

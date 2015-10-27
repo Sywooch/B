@@ -9,6 +9,7 @@
 namespace common\entities;
 
 
+use common\components\Counter;
 use common\models\FollowTag;
 
 class FollowTagEntity extends FollowTag
@@ -41,27 +42,45 @@ class FollowTagEntity extends FollowTag
             )
         )->execute();
 
-        if (!$result) {
+        if ($result) {
+            Counter::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
+                'count_follow_tag',
+                count($tag_ids)
+            )->execute();
+
+        } else {
             Yii::error(sprintf('Batch Add Follow Tag %s', $result), __FUNCTION__);
         }
 
         return $result;
     }
 
-    public function removeFollowTag($user_id, array $tag_ids)
+    public function removeFollowTag(array $tag_ids, $user_id = null)
     {
-        $result = self::getDb()->createCommand()->delete(
-            self::tableName(),
-            [
-                'user_id'       => $user_id,
-                'follow_tag_id' => $tag_ids,
-            ]
-        )->execute();
-
-        if (!$result) {
-            Yii::error(sprintf('Batch Remove Follow Tag %s', $result), __FUNCTION__);
+        if (empty($user_id) || empty($tag_ids)) {
+            throw new ParamsInvalidException(['user_id', 'tag_ids']);
         }
 
-        return $result;
+        #delete
+        $model = self::find(
+            [
+                'follow_tag_id' => $tag_ids,
+            ]
+        )->filterWhere(['user_id' => $user_id])->all();
+
+        foreach ($model as $follow_tag) {
+            if ($follow_tag->delete()) {
+                Counter::build()->set(
+                    UserProfileEntity::tableName(),
+                    $follow_tag->user_id,
+                    'user_id'
+                )->value(
+                    'count_follow_question',
+                    -1
+                )->execute();
+            }
+        }
+
+        return true;
     }
 }
