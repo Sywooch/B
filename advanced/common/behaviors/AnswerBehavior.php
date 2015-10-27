@@ -75,16 +75,7 @@ class AnswerBehavior extends Behavior
     public function dealWithAddCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = Counter::build()->set(
-            UserProfileEntity::tableName(),
-            $this->owner->create_by,
-            'user_id'
-        )->value(
-            'count_answer',
-            1
-        )->execute();
-
-        Yii::trace(sprintf('Counter: %s', $result), 'behavior');
+        Counter::addAnswer($this->owner->create_by);
     }
 
     public function dealWithNotification($type)
@@ -94,12 +85,10 @@ class AnswerBehavior extends Behavior
         $followQuestionEntity = Yii::createObject(FollowQuestionEntity::className());
         $user_ids = $followQuestionEntity->getFollowUserIds($this->owner->question_id);
         if ($user_ids) {
-            $result = Notifier::build()->from($this->owner->create_by)->to($user_ids)->set(
+            Notifier::build()->from($this->owner->create_by)->to($user_ids)->set(
                 $type,
                 $this->owner->question_id
             )->send();
-
-            Yii::trace(sprintf('Notifier: %s', $result), 'behavior');
         }
     }
 
@@ -111,6 +100,10 @@ class AnswerBehavior extends Behavior
         $answer_version_entity = Yii::createObject(AnswerVersionEntity::className());
         $result = $answer_version_entity->addNewVersion($this->owner->id, $this->owner->content, $this->owner->reason);
 
+        if ($result) {
+            #count_common_edit
+            Counter::addCommonEdit(Yii::$app->user->id);
+        }
         Yii::trace(sprintf('add New Version: %s', $result), 'behavior');
     }
 

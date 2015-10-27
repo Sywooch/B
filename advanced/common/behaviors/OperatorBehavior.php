@@ -46,8 +46,6 @@ class OperatorBehavior extends AttributeBehavior
     {
         $this->value = Yii::$app->user->id;
 
-        Yii::trace('GetValue ' . $this->value, 'behavior');
-
         return $this->value;
     }
 }

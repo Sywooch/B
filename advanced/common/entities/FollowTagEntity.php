@@ -43,11 +43,7 @@ class FollowTagEntity extends FollowTag
         )->execute();
 
         if ($result) {
-            Counter::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
-                'count_follow_tag',
-                count($tag_ids)
-            )->execute();
-
+            Counter::followTag($user_id, count($tag_ids));
         } else {
             Yii::error(sprintf('Batch Add Follow Tag %s', $result), __FUNCTION__);
         }
@@ -70,14 +66,7 @@ class FollowTagEntity extends FollowTag
 
         foreach ($model as $follow_tag) {
             if ($follow_tag->delete()) {
-                Counter::build()->set(
-                    UserProfileEntity::tableName(),
-                    $follow_tag->user_id,
-                    'user_id'
-                )->value(
-                    'count_follow_question',
-                    -1
-                )->execute();
+                Counter::cancelFollowTag($follow_tag->user_id);
             }
         }
 

@@ -42,11 +42,9 @@ class AnswerCommentBehavior extends Behavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        $result = Notifier::build()->from(Yii::$app->user->id)->to()->set(
+        Notifier::build()->from(Yii::$app->user->id)->to()->set(
             NotificationEntity::TYPE_MY_ANSWER_HAS_NEW_COMMENT
         )->send();
-
-        Yii::trace(sprintf('Notifier: %s', $result), 'behavior');
     }
 
     /**
@@ -63,11 +61,9 @@ class AnswerCommentBehavior extends Behavior
 
         $user_ids = $user_entity->getUserIdByUsername($username);
 
-        $result = Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->set(
+        Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->set(
             NotificationEntity::TYPE_COMMENT_AT_ME,
             $this->owner->id
         );
-
-        Yii::trace(sprintf('Notifier: %s', $result), 'behavior');
     }
 }

@@ -45,8 +45,6 @@ class IpBehavior extends AttributeBehavior
     {
         $this->value = Yii::$app->request->userIP ? ip2long(Yii::$app->request->userIP) : null;
 
-        Yii::trace('GetValue ' . $this->value, 'behavior');
-
         return $this->value;
     }
 }

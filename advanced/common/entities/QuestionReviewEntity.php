@@ -11,6 +11,7 @@ namespace common\entities;
 
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
+use common\components\Counter;
 use common\models\QuestionReview;
 use yii\db\ActiveRecord;
 use Yii;
@@ -21,7 +22,7 @@ class QuestionReviewEntity extends QuestionReview
     const STATUS_PROGRESS = 'progress';
     const STATUS_COMPLETE = 'complete';
     const STATUS_OVERTIME = 'overtime';
-
+    
     public function behaviors()
     {
         return [
@@ -109,7 +110,9 @@ class QuestionReviewEntity extends QuestionReview
 
         if ($model) {
             $model->status = self::STATUS_COMPLETE;
-            $model->save();
+            if ($model->save()) {
+                Counter::addCommonEdit($user_id);
+            }
 
             return true;
         } else {

@@ -58,7 +58,7 @@ class PrivateMessageDialogBehavior extends Behavior
             $this->owner->private_message_id
         )->send();
 
-        Yii::trace(sprintf('Notifier: %s', $result), 'behavior');
+        return $result;
     }
 
     public function dealWithUpdatePrivateMessage()
@@ -81,13 +81,8 @@ class PrivateMessageDialogBehavior extends Behavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        $result = Counter::build()->set(
-            PrivateMessageEntity::tableName(),
-            $this->owner->private_message_id
-        )->value(
-            'count_message'
-        )->execute();
+        $result = Counter::addPrivateMessage($this->owner->private_message_id);
 
-        Yii::trace(sprintf('Counter count_message: %s', $result), 'behavior');
+        return $result;
     }
 }

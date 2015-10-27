@@ -103,10 +103,11 @@ class Notifier extends Object
         if ($this->filterToUserId()) {
             #priority = true 为马上执行
             if ($this->priority) {
-                return $this->immediately();
+                $result =  $this->immediately();
             } else {
-                return $this->simpleQueue();
+                $result =  $this->simpleQueue();
             }
+            Yii::trace(sprintf('Notifier Result: %s', $result), 'notifier');
         }
     }
 

@@ -9,6 +9,7 @@
 namespace common\entities;
 
 
+use common\components\Counter;
 use common\models\FollowUser;
 use Yii;
 use yii\base\ErrorException;
@@ -62,10 +63,8 @@ class FollowUserEntity extends FollowUser
         )->execute();
 
         if ($result) {
-            Counter::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
-                'count_follow_user',
-                count($follow_user_ids)
-            )->execute();
+            Counter::followUser($user_id);
+
         } else {
             Yii::error(sprintf('Batch Add Follow Tag %s', $result), __FUNCTION__);
         }
@@ -88,10 +87,7 @@ class FollowUserEntity extends FollowUser
 
         foreach ($model as $follow_user) {
             if ($follow_user->delete()) {
-                Counter::build()->set(UserProfileEntity::tableName(), $follow_user->user_id, 'user_id')->value(
-                    'count_follow_user',
-                    -1
-                )->execute();
+                Counter::cancelFollowUser($follow_user->user_id);
             }
         }
 

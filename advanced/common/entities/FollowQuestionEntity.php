@@ -19,13 +19,13 @@ class FollowQuestionEntity extends FollowQuestion
     public function behaviors()
     {
         return [
-            'operator'        => [
+            'operator'  => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_VALIDATE => 'user_id',
                 ],
             ],
-            'timestamp'       => [
+            'timestamp' => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
@@ -66,10 +66,8 @@ class FollowQuestionEntity extends FollowQuestion
             $this->create_at = $user_id;
             $this->follow_question_id = $question_id;
             if ($this->save()) {
-                Counter::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
-                    'count_follow_question',
-                    1
-                )->execute();
+                Counter::followQuestion($user_id);
+
                 return true;
             } else {
                 Yii::error($this->getErrors(), __FUNCTION__);
@@ -103,16 +101,13 @@ class FollowQuestionEntity extends FollowQuestion
 
         foreach ($model as $follow_question) {
             if ($follow_question->delete()) {
-                Counter::build()->set(UserProfileEntity::tableName(), $follow_question->user_id, 'user_id')->value(
-                    'count_follow_question',
-                    -1
-                )->execute();
+                Counter::cancelFollowQuestion($follow_question->user_id);
             }
         }
 
         return true;
     }
-
+    
     public function getFollowUser($question_id)
     {
         if (empty($question_id)) {

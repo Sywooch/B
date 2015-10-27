@@ -37,13 +37,13 @@ class FavoriteRecordBehavior extends Behavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
         $this->dealWithActiveFavorite();
-        $this->dealWithCounter(1);
+        $this->dealWithAddCounter();
     }
 
     public function afterFavoriteRecordDelete($event)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $this->dealWithCounter(-1);
+        $this->dealWithRemoveCounter();
     }
 
     public function dealWithActiveFavorite()
@@ -63,15 +63,18 @@ class FavoriteRecordBehavior extends Behavior
         Yii::trace(sprintf('Update Favorite Result: %s', $result), 'behavior');
     }
 
-    public function dealWithCounter($value)
+    public function dealWithAddCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = Counter::build()->set(
-            FavoriteEntity::tableName(),
-            $this->owner->favorite_id
-        )->value('count_favorite', $value)->execute();
+        $result = Counter::addFavorite($this->owner->favorite_id);
 
-        Yii::trace(sprintf('Counter Result: %s', $result), 'behavior');
+        return $result;
+    }
+
+    public function dealWithRemoveCounter()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        $result = Counter::removeFavorite($this->owner->favorite_id);
 
         return $result;
     }

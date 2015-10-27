@@ -245,11 +245,7 @@ class QuestionBehavior extends Behavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         
-        $result = Counter::build()->set(
-            UserProfileEntity::tableName(),
-            1,
-            'user_id'
-        )->value('count_question', $value)->execute();
+        $result = Counter::addQuestion($this->owner->create_by);
 
         Yii::trace(sprintf('Counter Result: %s', $result), 'behavior');
     }

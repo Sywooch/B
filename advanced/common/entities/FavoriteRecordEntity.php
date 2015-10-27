@@ -84,10 +84,7 @@ class FavoriteRecordEntity extends FavoriteRecord
         }
 
         foreach ($favorite_ids as $favorite_id) {
-            Counter::build()->set(
-                FavoriteEntity::tableName(),
-                $favorite_id
-            )->value('count_favorite', -1)->execute();
+            Counter::addFavorite($favorite_id);
         }
 
         return true;
