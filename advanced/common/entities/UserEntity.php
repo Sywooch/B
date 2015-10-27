@@ -134,7 +134,7 @@ class UserEntity extends User
         }
 
         $user_id = array_filter($user_id);
-        $data = $this->getUserCacheByUserId($user_id);
+        $data = $this->getUserByUserIdUseCache($user_id);
 
         if ($multiple) {
             $result = $data;
@@ -156,7 +156,7 @@ class UserEntity extends User
         }
 
         $username = array_filter($username);
-        $data = $this->getUserCacheByUsername($username);
+        $data = $this->getUserByUsernameUseCache($username);
 
         if ($multiple) {
             $result = $data;
@@ -178,7 +178,7 @@ class UserEntity extends User
         }
 
         $username = array_filter($username);
-        $data = $this->getUserIdCacheByUsername($username);
+        $data = $this->getUserIdByUsernameUseCache($username);
 
         if ($multiple) {
             $result = $data;
@@ -189,14 +189,36 @@ class UserEntity extends User
         return $result;
     }
 
-    private function getUserCacheByUserId(array $user_id)
+    public function getUsernameByUserId($user_id)
+    {
+        #use redis
+        if (is_array($user_id)) {
+            $multiple = true;
+        } else {
+            $multiple = false;
+            $user_id = [$user_id];
+        }
+
+        $user_id = array_filter($user_id);
+        $data = $this->getUsernameByUserIdUseCache($user_id);
+
+        if ($multiple) {
+            $result = $data;
+        } else {
+            $result = array_shift($data);
+        }
+
+        return $result;
+    }
+
+    private function getUserByUserIdUseCache(array $user_id)
     {
         $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USER, $user_id]);
         $cache_miss_key = Yii::$app->redis->getMissKey($user_id, $cache_hit_data);
 
         if (count($cache_miss_key)) {
             $sql = sprintf(
-                "SELECT u.id, u.username, u.email, up.nickname, up.sex, up.title, up.bio, up.avatar
+                "SELECT u.id, u.username, u.email, u.last_login_at, up.nickname, up.sex, up.title, up.bio, up.avatar
                 FROM `%s` u
                 LEFT JOIN `%s` up
                 ON u.id=up.user_id
@@ -223,7 +245,7 @@ class UserEntity extends User
                 #cache user miss databases data
                 Yii::$app->redis->mset([REDIS_KEY_USER, $cache_miss_data]);
 
-                #cache usename id relation data
+                #cache username id relation data
                 Yii::$app->redis->mset([REDIS_KEY_USERNAME, $username_id_data]);
 
                 #padding miss data
@@ -238,7 +260,7 @@ class UserEntity extends User
         return $cache_hit_data;
     }
 
-    private function getUserIdCacheByUsername(array $username)
+    private function getUserIdByUsernameUseCache(array $username)
     {
         $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USERNAME, $username]);
         $cache_miss_key = Yii::$app->redis->getMissKey($username, $cache_hit_data);
@@ -264,6 +286,10 @@ class UserEntity extends User
             //print_r($cache_miss_data);exit;
 
             if ($cache_miss_data) {
+
+                #add to redis cache
+                Yii::$app->redis->mset([REDIS_KEY_USERNAME, $cache_miss_data]);
+
                 $cache_hit_data = Yii::$app->redis->paddingMissData(
                     $cache_hit_data,
                     $cache_miss_key,
@@ -275,11 +301,23 @@ class UserEntity extends User
         return $cache_hit_data;
     }
 
-    private function getUserCacheByUsername(array $username)
+    private function getUserByUsernameUseCache(array $username)
     {
-        $user_ids = $this->getUserIdCacheByUsername($username);
+        $user_ids = $this->getUserIdByUsernameUseCache($username);
         if ($user_ids) {
-            $result = $this->getUserCacheByUserId($user_ids);
+            $result = $this->getUserByUserIdUseCache($user_ids);
+        } else {
+            $result = null;
+        }
+
+        return $result;
+    }
+
+    private function getUsernameByUserIdUseCache(array $user_id)
+    {
+        $user = $this->getUserByUserIdUseCache($user_id);
+        if ($user) {
+            $result = ArrayHelper::getColumn($user, 'username');
         } else {
             $result = null;
         }

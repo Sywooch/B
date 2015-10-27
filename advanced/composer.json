@@ -57,6 +57,7 @@
     "kartik-v/yii2-widget-depdrop": "@dev",
     "kartik-v/yii2-widget-select2": "*",
     "kartik-v/yii2-grid": "*",
+    "kartik-v/yii2-tabs-x": "*"
 
     "kop/yii2-scroll-pager": "dev-master",
     "nemmo/yii2-attachments": "dev-master",

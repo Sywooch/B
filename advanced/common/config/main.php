@@ -96,7 +96,7 @@ return [
         ],
         #日志设置
         'log'                  => [
-            'traceLevel' => YII_DEBUG ? 0 : 0,
+            'traceLevel' => YII_DEBUG ? false : 0,
             'targets'    => [
                 [
                     'class'       => 'yii\log\FileTarget',

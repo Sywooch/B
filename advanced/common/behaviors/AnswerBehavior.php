@@ -72,7 +72,11 @@ class AnswerBehavior extends Behavior
     public function dealWithAddCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result =  Counter::build()->set(UserProfileEntity::tableName(), $this->owner->create_by, 'user_id')->value(
+        $result = Counter::build()->set(
+            UserProfileEntity::tableName(),
+            $this->owner->create_by,
+            'user_id'
+        )->value(
             'count_answer',
             1
         )->execute();

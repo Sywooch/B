@@ -7,6 +7,7 @@ use kartik\icons\Icon;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
+use yii\widgets\Block;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
@@ -32,14 +33,16 @@ AppAsset::register($this);
 
 <div class="wrap">
     <?php
-    NavBar::begin([
+    NavBar::begin(
+            [
 
-        'brandLabel' => Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
-        'options' => [
-            'class' => 'navbar navbar-default navbar-fixed-top',
-        ],
-    ]);
+                    'brandLabel' => Yii::$app->name,
+                    'brandUrl'   => Yii::$app->homeUrl,
+                    'options'    => [
+                            'class' => 'navbar navbar-default navbar-fixed-top',
+                    ],
+            ]
+    );
 
     echo '<form class="navbar-form navbar-left" role="search" action="/search" method="get">
                 <div class="form-group">
@@ -47,42 +50,44 @@ AppAsset::register($this);
                 </div>
             </form>';
 
-    echo Nav::widget([
-        'options' => ['class' => 'nav navbar-nav '],
-        'items' => [
-//        ['label' =>  Icon::show('th-large')  . '首页', 'url' => ['/site/index'] ],
-            ['label' => '社区', 'url' => ['/topic'], 'active' => true],
+    echo Nav::widget(
+            [
+                    'options'      => ['class' => 'nav navbar-nav '],
+                    'items'        => [
+                        //        ['label' =>  Icon::show('th-large')  . '首页', 'url' => ['/site/index'] ],
+                            ['label' => '社区', 'url' => ['/topic'], 'active' => true],
 
-        ],
-        'encodeLabels' => false
-    ]);
+                    ],
+                    'encodeLabels' => false,
+            ]
+    );
 
 
     $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
+            ['label' => 'Home', 'url' => ['/site/index']],
     ];
 
     if (Yii::$app->user->isGuest) {
         $menuItems[] = [
-            'label'   => '消息',
-            'url'     => ['/site/signup'],
+                'label' => '消息',
+                'url'   => ['/site/signup'],
 
         ];
         $menuItems[] = [
-            'label'       => '注册 & 登录',
-            'url'         => ['/user/security/login'],
+                'label' => '注册 & 登录',
+                'url'   => ['/user/security/login'],
 
         ];
     } else {
         // 撰写
         $menuItems[] = [
-            'label'   => '撰写',
-            'items'   => [
-                [
-                    'label' => '提问',
-                    'url'   => ['/question/create']
+                'label' => '撰写',
+                'items' => [
+                        [
+                                'label' => '提问',
+                                'url'   => ['/question/create'],
+                        ],
                 ],
-            ],
         ];
 
 
@@ -93,27 +98,27 @@ AppAsset::register($this);
 
         // 个人中心
         $menuItems[] = [
-            'label'   => Yii::$app->user->identity->username,
-            'items'   => [
-                [
-                    'label' => '我的主页',
-                    'url'   => ['/user/profile/show', 'id' => Yii::$app->user->identity->id]
+                'label' => Yii::$app->user->identity->username,
+                'items' => [
+                        [
+                                'label' => '我的主页',
+                                'url'   => ['/user/profile/show', 'id' => Yii::$app->user->identity->id],
+                        ],
+                        [
+                                'label' => '收藏夹',
+                                'url'   => ['/user/default'],
+                        ],
+                        [
+                                'label' => '帐号设置',
+                                'url'   => ['/user/settings/profile'],
+                        ],
+                        '<li class="divider"></li>',
+                        [
+                                'label'       => '退出',
+                                'url'         => ['/user/security/logout'],
+                                'linkOptions' => ['data-method' => 'post'],
+                        ],
                 ],
-                [
-                    'label' => '收藏夹',
-                    'url'   => ['/user/default']
-                ],
-                [
-                    'label' => '帐号设置',
-                    'url'   => ['/user/settings/profile']
-                ],
-                '<li class="divider"></li>',
-                [
-                    'label'       => '退出',
-                    'url'         => ['/user/security/logout'],
-                    'linkOptions' => ['data-method' => 'post']
-                ],
-            ]
         ];
     }
     /*
@@ -129,21 +134,29 @@ AppAsset::register($this);
     }*/
 
 
-
-
-
-
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => $menuItems,
-    ]);
+    echo Nav::widget(
+            [
+                    'options' => ['class' => 'navbar-nav navbar-right'],
+                    'items'   => $menuItems,
+            ]
+    );
     NavBar::end();
     ?>
 
+    <?php if (isset($this->blocks['top-header'])) {
+        echo $this->blocks['top-header'];
+    } ?>
+
+
     <div class="container">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]) ?>
+        <?php
+        if (!isset($this->blocks['top-header'])) {
+            echo Breadcrumbs::widget(
+                    [
+                            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                    ]
+            );
+        } ?>
         <?= Alert::widget() ?>
         <?= $content ?>
     </div>

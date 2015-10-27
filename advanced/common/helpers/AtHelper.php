@@ -11,7 +11,7 @@ namespace common\helpers;
 
 class AtHelper
 {
-    public static function findAtUser($content)
+    public static function findAtUsername($content)
     {
         preg_match_all("/(\S*)\@([^\r\n\s]*)/i", $content, $at_list_tmp);
         $users = [];

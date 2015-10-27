@@ -22,6 +22,9 @@ class PrivateMessageEntity extends PrivateMessage
     const STATUS_REMOVE_YES = 'yes';
     const STATUS_REMOVE_NO = 'no';
 
+    const ROLE_SENDER = 'sender';
+    const ROLE_RECEIVER = 'receiver';
+
     public function behaviors()
     {
         return [
@@ -75,6 +78,11 @@ class PrivateMessageEntity extends PrivateMessage
         }
 
         if ($model->save()) {
+
+            if ($model->sender_remove == self::STATUS_REMOVE_YES && $model->sender_remove == self::STATUS_REMOVE_YES) {
+                $model->delete();
+            }
+
             return true;
         } else {
             Yii::error($model->getErrors(), __FUNCTION__);
@@ -86,10 +94,21 @@ class PrivateMessageEntity extends PrivateMessage
     public function updateLastActive($id, $active_by, $last_message, $active_at)
     {
         $model = self::findOne($id);
+
+
         if ($model) {
             $model->last_message = $last_message;
             $model->active_by = $active_by;
             $model->active_at = $active_at;
+
+            #update read status
+            $currentUserRole = $this->checkUserRole($model, $active_by);
+            if ($currentUserRole == self::ROLE_SENDER) {
+                $model->sender_read_at = time();
+            } else {
+                $model->receiver_read_at = time();
+            }
+
             if ($model->save()) {
                 return true;
             } else {
@@ -101,7 +120,14 @@ class PrivateMessageEntity extends PrivateMessage
             Yii::error(sprintf('model no exist, id: %d', $id), __FUNCTION__);
         }
     }
-    
+
+    /**
+     * find dialog object's user id
+     * @param $id
+     * @param $user_id
+     * @return int
+     * @throws NotFoundModelException
+     */
     public function getDialogUserId($id, $user_id)
     {
         $model = self::findOne(['id' => $id]);
@@ -116,5 +142,16 @@ class PrivateMessageEntity extends PrivateMessage
         }
 
         return $dialog_user_id;
+    }
+
+    private function checkUserRole(PrivateMessage $model, $user_id)
+    {
+        if ($user_id == $model->sender) {
+            $role = self::ROLE_SENDER;
+        } else {
+            $role = self::ROLE_RECEIVER;
+        }
+
+        return $role;
     }
 }

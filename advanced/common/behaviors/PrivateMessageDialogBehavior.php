@@ -9,6 +9,7 @@
 namespace common\behaviors;
 
 
+use common\components\Counter;
 use common\components\Notifier;
 use common\entities\NotificationEntity;
 use common\entities\PrivateMessageEntity;
@@ -41,6 +42,7 @@ class PrivateMessageDialogBehavior extends Behavior
 
         $this->dealWithUpdatePrivateMessage();
         $this->dealWithNotification();
+        $this->dealWithCounter();
     }
 
     public function dealWithNotification()
@@ -73,5 +75,19 @@ class PrivateMessageDialogBehavior extends Behavior
         );
 
         Yii::trace(sprintf('updateLastActive: %s', $result), 'behavior');
+    }
+
+    public function dealWithCounter()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        $result = Counter::build()->set(
+            PrivateMessageEntity::tableName(),
+            $this->owner->private_message_id
+        )->value(
+            'count_message'
+        )->execute();
+
+        Yii::trace(sprintf('Counter count_message: %s', $result), 'behavior');
     }
 }

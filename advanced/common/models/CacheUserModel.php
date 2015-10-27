@@ -20,4 +20,5 @@ class CacheUserModel extends BaseCacheModel
     public $sex;
     public $title;
     public $bio;
+    public $last_login_at;
 }

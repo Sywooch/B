@@ -10,6 +10,8 @@
  */
 use yii\bootstrap\Tabs;
 use yii\helpers\Url;
+use kartik\tabs\TabsX;
+
 
 ?>
 
@@ -17,30 +19,53 @@ use yii\helpers\Url;
 <div class="row">
     <div class="col-xs-12 col-md-9 main">
         <p class="main-title hidden-xs">
-            今天，你在开发时遇到了什么问题呢？
-            <a id="goAsk" href="/ask" class="btn btn-primary">我要提问</a>
+            今天，你在深圳遇到了什么问题呢？
+            <a id="goAsk" href="<?= Url::to(['/question/create']) ?>" class="btn btn-primary">我要提问</a>
         </p>
 
         <?php
-        echo Tabs::widget(
+
+
+        $items = [
                 [
+                        'label'       => '<i class="glyphicon glyphicon-home"></i> Home',
+                        'content'     => '$content1',
+                        'active'      => true,
+                        'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=1'])],
+                ],
+                [
+                        'label'       => '<i class="glyphicon glyphicon-user"></i> Profile',
+                        'content'     => '$content2',
+                        'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=2'])],
+                ],
+                [
+                        'label' => '<i class="glyphicon glyphicon-list-alt"></i> Dropdown',
                         'items' => [
                                 [
-                                        'label'   => '最新的',
-                                        'content' => 'Anim pariatur cliche...',
-                                        'active'  => true,
+                                        'label'       => '<i class="glyphicon glyphicon-chevron-right"></i> Option 1',
+                                        'encode'      => false,
+                                        'content'     => '$content3',
+                                        'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=3'])],
                                 ],
                                 [
-                                        'label' => '热门的',
-                                        'url'   => Url::to(['/question/index/hottest']),
-                                ],
-                                [
-                                        'label' => '未回答的',
-                                        'url'   => Url::to(['/question/index/unanswered']),
+                                        'label'       => '<i class="glyphicon glyphicon-chevron-right"></i> Option 2',
+                                        'encode'      => false,
+                                        'content'     => '$content4',
+                                        'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=4'])],
                                 ],
                         ],
+                ],
+        ];
+        // Ajax Tabs Above
+        echo TabsX::widget(
+                [
+                        'items'        => $items,
+                        'position'     => TabsX::POS_ABOVE,
+                        'encodeLabels' => false,
                 ]
         );
+
+
         ?>
 
 

@@ -1,5 +1,5 @@
 ﻿body {
-    padding-top: 70px;
+    padding-top: 50px;
 }
 
 a {
@@ -21,6 +21,317 @@ a:focus {
 #footer {
     margin: 20px 0;
 }
+
+
+
+.mt-5, .mt--5 {
+    margin-top: -5px
+}
+
+.mt0, .mt-0 {
+    margin-top: 0px
+}
+
+.mt4, .mt-4 {
+    margin-top: 4px
+}
+
+.mt5, .mt-5 {
+    margin-top: 5px
+}
+
+.mt10, .mt-10 {
+    margin-top: 10px
+}
+
+.mt15, .mt-15 {
+    margin-top: 15px
+}
+
+.mt20, .mt-20 {
+    margin-top: 20px
+}
+
+.mt30, .mt-30 {
+    margin-top: 30px
+}
+
+.mt40, .mt-40 {
+    margin-top: 40px
+}
+
+.mb0, .mb-0 {
+    margin-bottom: 0px
+}
+
+.mb5, .mb-5 {
+    margin-bottom: 5px
+}
+
+.mb10, .mb-10 {
+    margin-bottom: 10px
+}
+
+.mb20, .mb-20 {
+    margin-bottom: 20px
+}
+
+.mb30, .mb-30 {
+    margin-bottom: 30px
+}
+
+.mb40, .mb-40 {
+    margin-bottom: 40px
+}
+
+.mb50, .mb-50 {
+    margin-bottom: 50px
+}
+
+.mr5, .mr-5 {
+    margin-right: 5px
+}
+
+.mr10, .mr-10 {
+    margin-right: 10px
+}
+
+.mr20, .mr-20 {
+    margin-right: 20px
+}
+
+.mr30, .mr-30 {
+    margin-right: 30px
+}
+
+.ml0, .ml-0 {
+    margin-left: 0px
+}
+
+.ml5, .ml-5 {
+    margin-left: 5px
+}
+
+.ml10, .ml-10 {
+    margin-left: 10px
+}
+
+.ml15, .ml-15 {
+    margin-left: 15px
+}
+
+.ml20, .ml-20 {
+    margin-left: 20px
+}
+
+.ml30, .ml-30 {
+    margin-left: 30px
+}
+
+.pt5, .pt-5 {
+    padding-top: 5px
+}
+
+.pt10, .pt-10 {
+    padding-top: 10px
+}
+
+.pt20, .pt-20 {
+    padding-top: 20px
+}
+
+.pt30, .pt-30 {
+    padding-top: 30px
+}
+
+.pb0, .pb-0 {
+    padding-bottom: 0px
+}
+
+.pb10, .pb-10 {
+    padding-bottom: 10px
+}
+
+.pb20, .pb-20 {
+    padding-bottom: 20px
+}
+
+.pb300, .pb-300 {
+    padding-bottom: 300px
+}
+
+.pl0, .pl-0 {
+    padding-left: 0px
+}
+
+.pl5, .pl-5 {
+    padding-left: 5px
+}
+
+.pl10, .pl-10 {
+    padding-left: 10px
+}
+
+.pl15, .pl-15 {
+    padding-left: 15px
+}
+
+.pl20, .pl-20 {
+    padding-left: 20px
+}
+
+.pl50, .pl-50 {
+    padding-left: 50px
+}
+
+.pl300, .pl-300 {
+    padding-left: 300px
+}
+
+.pr0, .pr-0 {
+    padding-right: 0px
+}
+
+.pr5, .pr-5 {
+    padding-right: 5px
+}
+
+.pr10, .pr-10 {
+    padding-right: 10px
+}
+
+.pr20, .pr-20 {
+    padding-right: 20px
+}
+
+.pr50, .pr-50 {
+    padding-right: 50px
+}
+
+.pr300, .pr-300 {
+    padding-right: 300px
+}
+
+.p0 {
+    padding: 0px
+}
+
+.p10 {
+    padding: 10px
+}
+
+.p20 {
+    padding: 20px
+}
+
+.p50 {
+    padding: 50px
+}
+
+.p300 {
+    padding: 300px
+}
+
+.green, .text-green {
+    color: #009a61
+}
+
+.red, .text-red {
+    color: #D0021B
+}
+
+.black, .text-black {
+    color: #333
+}
+
+.black:hover, .text-black:hover {
+    color: #333
+}
+
+.white, .text-white {
+    color: #fff
+}
+
+.whitea:hover, .text-whitea:hover {
+    color: #eee
+}
+
+.bg-gray {
+    background-color: #F3F3F3
+}
+
+.bg-white {
+    background-color: #FFF
+}
+
+.bg-green {
+    background-color: #009A61
+}
+
+.bg-red {
+    background-color: #AF3933
+}
+
+
+
+.widget-user {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin-top: 0
+}
+
+.widget-user.well {
+    margin-top: 5px;
+    margin-right: 5px;
+    background-color: #F6F6F6;
+    border-radius: 0;
+    width: 170px;
+    margin-bottom: 10px
+}
+
+.widget-taguser .ellipsis {
+    width: auto;
+    max-width: 50%;
+    display: inline-block;
+    vertical-align: top
+}
+
+.widget-answer p {
+    color: #666
+}
+
+.widget-action--ver {
+    color: #999
+}
+
+.widget-action--ver li {
+    margin-top: 12px
+}
+
+.widget-action--ver li:first-child {
+    margin-top: 0
+}
+
+.widget-action--ver button {
+    margin-right: 8px;
+    min-width: 58px
+}
+
+.widget-action--ver strong {
+    color: #333
+}
+
+.widget-action--ver .no-stress {
+    font-weight: normal
+}
+
+.widget-share-network {
+    margin-top: 10px;
+    color: #999;
+    font-size: 13px
+}
+
 
 /**************************/
 
@@ -71,6 +382,52 @@ a:focus {
 
 .bs-callout-info h4 {
     color: #1b809e
+}
+
+/*头像相关*/
+
+[class*="avatar-"] {
+    border-radius: 2px
+}
+
+.avatar-16 {
+    width: 16px;
+    height: 16px
+}
+
+.avatar-20 {
+    width: 20px;
+    height: 20px
+}
+
+.avatar-24 {
+    width: 24px;
+    height: 24px
+}
+
+.avatar-32 {
+    width: 32px;
+    height: 32px
+}
+
+.avatar-40 {
+    width: 40px;
+    height: 40px
+}
+
+.avatar-64 {
+    width: 64px;
+    height: 64px
+}
+
+.avatar-128 {
+    width: 128px;
+    height: 128px
+}
+
+.avatar-256 {
+    width: 256px;
+    height: 256px
 }
 
 /*首页开始*/
@@ -352,3 +709,38 @@ a:focus {
 }
 
 /*首页结束*/
+
+/*问题显示页面开始*/
+
+.post-topheader {
+    padding: 15px 0;
+    background: rgb(214, 81, 0)
+}
+
+.post-topheader .breadcrumb {
+    margin: 0 0 10px;
+    padding: 0;
+    background-color: transparent
+}
+
+.post-topheader .title {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0
+}
+
+.post-topheader .title a, .post-topheader .title a:hover, .post-topheader .title a:active {
+    color: #333;
+    text-decoration: none
+}
+
+.post-topheader .author {
+    margin-top: 10px;
+    color: #999;
+}
+
+.post-topheader .widget-action--ver {
+    margin-top: 10px
+}
+
+/*问题显示页面结束*/

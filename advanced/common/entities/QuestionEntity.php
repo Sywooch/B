@@ -30,6 +30,15 @@ class QuestionEntity extends Question
 
     const MIN_SUBJECT_LENGTH = 6;
 
+    const STATUS_ORIGINAL = 'original'; //原稿，初始状态
+    const STATUS_REVIEW = 'review';     //审核
+    const STATUS_ENABLE = 'enable';     //正常
+    const STATUS_DISABLE = 'disable';   //禁止
+    const STATUS_LOCK = 'lock';         //锁定，不允许回答
+    const STATUS_CRAWL = 'crawl';       //抓取
+
+    const STATUS_DISPLAY = ['original', 'review', 'enable', 'lock']; //允许显示的状态
+
 
     //
 
@@ -185,11 +194,15 @@ class QuestionEntity extends Question
      */
     public function updateContent($id, $content)
     {
-        Updater::build()->priority()->table(self::tableName())->set(['content' => $content])->where(['id' => $id])->execute();
+        Updater::build()->priority()->table(self::tableName())->set(['content' => $content])->where(
+            ['id' => $id]
+        )->execute();
     }
 
     public function updateActiveAt($id, $active_at)
     {
-        Updater::build()->priority()->table(self::tableName())->set(['active_at' => $active_at])->where(['id' => $id])->execute();
+        Updater::build()->priority()->table(self::tableName())->set(['active_at' => $active_at])->where(
+            ['id' => $id]
+        )->execute();
     }
 }

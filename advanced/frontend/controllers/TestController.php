@@ -15,7 +15,9 @@ use common\components\Updater;
 use common\entities\NotificationEntity;
 use common\entities\PrivateMessageEntity;
 use common\entities\QuestionEntity;
+use common\entities\TagEntity;
 use common\entities\UserEntity;
+use common\helpers\AtHelper;
 use common\helpers\FormatterHelper;
 use console\modules\crawler\controllers\crawlers\CrawlerBase;
 use Yii;
@@ -189,7 +191,7 @@ class TestController extends BaseController
     {
         /* @var $user UserEntity */
         $user = Yii::createObject(UserEntity::className());
-        $data = $user->getUserById([1,2]);
+        $data = $user->getUserById([1, 2]);
 
         print_r($data);
     }
@@ -201,6 +203,25 @@ class TestController extends BaseController
         $data = $user->updateUserCache(1, ['username' => 'new']);
 
         print_r($data);
+    }
+
+
+    public function actionTag()
+    {
+        /* @var $tag TagEntity */
+        $tag = Yii::createObject(TagEntity::className());
+        //$data = $tag->getTagIdByName( ['中国人', '大家好']);
+        $data = $tag->getTagNameById([1, 2]);
+
+        print_r($data);
+    }
+
+    public function actionFindAt()
+    {
+        $string = '你好呀@小明,你又是谁呢？ @王宝强　 @小不点 ';
+        $result = AtHelper::findAtUsername($string);
+
+        print_r($result);
     }
 }
 

@@ -23,20 +23,10 @@ class FollowQuestionBehavior extends Behavior
     public function events()
     {
         Yii::trace('Begin ' . $this->className(), 'behavior');
+
         return [
-                //ActiveRecord::EVENT_AFTER_DELETE => 'afterRemoveFollowQuestion',
+            //ActiveRecord::EVENT_AFTER_DELETE => 'afterRemoveFollowQuestion',
         ];
     }
 
-    /**
-     * @param $event
-     * @throws \yii\base\InvalidConfigException
-     * @property \common\services\NotificationService $notificationService
-     */
-    public function afterRemoveFollowQuestion($event)
-    {
-        Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $notificationService = Yii::createObject(NotificationService::className());
-        $notificationService->removeFollowQuestion($this->owner->user_id);
-    }
 }
