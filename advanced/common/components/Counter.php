@@ -21,6 +21,8 @@ class Counter extends BaseCounter
 {
     public static function viewPersonalHomePage($user_id)
     {
+        Yii::trace('增加个人主页查看数', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_home_views',
             1
@@ -29,6 +31,8 @@ class Counter extends BaseCounter
 
     public static function beFollowUser($user_id, $multiple = 1)
     {
+        Yii::trace('增加被关注用户数', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_be_follow',
             1
@@ -37,6 +41,8 @@ class Counter extends BaseCounter
 
     public static function cancelBeFollowUser($user_id, $multiple = 1)
     {
+        Yii::trace('减少被关注用户数', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_be_follow',
             -1
@@ -45,6 +51,8 @@ class Counter extends BaseCounter
 
     public static function followUser($user_id, $multiple = 1)
     {
+        Yii::trace('增加关注用户数', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_follow_user',
             1
@@ -53,6 +61,8 @@ class Counter extends BaseCounter
 
     public static function cancelFollowUser($user_id)
     {
+        Yii::trace('减少关注用户数', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_follow_user',
             -1
@@ -61,6 +71,8 @@ class Counter extends BaseCounter
 
     public static function followTag($user_id, $multiple = 1)
     {
+        Yii::trace('增加用户关注标签数', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_follow_tag',
             1
@@ -69,6 +81,8 @@ class Counter extends BaseCounter
 
     public static function cancelFollowTag($user_id)
     {
+        Yii::trace('减少用户关注标签数', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_follow_tag',
             -1
@@ -77,6 +91,8 @@ class Counter extends BaseCounter
 
     public static function followQuestion($user_id)
     {
+        Yii::trace('增加用户问题关注数量', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_follow_question',
             1
@@ -85,6 +101,8 @@ class Counter extends BaseCounter
 
     public static function cancelFollowQuestion($user_id)
     {
+        Yii::trace('减少用户问题关注数量', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_follow_question',
             -1
@@ -93,6 +111,8 @@ class Counter extends BaseCounter
 
     public static function addQuestion($user_id)
     {
+        Yii::trace('增加用户问题提问数量', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_question',
             1
@@ -101,6 +121,8 @@ class Counter extends BaseCounter
 
     public static function deleteQuestion($user_id)
     {
+        Yii::trace('减少用户问题提问数量', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_question',
             -1
@@ -110,6 +132,8 @@ class Counter extends BaseCounter
 
     public static function addQuestionView($question_id)
     {
+        Yii::trace('增加问题查看数量', 'counter');
+
         return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
             'count_views',
             1
@@ -118,6 +142,8 @@ class Counter extends BaseCounter
 
     public static function addQuestionAnswer($question_id)
     {
+        Yii::trace('增加问题回答数量', 'counter');
+
         return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
             'count_answer',
             1
@@ -126,6 +152,8 @@ class Counter extends BaseCounter
 
     public static function deleteQuestionAnswer($question_id)
     {
+        Yii::trace('减少问题回答数量', 'counter');
+
         return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
             'count_answer',
             -1
@@ -134,6 +162,8 @@ class Counter extends BaseCounter
 
     public static function addQuestionFavorite($question_id)
     {
+        Yii::trace('增加问题收藏数量', 'counter');
+
         return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
             'count_favorite',
             1
@@ -142,6 +172,8 @@ class Counter extends BaseCounter
 
     public static function cancelQuestionFavorite($question_id)
     {
+        Yii::trace('减少问题收藏数量', 'counter');
+
         return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
             'count_favorite',
             -1
@@ -150,6 +182,8 @@ class Counter extends BaseCounter
 
     public static function addQuestionFollow($question_id)
     {
+        Yii::trace('增加问题关注数量', 'counter');
+
         return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
             'count_follow',
             1
@@ -158,6 +192,8 @@ class Counter extends BaseCounter
 
     public static function cancelQuestionFollow($question_id)
     {
+        Yii::trace('减少问题关注数量', 'counter');
+
         return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
             'count_follow',
             -1
@@ -166,6 +202,8 @@ class Counter extends BaseCounter
 
     public static function addPrivateMessage($private_message_id)
     {
+        Yii::trace('增加私信的通知数量', 'counter');
+
         return self::build()->set(PrivateMessageEntity::tableName(), $private_message_id)->value(
             'count_message',
             1
@@ -174,6 +212,8 @@ class Counter extends BaseCounter
 
     public static function deletePrivateMessage($private_message_id)
     {
+        Yii::trace('减少私信的通知数量', 'counter');
+
         return self::build()->set(
             PrivateMessageEntity::tableName(),
             $private_message_id
@@ -183,6 +223,8 @@ class Counter extends BaseCounter
 
     public static function addFavorite($favorite_id)
     {
+        Yii::trace('增加用户的问题收藏数量', 'counter');
+
         return self::build()->set(
             FavoriteEntity::tableName(),
             $favorite_id
@@ -191,6 +233,8 @@ class Counter extends BaseCounter
 
     public static function removeFavorite($favorite_id)
     {
+        Yii::trace('减少用户的问题收藏数量', 'counter');
+
         return self::build()->set(
             FavoriteEntity::tableName(),
             $favorite_id
@@ -199,6 +243,8 @@ class Counter extends BaseCounter
 
     public static function addAnswer($user_id)
     {
+        Yii::trace('增加用户的问题回答数量', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_answer',
             1
@@ -207,6 +253,8 @@ class Counter extends BaseCounter
 
     public static function deleteAnswer($user_id)
     {
+        Yii::trace('减少用户的问题回答数量', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_answer',
             -1
@@ -215,6 +263,8 @@ class Counter extends BaseCounter
 
     public static function addCommonEdit($user_id)
     {
+        Yii::trace('增加用户的公共编辑次数', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_common_edit',
             1
@@ -223,6 +273,8 @@ class Counter extends BaseCounter
 
     public static function cancelCommonEdit($user_id)
     {
+        Yii::trace('减少用户的公共编辑次数', 'counter');
+
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_common_edit',
             -1
