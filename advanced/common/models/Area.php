@@ -13,7 +13,7 @@ use Yii;
  * @property string $grade
  * @property string $name
  */
-class Area extends \yii\db\ActiveRecord
+class Area extends \common\models\BaseActiveRecord
 {
     /**
      * @inheritdoc

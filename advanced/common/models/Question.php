@@ -31,7 +31,7 @@ use Yii;
  * @property Tag[] $tags0
  * @property QuestionVersion[] $questionVersions
  */
-class Question extends \yii\db\ActiveRecord
+class Question extends \common\models\BaseActiveRecord
 {
     /**
      * @inheritdoc

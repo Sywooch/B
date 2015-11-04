@@ -21,7 +21,7 @@ use Yii;
  * @package common\behaviors
  * @property \common\entities\PrivateMessageDialogEntity owner
  */
-class PrivateMessageDialogBehavior extends Behavior
+class PrivateMessageDialogBehavior extends BaseBehavior
 {
 
     public function events()

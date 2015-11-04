@@ -14,7 +14,7 @@ use Yii;
  * @property User $user
  * @property Answer $answer
  */
-class AnswerUsefullLog extends \yii\db\ActiveRecord
+class AnswerUsefullLog extends \common\models\BaseActiveRecord
 {
     /**
      * @inheritdoc

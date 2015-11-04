@@ -20,7 +20,7 @@ use yii\db\ActiveRecord;
  * @package common\behaviors
  * @property \common\entities\FavoriteRecordEntity owner
  */
-class FavoriteRecordBehavior extends Behavior
+class FavoriteRecordBehavior extends BaseBehavior
 {
     public function events()
     {

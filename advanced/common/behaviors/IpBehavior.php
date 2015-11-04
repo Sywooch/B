@@ -1,6 +1,6 @@
 <?php
 /**
- * Description: �Զ���Ӳ�����IP
+ * Description: 填充IP地址
  * License:
  * User: Keen
  * Date: 2015/10/11

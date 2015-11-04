@@ -13,7 +13,7 @@ use Yii;
 use yii\base\Behavior;
 use yii\db\ActiveRecord;
 
-class NotificationBehavior extends Behavior
+class NotificationBehavior extends BaseBehavior
 {
     public function events()
     {

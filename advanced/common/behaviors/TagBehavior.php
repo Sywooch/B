@@ -22,7 +22,7 @@ use yii\helpers\ArrayHelper;
  * @package common\behaviors
  * @property \common\entities\QuestionEntity owner
  */
-class TagBehavior extends Behavior
+class TagBehavior extends BaseBehavior
 {
     /*public function events()
     {

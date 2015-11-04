@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d86baba35ee8c8df8e4f9509544048ad",
+    "hash": "2ed83227cceb573740759f462e5774b7",
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
@@ -3210,21 +3210,21 @@
         },
         {
             "name": "kartik-v/yii2-widget-fileinput",
-            "version": "dev-master",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-fileinput.git",
-                "reference": "084447f095888ddb09a95a1a363842ca87e01c9d"
+                "reference": "c78637387dd5306002ae5613d9f9cab8a5df975d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-fileinput/zipball/084447f095888ddb09a95a1a363842ca87e01c9d",
-                "reference": "084447f095888ddb09a95a1a363842ca87e01c9d",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-fileinput/zipball/c78637387dd5306002ae5613d9f9cab8a5df975d",
+                "reference": "c78637387dd5306002ae5613d9f9cab8a5df975d",
                 "shasum": ""
             },
             "require": {
-                "kartik-v/bootstrap-fileinput": "~4.2",
-                "kartik-v/yii2-krajee-base": "~1.7"
+                "kartik-v/bootstrap-fileinput": "*",
+                "kartik-v/yii2-krajee-base": "*"
             },
             "type": "yii2-extension",
             "autoload": {
@@ -3234,7 +3234,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD-3-Clause"
+                "BSD 3-Clause"
             ],
             "authors": [
                 {
@@ -3256,7 +3256,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-08-17 13:03:50"
+            "time": "2015-05-03 14:11:04"
         },
         {
             "name": "kartik-v/yii2-widget-growl",
@@ -3937,17 +3937,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nemmo/yii2-attachments.git",
-                "reference": "fb117b083324f3f60ac6a2a50469a72e6aa8340a"
+                "reference": "efd598c4359415ba3ab7858eeb0b4e55e52016fa"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/Nemmo/yii2-attachments/zipball/efd598c4359415ba3ab7858eeb0b4e55e52016fa",
-                "reference": "fb117b083324f3f60ac6a2a50469a72e6aa8340a",
+                "reference": "efd598c4359415ba3ab7858eeb0b4e55e52016fa",
                 "shasum": ""
             },
             "require": {
                 "himiklab/yii2-colorbox-widget": "*",
-                "kartik-v/yii2-widget-fileinput": "*",
+                "kartik-v/yii2-widget-fileinput": "v1.0.2",
                 "php": ">=5.4.0",
                 "yiisoft/yii2": "*"
             },
@@ -3975,7 +3975,7 @@
                 "upload",
                 "yii2"
             ],
-            "time": "2015-08-17 08:02:41"
+            "time": "2015-11-03 08:05:54"
         },
         {
             "name": "php-imap/php-imap",
@@ -4286,55 +4286,6 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2015-10-11 09:39:48"
-        },
-        {
-            "name": "tedivm/fetch",
-            "version": "v0.6.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tedious/Fetch.git",
-                "reference": "154a84fdfa0d045c2871dd9f8708362fb9ea4acf"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tedious/Fetch/zipball/154a84fdfa0d045c2871dd9f8708362fb9ea4acf",
-                "reference": "154a84fdfa0d045c2871dd9f8708362fb9ea4acf",
-                "shasum": ""
-            },
-            "require": {
-                "ext-imap": "*",
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "fabpot/php-cs-fixer": "0.5.*",
-                "phpunit/phpunit": "4.2.*",
-                "satooshi/php-coveralls": "dev-master",
-                "tedivm/dovecottesting": "1.2.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Fetch": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Robert Hafner",
-                    "email": "tedivm@tedivm.com"
-                }
-            ],
-            "description": "A PHP IMAP Library",
-            "homepage": "http://github.com/tedious/Fetch",
-            "keywords": [
-                "email",
-                "imap",
-                "pop3"
-            ],
-            "time": "2015-01-08 03:22:20"
         },
         {
             "name": "thamtech/yii2-uuid",

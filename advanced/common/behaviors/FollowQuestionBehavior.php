@@ -18,7 +18,7 @@ use yii\base\Behavior;
  * @package common\behaviors
  * @property \common\entities\FollowQuestionEntity owner
  */
-class FollowQuestionBehavior extends Behavior
+class FollowQuestionBehavior extends BaseBehavior
 {
     public function events()
     {

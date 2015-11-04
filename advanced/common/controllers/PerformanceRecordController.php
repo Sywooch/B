@@ -8,80 +8,101 @@
 
 namespace common\controllers;
 
+use Yii;
 use yii\web\Application;
 use yii\web\Controller;
 
 class PerformanceRecordController extends Controller
 {
-    private $time_record;
+    public static $time_record;
     private $action_name;
     private $start_time;
-    const max_execute_time = 0.5;
+    const MAX_EXECUTE_TIME = 0.2;
+    const MIN_EXECUTE_TIME = 0.1;
 
     public function __construct($id, $module, $config = [])
     {
-        $this->time_record = [];
+        self::$time_record = [];
         $this->start_time = microtime(true);
         parent::__construct($id, $module, $config);
-        $this->time_record[] = ["After parent construct", microtime(true)];
+        self::$time_record[] = ["After parent construct", microtime(true)];
     }
-
+    
     public function beforeAction($action)
     {
         $this->action_name = $action->getUniqueId();
-        $this->time_record[] = ["Before parent before action", microtime(true)];
+        self::$time_record[] = ["Before parent before action", microtime(true)];
         $result = parent::beforeAction($action);
-        $this->time_record[] = ["After parent before action", microtime(true)];
+        self::$time_record[] = ["After parent before action", microtime(true)];
+        
         return $result;
     }
-
+    
     public function afterAction($action, $result)
     {
-        $this->time_record[] = ["Before parent after action", microtime(true)];
+        self::$time_record[] = ["Before parent after action", microtime(true)];
         $result = parent::afterAction($action, $result);
-        $this->time_record[] = ["After parent after action", microtime(true)];
-        \Yii::$app->on(Application::EVENT_AFTER_REQUEST, array($this, "appEnd"));
+        self::$time_record[] = ["After parent after action", microtime(true)];
+        Yii::$app->on(Application::EVENT_AFTER_REQUEST, [$this, "appEnd"]);
+        
         return $result;
     }
-
+    
     public function appEnd()
     {
-        $this->time_record[] = ["APP END", microtime(true)];
-        register_shutdown_function(array($this, "onShutdown"));
+        self::$time_record[] = ["APP END", microtime(true)];
+        register_shutdown_function([$this, "onShutdown"]);
     }
-
+    
     public function onShutdown()
     {
-        $this->time_record[] = ["PHP shutdown", microtime(true)];
-
+        self::$time_record[] = ["PHP shutdown", microtime(true)];
+        
         $records = [];
         $previous_use_time = $this->start_time;
-
-        foreach ($this->time_record as $item) {
-            #��ĿǰΪֹʱ��
+        
+        foreach (self::$time_record as $item) {
+            #到目前为止时间
             $used_time = $item[1] - $this->start_time;
-            #�ò�ִ��ʱ��
+            #该步执行时间
             $use_time = $item[1] - $previous_use_time;
-            #�жϸö���ִ��ʱ��ʱ
-            if ($use_time >= self::max_execute_time) {
-                $records[] = sprintf("+++ [%2.3f/%2.3f] %s", $use_time, $used_time, $item[0]);
+            #判断该动作执行时否超时
+            if ($use_time >= self::MAX_EXECUTE_TIME) {
+                $sign = '+++';
+            } elseif ($use_time >= self::MIN_EXECUTE_TIME) {
+                $sign = '---';
             } else {
-                $records[] = sprintf("--- [%2.3f/%2.3f] %s", $use_time, $used_time, $item[0]);
+                $sign = '   ';
             }
+
+            $records[] = sprintf("%s [%2.3f/%2.3f] %s", $sign, $use_time, $used_time, $item[0]);
 
             $previous_use_time = $item[1];
         }
-
-        $timeRec = PHP_EOL . "Action Name:" . $this->action_name . PHP_EOL . implode(PHP_EOL, $records);
-
-        \Yii::trace($timeRec, "Performance");
+        
+        $timeRec = sprintf(
+            '%s%s%s%s%s%s%s%s',
+            PHP_EOL,
+            str_repeat('-', 30),
+            PHP_EOL,
+            "Action Name:" . $this->action_name,
+            PHP_EOL,
+            str_repeat('-', 30),
+            PHP_EOL,
+            implode(
+                PHP_EOL,
+                $records
+            )
+        );
+        
+        Yii::info($timeRec, "Performance");
     }
-
+    
     /**
      * @param $anchor
      */
     protected function setPerformanceRecordAnchor($anchor)
     {
-        $this->time_record[] = [$anchor, microtime(true)];
+        self::$time_record[] = [$anchor, microtime(true)];
     }
 }

@@ -16,7 +16,7 @@ use Yii;
  *
  * @property JudgeEvent $judgeEvent
  */
-class JudgeLog extends \yii\db\ActiveRecord
+class JudgeLog extends \common\models\BaseActiveRecord
 {
     /**
      * @inheritdoc

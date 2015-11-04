@@ -20,7 +20,7 @@ use Yii;
  * @package common\behaviors
  * @property \common\entities\QuestionInviteEntity owner
  */
-class QuestionInviteBehavior extends Behavior
+class QuestionInviteBehavior extends BaseBehavior
 {
     public function events()
     {

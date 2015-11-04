@@ -18,9 +18,7 @@ use common\entities\FollowTagPassiveEntity;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
 use common\entities\TagEntity;
-use common\entities\UserProfileEntity;
 use Yii;
-use yii\base\Behavior;
 use yii\base\ModelEvent;
 use yii\db\ActiveRecord;
 
@@ -29,7 +27,7 @@ use yii\db\ActiveRecord;
  * @package common\behaviors
  * @property \common\entities\AnswerEntity owner
  */
-class AnswerBehavior extends Behavior
+class AnswerBehavior extends BaseBehavior
 {
     public function events()
     {

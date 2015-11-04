@@ -16,7 +16,7 @@ use Yii;
  * @property string $create_at
  * @property string $status
  */
-class Attachment extends \yii\db\ActiveRecord
+class Attachment extends \common\models\BaseActiveRecord
 {
     /**
      * @inheritdoc

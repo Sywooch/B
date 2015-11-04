@@ -292,7 +292,9 @@ class TestController extends BaseController
         $question->subject = 'testtesttesttesttesttesttest';
         $question->tags = 'aa,bb,cc';
         $question->content = 'testcontent';
+        $this->setPerformanceRecordAnchor('before save question');
         $result = $question->save();
+        $this->setPerformanceRecordAnchor('after save question');
         $this->setPerformanceRecordAnchor('end question');
         echo '<pre />';
         print_r($question->getErrors());

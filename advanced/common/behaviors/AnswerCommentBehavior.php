@@ -22,7 +22,7 @@ use yii\db\ActiveRecord;
  * @package common\behaviors
  * @property \common\entities\AnswerCommentEntity owner
  */
-class AnswerCommentBehavior extends Behavior
+class AnswerCommentBehavior extends BaseBehavior
 {
     public function events()
     {

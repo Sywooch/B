@@ -57,12 +57,11 @@ return [
             'class'               => 'funson86\setting\Module',
             'controllerNamespace' => 'funson86\setting\controllers',
         ],
-
         ########## 以下为项目模块　##########
 
     ],
     'components'    => [
-        'formatter'            => [ //for the showing of date datetime
+        'formatter' => [ //for the showing of date datetime
             'class'             => 'common\helpers\FormatterHelper',
             'dateFormat'        => 'yyyy-MM-dd',
             'locale'            => 'zh-CN',
@@ -71,10 +70,10 @@ return [
             'thousandSeparator' => ' ',
             'currencyCode'      => 'CNY',
         ],
-        'cache'                => [
+        'cache'     => [
             'class' => 'yii\caching\FileCache',
         ],
-        'session'              => [
+        'session'   => [
             'class'        => 'yii\web\Session',
             'timeout'      => 7200,
             'name'         => 'PHPSESSID',
@@ -86,7 +85,7 @@ return [
 
         ],
         #日志设置
-        'log'                  => [
+        'log'       => [
             'traceLevel' => YII_DEBUG ? false : 0,
             'targets'    => [
                 [
@@ -120,23 +119,20 @@ return [
                     'class'       => 'yii\log\FileTarget',
                     'levels'      => ['error'],
                     'maxLogFiles' => 20,
-                    /*'categories'  => [
-                        'SaveModel2*'
-                    ],*/
                     'logFile'     => '@app/runtime/logs/error_' . date('Y-m-d') . '.log',
                     'maxFileSize' => 1024 * 2,
                     'logVars'     => [],
                 ],
-                /*[
+                [
                     'class'       => 'yii\log\FileTarget',
-                    'levels'      => ['trace'],
+                    'levels'      => ['trace', 'info'],
                     'maxLogFiles' => 20,
                     'categories'  => ['Performance'],
-                    'logFile'     => '@app/runtime/logs/performance/' . date('Y-m-d') . '.log',
+                    'logFile'     => '@app/runtime/logs/performance_' . date('Y-m-d') . '.log',
                     'maxFileSize' => 1024 * 2,
                     'logVars'     => [],
                 ],
-                [
+                /*[
                     'class'       => 'yii\log\FileTarget',
                     'levels'      => ['trace'],
                     'maxLogFiles' => 20,
@@ -175,7 +171,7 @@ return [
             ],
         ],
         #邮件发送配置
-        'mailer'               => [
+        'mailer'    => [
             'class'            => 'yii\swiftmailer\Mailer',
             'useFileTransport' => false, #true 测试用，在runtime/mail文件夹下生成
             'transport'        => [
@@ -192,17 +188,17 @@ return [
             ],
         ],
         #redis定义
-        'redis'                => [
+        'redis'     => [
             'class'  => 'common\components\redis\Connection',
             'prefix' => 'YIIREDIS',
             'config' => $redis,
         ],
         #站点设置
-        'setting'              => [
+        'setting'   => [
             'class' => 'common\components\setting\Setting',
         ],
         #自定义模板目录
-        'view'                 => [
+        'view'      => [
             'theme' => [
                 'pathMap' => [
                     #用户模板
@@ -222,7 +218,7 @@ return [
             ],
         ],*/
         #xunsearch
-        'xunsearch'            => [
+        'xunsearch' => [
             'class'        => 'hightman\xunsearch\Connection',
             'iniDirectory' => '@common/config/xunsearch',    // 搜索 ini 文件目录，默认：@vendor/hightman/xunsearch/app
             'charset'      => 'utf-8',

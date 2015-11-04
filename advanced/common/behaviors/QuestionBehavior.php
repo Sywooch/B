@@ -27,7 +27,7 @@ use yii\helpers\ArrayHelper;
  * @package common\behaviors
  * @property \common\entities\QuestionEntity owner
  */
-class QuestionBehavior extends Behavior
+class QuestionBehavior extends BaseBehavior
 {
     public $dirtyAttributes;
     

@@ -50,6 +50,8 @@
 
     "daixianceng/yii2-smser": "*",
 
+    "trntv/yii2-file-kit": "*",
+
     "kartik-v/bootstrap-tabs-x": "dev-master",
     "kartik-v/yii2-widgets": "*",
     "kartik-v/yii2-icons": "*",
@@ -76,7 +78,7 @@
     "budyaga/yii2-cropper": "*",
 
     "thamtech/yii2-uuid": "*",
-    "trntv/yii2-file-kit": "*",
+
 
     "callmez/yii2-wechat": "^0.2.0",
     "crazydb/yii2-ueditor": "*",
