@@ -267,7 +267,6 @@ class TestController extends BaseController
         //        }{imap.gmail.com:993/imap/ssl}INBOX
 
 
-
     }
 
     function decodeSubject($subject)
@@ -283,6 +282,23 @@ class TestController extends BaseController
         }
 
         return implode('', $new_subject);
+    }
+
+    public function actionQuestion()
+    {
+        $this->setPerformanceRecordAnchor('start question');
+        /* @var $question QuestionEntity */
+        $question = Yii::createObject(QuestionEntity::className());
+        $question->subject = 'testtesttesttesttesttesttest';
+        $question->tags = 'aa,bb,cc';
+        $question->content = 'testcontent';
+        $result = $question->save();
+        $this->setPerformanceRecordAnchor('end question');
+        echo '<pre />';
+        print_r($question->getErrors());
+        var_dump($result);
+
+
     }
 }
 

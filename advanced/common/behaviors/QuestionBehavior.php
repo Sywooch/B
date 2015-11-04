@@ -66,7 +66,7 @@ class QuestionBehavior extends Behavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithAddQuestionEventHistory();
         $this->dealWithInsertTags();
-        $this->dealWithUserCounter(1);
+        $this->dealWithUserAddQuestionCounter();
         $this->dealWithAddFollowQuestion();
         $this->dealWithAddAttachments();
     }
@@ -84,7 +84,7 @@ class QuestionBehavior extends Behavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithRemoveFollowQuestion();
         $this->dealWithFavoriteRecordRemove();
-        $this->dealWithUserCounter(-1);
+        $this->dealWithUserDeleteQuestionCounter();
         #delete notify if operator is not delete by others.
     }
     
@@ -248,13 +248,22 @@ class QuestionBehavior extends Behavior
         }
     }
     
-    public function dealWithUserCounter($value)
+    public function dealWithUserAddQuestionCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         
         $result = Counter::addQuestion($this->owner->create_by);
 
-        Yii::trace(sprintf('Counter Result: %s', $result), 'behavior');
+        return $result;
+    }
+
+    public function dealWithUserDeleteQuestionCounter()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        $result = Counter::deleteQuestion($this->owner->create_by);
+
+        return $result;
     }
     
     /**

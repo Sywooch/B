@@ -25,14 +25,14 @@ class TimestampBehavior extends AttributeBehavior
      */
     public function init()
     {
-        Yii::trace('Begin '. $this->className(), 'behavior');
+        Yii::trace('Begin ' . $this->className(), 'behavior');
 
         parent::init();
 
         if (empty($this->attributes)) {
             $this->attributes = [
-                    BaseActiveRecord::EVENT_BEFORE_INSERT => $this->createdAtAttribute,
-                    BaseActiveRecord::EVENT_BEFORE_UPDATE => $this->updatedAtAttribute,
+                BaseActiveRecord::EVENT_BEFORE_INSERT => $this->createdAtAttribute,
+                BaseActiveRecord::EVENT_BEFORE_UPDATE => $this->updatedAtAttribute,
             ];
         }
     }
@@ -44,7 +44,7 @@ class TimestampBehavior extends AttributeBehavior
     {
         $this->value = time();
 
-        Yii::trace('GetValue '. $this->value, 'behavior');
+        //Yii::trace('GetValue '. $this->value, 'behavior');
 
         return $this->value;
     }
