@@ -4,8 +4,6 @@ $redis = array_merge(
     require(__DIR__ . '/../../common/config/redis-local.php')
 );
 
-$error = require(__DIR__ . '/../../common/config/error.php');
-
 return [
     'name'          => '网站名称',
     'language'      => 'zh-cn',
@@ -59,13 +57,6 @@ return [
             'class'               => 'funson86\setting\Module',
             'controllerNamespace' => 'funson86\setting\controllers',
         ],
-        /*#redactor编辑器
-        'redactor' => [
-                'class'                => 'yii\redactor\RedactorModule',
-                'uploadDir'            => '@webroot/path/to/uploadfolder',
-                'uploadUrl'            => '@web/path/to/uploadfolder',
-                'imageAllowExtensions' => ['jpg', 'png', 'gif']
-        ],*/
 
         ########## 以下为项目模块　##########
 
@@ -88,7 +79,7 @@ return [
             'timeout'      => 7200,
             'name'         => 'PHPSESSID',
             'cookieParams' => [
-                'domain'   => '.yii2.com',
+                'domain'   => '.yii2.com', #todo 记得修改
                 'httponly' => true,
                 'path'     => '/',
             ],
@@ -219,21 +210,22 @@ return [
                 ],
             ],
         ],
-        #错误代码
-        'error'                => [
-            'class'  => 'common\components\error\ErrorResponse',
-            'config' => $error,
-        ],
         #第三方接入
-        'authClientCollection' => [
+        /*'authClientCollection' => [
             'class'   => 'yii\authclient\Collection',
             'clients' => [
                 'qq' => [
-                    'class'        => 'common\components\authclients\QqOAuth',
+                    'class'        => '@common\components\authclients\QqOAuth',
                     'clientId'     => 'your_qq_clientid',
                     'clientSecret' => 'your_qq_secret',
                 ],
             ],
+        ],*/
+        #xunsearch
+        'xunsearch'            => [
+            'class'        => 'hightman\xunsearch\Connection',
+            'iniDirectory' => '@common/config/xunsearch',    // 搜索 ini 文件目录，默认：@vendor/hightman/xunsearch/app
+            'charset'      => 'utf-8',
         ],
     ],
     'controllerMap' => [

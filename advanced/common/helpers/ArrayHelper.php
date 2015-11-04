@@ -11,7 +11,12 @@ namespace common\helpers;
 
 class ArrayHelper extends \yii\helpers\ArrayHelper
 {
-    public function isPureAssociative($array)
+    /**
+     * 比 ArrayHelper::isAssociative还要严格的关联数组，
+     * @param $array
+     * @return bool
+     */
+    public static function isPureAssociative($array)
     {
         return array_keys($array) !== range(0, count($array) - 1);
     }

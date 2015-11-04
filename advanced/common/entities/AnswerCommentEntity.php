@@ -12,6 +12,7 @@ namespace common\entities;
 use common\behaviors\IpBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
+use common\components\Error;
 use common\exceptions\ParamsInvalidException;
 use common\models\AnswerComment;
 use yii\db\ActiveRecord;
@@ -51,15 +52,15 @@ class AnswerCommentEntity extends AnswerComment
     public function addComment($answer_id, $user_id, $content, $is_anonymous = self::STATUS_UNANONYMOUS)
     {
         if (empty($answer_id)) {
-            throw new ParamsInvalidException(['answer_id']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['answer_id']);
         }
 
         if (empty($user_id)) {
-            throw new ParamsInvalidException(['user_id']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id']);
         }
 
         if (empty($content)) {
-            throw new ParamsInvalidException(['content']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['content']);
         }
 
         if ($this->load(
@@ -82,19 +83,19 @@ class AnswerCommentEntity extends AnswerComment
     public function modifyComment($comment_id, $answer_id, $user_id, $content, $is_anonymous = self::STATUS_UNANONYMOUS)
     {
         if (empty($comment_id)) {
-            throw new ParamsInvalidException(['comment_id']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['comment_id']);
         }
 
         if (empty($answer_id)) {
-            throw new ParamsInvalidException(['answer_id']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['answer_id']);
         }
 
         if (empty($user_id)) {
-            throw new ParamsInvalidException(['user_id']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id']);
         }
 
         if (empty($content)) {
-            throw new ParamsInvalidException(['content']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['content']);
         }
 
         $model = $this->findOne(['id' => $comment_id, 'create_at' => $user_id]);

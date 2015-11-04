@@ -23,10 +23,10 @@ use Yii;
  *
  * @property User $createBy
  * @property Question $question
+ * @property AnswerComment[] $answerComments
  * @property AnswerUsefullLog[] $answerUsefullLogs
  * @property User[] $users
  * @property AnswerVersion[] $answerVersions
- * @property Comment[] $comments
  */
 class Answer extends \common\models\BaseActiveRecord
 {
@@ -93,6 +93,14 @@ class Answer extends \common\models\BaseActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getAnswerComments()
+    {
+        return $this->hasMany(AnswerComment::className(), ['answer_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getAnswerUsefullLogs()
     {
         return $this->hasMany(AnswerUsefullLog::className(), ['answer_id' => 'id']);
@@ -112,13 +120,5 @@ class Answer extends \common\models\BaseActiveRecord
     public function getAnswerVersions()
     {
         return $this->hasMany(AnswerVersion::className(), ['answer_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getComments()
-    {
-        return $this->hasMany(Comment::className(), ['answer_id' => 'id']);
     }
 }

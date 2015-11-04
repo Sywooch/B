@@ -4,6 +4,7 @@ namespace common\entities;
 
 use common\behaviors\FollowQuestionBehavior;
 use common\components\Counter;
+use common\components\Error;
 use Yii;
 use common\exceptions\ParamsInvalidException;
 use common\models\FollowQuestion;
@@ -45,14 +46,13 @@ class FollowQuestionEntity extends FollowQuestion
     public function addFollow($question_id, $user_id)
     {
         if (empty($user_id) || empty($question_id)) {
-            throw new ParamsInvalidException(['user_id', 'question_id']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
         }
 
-
-        $follow_question_count = Yii::$app->user->profile->count_follow;
+        $follow_question_count = Yii::$app->user->identity->profile->count_follow;
 
         if ($follow_question_count > self::MAX_FOLLOW_NUMBER) {
-            throw new ErrorException(sprintf('你当前的关注问题数量已超过限制，最多%d个，请先清理一下。', self::MAX_FOLLOW_NUMBER));
+            return Error::set(Error::TYPE_FOLLOW_QUESTION_FOLLOW_TOO_MUCH_QUESTION, self::MAX_FOLLOW_NUMBER);
         }
 
 
@@ -89,7 +89,7 @@ class FollowQuestionEntity extends FollowQuestion
     public function removeFollow($question_id, $user_id = null)
     {
         if (empty($question_id)) {
-            throw new ParamsInvalidException(['user_id', 'question_id']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
         }
 
         #delete
@@ -111,7 +111,7 @@ class FollowQuestionEntity extends FollowQuestion
     public function getFollowUser($question_id)
     {
         if (empty($question_id)) {
-            throw new ParamsInvalidException(['user_id', 'question_id']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
         }
 
         $model = self::find(

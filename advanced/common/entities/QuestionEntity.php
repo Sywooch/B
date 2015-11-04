@@ -37,7 +37,8 @@ class QuestionEntity extends Question
     const STATUS_LOCK = 'lock';         //锁定，不允许回答
     const STATUS_CRAWL = 'crawl';       //抓取
 
-    const STATUS_DISPLAY = ['original', 'review', 'enable', 'lock']; //允许显示的状态
+    const STATUS_DISPLAY = 'original,review,enable,lock'; //允许显示的状态
+    const STATUS_DISPLAY_FOR_SPIDER = 'enable,lock'; //允许显示的状态，给搜索引擎
 
 
     //
@@ -204,5 +205,86 @@ class QuestionEntity extends Question
         Updater::build()->priority()->table(self::tableName())->set(['active_at' => $active_at])->where(
             ['id' => $id]
         )->execute();
+    }
+    
+    public function fetchLatest($limit = 10, $is_spider)
+    {
+        $cache_key = [REDIS_KEY_QUESTION, 'LATEST_' . $is_spider];
+        $cache_data = Yii::$app->redis->get($cache_key);
+
+        if (!$cache_data) {
+            $model = self::find()->where(
+                ['status' => $this->getAllowShowStatus($is_spider)]
+            )->andWhere(
+                'count_answer>0'
+            )->orderBy('create_at DESC')->limit($limit)->asArray()->all();
+            $cache_data = $model;
+            Yii::$app->redis->set([REDIS_KEY_QUESTION, 'HOT'], $cache_data);
+        }
+
+        return $cache_data;
+    }
+
+    public function fetchHot($limit = 10, $is_spider, $period = 7)
+    {
+        $cache_key = [REDIS_KEY_QUESTION, 'HOT_' . $is_spider];
+        $cache_data = Yii::$app->redis->get($cache_key);
+
+        if (!$cache_data) {
+            $model = self::find()->where(
+                ['status' => $this->getAllowShowStatus($is_spider)]
+            )->andWhere(
+                'create_at>=:create_at',
+                [
+                    ':create_at' => time() - $period * 86400,
+                ]
+            )->andWhere(
+                'count_answer>0'
+            )->orderBy('count_views DESC')->limit($limit)->asArray()->all();
+
+            $cache_data = $model;
+            Yii::$app->redis->set([REDIS_KEY_QUESTION, 'HOT'], $cache_data);
+        }
+
+        return $cache_data;
+    }
+
+    public function fetchUnAnswer($limit = 10, $is_spider, $period = 7)
+    {
+        $cache_key = [REDIS_KEY_QUESTION, 'UNANSWER_' . $is_spider];
+        $cache_data = Yii::$app->redis->get($cache_key);
+
+        if (!$cache_data) {
+            $model = self::find()->where(
+                ['status' => $this->getAllowShowStatus($is_spider)]
+            )->andWhere(
+                'create_at>=:create_at',
+                [
+                    ':create_at' => time() - $period * 86400,
+                ]
+            )->andWhere(
+                'count_answer>0'
+            )->orderBy('count_views DESC')->limit($limit)->asArray()->all();
+
+            $cache_data = $model;
+            Yii::$app->redis->set([REDIS_KEY_QUESTION, 'HOT'], $cache_data);
+        }
+
+        return $cache_data;
+    }
+
+    /**
+     * @param $is_spider
+     * @return array
+     */
+    private function getAllowShowStatus($is_spider)
+    {
+        if ($is_spider) {
+            $status = self::STATUS_DISPLAY_FOR_SPIDER;
+        } else {
+            $status = self::STATUS_DISPLAY;
+        }
+
+        return array_filter(explode(',', $status));
     }
 }

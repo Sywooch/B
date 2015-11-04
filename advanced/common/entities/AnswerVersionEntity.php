@@ -47,7 +47,7 @@ class AnswerVersionEntity extends AnswerVersion
                 return true;
             } else {
                 Yii::error(sprintf('%s insert error', __FUNCTION__));
-
+                Yii::error($model->getErrors());
                 return false;
             }
         }
@@ -73,6 +73,7 @@ class AnswerVersionEntity extends AnswerVersion
                     return true;
                 } else {
                     Yii::error(sprintf('%s insert error', __FUNCTION__));
+                    Yii::error($model->getErrors());
 
                     return false;
                 }

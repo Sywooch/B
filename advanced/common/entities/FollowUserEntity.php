@@ -9,14 +9,18 @@
 namespace common\entities;
 
 
+use common\behaviors\TimestampBehavior;
 use common\components\Counter;
+use common\components\Error;
 use common\models\FollowUser;
 use Yii;
 use yii\base\ErrorException;
+use yii\db\ActiveRecord;
 
 class FollowUserEntity extends FollowUser
 {
     const MAX_FOLLOW_NUMBER = 1000;
+
 
     public function behaviors()
     {
@@ -30,16 +34,26 @@ class FollowUserEntity extends FollowUser
         ];
     }
 
-    public function addFollow($user_id, array $follow_user_ids)
+    public function addFollow(array $follow_user_ids, $user_id)
     {
         if (empty($user_id) || empty($follow_user_ids)) {
-            throw new ParamsInvalidException(['user_id', 'follow_user_ids']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, 'user_id,follow_user_ids');
+        }
+
+        if (UserEntity::checkWhetherIsOfficialAccount($user_id)) {
+            return Error::set(Error::TYPE_FOLLOW_DO_NOT_ALLOW_TO_FOLLOW);
         }
 
         $follow_user_count = Yii::$app->user->profile->count_follow;
 
         if ($follow_user_count + count($follow_user_ids) > self::MAX_FOLLOW_NUMBER) {
-            throw new ErrorException(sprintf('你当前的关注用户的数量已超过限制，最多%d个用户，请先清理一下。', self::MAX_FOLLOW_NUMBER));
+            return Error::set(
+                Error::TYPE_FOLLOW_USER_FOLLOW_TOO_MUCH_USER,
+                [
+                    $follow_user_count,
+                    self::MAX_FOLLOW_NUMBER,
+                ]
+            );
         }
 
         $create_at = time();
@@ -63,7 +77,15 @@ class FollowUserEntity extends FollowUser
         )->execute();
 
         if ($result) {
-            Counter::followUser($user_id);
+            # increase myself & follow user
+            Counter::followUser($user_id, count($follow_user_ids));
+
+            foreach ($follow_user_ids as $follow_user_id) {
+                Counter::beFollowUser($follow_user_id);
+            }
+
+            #add to cache
+            $this->addFollowUserToCache($user_id, $follow_user_ids);
 
         } else {
             Yii::error(sprintf('Batch Add Follow Tag %s', $result), __FUNCTION__);
@@ -72,10 +94,17 @@ class FollowUserEntity extends FollowUser
         return $result;
     }
 
-    public function removeFollow($follow_user_id, $user_id = null)
+    /**
+     * @param array $follow_user_id
+     * @param null  $user_id when user_id is null, means delete user_id
+     * @return bool
+     * @throws ParamsInvalidException
+     * @throws \Exception
+     */
+    public function removeFollow(array $follow_user_id, $user_id = null)
     {
         if (empty($follow_user_id)) {
-            throw new ParamsInvalidException(['user_id', 'tag_id']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,follow_user_id']);
         }
 
         #delete
@@ -85,12 +114,76 @@ class FollowUserEntity extends FollowUser
             ]
         )->filterWhere(['user_id' => $user_id])->all();
 
+        #decrease myself & follow user
         foreach ($model as $follow_user) {
             if ($follow_user->delete()) {
-                Counter::cancelFollowUser($follow_user->user_id);
+                if ($user_id) {
+                    Counter::cancelFollowUser($user_id);
+                }
+                Counter::cancelBeFollowUser($follow_user->user_id);
             }
         }
 
+        #udpate follow use cache
+        if ($user_id) {
+            $this->removeFollowUserToCache($user_id, $follow_user_id);
+        }
+
         return true;
+    }
+
+
+    public function getFollowUserIds($user_id, $limit = 1000)
+    {
+        return $this->getFollowUserIdsUseCache($user_id, $limit);
+    }
+
+    private function getFollowUserIdsUseCache($user_id, $limit)
+    {
+        $cache_data = Yii::$app->redis->sMembers([REDIS_KEY_USER_FOLLOW, $user_id]);
+
+        if (!$cache_data) {
+            $model = self::find()->select(['follow_user_id'])->where(
+                [
+                    'user_id' => $user_id,
+                ]
+            )->orderBy('create_at DESC')->limit($limit)->column();
+
+            if ($this->addFollowUserToCache($user_id, $model)) {
+                $cache_data = $model;
+            }
+        }
+
+        return $cache_data;
+    }
+
+    private function addFollowUserToCache($user_id, array $follow_user_id)
+    {
+        if ($follow_user_id) {
+            $params = array_merge(
+                [
+                    [REDIS_KEY_USER_FOLLOW, $user_id],
+
+                ],
+                array_values($follow_user_id)
+            );
+
+            return call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
+        }
+    }
+
+    private function removeFollowUserToCache($user_id, array $follow_user_id)
+    {
+        if ($follow_user_id) {
+            $params = array_merge(
+                [
+                    [REDIS_KEY_USER_FOLLOW, $user_id],
+
+                ],
+                array_values($follow_user_id)
+            );
+
+            return call_user_func_array([Yii::$app->redis, 'sRem'], $params);
+        }
     }
 }

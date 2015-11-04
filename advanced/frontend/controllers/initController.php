@@ -13,11 +13,11 @@ use common\controllers\BaseController;
 use dektrium\user\models\RegistrationForm;
 use Yii;
 
-class AutoSignInController extends BaseController
+class InitController extends BaseController
 {
     public $user_names;
 
-    public function getUserNames()
+    private function getUserNames()
     {
         $this->user_names = [
             '一剑飞天',
@@ -1026,34 +1026,35 @@ class AutoSignInController extends BaseController
 
     public function actionIndex()
     {
+
+
+    }
+
+    public function actionAutoRegister()
+    {
+        set_time_limit(0);
         $username_data = $this->getUserNames();
+        $registration = Yii::createObject(RegistrationForm::className());
 
         foreach ($username_data as $username) {
-
-            $model = Yii::createObject(RegistrationForm::className());
-
+            /* @var $model RegistrationForm */
+            $model = clone $registration;
             $email = sprintf('rand_%s@bo-u.cn', md5($username));
 
-            $result = $model->load(
-                [
-                    'email'    => $email,
-                    'username' => $username,
-                    'password' => 'yuyunjian',
-                ],
-                ''
-            );
-            var_dump($result);
-            exit;
-
-            if ($model->register()) {
-                echo 'ok';
-                unset($model);
+            if ($model->load(
+                    [
+                        'email'    => $email,
+                        'username' => $username,
+                        'password' => 'yuyunjian',
+                    ],
+                    ''
+                ) && $model->register()
+            ) {
+                echo sprintf('<p>%s Register OK</p>', $username);
             } else {
-
+                echo sprintf('<p>%s Register Fail</p>', $username);
             }
         }
-
-
     }
 
 }

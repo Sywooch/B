@@ -24,7 +24,9 @@ class AppAsset extends AssetBundle
         //'css/responsive.css',
     ];
     public $js = [
+        'js/ajax.js',
         'js/main.js',
+        'js/bootstrap-notify.min.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

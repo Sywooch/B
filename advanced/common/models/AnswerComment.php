@@ -5,10 +5,9 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "comment".
+ * This is the model class for table "answer_comment".
  *
  * @property string $id
- * @property integer $user_id
  * @property string $answer_id
  * @property string $content
  * @property string $create_at
@@ -19,7 +18,7 @@ use Yii;
  * @property string $ip
  * @property string $status
  *
- * @property User $user
+ * @property User $createBy
  * @property Answer $answer
  */
 class AnswerComment extends \common\models\BaseActiveRecord
@@ -38,8 +37,8 @@ class AnswerComment extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'answer_id', 'content', 'create_by', 'modify_by'], 'required'],
-            [['user_id', 'answer_id', 'create_at', 'create_by', 'modify_at', 'modify_by', 'ip'], 'integer'],
+            [['answer_id', 'content', 'create_by', 'modify_by'], 'required'],
+            [['answer_id', 'create_at', 'create_by', 'modify_at', 'modify_by', 'ip'], 'integer'],
             [['content', 'is_anonymous', 'status'], 'string']
         ];
     }
@@ -51,11 +50,10 @@ class AnswerComment extends \common\models\BaseActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
             'answer_id' => 'Answer ID',
             'content' => '内容',
             'create_at' => '创建时间',
-            'create_by' => '创建用户',
+            'create_by' => 'Create By',
             'modify_at' => '修改时间',
             'modify_by' => '修改用户',
             'is_anonymous' => '是否匿名发表',
@@ -67,9 +65,9 @@ class AnswerComment extends \common\models\BaseActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
+    public function getCreateBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::className(), ['id' => 'create_by']);
     }
 
     /**

@@ -6,19 +6,33 @@
  */
 namespace common\widgets\UEditor;
 
+use common\components\atwho\AtWhoAsset;
 use Yii;
 use crazydb\ueditor\UEditor as BaseUEditor;
+use yii\helpers\Html;
+use yii\helpers\Json;
+use yii\helpers\Url;
 
 
 class UEditor extends BaseUEditor
 {
-    public $style = null;
+    public $style, $associate_id, $atwho_data_path;
 
     public function init()
     {
-        #print_r($this->style);exit;
+        $this->atwho_data_path = Url::to(
+            [
+                'question/get-associate-user-id-when-answer',
+                'user_id'     => Yii::$app->user->id,
+                'question_id' => $this->associate_id,
+            ],
+            true
+        );
+
         switch ($this->style) {
             case 'answer':
+                $this->config['initialFrameHeight'] = 150;
+                $this->config['elementPathEnabled'] = false;
                 $this->config['toolbars'] = [
                     [
                         'fullscreen',
@@ -29,11 +43,11 @@ class UEditor extends BaseUEditor
                         'strikethrough',
                         '|',
                         //'source',
-                        'removeformat',
-                        'pasteplain',
+                        //'removeformat',
+                        //'pasteplain',
                         //'undo',
                         //'redo',
-                        '|',
+                        //'|',
                         //'superscript',
                         //'subscript',
                         'blockquote',
@@ -142,6 +156,68 @@ class UEditor extends BaseUEditor
 
         parent::init();
 
+    }
+
+    public function run()
+    {
+
+        $id = $this->hasModel() ? Html::getInputId($this->model, $this->attribute) : $this->id;
+
+        $config = Json::encode($this->config);
+
+        //ready部分代码，是为了缩略图管理。UEditor本身就很大，在后台直接加载大文件图片会很卡。
+        $script = <<<UEDITOR
+    var {$this->name} = UE.getEditor('{$id}',{$config});
+    {$this->name}.ready(function(){
+        this.addListener( "beforeInsertImage", function ( type, imgObjs ) {
+            for(var i=0;i < imgObjs.length;i++){
+                imgObjs[i].src = imgObjs[i].src.replace(".thumbnail","");
+            }
+        });
+    });
+UEDITOR;
+
+        /**
+         * 回答输入框中，引入atwho
+         */
+        if ($this->style == 'answer') {
+
+            AtWhoAsset::register($this->getView());
+
+            $template = '<li>123</li>';
+            $add_script = sprintf(
+                "
+                var at_config;
+                %s.addListener('focus', function(editor){
+                    if(typeof(at_config) == 'undefined'){
+                        at_config = {
+                                   at: '@',
+                                 data: '%s',
+                            displayTpl: '%s',
+                            insertTpl: '%s',
+                                limit: 6
+                        };
+                        $(this.document.body).atwho(at_config);
+                    }
+                });
+                ",
+                $this->name,
+                $this->atwho_data_path,
+                '<li>${username}</li>',
+                '<span>@${username}</span>'
+
+            );
+
+            $script .= $add_script;
+        }
+
+        $this->getView()->registerJs($script);
+
+        if ($this->hasModel()) {
+            return Html::activeTextarea($this->model, $this->attribute);
+        } else {
+            return Html::textarea($this->name, $this->value, ['id' => $id]);
+        }
     }
 
 

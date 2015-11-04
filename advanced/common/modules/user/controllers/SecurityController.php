@@ -8,10 +8,30 @@
 
 namespace common\modules\user\controllers;
 
+
 use dektrium\user\controllers\SecurityController as BaseSecurityController;
+use dektrium\user\models\LoginForm;
 use Yii;
+use yii\helpers\Url;
 
 class SecurityController extends BaseSecurityController
 {
 
+    public function actionLogin()
+    {
+        if (strpos(Yii::$app->request->getReferrer(), 'login') === false) {
+            Url::remember(Yii::$app->request->getReferrer());
+        }
+
+        return parent::actionLogin();
+    }
+
+    public function actionLogout()
+    {
+        Yii::$app->getUser()->logout();
+
+        Url::remember(Yii::$app->request->getReferrer());
+
+        return $this->goBack();
+    }
 }

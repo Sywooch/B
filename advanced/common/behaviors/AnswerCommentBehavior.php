@@ -15,6 +15,7 @@ use common\entities\UserEntity;
 use common\helpers\AtHelper;
 use yii\base\Behavior;
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * Class AnswerCommentBehavior

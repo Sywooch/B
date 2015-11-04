@@ -12,6 +12,7 @@ namespace common\entities;
 use common\behaviors\AnswerBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
+use common\components\Error;
 use common\models\Answer;
 use yii\db\ActiveRecord;
 
@@ -65,6 +66,7 @@ class AnswerEntity extends Answer
             $model->save();
         }
     }
+
     public function anonymousAnswer($answer_id, $user_id)
     {
         $model = self::findOne(['answer_id' => $answer_id]);
@@ -117,5 +119,60 @@ class AnswerEntity extends Answer
         }
 
         return $content;
+    }
+
+    public static function getAnswerUserIdsByQuestionId($question_id, $limit = 100)
+    {
+        $sql = "
+                SELECT
+                  GROUP_CONCAT(
+                    CONCAT(
+                      a.`create_by`,
+                      ',',
+                      ac.`create_by`
+                    )
+                  )
+                FROM
+                  `answer` a
+                  LEFT JOIN `answer_comment` ac
+                    ON a.`id` = ac.`answer_id`
+                WHERE a.`question_id` =:question_id
+                ORDER BY a.`create_at` DESC, ac.`create_at` DESC
+                LIMIT :limit ;
+                ";
+        $command = self::getDb()->createCommand(
+            $sql,
+            [
+                ':question_id' => $question_id,
+                ':limit'       => $limit,
+            ]
+        );
+
+        $data = $command->queryAll();
+
+        if ($data) {
+            $data = array_unique(array_filter(explode(',', $data)));
+        }
+
+        return $data;
+    }
+
+    public function addAnswer($data)
+    {
+        if ($this->load($data) && $this->save()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function checkWhetherHasAnswered($question_id, $user_id)
+    {
+        return self::find()->select('id')->where(
+            [
+                'question_id' => $question_id,
+                'create_by'   => $user_id,
+            ]
+        )->scalar();
     }
 }

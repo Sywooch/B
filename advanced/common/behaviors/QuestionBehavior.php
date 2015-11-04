@@ -12,6 +12,7 @@ use common\components\Counter;
 use common\entities\AttachmentEntity;
 use common\entities\FavoriteRecordEntity;
 use common\entities\FollowQuestionEntity;
+use common\entities\QuestionEntity;
 use common\entities\QuestionEventHistoryEntity;
 use common\entities\TagEntity;
 use common\entities\UserProfileEntity;
@@ -39,9 +40,15 @@ class QuestionBehavior extends Behavior
             ActiveRecord::EVENT_AFTER_UPDATE  => 'afterQuestionUpdate',
             ActiveRecord::EVENT_AFTER_DELETE  => 'afterQuestionDelete',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeQuestionSave',
+            //ActiveRecord::EVENT_AFTER_FIND    => 'afterQuestionFind',
         ];
     }
-    
+
+    /*public function afterQuestionFind($event)
+    {
+
+    }*/
+
     public function beforeQuestionValidate($event)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');

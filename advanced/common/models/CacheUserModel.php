@@ -16,7 +16,6 @@ class CacheUserModel extends BaseCacheModel
     public $name;
     public $username;
     public $avatar;
-    public $email;
     public $sex;
     public $title;
     public $bio;

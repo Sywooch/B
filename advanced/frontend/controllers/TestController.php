@@ -10,8 +10,12 @@ namespace frontend\controllers;
 
 use common\behaviors\PrivateMessageDialogBehavior;
 use common\components\Counter;
+use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
+use common\entities\AnswerEntity;
+use common\entities\FollowTagPassiveEntity;
+use common\entities\FollowUserEntity;
 use common\entities\NotificationEntity;
 use common\entities\PrivateMessageEntity;
 use common\entities\QuestionEntity;
@@ -19,6 +23,7 @@ use common\entities\TagEntity;
 use common\entities\UserEntity;
 use common\helpers\AtHelper;
 use common\helpers\FormatterHelper;
+use common\models\xunsearch\Question;
 use console\modules\crawler\controllers\crawlers\CrawlerBase;
 use Yii;
 use common\controllers\BaseController;
@@ -222,6 +227,61 @@ class TestController extends BaseController
         $result = AtHelper::findAtUsername($string);
 
         print_r($result);
+    }
+
+    public function actionTest()
+    {
+
+        /*$question = new Question();
+        $question->id = 1;
+        $question->subject = 'abc';
+        $question->save();*/
+
+        /*$answer = new AnswerEntity;
+        $answer->question_id = 4;
+        $answer->content = 'aa';
+
+        $result = $answer->save();
+
+        var_dump($result);
+        print_r($answer->getErrors());
+        exit('dd');*/
+
+        //        $server = new \Fetch\Server('imap.exmail.qq.com');
+        //        $server->setAuthentication('admin@bo-u.cn', '662800Yu');
+        //
+        //        echo '<pre />';
+        //        $box = $server->getMailBox();
+        //        var_dump($box);
+        //
+        //        $messages = $server->getRecentMessages(100);
+        //        /** @var $message \Fetch\Message */
+        //        foreach ($messages as $message) {
+        //            print_r($message->getHeaders()->fromaddress);
+        //            echo PHP_EOL;
+        //            print_r($message->getHeaders()->toaddress);
+        //            echo PHP_EOL;
+        //            print_r($this->decodeSubject($message->getHeaders()->subject));
+        //            echo PHP_EOL, PHP_EOL, PHP_EOL;
+        //        }{imap.gmail.com:993/imap/ssl}INBOX
+
+
+
+    }
+
+    function decodeSubject($subject)
+    {
+        $data = imap_mime_header_decode($subject);
+
+        $new_subject = [];
+        foreach ($data as $item) {
+            if ($item->charset != 'default' && $item->charset != 'UTF-8') {
+                $item->text = mb_convert_encoding($item->text, 'utf8', $item->charset);
+            }
+            $new_subject[] = $item->text;
+        }
+
+        return implode('', $new_subject);
     }
 }
 

@@ -10,6 +10,7 @@ namespace common\entities;
 
 
 use common\components\Counter;
+use common\components\Error;
 use common\models\FollowTag;
 
 class FollowTagEntity extends FollowTag
@@ -17,7 +18,7 @@ class FollowTagEntity extends FollowTag
     public function addFollowTag($user_id, array $tag_ids)
     {
         if (empty($user_id) || empty($tag_ids)) {
-            throw new ParamsInvalidException(['user_id', 'tag_ids']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,tag_ids']);
         }
 
         $data = [];
@@ -54,7 +55,7 @@ class FollowTagEntity extends FollowTag
     public function removeFollowTag(array $tag_ids, $user_id = null)
     {
         if (empty($user_id) || empty($tag_ids)) {
-            throw new ParamsInvalidException(['user_id', 'tag_ids']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,tag_ids']);
         }
 
         #delete

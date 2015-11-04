@@ -185,6 +185,6 @@ class Updater extends Object
 
     private static function addSet($table)
     {
-        return Yii::$app->redis->sAdd(REDIS_KEY_UPDATER_SET, $table);;
+        return Yii::$app->redis->sAdd([REDIS_KEY_UPDATER_SET], $table);;
     }
 }

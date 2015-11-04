@@ -10,6 +10,7 @@ namespace common\behaviors;
 
 
 use common\components\Counter;
+use common\components\Error;
 use common\components\Notifier;
 use common\entities\AnswerVersionEntity;
 use common\entities\FollowQuestionEntity;
@@ -20,6 +21,8 @@ use common\entities\TagEntity;
 use common\entities\UserProfileEntity;
 use Yii;
 use yii\base\Behavior;
+use yii\base\ModelEvent;
+use yii\db\ActiveRecord;
 
 /**
  * Class AnswerBehavior
@@ -33,10 +36,23 @@ class AnswerBehavior extends Behavior
         Yii::trace('Begin ' . $this->className(), 'behavior');
 
         return [
-            ActiveRecord::EVENT_AFTER_INSERT => 'afterAnswerInsert',
-            ActiveRecord::EVENT_AFTER_UPDATE => 'afterAnswerUpdate',
-            ActiveRecord::EVENT_AFTER_DELETE => 'afterAnswerDelete',
+            ActiveRecord::EVENT_BEFORE_INSERT => 'beforeAnswerInsert',
+            ActiveRecord::EVENT_AFTER_INSERT  => 'afterAnswerInsert',
+            ActiveRecord::EVENT_AFTER_UPDATE  => 'afterAnswerUpdate',
+            ActiveRecord::EVENT_AFTER_DELETE  => 'afterAnswerDelete',
         ];
+    }
+
+    public function beforeAnswerInsert(ModelEvent $event)
+    {
+        $hasAnswered = $this->owner->checkWhetherHasAnswered($this->owner->question_id, $this->owner->create_by);
+
+        if ($hasAnswered) {
+            $event->isValid = false;
+            //$event->sender->addError('question_id', '一个问题只能回答一次。');
+
+            return Error::set(Error::TYPE_ANSWER_ONE_QUESTION_ONE_ANSWER_PER_PEOPLE);
+        }
     }
 
     public function afterAnswerInsert($event)
@@ -61,6 +77,11 @@ class AnswerBehavior extends Behavior
     {
     }
 
+    public function dealWithCheckWhetherHasAnswered()
+    {
+
+    }
+
     public function dealWithUpdateQuestionActiveTime()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -76,6 +97,7 @@ class AnswerBehavior extends Behavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         Counter::addAnswer($this->owner->create_by);
+        Counter::addQuestionAnswer($this->owner->question_id);
     }
 
     public function dealWithNotification($type)
@@ -116,7 +138,9 @@ class AnswerBehavior extends Behavior
         /* @var $tag_entity TagEntity */
         $tag_entity = Yii::createObject(TagEntity::className());
         $tag_ids = $tag_entity->getTagIdByName($question->tags);
+
         if ($tag_ids) {
+            $tag_ids = is_array($tag_ids) ? $tag_ids : [$tag_ids];
             /* @var $follow_tag_passive_entity FollowTagPassiveEntity */
             $follow_tag_passive_entity = Yii::createObject(FollowTagPassiveEntity::className());
             $result = $follow_tag_passive_entity->addFollowTag(

@@ -18,7 +18,7 @@ use kartik\tabs\TabsX;
 
 <div class="row">
     <div class="col-xs-12 col-md-9 main">
-        <p class="main-title hidden-xs">
+        <p class="main-title hidden-xs mt10">
             今天，你在深圳遇到了什么问题呢？
             <a id="goAsk" href="<?= Url::to(['/question/create']) ?>" class="btn btn-primary">我要提问</a>
         </p>
@@ -28,33 +28,22 @@ use kartik\tabs\TabsX;
 
         $items = [
                 [
-                        'label'       => '<i class="glyphicon glyphicon-home"></i> Home',
-                        'content'     => '$content1',
-                        'active'      => true,
-                        'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=1'])],
+                        'label'   => '<i class="glyphicon glyphicon-home"></i> 最新的',
+                        'content' => $question_latest,
+                        'active'  => true,
+                    //'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=1'])],
                 ],
                 [
-                        'label'       => '<i class="glyphicon glyphicon-user"></i> Profile',
+                        'label'       => '<i class="glyphicon glyphicon-user"></i> 热门的',
                         'content'     => '$content2',
-                        'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=2'])],
+                        'linkOptions' => ['data-url' => Url::to(['/default/fetch-hot'])],
                 ],
                 [
-                        'label' => '<i class="glyphicon glyphicon-list-alt"></i> Dropdown',
-                        'items' => [
-                                [
-                                        'label'       => '<i class="glyphicon glyphicon-chevron-right"></i> Option 1',
-                                        'encode'      => false,
-                                        'content'     => '$content3',
-                                        'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=3'])],
-                                ],
-                                [
-                                        'label'       => '<i class="glyphicon glyphicon-chevron-right"></i> Option 2',
-                                        'encode'      => false,
-                                        'content'     => '$content4',
-                                        'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=4'])],
-                                ],
-                        ],
+                        'label'       => '<i class="glyphicon glyphicon-user"></i> 未回答',
+                        'content'     => '$content2',
+                        'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
                 ],
+
         ];
         // Ajax Tabs Above
         echo TabsX::widget(
@@ -64,105 +53,8 @@ use kartik\tabs\TabsX;
                         'encodeLabels' => false,
                 ]
         );
-
-
         ?>
 
-
-        <ul class="nav nav-tabs nav-tabs-zen mb10">
-            <li class="active"><a href="/questions/newest">最新的</a></li>
-            <li><a href="/questions/hottest">热门的</a></li>
-            <li><a href="/questions/unanswered">未回答</a></li>
-        </ul>
-
-        <div class="stream-list question-stream">
-            <section class="stream-list__item">
-                <div class="qa-rank">
-                    <div class="votes hidden-xs">
-                        0
-                        <small>投票</small>
-                    </div>
-                    <div class="answers">
-                        0
-                        <small>回答</small>
-                    </div>
-                    <div class="views hidden-xs">
-                        1
-                        <small>浏览</small>
-                    </div>
-                </div>
-                <div class="summary">
-                    <ul class="author list-inline">
-                        <li>
-                            <a href="/u/Woody">Woody</a>
-                            <span class="split"></span>
-                            <a href="/q/1010000003798861" class="askDate" data-created="1443361045">刚刚提问</a>
-                        </li>
-                    </ul>
-                    <h2 class="title"><a href="/q/1010000003798861">Xcode7上传archive的时候报Invalid Bundle的错误。</a>
-                    </h2>
-                    <ul class="taglist--inline ib">
-                        <li class="tagPopup"><a class="tag tag-sm" href="/t/ios" data-toggle="popover"
-                                                data-original-title="ios" data-id="1040000000089442">ios</a>
-                        </li>
-                        <li class="tagPopup"><a class="tag tag-sm" href="/t/xcode7" data-toggle="popover"
-                                                data-original-title="xcode7"
-                                                data-id="1040000002959191">xcode7</a></li>
-                        <li class="tagPopup"><a class="tag tag-sm" href="/t/ios9" data-toggle="popover"
-                                                data-original-title="ios9" data-id="1040000002988972">ios9</a>
-                        </li>
-                    </ul>
-                </div>
-            </section>
-
-            <section class="stream-list__item">
-                <div class="qa-rank">
-                    <div class="votes hidden-xs">
-                        0
-                        <small>投票</small>
-                    </div>
-                    <div class="answers">
-                        0
-                        <small>回答</small>
-                    </div>
-                    <div class="views hidden-xs">
-                        7
-                        <small>浏览</small>
-                    </div>
-                </div>
-                <div class="summary">
-                    <ul class="author list-inline">
-                        <li>
-                            <a href="/u/Woody">Woody</a>
-                            <span class="split"></span>
-                            <a href="/q/1010000003798842" class="askDate" data-created="1443360684">6 分钟前提问</a>
-                        </li>
-                    </ul>
-                    <h2 class="title"><a href="/q/1010000003798842">用Xcode7上传archive的时候报unexpected
-                                                                    CFBundleExecutable Key的错误。</a></h2>
-                    <ul class="taglist--inline ib">
-                        <li class="tagPopup"><a class="tag tag-sm" href="/t/xcode7" data-toggle="popover"
-                                                data-original-title="xcode7"
-                                                data-id="1040000002959191">xcode7</a></li>
-                        <li class="tagPopup"><a class="tag tag-sm" href="/t/ios" data-toggle="popover"
-                                                data-original-title="ios" data-id="1040000000089442">ios</a>
-                        </li>
-                        <li class="tagPopup"><a class="tag tag-sm" href="/t/ios9" data-toggle="popover"
-                                                data-original-title="ios9" data-id="1040000002988972">ios9</a>
-                        </li>
-                        <li class="tagPopup"><a class="tag tag-sm"
-                                                href="/t/qq%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95"
-                                                data-toggle="popover" data-original-title="qq第三方登录"
-                                                data-id="1040000002704172">qq第三方登录</a></li>
-                        <li class="tagPopup"><a class="tag tag-sm" href="/t/qq%E7%99%BB%E5%BD%95"
-                                                data-toggle="popover" data-original-title="qq登录"
-                                                data-id="1040000000519011">qq登录</a></li>
-                    </ul>
-                </div>
-            </section>
-
-
-        </div>
         <!-- /.stream-list -->
 
         <div class="text-center">

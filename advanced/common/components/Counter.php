@@ -11,6 +11,7 @@ namespace common\components;
 
 use common\entities\FavoriteEntity;
 use common\entities\PrivateMessageEntity;
+use common\entities\QuestionEntity;
 use common\entities\UserProfileEntity;
 use common\exceptions\ParamsInvalidException;
 use Yii;
@@ -24,6 +25,7 @@ class Counter extends Object
     private $field; #修改的属性
     private $value; #修改的值
     private $priority; #优先级, true 立马执行　false 队列
+
     private static $instance;
     
     public static function viewPersonalHomePage($user_id)
@@ -34,28 +36,28 @@ class Counter extends Object
         )->execute();
     }
 
-    public static function beFollowUser($user_id, $value = 1)
+    public static function beFollowUser($user_id, $multiple = 1)
     {
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_be_follow',
-            $value
-        )->execute();
+            1
+        )->multiple($multiple)->execute();
     }
 
-    public static function cancelBeFollowUser($user_id, $value = -1)
+    public static function cancelBeFollowUser($user_id, $multiple = 1)
     {
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_be_follow',
-            $value
-        )->execute();
+            -1
+        )->multiple($multiple)->execute();
     }
 
-    public static function followUser($user_id, $value = 1)
+    public static function followUser($user_id, $multiple = 1)
     {
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_follow_user',
-            $value
-        )->execute();
+            1
+        )->multiple($multiple)->execute();
     }
 
     public static function cancelFollowUser($user_id)
@@ -66,12 +68,12 @@ class Counter extends Object
         )->execute();
     }
 
-    public static function followTag($user_id, $value = 1)
+    public static function followTag($user_id, $multiple = 1)
     {
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_follow_tag',
-            $value
-        )->execute();
+            1
+        )->multiple($multiple)->execute();
     }
 
     public static function cancelFollowTag($user_id)
@@ -110,6 +112,63 @@ class Counter extends Object
     {
         return self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
             'count_question',
+            -1
+        )->execute();
+    }
+
+
+    public static function addQuestionView($question_id)
+    {
+        return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_views',
+            1
+        )->execute();
+    }
+
+    public static function addQuestionAnswer($question_id)
+    {
+        return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_answer',
+            1
+        )->execute();
+    }
+
+    public static function deleteQuestionAnswer($question_id)
+    {
+        return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_answer',
+            -1
+        )->execute();
+    }
+
+    public static function addQuestionFavorite($question_id)
+    {
+        return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_favorite',
+            1
+        )->execute();
+    }
+
+    public static function cancelQuestionFavorite($question_id)
+    {
+        return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_favorite',
+            -1
+        )->execute();
+    }
+
+    public static function addQuestionFollow($question_id)
+    {
+        return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_follow',
+            1
+        )->execute();
+    }
+
+    public static function cancelQuestionFollow($question_id)
+    {
+        return self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_follow',
             -1
         )->execute();
     }
@@ -217,6 +276,15 @@ class Counter extends Object
         return $this;
     }
 
+    public function multiple($multiple)
+    {
+        if ($multiple > 1) {
+            $this->value = $this->value * $multiple;
+        }
+
+        return $this;
+    }
+
     public function priority($priority = true)
     {
         $this->priority = $priority;
@@ -295,6 +363,8 @@ class Counter extends Object
             $primary_key_name
         );
         $db = Yii::$app->db;
+
+        //print_r($db->schema);exit;
         $command = $db->createCommand(
             $sql,
             [
@@ -352,12 +422,13 @@ class Counter extends Object
 
     public static function getSet()
     {
-        return Yii::$app->redis->SMEMBERS(REDIS_KEY_COUNTER_SET);
+        return Yii::$app->redis->SMEMBERS([REDIS_KEY_COUNTER_SET]);
     }
 
     private static function addSet($table)
     {
-        return Yii::$app->redis->sAdd(REDIS_KEY_COUNTER_SET, $table);;
+        return Yii::$app->redis->sAdd([REDIS_KEY_COUNTER_SET], $table);;
     }
-    
+
+
 }

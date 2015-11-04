@@ -4,8 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0fa520b3febbdebb71c00ca3c7e98d4c",
-    "content-hash": "c8af688039bbf6b762277e21f75d0f9e",
+    "hash": "d86baba35ee8c8df8e4f9509544048ad",
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
@@ -1651,16 +1650,16 @@
         },
         {
             "name": "components/flag-icon-css",
-            "version": "0.8.2",
+            "version": "0.8.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lipis/flag-icon-css.git",
-                "reference": "63b89f891914b589d12c6e71989a0eb54d35a7a3"
+                "reference": "ee0f8d5bdfdcd75b2fe1db21e4486b18c250b227"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lipis/flag-icon-css/zipball/63b89f891914b589d12c6e71989a0eb54d35a7a3",
-                "reference": "63b89f891914b589d12c6e71989a0eb54d35a7a3",
+                "url": "https://api.github.com/repos/lipis/flag-icon-css/zipball/ee0f8d5bdfdcd75b2fe1db21e4486b18c250b227",
+                "reference": "ee0f8d5bdfdcd75b2fe1db21e4486b18c250b227",
                 "shasum": ""
             },
             "type": "component",
@@ -1685,7 +1684,7 @@
                 }
             ],
             "description": "CSS for vector based country flags",
-            "time": "2015-09-05 08:34:56"
+            "time": "2015-10-27 15:07:00"
         },
         {
             "name": "crazydb/yii2-ueditor",
@@ -2331,6 +2330,42 @@
             "time": "2013-07-10 17:25:36"
         },
         {
+            "name": "jakeasmith/http_build_url",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jakeasmith/http_build_url.git",
+                "reference": "15bdd686e5178ddfa3e88de60fa585adffb292bb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jakeasmith/http_build_url/zipball/15bdd686e5178ddfa3e88de60fa585adffb292bb",
+                "reference": "15bdd686e5178ddfa3e88de60fa585adffb292bb",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/http_build_url.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jake A. Smith",
+                    "email": "theman@jakeasmith.com"
+                }
+            ],
+            "description": "Provides functionality for http_build_url() to environments without pecl_http.",
+            "time": "2015-05-06 12:27:20"
+        },
+        {
             "name": "kartik-v/bootstrap-fileinput",
             "version": "v4.2.7",
             "source": {
@@ -2548,6 +2583,54 @@
                 "select"
             ],
             "time": "2015-07-14 09:54:25"
+        },
+        {
+            "name": "kartik-v/yii2-editable",
+            "version": "v1.7.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-editable.git",
+                "reference": "bbbe10218d1539c31f1628e86ee889a27629e3f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-editable/zipball/bbbe10218d1539c31f1628e86ee889a27629e3f5",
+                "reference": "bbbe10218d1539c31f1628e86ee889a27629e3f5",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/yii2-krajee-base": "~1.7",
+                "kartik-v/yii2-popover-x": "~1.3"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\editable\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "An enhanced editable widget for Yii 2.0 that allows easy editing of displayed data with numerous configuration possibilities.",
+            "homepage": "https://github.com/kartik-v/yii2-editable",
+            "keywords": [
+                "bootstrap",
+                "editable",
+                "input",
+                "jquery",
+                "popover",
+                "popover-x",
+                "widget"
+            ],
+            "time": "2015-07-01 16:46:53"
         },
         {
             "name": "kartik-v/yii2-grid",
@@ -2785,16 +2868,16 @@
         },
         {
             "name": "kartik-v/yii2-widget-activeform",
-            "version": "v1.4.5",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-activeform.git",
-                "reference": "076f49747309f30658085eb008276ecd3370b151"
+                "reference": "1ccb21990894bf99cac2ab58605055b40ed18a7b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-activeform/zipball/076f49747309f30658085eb008276ecd3370b151",
-                "reference": "076f49747309f30658085eb008276ecd3370b151",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-activeform/zipball/1ccb21990894bf99cac2ab58605055b40ed18a7b",
+                "reference": "1ccb21990894bf99cac2ab58605055b40ed18a7b",
                 "shasum": ""
             },
             "require": {
@@ -2828,7 +2911,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-10-22 14:36:24"
+            "time": "2015-11-01 10:14:48"
         },
         {
             "name": "kartik-v/yii2-widget-affix",
@@ -3127,16 +3210,16 @@
         },
         {
             "name": "kartik-v/yii2-widget-fileinput",
-            "version": "v1.0.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-fileinput.git",
-                "reference": "bfed1b4201cc5fb3ac11563e1269f0ca64071e0b"
+                "reference": "084447f095888ddb09a95a1a363842ca87e01c9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-fileinput/zipball/bfed1b4201cc5fb3ac11563e1269f0ca64071e0b",
-                "reference": "bfed1b4201cc5fb3ac11563e1269f0ca64071e0b",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-fileinput/zipball/084447f095888ddb09a95a1a363842ca87e01c9d",
+                "reference": "084447f095888ddb09a95a1a363842ca87e01c9d",
                 "shasum": ""
             },
             "require": {
@@ -3173,7 +3256,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-06-26 20:23:24"
+            "time": "2015-08-17 13:03:50"
         },
         {
             "name": "kartik-v/yii2-widget-growl",
@@ -3858,7 +3941,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nemmo/yii2-attachments/zipball/fb117b083324f3f60ac6a2a50469a72e6aa8340a",
+                "url": "https://api.github.com/repos/Nemmo/yii2-attachments/zipball/efd598c4359415ba3ab7858eeb0b4e55e52016fa",
                 "reference": "fb117b083324f3f60ac6a2a50469a72e6aa8340a",
                 "shasum": ""
             },
@@ -3893,6 +3976,49 @@
                 "yii2"
             ],
             "time": "2015-08-17 08:02:41"
+        },
+        {
+            "name": "php-imap/php-imap",
+            "version": "2.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barbushin/php-imap.git",
+                "reference": "cc1a49a3f68090db182183c59ffbc09055d59f5b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/cc1a49a3f68090db182183c59ffbc09055d59f5b",
+                "reference": "cc1a49a3f68090db182183c59ffbc09055d59f5b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PhpImap": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Barbushin",
+                    "email": "barbushin@gmail.com",
+                    "homepage": "http://linkedin.com/in/barbushin"
+                }
+            ],
+            "description": "PHP class to access mailbox by POP3/IMAP/NNTP using IMAP extension",
+            "homepage": "https://github.com/barbushin/php-imap",
+            "keywords": [
+                "imap",
+                "mail",
+                "php"
+            ],
+            "time": "2015-09-16 07:40:39"
         },
         {
             "name": "prawee/yii2-adminlte-theme",
@@ -4117,23 +4243,20 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.7.5",
+            "version": "v2.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770"
+                "reference": "eca9019c88fbe250164affd107bc8057771f3f4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
-                "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/eca9019c88fbe250164affd107bc8057771f3f4d",
+                "reference": "eca9019c88fbe250164affd107bc8057771f3f4d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
@@ -4162,7 +4285,56 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2015-09-14 14:14:09"
+            "time": "2015-10-11 09:39:48"
+        },
+        {
+            "name": "tedivm/fetch",
+            "version": "v0.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tedious/Fetch.git",
+                "reference": "154a84fdfa0d045c2871dd9f8708362fb9ea4acf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tedious/Fetch/zipball/154a84fdfa0d045c2871dd9f8708362fb9ea4acf",
+                "reference": "154a84fdfa0d045c2871dd9f8708362fb9ea4acf",
+                "shasum": ""
+            },
+            "require": {
+                "ext-imap": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "fabpot/php-cs-fixer": "0.5.*",
+                "phpunit/phpunit": "4.2.*",
+                "satooshi/php-coveralls": "dev-master",
+                "tedivm/dovecottesting": "1.2.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Fetch": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Robert Hafner",
+                    "email": "tedivm@tedivm.com"
+                }
+            ],
+            "description": "A PHP IMAP Library",
+            "homepage": "http://github.com/tedious/Fetch",
+            "keywords": [
+                "email",
+                "imap",
+                "pop3"
+            ],
+            "time": "2015-01-08 03:22:20"
         },
         {
             "name": "thamtech/yii2-uuid",
@@ -4208,6 +4380,54 @@
                 "yii2"
             ],
             "time": "2015-10-08 23:22:24"
+        },
+        {
+            "name": "trntv/yii2-file-kit",
+            "version": "0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/trntv/yii2-file-kit.git",
+                "reference": "37c10c8856d589869c3777bd34741d14d8aa2afc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/trntv/yii2-file-kit/zipball/37c10c8856d589869c3777bd34741d14d8aa2afc",
+                "reference": "37c10c8856d589869c3777bd34741d14d8aa2afc",
+                "shasum": ""
+            },
+            "require": {
+                "jakeasmith/http_build_url": "*",
+                "yiisoft/yii2": "*",
+                "yiisoft/yii2-jui": "*"
+            },
+            "suggest": {
+                "ext-http": "HTTP PHP Extension"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "asset-installer-paths": {
+                    "npm-asset-library": "vendor/npm",
+                    "bower-asset-library": "vendor/bower"
+                },
+                "bootstrap": "trntv\\filekit\\storage\\FileStorage"
+            },
+            "autoload": {
+                "psr-4": {
+                    "trntv\\filekit\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Eugine Terentev",
+                    "email": "eugine@terentev.net"
+                }
+            ],
+            "description": "Yii2 file upload and storage kit",
+            "time": "2015-01-13 14:40:00"
         },
         {
             "name": "vova07/yii2-imperavi-widget",
@@ -4959,16 +5179,16 @@
         },
         {
             "name": "linslin/yii2-curl",
-            "version": "1.0.4",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/linslin/Yii2-Curl.git",
-                "reference": "e54f6e575a256bf378252dc84614f3b032c838e5"
+                "reference": "c5b574fa4a3c685642e0f67ac02a9f089abd5f30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/linslin/Yii2-Curl/zipball/e54f6e575a256bf378252dc84614f3b032c838e5",
-                "reference": "e54f6e575a256bf378252dc84614f3b032c838e5",
+                "url": "https://api.github.com/repos/linslin/Yii2-Curl/zipball/c5b574fa4a3c685642e0f67ac02a9f089abd5f30",
+                "reference": "c5b574fa4a3c685642e0f67ac02a9f089abd5f30",
                 "shasum": ""
             },
             "require": {
@@ -4998,7 +5218,7 @@
                 "restful",
                 "yii2"
             ],
-            "time": "2015-05-07 08:21:26"
+            "time": "2015-10-27 12:02:48"
         },
         {
             "name": "phpspec/php-diff",
@@ -5236,6 +5456,8 @@
         "kop/yii2-scroll-pager": 20,
         "kartik-v/bootstrap-tabs-x": 20,
         "kartik-v/yii2-widget-depdrop": 20,
+        "kartik-v/yii2-widget-fileinput": 20,
+        "kartik-v/yii2-widget-activeform": 20,
         "nemmo/yii2-attachments": 20,
         "prawee/yii2-adminlte-theme": 20
     },

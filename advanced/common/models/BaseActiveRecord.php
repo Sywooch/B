@@ -9,9 +9,17 @@
 namespace common\models;
 
 
-use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use Yii;
 
 class BaseActiveRecord extends ActiveRecord
 {
+    public function afterValidate()
+    {
+        if (parent::afterValidate()) {
+            if ($this->getErrors()) {
+                Yii::error($this->getErrors(), implode('-', ['BaseActiveRecord', $this->tableName()]));
+            }
+        }
+    }
 }

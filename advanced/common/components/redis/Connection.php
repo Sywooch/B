@@ -21,6 +21,7 @@ class Connection extends Component
     #todo 需要设置过期时间的方法，此方法有待完善
     public $need_set_expire_command = [
         'SET',
+        'SADD',
         'HSET',
         'LSET',
     ];
@@ -172,7 +173,9 @@ class Connection extends Component
 
         #判断第一个参数是否为数组格式，数组格式则为 prefix:array[0]:array[1]，否则为 prefix:array
         if (empty($params[0]) || !is_array($params[0])) {
-            throw new Exception('Redis参数1不得为空，且为数组格式:[category, id]!');
+            throw new Exception('redis 参数1不得为空，数组格式:[category, id]');
+        } elseif (count($params[0]) == 1) {
+            $params[0] = array_merge($params[0], ['']);
         }
 
         list($cache_category, $cache_id) = $params[0];

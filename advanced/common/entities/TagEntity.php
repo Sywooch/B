@@ -5,6 +5,7 @@ namespace common\entities;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TagBehavior;
 use common\behaviors\TimestampBehavior;
+use common\components\Error;
 use common\exceptions\ParamsInvalidException;
 use common\models\FollowTag;
 use common\models\TagQuery;
@@ -93,12 +94,13 @@ class TagEntity extends Tag
      * @param       $user_id
      * @param       $question_id
      * @param array $tag_ids
+     * @return bool
      * @throws ParamsInvalidException
      */
     public function addQuestionTag($user_id, $question_id, array $tag_ids)
     {
         if (empty($user_id) || empty($question_id) || empty($tag_ids)) {
-            throw new ParamsInvalidException(['user_id', 'question_id', 'tag_ids']);
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id,tag_ids']);
         }
 
         $data = [];

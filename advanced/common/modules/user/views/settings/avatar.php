@@ -6,6 +6,7 @@
  * @Last Modified time: 2015-01-30 22:56:49
  */
 
+use common\helpers\TemplateHelper;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use bupy7\cropbox\Cropbox;
@@ -29,9 +30,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'options' => ['enctype' => 'multipart/form-data'],
                         ]
                 ); ?>
-                <?= Html::img($model->user->getAvatar(200, true)); ?>
-                <?= Html::img($model->user->getAvatar(50, true)); ?>
-                <?= Html::img($model->user->getAvatar(24, true)); ?>
+                <?= TemplateHelper::showUserAvatar($model->user->id, 200, false); ?>
+                <?= TemplateHelper::showUserAvatar($model->user->id, 50, false); ?>
+                <?= TemplateHelper::showUserAvatar($model->user->id, 24, false); ?>
                 <br>
                 <br>
                 <?= $form->field($model, 'avatar')->fileInput(); ?>
