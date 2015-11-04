@@ -82,7 +82,7 @@
     "crazydb/yii2-ueditor": "*",
 
     "fedemotta/yii2-cronjob": "*",
-    
+
     "php-imap/php-imap": "~2.0"
 
   },

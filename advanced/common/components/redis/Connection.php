@@ -46,11 +46,10 @@ class Connection extends Component
     /**
      * 修饰缓存KEY
      * @param      $cache_category
-     * @param      $id
      * @param null $cache_id
      * @return string
      */
-    public function buildCallParams($cache_category, $id, $cache_id = null)
+    private function buildCallParams($cache_category, $cache_id = null)
     {
 
         #例如　mget(),第一个参数为数组
@@ -85,7 +84,7 @@ class Connection extends Component
         } else {
             #非数组
             if ($this->prefix) {
-                $this->params[0] = implode(':', [$this->prefix, $id]);
+                $this->params[0] = implode(':', [$this->prefix, $cache_category]);
             }
 
             if ($cache_id) {
@@ -107,14 +106,10 @@ class Connection extends Component
         }
     }
 
-    public function getCacheConfig($key)
+    private function getCacheConfig($key)
     {
         if (!isset($this->config[$key]['server'])) {
             throw new Exception("当前key：{$key} 的server项未配置。");
-        }
-
-        if (!isset($this->config[$key]['key'])) {
-            throw new Exception("当前key：{$key} 的key项未配置。");
         }
 
         if (!isset($this->config[$key]['expire'])) {
@@ -189,7 +184,7 @@ class Connection extends Component
         $this->createInstance($config);
 
         #建立请求参数
-        $this->buildCallParams($cache_category, $config['key'], $cache_id);
+        $this->buildCallParams($cache_category, $cache_id);
 
         #执行动作
         $result = call_user_func_array([self::$instance[$this->instance_key], $action], $this->params);
