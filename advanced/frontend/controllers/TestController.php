@@ -302,5 +302,10 @@ class TestController extends BaseController
 
 
     }
+
+    public function actionError()
+    {
+        Yii::error('abc', 'log');
+    }
 }
 

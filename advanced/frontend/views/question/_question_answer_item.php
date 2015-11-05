@@ -6,6 +6,7 @@
  * Time: 13:09
  */
 use common\helpers\TemplateHelper;
+use yii\helpers\Html;
 use yii\widgets\LinkPager;
 
 //print_r($data);exit;
@@ -16,13 +17,13 @@ use yii\widgets\LinkPager;
                 'clientOptions' => [
                         'container' => 'pjax-container',
                 ],
-            'options' => [
-                'id' => 'answer_item_area'
-            ]
+                'options'       => [
+                        'id' => 'answer_item_area',
+                ],
         ]
 ); ?>
 <?php foreach ($data as $item): ?>
-    <article class="clearfix widget-answers__item" id="a-1020000003903993">
+    <article class="clearfix widget-answers__item">
         <div class="post-col">
             <div class="widget-vote">
                 <button type="button"
@@ -68,7 +69,14 @@ use yii\widgets\LinkPager;
             <div class="post-opt">
                 <ul class="list-inline mb0">
 
-                    <li><a href="/q/1010000003903942/a-1020000003903993">链接</a></li>
+                    <li><?= Html::a(
+                                '链接',
+                                [
+                                        'question/answer',
+                                        'question_id' => $question_id,
+                                        'answer_id'   => $item['id'],
+                                ]
+                        ) ?></li>
                     <li><a href="javascript:void(0);"
                            class="comments"
                            data-id="1020000003903993"

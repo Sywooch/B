@@ -215,9 +215,7 @@ class QuestionEntity extends Question
         if (!$cache_data) {
             $model = self::find()->where(
                 ['status' => $this->getAllowShowStatus($is_spider)]
-            )->andWhere(
-                'count_answer>0'
-            )->orderBy('create_at DESC')->limit($limit)->asArray()->all();
+            )->andWhere('count_answer>=0')->orderBy('create_at DESC')->limit($limit)->asArray()->all();
             $cache_data = $model;
             Yii::$app->redis->set([REDIS_KEY_QUESTION, 'HOT'], $cache_data);
         }
@@ -263,7 +261,7 @@ class QuestionEntity extends Question
                     ':create_at' => time() - $period * 86400,
                 ]
             )->andWhere(
-                'count_answer>0'
+                'count_answer=0'
             )->orderBy('count_views DESC')->limit($limit)->asArray()->all();
 
             $cache_data = $model;

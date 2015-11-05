@@ -22,6 +22,8 @@ class PerformanceRecordController extends Controller
 
     public function __construct($id, $module, $config = [])
     {
+        Yii::$app->log->setTraceLevel(0);
+
         self::$time_record = [];
         $this->start_time = microtime(true);
         parent::__construct($id, $module, $config);
@@ -95,7 +97,7 @@ class PerformanceRecordController extends Controller
             )
         );
         
-        Yii::info($timeRec, "Performance");
+        Yii::trace($timeRec, "Performance");
     }
     
     /**

@@ -37,9 +37,14 @@ class TemplateHelper
         return $result;
     }
 
-    public static function showUserAvatar($user_id, $size = 24, $link = true, $anonymity =  AnswerEntity::STATUS_UNANONYMOUS)
-    {
-        if ($anonymity == AnswerEntity::STATUS_UNANONYMOUS) {
+    public static function showUserAvatar(
+        $user_id,
+        $size = 24,
+        $link = true,
+        $anonymity = AnswerEntity::STATUS_UNANONYMOUS
+    ) {
+        //不匿名或当前用户是登陆用户
+        if ($anonymity == AnswerEntity::STATUS_UNANONYMOUS || $user_id == Yii::$app->user->id) {
             /* @var $user_entity UserEntity */
             $user_entity = Yii::createObject(UserEntity::className());
 

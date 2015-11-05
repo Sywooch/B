@@ -86,18 +86,28 @@ return [
         ],
         #日志设置
         'log'       => [
-            'traceLevel' => YII_DEBUG ? false : 0,
+            'traceLevel' => YII_DEBUG ? 0 : 3,
             'targets'    => [
-                [
+                'file'        => [
                     'class'       => 'yii\log\FileTarget',
                     'levels'      => [
-                        'error',
                         'warning',
+                        'error',
                     ],
                     'maxLogFiles' => 20,
                     'logVars'     => [],
                 ],
-                [
+                'email'       => [
+                    'class'   => 'common\components\EmailTarget',
+                    'levels'  => ['error'],
+                    'mailer'  => 'mailer',
+                    'message' => [
+                        'from'    => ['admin@bo-u.cn'],
+                        'to'      => ['6202551@qq.com'],
+                        'subject' => 'Log message',
+                    ],
+                ],
+                'trace'       => [
                     'class'       => 'yii\log\FileTarget',
                     'levels'      => ['trace'],
                     'maxLogFiles' => 20,
@@ -110,22 +120,15 @@ return [
                         'counter',
                         'updater',
                         'redis',
+                        'log',
                     ],
                     'logFile'     => '@app/runtime/logs/trace_' . date('Y-m-d') . '.log',
                     'maxFileSize' => 1024 * 2,
                     'logVars'     => [],
                 ],
-                [
+                'performance' => [
                     'class'       => 'yii\log\FileTarget',
-                    'levels'      => ['error'],
-                    'maxLogFiles' => 20,
-                    'logFile'     => '@app/runtime/logs/error_' . date('Y-m-d') . '.log',
-                    'maxFileSize' => 1024 * 2,
-                    'logVars'     => [],
-                ],
-                [
-                    'class'       => 'yii\log\FileTarget',
-                    'levels'      => ['trace', 'info'],
+                    'levels'      => ['trace'],
                     'maxLogFiles' => 20,
                     'categories'  => ['Performance'],
                     'logFile'     => '@app/runtime/logs/performance_' . date('Y-m-d') . '.log',

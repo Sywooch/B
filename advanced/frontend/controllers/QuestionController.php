@@ -99,6 +99,7 @@ class QuestionController extends BaseController
                 'answer_item_html' => $this->renderPartial(
                     '_question_answer_item',
                     [
+                        'question_id'  => $id,
                         'data'  => $answer_data,
                         'pages' => $pages,
                     ]

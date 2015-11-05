@@ -49,31 +49,32 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
     public function addQuestion($event_content)
     {
         $allow_cancel = false;
-        $this->addEvent(self::QUESTION_ADD, $event_content, $allow_cancel);
+
+        return $this->addEvent(self::QUESTION_ADD, $event_content, $allow_cancel);
     }
 
     public function modifyQuestionSubject($event_content)
     {
         $allow_cancel = true;
-        $this->addEvent(self::QUESTION_MODIFY_SUBJECT, $event_content, $allow_cancel);
+        return $this->addEvent(self::QUESTION_MODIFY_SUBJECT, $event_content, $allow_cancel);
     }
 
     public function modifyQuestionContent($event_content)
     {
         $allow_cancel = true;
-        $this->addEvent(self::QUESTION_MODIFY_CONTENT, $event_content, $allow_cancel);
+        return $this->addEvent(self::QUESTION_MODIFY_CONTENT, $event_content, $allow_cancel);
     }
 
     public function addQuestionRedirect($event_content)
     {
         $allow_cancel = true;
-        $this->addEvent(self::QUESTION_ADD_REDIRECT, $event_content, $allow_cancel);
+        return $this->addEvent(self::QUESTION_ADD_REDIRECT, $event_content, $allow_cancel);
     }
 
     public function modifyQuestionRedirect($event_content)
     {
         $allow_cancel = false;
-        $this->addEvent(self::QUESTION_MODIFY_REDIRECT, $event_content, $allow_cancel);
+        return $this->addEvent(self::QUESTION_MODIFY_REDIRECT, $event_content, $allow_cancel);
     }
 
     public function addTag(array $tags)
@@ -82,6 +83,7 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
         foreach ($tags as $tag) {
             $this->addEvent(self::QUESTION_ADD_TAG, $tag, $allow_cancel);
         }
+        return true;
     }
 
     public function removeTag(array $tags)
@@ -90,6 +92,8 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
         foreach ($tags as $tag) {
             $this->addEvent(self::QUESTION_REMOVE_TAG, $tag, $allow_cancel);
         }
+
+        return true;
     }
 
     private function addEvent($event_type, $event_content, $allow_cancel, $reason = null)

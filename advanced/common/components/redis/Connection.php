@@ -124,7 +124,6 @@ class Connection extends Component
 
     public function createInstance($config)
     {
-
         if (empty($config['server']['hostname']) || empty($config['server']['port'])) {
             throw new Exception("找不到key {$config['name']}的redis的配置信息!");
         }
@@ -132,11 +131,33 @@ class Connection extends Component
         #创建instance key
         $this->instance_key = md5($config['server']['hostname'] . ':' . $config['server']['port']);
 
-        if (!isset(self::$instance[$this->instance_key])) {
+
+        if (self::$instance[$this->instance_key] === null) {
 
             $redis = new \Redis();
             if (!$redis->connect($config['server']['hostname'], $config['server']['port'], 1)) {
-                throw new Exception('redis实例连接失败!');
+                if (!YII_DEBUG) {
+                    throw new Exception(
+                        sprintf(
+                            'redis实例[%s:%d]连接失败!',
+                            $config['server']['hostname'],
+                            $config['server']['port']
+                        )
+                    );
+                } else {
+                    self::$instance[$this->instance_key] = false;
+
+                    Yii::error(
+                        sprintf(
+                            'redis实例[%s:%d]连接失败!',
+                            $config['server']['hostname'],
+                            $config['server']['port']
+                        ),
+                        'redis'
+                    );
+
+                    return false;
+                }
             }
 
             if (!empty($config['server']['auth'])) {
@@ -152,6 +173,8 @@ class Connection extends Component
 
             self::$instance[$this->instance_key] = $redis;
         }
+
+        return true;
     }
 
     /**
@@ -163,7 +186,7 @@ class Connection extends Component
      */
     public function __call($action, $params)
     {
-        Yii::trace(sprintf('Begin Reids Call: %s', $action), 'redis');
+        Yii::trace(sprintf('---------- Begin Reids Call: %s, Params in below', $action), 'redis');
         Yii::trace($params, 'redis');
 
         #判断第一个参数是否为数组格式，数组格式则为 prefix:array[0]:array[1]，否则为 prefix:array
@@ -180,21 +203,24 @@ class Connection extends Component
         #获取单项缓存配置
         $config = $this->getCacheConfig($cache_category);
 
+
         #创建实例
-        $this->createInstance($config);
+        if ($this->createInstance($config)) {
+            #建立请求参数
+            $this->buildCallParams($cache_category, $cache_id);
 
-        #建立请求参数
-        $this->buildCallParams($cache_category, $cache_id);
+            #执行动作
+            $result = call_user_func_array([self::$instance[$this->instance_key], $action], $this->params);
 
-        #执行动作
-        $result = call_user_func_array([self::$instance[$this->instance_key], $action], $this->params);
+            #设置缓存时间
+            $this->buildCacheKeyExpire($action, $config['expire']);
 
-        #设置缓存时间
-        $this->buildCacheKeyExpire($action, $config['expire']);
+            Yii::trace(sprintf('++++++++++ End Reids Call Result: %s', $result), 'redis');
 
-        Yii::trace($result, 'redis');
-
-        return $result;
+            return $result;
+        } else {
+            return null;
+        }
     }
 
 

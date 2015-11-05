@@ -78,6 +78,7 @@ class AnswerController extends BaseController
                 'answer_item' => $this->renderPartial(
                     '/question/_question_answer_item',
                     [
+                        'question_id' => $question_id,
                         'data'  => [$model->getAttributes()],
                         'pages' => null,
                     ]
@@ -92,7 +93,7 @@ class AnswerController extends BaseController
             ];
             $result = Error::get($data);
         } else {
-            $result =m Error::get($model->getErrors());
+            $result = Error::get($model->getErrors());
         }
 
         $this->jsonOut($result);

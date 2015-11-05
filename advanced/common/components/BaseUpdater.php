@@ -81,10 +81,14 @@ class BaseUpdater extends Object
 
         #priority = true 为马上执行
         if ($this->priority) {
-            return $this->immediately();
+            $result =  $this->immediately();
         } else {
-            return $this->simpleQueue();
+            $result =  $this->simpleQueue();
         }
+
+        Yii::trace(sprintf('Updater Result %s', var_export($result, true)), 'counter');
+
+        return $result;
     }
 
     public function test()

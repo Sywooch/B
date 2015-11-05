@@ -111,7 +111,7 @@ class QuestionBehavior extends BaseBehavior
         }
         
         $result = $questionEventHistoryEntity->addQuestion($event_content);
-        Yii::trace(sprintf('Add Question Event History: %s', $result), 'behavior');
+        Yii::trace(sprintf('Add Question Event History: %s', var_export($result, true)), 'behavior');
         
         return $result;
     }
@@ -121,17 +121,19 @@ class QuestionBehavior extends BaseBehavior
      */
     public function dealWithAddFollowQuestion()
     {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
         /* @var $model FollowQuestionEntity */
         $model = Yii::createObject(FollowQuestionEntity::className());
         $result = $model->addFollow($this->owner->id, $this->owner->create_by);
         
-        Yii::trace(sprintf('Add Question Follow: %s', $result), 'behavior');
+        Yii::trace(sprintf('Add Question Follow: %s', var_export($result, true)), 'behavior');
         
         return $result;
     }
     
     public function dealWithRemoveFollowQuestion()
     {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
         /* @var $model FollowQuestionEntity */
         $model = Yii::createObject(FollowQuestionEntity::className());
         $model->removeFollow($this->owner->id);
@@ -154,7 +156,7 @@ class QuestionBehavior extends BaseBehavior
                 $tag_ids = array_values($tag_relation);
                 $result = $tag_model->addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
                 
-                Yii::trace(sprintf('Add Question Tag Result: %s', $result), 'behavior');
+                Yii::trace(sprintf('Add Question Tag Result: %s', var_export($result, true)), 'behavior');
             }
         }
     }
@@ -338,7 +340,7 @@ class QuestionBehavior extends BaseBehavior
         $favorite_record = Yii::createObject(FavoriteRecordEntity::className());
         $result = $favorite_record->removeFavoriteRecord(FavoriteRecordEntity::TYPE_QUESTION, $this->owner->id);
 
-        Yii::trace(sprintf('Remove Favorite Record Result: %s', $result), 'behavior');
+        Yii::trace(sprintf('Remove Favorite Record Result: %s', var_export($result, true)), 'behavior');
     }
     
 }

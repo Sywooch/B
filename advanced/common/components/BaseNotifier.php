@@ -103,11 +103,13 @@ class BaseNotifier extends Object
         if ($this->filterToUserId()) {
             #priority = true 为马上执行
             if ($this->priority) {
-                $result =  $this->immediately();
+                $result = $this->immediately();
             } else {
-                $result =  $this->simpleQueue();
+                $result = $this->simpleQueue();
             }
-            Yii::trace(sprintf('Notifier Result: %s', $result), 'notifier');
+            Yii::trace(sprintf('Notifier Result: %s', var_export($result, true)), 'notifier');
+
+            return $result;
         }
     }
 

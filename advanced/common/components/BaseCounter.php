@@ -121,7 +121,7 @@ class BaseCounter extends Object
             $result = $this->simpleQueue();
         }
 
-        Yii::trace(sprintf('Counter Result %s', $result), 'counter');
+        Yii::trace(sprintf('Counter Result %s', var_export($result, true)), 'counter');
 
         return $result;
     }
@@ -166,7 +166,7 @@ class BaseCounter extends Object
         if ($command->execute()) {
             return true;
         } else {
-            Yii::trace(sprintf('UPDATE COUNTER FAIL, SQL: %s', $command->getSql()), 'counter');
+            Yii::error(sprintf('UPDATE COUNTER FAIL, SQL: %s', $command->getSql()), 'counter');
 
             return false;
         }
