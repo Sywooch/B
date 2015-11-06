@@ -3,6 +3,13 @@ yuyunjian
 
 邮箱的独立密码：662800yu
 
+QQ邮箱
+imap.qq.com/pop.qq.com
+smtp.qq.com
+
+QQ企业邮箱
+imap.exmail.qq.com/pop.exmail.qq.com
+smtp.exmail.qq.com
 
 QQ互联
 APP ID：101254110
