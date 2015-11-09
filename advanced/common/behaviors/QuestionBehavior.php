@@ -16,9 +16,11 @@ use common\entities\QuestionEntity;
 use common\entities\QuestionEventHistoryEntity;
 use common\entities\TagEntity;
 use common\entities\UserProfileEntity;
+use common\models\xunsearch\Question;
 use common\modules\user\models\Profile;
 use Yii;
 use yii\base\Behavior;
+use yii\base\Exception;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
@@ -342,5 +344,15 @@ class QuestionBehavior extends BaseBehavior
 
         Yii::trace(sprintf('Remove Favorite Record Result: %s', var_export($result, true)), 'behavior');
     }
-    
+
+    public function dealWithXunSearch()
+    {
+        try {
+            $question = new Question();
+            $question->load($this->owner->getAttributes(), '');
+            $question->save();
+        } catch (Exception $e) {
+            Yii::error(__METHOD__, 'xunsearch');
+        }
+    }
 }

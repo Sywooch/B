@@ -20,7 +20,7 @@ class TagController extends BaseController
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
                 ],
@@ -37,33 +37,42 @@ class TagController extends BaseController
         $searchModel = new TagSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        return $this->render(
+            'index',
+            [
+                'searchModel'  => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]
+        );
     }
 
-    /**
-     * ±êÇ©ËÑË÷
-     * @return string
-     */
     public function actionSearch()
     {
-        $searchModel = new TagSearchEntity();
+        $result = [];
 
-        $queryParams = array_merge(Yii::$app->request->queryParams, [
-            'status' => 'Y',
-        ]);
+        if (isset(Yii::$app->request->queryParams['query'])) {
+            $searchModel = new TagSearch();
+            $queryParams = [
+                'name'   => trim(urldecode(Yii::$app->request->queryParams['query']), ' ã€€'),
+                'status' => 'Y',
+            ];
 
-        $dataProvider = $searchModel->search($queryParams);
+            $dataProvider = $searchModel->search($queryParams);
 
 
-        #ajax
-        if (Yii::$app->request->getIsAjax()) {
-            return json_encode(ArrayHelper::getColumn($dataProvider->getModels(), function ($model) {
-                return $model->getAttributes(['name']);
-            }));
+            #ajax
+            if (Yii::$app->request->getIsAjax()) {
+                $result = ArrayHelper::getColumn(
+                    $dataProvider->getModels(),
+                    function ($model) {
+                        return $model->getAttributes(['name']);
+                    }
+                );
+
+            }
         }
+
+        $this->jsonOut($result);
     }
 
     /**
@@ -73,9 +82,12 @@ class TagController extends BaseController
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        return $this->render(
+            'view',
+            [
+                'model' => $this->findModel($id),
+            ]
+        );
     }
 
     /**
@@ -90,9 +102,12 @@ class TagController extends BaseController
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+            return $this->render(
+                'create',
+                [
+                    'model' => $model,
+                ]
+            );
         }
     }
 
@@ -109,9 +124,12 @@ class TagController extends BaseController
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+            return $this->render(
+                'update',
+                [
+                    'model' => $model,
+                ]
+            );
         }
     }
 

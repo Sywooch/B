@@ -3,19 +3,20 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\entities\AnswerEntity */
+/* @var $answer_model common\entities\AnswerEntity */
 
-$this->title = 'Update Answer Entity: ' . ' ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Answer Entities', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = '更新回答: ' . ' ' . $question_model->subject;
+$this->params['breadcrumbs'][] = ['label' => $question_model->subject, 'url' => [
+        'question/view', 'id' => $question_model->id]
+];
+$this->params['breadcrumbs'][] = '更新回答';
 ?>
 <div class="answer-entity-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
+    <?= $this->render(
+            '_form',
+            [
+                    'model' => $answer_model,
+            ]
+    ) ?>
 
 </div>

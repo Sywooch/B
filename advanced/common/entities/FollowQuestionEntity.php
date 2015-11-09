@@ -49,12 +49,13 @@ class FollowQuestionEntity extends FollowQuestion
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
         }
 
-        $follow_question_count = Yii::$app->user->identity->profile->count_follow;
+        $follow_question_count = UserProfileEntity::find()->select('count_follow')->where(
+            ['user_id' => $user_id]
+        )->scalar();
 
         if ($follow_question_count > self::MAX_FOLLOW_NUMBER) {
             return Error::set(Error::TYPE_FOLLOW_QUESTION_FOLLOW_TOO_MUCH_QUESTION, self::MAX_FOLLOW_NUMBER);
         }
-
 
         if (!self::findOne(
             [

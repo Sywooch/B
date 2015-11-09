@@ -12,7 +12,7 @@ namespace console\controllers;
 
 use common\components\Notifier;
 use common\entities\UserEntity;
-use common\models\UserHasQqMail;
+use common\models\UserInteractiveMailLog;
 use fedemotta\cronjob\models\CronJob;
 use Yii;
 use yii\console\Controller;
@@ -95,6 +95,7 @@ class MailerCronJobController extends Controller
     private function deal($mail)
     {
         echo sprintf('开始处理邮件：%s', $mail), PHP_EOL;
+        /* @var $user UserEntity */
         $user = UserEntity::find()->select(['id', 'confirmed_at'])->where(
             ['email' => $mail]
         )->one();
@@ -118,18 +119,18 @@ class MailerCronJobController extends Controller
             }
 
             if (preg_match('/qq\.com/i', $mail, $is_qq_mail)) {
-                $user_has_qq_mail = UserHasQqMail::find()->where(
+                $user_interactive_mail_log = UserInteractiveMailLog::find()->where(
                     [
                         'user_Id' => $user->id,
                     ]
                 )->one();
-                if (!$user_has_qq_mail) {
-                    $user_has_qq_mail = new UserHasQqMail;
-                    $user_has_qq_mail->user_id = $user->id;
+                if (!$user_interactive_mail_log) {
+                    $user_interactive_mail_log = new UserInteractiveMailLog;
+                    $user_interactive_mail_log->user_id = $user->id;
                 }
 
-                $user_has_qq_mail->email = $mail;
-                $result = $user_has_qq_mail->save();
+                $user_interactive_mail_log->email = $mail;
+                $result = $user_interactive_mail_log->save();
 
                 if (!$result) {
                     echo '未成功保存到 user_has_qq_mail', PHP_EOL;

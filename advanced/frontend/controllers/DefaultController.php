@@ -34,9 +34,7 @@ class DefaultController extends BaseController
 
     public function actionIndex()
     {
-        /* @var $questionEntity QuestionEntity */
-        $questionEntity = Yii::createObject(QuestionEntity::className());
-        $data = $questionEntity->fetchLatest(50, ServerHelper::checkIsSpider());
+        $data = QuestionEntity::fetchLatest(30, 0, ServerHelper::checkIsSpider());
         if ($data) {
             $html = $this->renderPartial(
                 'question_item_view',
@@ -58,9 +56,7 @@ class DefaultController extends BaseController
 
     public function actionFetchHot()
     {
-        /* @var $questionEntity QuestionEntity */
-        $questionEntity = Yii::createObject(QuestionEntity::className());
-        $data = $questionEntity->fetchHot(50, ServerHelper::checkIsSpider());
+        $data = QuestionEntity::fetchHot(30, 0, ServerHelper::checkIsSpider());
         if ($data) {
             $html = $this->renderPartial(
                 'question_item_view',
@@ -77,9 +73,7 @@ class DefaultController extends BaseController
 
     public function actionFetchUnAnswer()
     {
-        /* @var $questionEntity QuestionEntity */
-        $questionEntity = Yii::createObject(QuestionEntity::className());
-        $data = $questionEntity->fetchUnAnswer(50, ServerHelper::checkIsSpider());
+        $data = QuestionEntity::fetchUnAnswer(30, 0, ServerHelper::checkIsSpider());
         if ($data) {
             $html = $this->renderPartial(
                 'question_item_view',

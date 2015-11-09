@@ -229,6 +229,17 @@ class TestController extends BaseController
         print_r($result);
     }
 
+    public function actionXunsearch()
+    {
+        echo '<pre />';
+        $question = new Question();
+        //$question->id = 2;
+        //$question->subject = 'abc' . time();
+        //$question->save();
+        $result = $question->findAll([]);
+
+        print_r($result);
+    }
 
     public function actionTest()
     {
@@ -286,19 +297,20 @@ class TestController extends BaseController
 
     public function actionQuestion()
     {
-        $this->setPerformanceRecordAnchor('start question');
+
         /* @var $question QuestionEntity */
         $question = Yii::createObject(QuestionEntity::className());
-        $question->subject = 'testtesttesttesttesttesttest';
+        /*$question->subject = 'testtesttesttesttesttesttest';
         $question->tags = 'aa,bb,cc';
         $question->content = 'testcontent';
-        $this->setPerformanceRecordAnchor('before save question');
         $result = $question->save();
-        $this->setPerformanceRecordAnchor('after save question');
-        $this->setPerformanceRecordAnchor('end question');
         echo '<pre />';
         print_r($question->getErrors());
-        var_dump($result);
+        var_dump($result);*/
+
+        /*$data = $question->fetchLatest(1, true);
+
+        var_dump($data);*/
 
 
     }
@@ -306,6 +318,14 @@ class TestController extends BaseController
     public function actionError()
     {
         Yii::error('abc', 'log');
+    }
+
+    public function actionCws()
+    {
+        $result = Yii::$app->cws->text('红旗Linux是由北京中科红旗软件技术有限公司开发的一系列Linux发行版，包括桌面版、工作站版、数据中心服务器版、HA集群版和红旗嵌入式Linux等产品。目前在中国各软件专卖店可以购买到光盘版，同时官方网站也提供光盘镜像免费下载。红旗Linux是中国较大、较成熟的Linux发行版之一。')->getTops();
+
+        var_dump($result);
+
     }
 }
 

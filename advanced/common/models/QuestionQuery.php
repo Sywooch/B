@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use common\entities\QuestionEntity;
+
 /**
  * This is the ActiveQuery class for [[Question]].
  *
@@ -31,5 +33,51 @@ class QuestionQuery extends \yii\db\ActiveQuery
     public function one($db = null)
     {
         return parent::one($db);
+    }
+
+    public function answered($number = 0)
+    {
+        return $this->andWhere(
+            'count_answer>:number',
+            [
+                ':number' => $number,
+            ]
+        );
+    }
+
+    public function orderByTime($order = 'DESC')
+    {
+        return $this->addOrderBy(sprintf('create_at %s', $order));
+    }
+
+    public function allowShowStatus($is_spider = false)
+    {
+        if ($is_spider) {
+            $status = QuestionEntity::STATUS_DISPLAY_FOR_SPIDER;
+        } else {
+            $status = QuestionEntity::STATUS_DISPLAY;
+        }
+
+        $status = array_filter(explode(',', $status));
+
+        return $this->andWhere(
+            ['status' => $status]
+        );
+
+    }
+    
+    public function recent($period = 7)
+    {
+        return $this->andWhere(
+            'create_at>=:create_at',
+            [
+                ':create_at' => time() - $period * 86400,
+            ]
+        );
+    }
+
+    public function unAnswered()
+    {
+        return $this->andWhere('count_answer=0');
     }
 }

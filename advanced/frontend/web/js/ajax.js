@@ -81,6 +81,21 @@ var ajaxCallbacks = {
             $('#answer_item_area').append(response.data.answer_item);
             $('#answer_form_area').html(response.data.answer_form);
         }
+    },
+    'afterShowCommentList': function (response) {
+        if (validate(response)) {
+            $('#answer_item_area').append(response.data.answer_item);
+            $('#answer_form_area').html(response.data.answer_form);
+        }
     }
 
 }
+
+
+jQuery(function ($) {
+
+    //ajax操作
+    $(document).on('click', '[data-href]', function (e) {
+        handleAjaxLink(e);
+    });
+})

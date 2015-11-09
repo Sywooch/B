@@ -11,6 +11,10 @@ namespace common\models\xunsearch;
 
 use hightman\xunsearch\ActiveRecord;
 
+/**
+ * Class Question
+ * @package common\models\xunsearch
+ */
 class Question extends ActiveRecord
 {
     

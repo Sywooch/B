@@ -49,7 +49,7 @@ class AnswerCommentEntity extends AnswerComment
         ];
     }
 
-    public function addComment($answer_id, $user_id, $content, $is_anonymous = self::STATUS_UNANONYMOUS)
+    public static function addComment($answer_id, $user_id, $content, $is_anonymous = self::STATUS_UNANONYMOUS)
     {
         if (empty($answer_id)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['answer_id']);
@@ -63,7 +63,9 @@ class AnswerCommentEntity extends AnswerComment
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['content']);
         }
 
-        if ($this->load(
+        $model = new self;
+
+        if ($model->load(
                 [
                     'answer_id'    => $answer_id,
                     'content'      => $content,
@@ -71,7 +73,7 @@ class AnswerCommentEntity extends AnswerComment
                     'answer_id'    => $answer_id,
                 ],
                 ''
-            ) && $this->save()
+            ) && $model->save()
         ) {
 
             return true;
@@ -80,8 +82,13 @@ class AnswerCommentEntity extends AnswerComment
         }
     }
 
-    public function modifyComment($comment_id, $answer_id, $user_id, $content, $is_anonymous = self::STATUS_UNANONYMOUS)
-    {
+    public static function modifyComment(
+        $comment_id,
+        $answer_id,
+        $user_id,
+        $content,
+        $is_anonymous = self::STATUS_UNANONYMOUS
+    ) {
         if (empty($comment_id)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['comment_id']);
         }
@@ -98,7 +105,7 @@ class AnswerCommentEntity extends AnswerComment
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['content']);
         }
 
-        $model = $this->findOne(['id' => $comment_id, 'create_at' => $user_id]);
+        $model = self::findOne(['id' => $comment_id, 'create_at' => $user_id]);
 
         if ($model->load(
                 [
@@ -113,5 +120,14 @@ class AnswerCommentEntity extends AnswerComment
         } else {
             return false;
         }
+    }
+
+    public static function getCommentListByAnswerId($answer_id)
+    {
+        $model = self::find()->where(
+            ['answer_id' => $answer_id]
+        )->asArray()->all();
+
+        return $model;
     }
 }

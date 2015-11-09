@@ -42,6 +42,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $form->field($model, 'password')->passwordInput() ?>
                 <?php endif ?>
 
+                <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
+                        'captchaAction' => ['user/registration/captcha']
+                ]) ?>
+
                 <?= Html::submitButton(Yii::t('user', 'Sign up'), ['class' => 'btn btn-success btn-block']) ?>
 
                 <?php ActiveForm::end(); ?>

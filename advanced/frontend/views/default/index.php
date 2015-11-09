@@ -9,6 +9,7 @@
  * Created by PhpStorm.
  */
 use yii\bootstrap\Tabs;
+use yii\helpers\Html;
 use yii\helpers\Url;
 use kartik\tabs\TabsX;
 
@@ -24,8 +25,6 @@ use kartik\tabs\TabsX;
         </p>
 
         <?php
-
-
         $items = [
                 [
                         'label'   => '<i class="glyphicon glyphicon-home"></i> 最新的',
@@ -60,9 +59,9 @@ use kartik\tabs\TabsX;
         <div class="text-center">
             <ul class="pager">
                 <li>以上是部分更新，你还可以查看</li>
-                <li><a href="/questions/newest">全部问题</a></li>
+                <li><?= Html::a('全部问题', ['question/latest']) ?></li>
                 <li>或者</li>
-                <li><a href="/questions/hottest">热门问题</a></li>
+                <li><?= Html::a('热门问题', ['question/hottest']) ?></li>
                 <li>列表</li>
             </ul>
         </div>

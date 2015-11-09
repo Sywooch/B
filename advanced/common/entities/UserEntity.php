@@ -83,9 +83,9 @@ class UserEntity extends User
      * @return string
      * @throws \yii\base\Exception
      */
-    public function getAvatar($user_id, $size = 50, $auto_make_avatar = false)
+    public static function getAvatar($user_id, $size = 50, $auto_make_avatar = false)
     {
-        $user = $this->getUserById($user_id);
+        $user = self::getUserById($user_id);
 
         if (isset($user['avatar']) && $user['avatar']) {
             $avatarPath = Yii::$app->basePath . Yii::$app->params['avatarPath'];
@@ -129,7 +129,7 @@ class UserEntity extends User
     }
     
     
-    public function getUserById($user_id)
+    public static function getUserById($user_id)
     {
         #use redis
         if (is_array($user_id)) {
@@ -140,7 +140,7 @@ class UserEntity extends User
         }
         
         $user_id = array_filter($user_id);
-        $data = $this->getUserByUserIdUseCache($user_id);
+        $data = self::getUserByUserIdUseCache($user_id);
         
         if ($multiple) {
             $result = $data;
@@ -151,7 +151,7 @@ class UserEntity extends User
         return $result;
     }
     
-    public function getUserByUsername($username)
+    public static function getUserByUsername($username)
     {
         #use redis
         if (is_array($username)) {
@@ -162,7 +162,7 @@ class UserEntity extends User
         }
         
         $username = array_filter($username);
-        $data = $this->getUserByUsernameUseCache($username);
+        $data = self::getUserByUsernameUseCache($username);
         
         if ($multiple) {
             $result = $data;
@@ -173,7 +173,7 @@ class UserEntity extends User
         return $result;
     }
     
-    public function getUserIdByUsername($username)
+    public static function getUserIdByUsername($username)
     {
         #use redis
         if (is_array($username)) {
@@ -184,7 +184,7 @@ class UserEntity extends User
         }
         
         $username = array_filter($username);
-        $data = $this->getUserIdByUsernameUseCache($username);
+        $data = self::getUserIdByUsernameUseCache($username);
         
         if ($multiple) {
             $result = $data;
@@ -195,7 +195,7 @@ class UserEntity extends User
         return $result;
     }
     
-    public function getUsernameByUserId($user_id)
+    public static function getUsernameByUserId($user_id)
     {
         #use redis
         if (is_array($user_id)) {
@@ -206,7 +206,7 @@ class UserEntity extends User
         }
         
         $user_id = array_filter($user_id);
-        $data = $this->getUsernameByUserIdUseCache($user_id);
+        $data = self::getUsernameByUserIdUseCache($user_id);
         
         if ($multiple) {
             $result = $data;
@@ -217,7 +217,7 @@ class UserEntity extends User
         return $result;
     }
     
-    private function getUserByUserIdUseCache(array $user_id)
+    private static function getUserByUserIdUseCache(array $user_id)
     {
         $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USER, $user_id]);
         $cache_miss_key = Yii::$app->redis->getMissKey($user_id, $cache_hit_data);
@@ -266,7 +266,7 @@ class UserEntity extends User
         return $cache_hit_data;
     }
     
-    private function getUserIdByUsernameUseCache(array $username)
+    private static function getUserIdByUsernameUseCache(array $username)
     {
         $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USER_USERNAME_ID, $username]);
         $cache_miss_key = Yii::$app->redis->getMissKey($username, $cache_hit_data);
@@ -307,11 +307,11 @@ class UserEntity extends User
         return $cache_hit_data;
     }
     
-    private function getUserByUsernameUseCache(array $username)
+    private static function getUserByUsernameUseCache(array $username)
     {
-        $user_ids = $this->getUserIdByUsernameUseCache($username);
+        $user_ids = self::getUserIdByUsernameUseCache($username);
         if ($user_ids) {
-            $result = $this->getUserByUserIdUseCache($user_ids);
+            $result = self::getUserByUserIdUseCache($user_ids);
         } else {
             $result = null;
         }
@@ -319,9 +319,9 @@ class UserEntity extends User
         return $result;
     }
     
-    private function getUsernameByUserIdUseCache(array $user_id)
+    private static function getUsernameByUserIdUseCache(array $user_id)
     {
-        $user = $this->getUserByUserIdUseCache($user_id);
+        $user = self::getUserByUserIdUseCache($user_id);
         if ($user) {
             $result = ArrayHelper::getColumn($user, 'username');
         } else {
@@ -331,7 +331,7 @@ class UserEntity extends User
         return $result;
     }
     
-    public function updateUserCache($user_id, $user_data)
+    public static function updateUserCache($user_id, $user_data)
     {
         $user_cache_data = Yii::$app->redis->get([REDIS_KEY_USER, $user_id]);
         if ($user_cache_data) {

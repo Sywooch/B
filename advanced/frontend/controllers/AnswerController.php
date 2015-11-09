@@ -4,9 +4,13 @@ namespace frontend\controllers;
 
 use common\components\Error;
 use common\controllers\BaseController;
+use common\entities\AnswerCommentEntity;
+use common\entities\AnswerVersionEntity;
+use common\entities\QuestionEntity;
 use Yii;
 use common\entities\AnswerEntity;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -79,8 +83,8 @@ class AnswerController extends BaseController
                     '/question/_question_answer_item',
                     [
                         'question_id' => $question_id,
-                        'data'  => [$model->getAttributes()],
-                        'pages' => null,
+                        'data'        => [$model->getAttributes()],
+                        'pages'       => null,
                     ]
                 ),
                 'answer_form' => $this->renderPartial(
@@ -102,20 +106,25 @@ class AnswerController extends BaseController
     /**
      * Updates an existing AnswerEntity model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
+     * @param $question_id
+     * @param $id
      * @return mixed
+     * @throws NotFoundHttpException
+     * @internal param string $id
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $question_id)
     {
-        $model = $this->findModel($id);
+        $question_model = QuestionEntity::getQuestionByQuestionId($question_id);
+        $answer_model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($answer_model->load(Yii::$app->request->post()) && $answer_model->save()) {
+            return $this->redirect(['question/view', 'id' => $question_id, 'answer_id' => $id]);
         } else {
             return $this->render(
                 'update',
                 [
-                    'model' => $model,
+                    'answer_model'   => $answer_model,
+                    'question_model' => $question_model,
                 ]
             );
         }
@@ -148,5 +157,19 @@ class AnswerController extends BaseController
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function getCommentList($id)
+    {
+        $comments_data = AnswerCommentEntity::getCommentListByAnswerId($id);
+
+        $html = $this->render(
+            '_comment_list',
+            [
+                'comments_data' => $comments_data,
+            ]
+        );
+
+        $this->htmlOut($html);
     }
 }

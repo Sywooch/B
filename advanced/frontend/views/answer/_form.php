@@ -1,5 +1,7 @@
 <?php
 
+use common\entities\AnswerEntity;
+use common\widgets\UEditor\UEditor;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -12,32 +14,23 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'question_id')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'question_id')->label(false)->hiddenInput() ?>
 
-    <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
-
-    <?= $form->field($model, 'count_usefull')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'count_comment')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'create_at')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'create_by')->textInput() ?>
-
-    <?= $form->field($model, 'modify_at')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'modify_by')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'reproduce_url')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'reproduce_username')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'is_anonymous')->dropDownList([ 'yes' => 'Yes', 'no' => 'No', ], ['prompt' => '']) ?>
-
-    <?= $form->field($model, 'is_fold')->dropDownList([ 'yes' => 'Yes', 'no' => 'No', ], ['prompt' => '']) ?>
+    <?= $form->field($model, 'content')->label(false)->widget(UEditor::className()); ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <div class="checkbox pull-left">
+            <?= $form->field($model, 'is_anonymous')->checkbox(
+                    ['value' => AnswerEntity::STATUS_ANONYMOUS]
+            ) ?>
+        </div>
+
+        <div class="pull-right">
+            <?= Html::submitButton(
+                    $model->isNewRecord ? '提交回答' : '更新回答',
+                    ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']
+            ) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'question_id',
             'content:ntext',
-            'count_usefull',
+            'count_useful',
             'count_comment',
             // 'create_at',
             // 'create_by',

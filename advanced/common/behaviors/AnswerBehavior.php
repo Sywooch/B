@@ -50,8 +50,7 @@ class AnswerBehavior extends BaseBehavior
 
         if ($hasAnswered) {
             $event->isValid = false;
-            
-            //$event->sender->addError('question_id', '一个问题只能回答一次。');
+            $event->sender->addError('question_id', '一个问题只能回答一次。');
             
             return Error::set(Error::TYPE_ANSWER_ONE_QUESTION_ONE_ANSWER_PER_PEOPLE);
         }

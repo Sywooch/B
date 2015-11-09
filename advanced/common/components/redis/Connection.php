@@ -136,7 +136,7 @@ class Connection extends Component
 
             $redis = new \Redis();
             if (!$redis->connect($config['server']['hostname'], $config['server']['port'], 1)) {
-                if (!YII_DEBUG) {
+                if (YII_DEBUG) {
                     throw new Exception(
                         sprintf(
                             'redis实例[%s:%d]连接失败!',
@@ -215,7 +215,10 @@ class Connection extends Component
             #设置缓存时间
             $this->buildCacheKeyExpire($action, $config['expire']);
 
-            Yii::trace(sprintf('++++++++++ End Reids Call Result: %s', $result), 'redis');
+            Yii::trace(sprintf('Reids Call Result:'), 'redis');
+            Yii::trace($result, 'redis');
+            Yii::trace('++++++++++ End Redis Call', 'redis');
+
 
             return $result;
         } else {

@@ -10,7 +10,7 @@ use Yii;
  * @property string $id
  * @property string $question_id
  * @property string $content
- * @property string $count_usefull
+ * @property string $count_useful
  * @property string $count_comment
  * @property string $create_at
  * @property integer $create_by
@@ -21,8 +21,8 @@ use Yii;
  * @property string $is_anonymous
  * @property string $is_fold
  *
- * @property User $createBy
  * @property Question $question
+ * @property User $createBy
  * @property AnswerComment[] $answerComments
  * @property AnswerUsefullLog[] $answerUsefullLogs
  * @property User[] $users
@@ -45,7 +45,7 @@ class Answer extends \common\models\BaseActiveRecord
     {
         return [
             [['question_id', 'content', 'create_by'], 'required'],
-            [['question_id', 'count_usefull', 'count_comment', 'create_at', 'create_by', 'modify_at', 'modify_by'], 'integer'],
+            [['question_id', 'count_useful', 'count_comment', 'create_at', 'create_by', 'modify_at', 'modify_by'], 'integer'],
             [['content', 'is_anonymous', 'is_fold'], 'string'],
             [['reproduce_url'], 'string', 'max' => 45],
             [['reproduce_username'], 'string', 'max' => 255]
@@ -61,7 +61,7 @@ class Answer extends \common\models\BaseActiveRecord
             'id' => 'ID',
             'question_id' => '相关问题ID',
             'content' => '内容',
-            'count_usefull' => '有用',
+            'count_useful' => '点赞数',
             'count_comment' => '评论数',
             'create_at' => '创建时间',
             'create_by' => '用户ID',
@@ -69,17 +69,9 @@ class Answer extends \common\models\BaseActiveRecord
             'modify_by' => '修改用户',
             'reproduce_url' => '转载网址',
             'reproduce_username' => '转载谁的',
-            'is_anonymous' => '是否匿名发表',
+            'is_anonymous' => '匿名发表',
             'is_fold' => '是否被折叠',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreateBy()
-    {
-        return $this->hasOne(User::className(), ['id' => 'create_by']);
     }
 
     /**
@@ -88,6 +80,14 @@ class Answer extends \common\models\BaseActiveRecord
     public function getQuestion()
     {
         return $this->hasOne(Question::className(), ['id' => 'question_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreateBy()
+    {
+        return $this->hasOne(User::className(), ['id' => 'create_by']);
     }
 
     /**
@@ -120,5 +120,14 @@ class Answer extends \common\models\BaseActiveRecord
     public function getAnswerVersions()
     {
         return $this->hasMany(AnswerVersion::className(), ['answer_id' => 'id']);
+    }
+
+    /**
+     * @inheritdoc
+     * @return AnswerQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new AnswerQuery(get_called_class());
     }
 }

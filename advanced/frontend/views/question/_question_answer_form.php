@@ -24,19 +24,31 @@ use common\entities\AnswerEntity;
             </div>
         </div>
 
-    <?php elseif ($answer_id = $answer_model->checkWhetherHasAnswered(
-            $question_model->id,
-            Yii::$app->user->id
-    )
-    ):
-        echo $this->render(
+    <?php elseif ($answer_id = $answer_model->checkWhetherHasAnswered($question_model->id, Yii::$app->user->id)): ?>
+
+        <?php if (isset($_GET['answer_id']) && $_GET['answer_id'] && $question_model->count_answer > 1): ?>
+            <div class="mt20">
+                <?= Html::a(
+                        sprintf(
+                                '<strong>查看全部 %d 个回答</strong>',
+                                $question_model->count_answer
+
+                        ),
+                        [
+                                'question/view',
+                                'id' => $question_model->id,
+                        ]
+                ); ?>
+            </div>
+        <?php endif; ?>
+
+        <?= $this->render(
                 '_question_has_answered',
                 [
                         'question_id' => $question_model->id,
-                        'answer_id'  => $answer_id,
+                        'answer_id'   => $answer_id,
                 ]
-        );
-        ?>
+        ); ?>
 
     <?php else: ?>
         <h4>撰写答案</h4>
@@ -72,7 +84,7 @@ use common\entities\AnswerEntity;
         </div>
 
         <?php
-        $this->registerJs("$('#btn_ajax_answer').click(handleAjaxLink);", \yii\web\View::POS_READY);
+        //$this->registerJs("$('#btn_ajax_answer').click(handleAjaxLink);", \yii\web\View::POS_READY);
         ?>
 
         <?php ActiveForm::end(); ?>

@@ -5,5 +5,12 @@ use dektrium\user\controllers\RegistrationController as BaseRegistrationControll
 
 class RegistrationController extends BaseRegistrationController
 {
-
+    public function actions()
+    {
+        return [
+            'captcha' => [
+                'class' => 'yii\captcha\CaptchaAction',
+            ],
+        ];
+    }
 }

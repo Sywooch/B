@@ -47,7 +47,7 @@ class TagSearch extends Tag
             'query' => $query,
         ]);
 
-        $this->load($params);
+        $this->load($params, '');
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -61,10 +61,7 @@ class TagSearch extends Tag
             'count_follow' => $this->count_follow,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'alias', $this->alias])
-            ->andFilterWhere(['like', 'content', $this->content])
-            ->andFilterWhere(['like', 'status', $this->status]);
+        $query->andFilterWhere(['like', 'name', $this->name])->limit(12)->orderBy("weight DESC");
 
         return $dataProvider;
     }

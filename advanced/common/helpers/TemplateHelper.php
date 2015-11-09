@@ -19,10 +19,8 @@ class TemplateHelper
 {
     public static function showUsername($user_id, $link = true, $anonymity = AnswerEntity::STATUS_UNANONYMOUS)
     {
-        if ($anonymity == AnswerEntity::STATUS_UNANONYMOUS) {
-            /* @var $user_entity UserEntity */
-            $user_entity = Yii::createObject(UserEntity::className());
-            $user_name = $user_entity->getUsernameByUserId($user_id);
+        if ($user_id == Yii::$app->user->id || $anonymity == AnswerEntity::STATUS_UNANONYMOUS) {
+            $user_name = UserEntity::getUsernameByUserId($user_id);
 
             if ($link) {
                 $result = Html::a($user_name, ['/member/' . $user_id]);
@@ -44,11 +42,9 @@ class TemplateHelper
         $anonymity = AnswerEntity::STATUS_UNANONYMOUS
     ) {
         //不匿名或当前用户是登陆用户
-        if ($anonymity == AnswerEntity::STATUS_UNANONYMOUS || $user_id == Yii::$app->user->id) {
-            /* @var $user_entity UserEntity */
-            $user_entity = Yii::createObject(UserEntity::className());
+        if ($user_id == Yii::$app->user->id || $anonymity == AnswerEntity::STATUS_UNANONYMOUS) {
 
-            $avatar = $user_entity->getAvatar($user_id, $size, true);
+            $avatar = UserEntity::getAvatar($user_id, $size, true);
 
             $avatar = Html::img(
                 $avatar,

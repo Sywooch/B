@@ -16,7 +16,7 @@ use yii\helpers\Html;
                 <?= $item['count_follow'] ?>
                 <small>关注</small>
             </div>
-            <div class="answers">
+            <div class="answers<?=$item['count_answer']>0?' answered':'';?>">
                 <?= $item['count_answer'] ?>
                 <small>回答</small>
             </div>

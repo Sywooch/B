@@ -281,4 +281,17 @@ class TagEntity extends Tag
 
         return $cache_hit_data;
     }
+    
+    public function getRecommendTag($word)
+    {
+        $result = Yii::$app->cws->getTops($word, 10);
+
+        $tags = [];
+
+        foreach ($result as $item) {
+            $tags[] = '';
+        }
+
+        return $tags;
+    }
 }

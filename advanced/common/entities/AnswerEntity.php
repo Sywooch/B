@@ -20,6 +20,7 @@ class AnswerEntity extends Answer
 {
     const STATUS_FOLD = 'yes';
     const STATUS_UNFOLD = 'no';
+
     const STATUS_ANONYMOUS = 'yes';
     const STATUS_UNANONYMOUS = 'no';
 
@@ -32,14 +33,14 @@ class AnswerEntity extends Answer
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_VALIDATE => 'create_by',
-                    //ActiveRecord::EVENT_BEFORE_UPDATE   => 'modify_by',
+                    ActiveRecord::EVENT_BEFORE_UPDATE   => 'modify_by',
                 ],
             ],
             'timestamp'       => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
-                    //ActiveRecord::EVENT_BEFORE_UPDATE => 'modify_at',
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'modify_at',
                 ],
             ],
             'answer_behavior' => [
@@ -49,7 +50,7 @@ class AnswerEntity extends Answer
     }
 
 
-    public function foldAnswer($answer_id, $user_id)
+    public static function foldAnswer($answer_id, $user_id)
     {
         $model = self::findOne(['answer_id' => $answer_id]);
         if ($model) {
@@ -58,7 +59,7 @@ class AnswerEntity extends Answer
         }
     }
 
-    public function cancelFoldAnswer($answer_id, $user_id)
+    public static function cancelFoldAnswer($answer_id, $user_id)
     {
         $model = self::findOne(['answer_id' => $answer_id]);
         if ($model) {
@@ -67,7 +68,7 @@ class AnswerEntity extends Answer
         }
     }
 
-    public function anonymousAnswer($answer_id, $user_id)
+    public static function anonymousAnswer($answer_id, $user_id)
     {
         $model = self::findOne(['answer_id' => $answer_id]);
         if ($model) {
@@ -76,7 +77,7 @@ class AnswerEntity extends Answer
         }
     }
 
-    public function cancelAnonymousAnswer($answer_id, $user_id)
+    public static function cancelAnonymousAnswer($answer_id, $user_id)
     {
         $model = self::findOne(['answer_id' => $answer_id]);
         if ($model) {
@@ -85,7 +86,7 @@ class AnswerEntity extends Answer
         }
     }
 
-    public function findAtUsers($content)
+    public static function findAtUsers($content)
     {
         preg_match_all("/(\S*)\@([^\r\n\s]*)/i", $content, $at_list_tmp);
         $users = [];
@@ -99,7 +100,7 @@ class AnswerEntity extends Answer
         return ArrayHelper::map(UserEntity::find()->where(['username' => $users])->all(), 'id', 'username');
     }
 
-    public function replace($content)
+    public static function replace($content)
     {
         preg_match_all("/\#(\d*)/i", $content, $floor);
         if (isset($floor[1])) {
@@ -110,7 +111,7 @@ class AnswerEntity extends Answer
             }
         }
 
-        $users = $this->findAtUsers($content);
+        $users = self::findAtUsers($content);
         foreach ($users as $key => $value) {
             $search = '@' . $value;
             $url = Url::to(['/user/default/show', 'username' => $value]);
@@ -157,16 +158,17 @@ class AnswerEntity extends Answer
         return $data;
     }
 
-    public function addAnswer($data)
+    public static function addAnswer($data)
     {
-        if ($this->load($data) && $this->save()) {
+        $model = new self;
+        if ($model->load($data) && $model->save()) {
             return true;
         } else {
             return false;
         }
     }
 
-    public function checkWhetherHasAnswered($question_id, $user_id)
+    public static function checkWhetherHasAnswered($question_id, $user_id)
     {
         return self::find()->select('id')->where(
             [
@@ -174,5 +176,52 @@ class AnswerEntity extends Answer
                 'create_by'   => $user_id,
             ]
         )->scalar();
+    }
+
+    public static function getAnswerListByAnswerId(array $answer_id)
+    {
+        $query = self::find();
+        $data = $query->where(['id' => $answer_id])->asArray()->all();
+
+        return $data;
+    }
+
+    public static function getAnswerListByQuestionId($question_id, $limit, $offset, $sort = 'default')
+    {
+
+        $query = self::find();
+        switch ($sort) {
+            case 'created':
+                $query->addOrderBy('create_at DESC');
+                break;
+
+            default:
+                $query->addOrderBy('count_useful DESC');
+        }
+
+        //$data = $this->getAnswerListByQuestionIdByCache($question_id, $limit, $offset);
+        $data = false;
+        if ($data === false) {
+            $query = $query->where(['question_id' => $question_id])->offset($offset)->limit($limit)->asArray();
+            $data = $query->all();
+
+            //$this->setAnswerListByQuestionIdByCache($question_id, $limit, $offset, $data);
+        }
+
+        return $data;
+    }
+
+    private static function getAnswerListByQuestionIdByCache($question_id, $limit, $offset)
+    {
+        $cache_key = [REDIS_KEY_ANSWER_LIST, implode(':', [$question_id, $limit, $offset])];
+
+        return Yii::$app->redis->get($cache_key);
+    }
+
+    private static function setAnswerListByQuestionIdByCache($question_id, $limit, $offset, $data)
+    {
+        $cache_key = [REDIS_KEY_ANSWER_LIST, implode(':', [$question_id, $limit, $offset])];
+
+        return Yii::$app->redis->set($cache_key, $data);
     }
 }

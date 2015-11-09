@@ -3112,16 +3112,16 @@
         },
         {
             "name": "kartik-v/yii2-widget-datetimepicker",
-            "version": "v1.4.0",
+            "version": "v1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-datetimepicker.git",
-                "reference": "3e59cc0f074df3b883c045395c6814506e4db7c6"
+                "reference": "2ad71f7a8f4fdd03b999c4f50257f42b2c1b74fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-datetimepicker/zipball/3e59cc0f074df3b883c045395c6814506e4db7c6",
-                "reference": "3e59cc0f074df3b883c045395c6814506e4db7c6",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-datetimepicker/zipball/2ad71f7a8f4fdd03b999c4f50257f42b2c1b74fe",
+                "reference": "2ad71f7a8f4fdd03b999c4f50257f42b2c1b74fe",
                 "shasum": ""
             },
             "require": {
@@ -3135,7 +3135,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD 3-Clause"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
@@ -3157,7 +3157,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-01-25 16:36:55"
+            "time": "2015-11-04 18:46:05"
         },
         {
             "name": "kartik-v/yii2-widget-depdrop",
@@ -3979,19 +3979,20 @@
         },
         {
             "name": "php-imap/php-imap",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barbushin/php-imap.git",
-                "reference": "cc1a49a3f68090db182183c59ffbc09055d59f5b"
+                "reference": "cfd8f0e7d272bdfd8ffe83d07f1cb0ec91f76770"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/cc1a49a3f68090db182183c59ffbc09055d59f5b",
-                "reference": "cc1a49a3f68090db182183c59ffbc09055d59f5b",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/cfd8f0e7d272bdfd8ffe83d07f1cb0ec91f76770",
+                "reference": "cfd8f0e7d272bdfd8ffe83d07f1cb0ec91f76770",
                 "shasum": ""
             },
             "require": {
+                "ext-imap": "*",
                 "php": ">=5.3.0"
             },
             "type": "library",
@@ -4018,7 +4019,7 @@
                 "mail",
                 "php"
             ],
-            "time": "2015-09-16 07:40:39"
+            "time": "2015-11-06 01:41:28"
         },
         {
             "name": "prawee/yii2-adminlte-theme",
@@ -4289,16 +4290,16 @@
         },
         {
             "name": "thamtech/yii2-uuid",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thamtech/yii2-uuid.git",
-                "reference": "21d00efa3b7270e87274c71967cc7183f469c3f5"
+                "reference": "aeecbdf8a7116efe22fef4b3a04c62ae497b14a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thamtech/yii2-uuid/zipball/21d00efa3b7270e87274c71967cc7183f469c3f5",
-                "reference": "21d00efa3b7270e87274c71967cc7183f469c3f5",
+                "url": "https://api.github.com/repos/thamtech/yii2-uuid/zipball/aeecbdf8a7116efe22fef4b3a04c62ae497b14a4",
+                "reference": "aeecbdf8a7116efe22fef4b3a04c62ae497b14a4",
                 "shasum": ""
             },
             "require": {
@@ -4306,6 +4307,9 @@
                 "php": ">=5.4.0",
                 "ramsey/uuid": "~3.0.0",
                 "yiisoft/yii2": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0"
             },
             "type": "yii2-extension",
             "autoload": {
@@ -4330,7 +4334,7 @@
                 "yii",
                 "yii2"
             ],
-            "time": "2015-10-08 23:22:24"
+            "time": "2015-11-04 17:28:56"
         },
         {
             "name": "trntv/yii2-file-kit",

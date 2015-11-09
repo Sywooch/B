@@ -16,6 +16,8 @@ use Yii;
  * @property string $count_answer
  * @property string $count_favorite
  * @property string $count_follow
+ * @property string $count_like
+ * @property string $count_hate
  * @property string $create_at
  * @property integer $create_by
  * @property integer $active_at
@@ -23,13 +25,15 @@ use Yii;
  * @property string $is_lock
  * @property string $status
  *
+ * @property Answer[] $answers
  * @property FollowQuestion[] $followQuestions
  * @property User[] $users
  * @property User $createBy
  * @property QuestionEventHistory[] $questionEventHistories
  * @property QuestionHasTag[] $questionHasTags
  * @property Tag[] $tags0
- * @property QuestionVersion[] $questionVersions
+ * @property QuestionInvite[] $questionInvites
+ * @property QuestionReview[] $questionReviews
  */
 class Question extends \common\models\BaseActiveRecord
 {
@@ -49,7 +53,7 @@ class Question extends \common\models\BaseActiveRecord
         return [
             [['subject', 'create_by'], 'required'],
             [['content', 'is_anonymous', 'is_lock', 'status'], 'string'],
-            [['count_views', 'count_answer', 'count_favorite', 'count_follow', 'create_at', 'create_by', 'active_at'], 'integer'],
+            [['count_views', 'count_answer', 'count_favorite', 'count_follow', 'count_like', 'count_hate', 'create_at', 'create_by', 'active_at'], 'integer'],
             [['subject', 'alias'], 'string', 'max' => 45],
             [['tags'], 'string', 'max' => 255]
         ];
@@ -70,13 +74,23 @@ class Question extends \common\models\BaseActiveRecord
             'count_answer' => '回答数',
             'count_favorite' => '收藏数',
             'count_follow' => '关注数',
+            'count_like' => '喜欢这个话题',
+            'count_hate' => '讨厌这个话题',
             'create_at' => '创建时间',
             'create_by' => '创建用户',
             'active_at' => '最后活跃时间',
             'is_anonymous' => '是否匿名发表',
             'is_lock' => '是否锁定',
-            'status' => 'enable启用 disable禁用 lock 锁定 draft草稿 close关闭',
+            'status' => 'original原稿 review 审稿 edited已编辑 recommend推荐 disable禁用 lock 锁定 crawl抓取',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAnswers()
+    {
+        return $this->hasMany(Answer::className(), ['question_id' => 'id']);
     }
 
     /**
@@ -108,7 +122,7 @@ class Question extends \common\models\BaseActiveRecord
      */
     public function getQuestionEventHistories()
     {
-        return $this->hasMany(QuestionEventHistory::className(), ['associate_id' => 'id']);
+        return $this->hasMany(QuestionEventHistory::className(), ['question_id' => 'id']);
     }
 
     /**
@@ -130,9 +144,17 @@ class Question extends \common\models\BaseActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getQuestionVersions()
+    public function getQuestionInvites()
     {
-        return $this->hasMany(QuestionVersion::className(), ['question_id' => 'id']);
+        return $this->hasMany(QuestionInvite::className(), ['question_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestionReviews()
+    {
+        return $this->hasMany(QuestionReview::className(), ['question_id' => 'id']);
     }
 
     /**

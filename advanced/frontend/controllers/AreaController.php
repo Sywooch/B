@@ -26,20 +26,24 @@ class AreaController extends BaseController
      */
     public function actionC($province_id)
     {
-        $count = Area::find()->where([
+        $count = Area::find()->where(
+            [
                 'grade'     => 2,
-                'parent_id' => $province_id
-        ])->count();
-        $data = Area::find()->where([
+                'parent_id' => $province_id,
+            ]
+        )->count();
+        $data = Area::find()->where(
+            [
                 'grade'     => 2,
-                'parent_id' => $province_id
-        ])->all();
+                'parent_id' => $province_id,
+            ]
+        )->all();
 
         $cities = [];
         if ($count > 0) {
-            $cities[]  = '<option value="0">请选择市</option>';
+            $cities[] = '<option value="0">请选择市</option>';
             foreach ($data as $item) {
-                $cities[]  =  "<option value='" . $item->area_id . "'>" . $item->name . "</option>";
+                $cities[] = "<option value='" . $item->area_id . "'>" . $item->name . "</option>";
             }
         }
 
@@ -52,14 +56,18 @@ class AreaController extends BaseController
      */
     public function actionD($city_id)
     {
-        $count = Area::find()->where([
+        $count = Area::find()->where(
+            [
                 'grade'     => 3,
-                'parent_id' => $city_id
-        ])->count();
-        $data = Area::find()->where([
+                'parent_id' => $city_id,
+            ]
+        )->count();
+        $data = Area::find()->where(
+            [
                 'grade'     => 3,
-                'parent_id' => $city_id
-        ])->all();
+                'parent_id' => $city_id,
+            ]
+        )->all();
 
         $districts = [];
         if ($count > 0) {

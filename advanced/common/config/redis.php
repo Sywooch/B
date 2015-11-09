@@ -38,6 +38,10 @@ const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation';
 
 #QUESTION
 const REDIS_KEY_QUESTION = 'question';
+const REDIS_KEY_QUESTION_BLOCK = 'question_BLOCK';
+
+#ANSWER
+const REDIS_KEY_ANSWER_LIST = 'answer_list';
 
 /*系统级缓存*/
 const REDIS_KEY_SETTING = 'setting';
@@ -133,6 +137,15 @@ return [
     REDIS_KEY_QUESTION          => [
         'server' => $servers['master'],
         'expire' => 86400 * 2, #有效期
+    ],
+    REDIS_KEY_QUESTION_BLOCK          => [
+        'server' => $servers['master'],
+        'expire' => 3600, #有效期
+    ],
+    #answer
+    REDIS_KEY_ANSWER_LIST       => [
+        'server' => $servers['master'],
+        'expire' => 3600, #有效期
     ],
     /*************************************************************/
     #临时测试类的缓存

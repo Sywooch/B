@@ -10,6 +10,7 @@ use common\entities\FollowUserEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserEntity;
 use common\helpers\ServerHelper;
+use common\models\AnswerQuery;
 use dosamigos\qrcode\lib\Encode;
 use Yii;
 use common\models\Question;
@@ -42,16 +43,103 @@ class QuestionController extends BaseController
      * Lists all Question models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionLatest()
     {
-        $searchModel = new QuestionSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $pages = new Pagination(
+            [
+                'totalCount' => QuestionEntity::fetchCount('latest', ServerHelper::checkIsSpider()),
+                'pageSize'   => 20,
+                'params'     => array_merge($_GET),
+            ]
+        );
+
+        $data = QuestionEntity::fetchLatest($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
+        if ($data) {
+            $html = $this->renderPartial(
+                '/default/question_item_view',
+                [
+                    'data' => $data,
+                ]
+            );
+        } else {
+            $html = null;
+        }
 
         return $this->render(
             'index',
             [
-                'searchModel'  => $searchModel,
-                'dataProvider' => $dataProvider,
+                'question_data' => $html,
+                'active'        => 'latest',
+                'pages' => $pages,
+            ]
+        );
+    }
+
+
+    public function actionHot()
+    {
+        $pages = new Pagination(
+            [
+                'totalCount' => QuestionEntity::fetchCount('hot', ServerHelper::checkIsSpider()),
+                'pageSize'   => 20,
+                'params'     => array_merge($_GET),
+            ]
+        );
+
+        $data = QuestionEntity::fetchHot($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
+
+        if ($data) {
+            $html = $this->renderPartial(
+                '/default/question_item_view',
+                [
+                    'data' => $data,
+                    'pages' => $pages,
+                ]
+            );
+        } else {
+            $html = null;
+        }
+
+        return $this->render(
+            'index',
+            [
+                'question_data' => $html,
+                'active'        => 'hot',
+                'pages' => $pages,
+            ]
+        );
+    }
+
+    public function actionUnAnswer()
+    {
+        $pages = new Pagination(
+            [
+                'totalCount' => QuestionEntity::fetchCount('un-answer', ServerHelper::checkIsSpider()),
+                'pageSize'   => 20,
+                'params'     => array_merge($_GET),
+            ]
+        );
+
+        $data = QuestionEntity::fetchUnAnswer($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
+
+
+        if ($data) {
+            $html = $this->renderPartial(
+                '/default/question_item_view',
+                [
+                    'data' => $data,
+                ]
+            );
+        } else {
+            $html = null;
+        }
+
+        return $this->render(
+            'index',
+            [
+                'question_data' => $html,
+                'active'        => 'un-answer',
+                'pages' => $pages,
             ]
         );
     }
@@ -59,11 +147,14 @@ class QuestionController extends BaseController
     /**
      * Displays a single Question model.
      * @param string $id
+     * @param string $sort
+     * @param null   $answer_id
      * @return mixed
      * @throws NotFoundHttpException
      */
-    public function actionView($id)
+    public function actionView($id, $sort = 'default', $answer_id = null)
     {
+
         $question_model = $this->findModel($id);
 
         if (ServerHelper::checkIsSpider() && !in_array(
@@ -76,19 +167,22 @@ class QuestionController extends BaseController
 
         $answer_model = new AnswerEntity();
 
+        #增加查看问题计数
         Counter::addQuestionView($id);
 
-        $answer_model_query = AnswerEntity::find()->where(['question_id' => $id]);
-
-        $pages = new Pagination(
-            [
-                'totalCount' => $answer_model_query->count(),
-                'pageSize'   => 20,
-                'params'     => array_merge($_GET, ['#' => 'answer-list']),
-            ]
-        );
-
-        $answer_data = $answer_model_query->offset($pages->offset)->limit($pages->limit)->asArray()->all();
+        if ($answer_id) {
+            $pages = null;
+            $answer_data = $answer_model->getAnswerListByAnswerId([$answer_id]);
+        } else {
+            $pages = new Pagination(
+                [
+                    'totalCount' => $question_model->count_answer,
+                    'pageSize'   => 20,
+                    'params'     => array_merge($_GET, ['#' => 'answer-list']),
+                ]
+            );
+            $answer_data = $answer_model->getAnswerListByQuestionId($id, $pages->pageSize, $pages->offset, $sort);
+        }
 
 
         return $this->render(
@@ -99,11 +193,12 @@ class QuestionController extends BaseController
                 'answer_item_html' => $this->renderPartial(
                     '_question_answer_item',
                     [
-                        'question_id'  => $id,
-                        'data'  => $answer_data,
-                        'pages' => $pages,
+                        'question_id' => $id,
+                        'data'        => $answer_data,
+                        'pages'       => $pages,
                     ]
                 ),
+                'sort'             => $sort,
             ]
         );
 
@@ -120,12 +215,7 @@ class QuestionController extends BaseController
         $model = new QuestionEntity();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->render(
-                '_after_success',
-                [
-                    'model' => $model,
-                ]
-            );
+            return $this->redirect(['question/view', 'id' => $model->id]);
         } else {
             return $this->render(
                 'create',
@@ -153,12 +243,7 @@ class QuestionController extends BaseController
         }*/
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->render(
-                '_after_success',
-                [
-                    'model' => $model,
-                ]
-            );
+            return $this->redirect(['question/view', 'id' => $model->id]);
         } else {
             return $this->render(
                 'update',
@@ -191,7 +276,7 @@ class QuestionController extends BaseController
      */
     protected function findModel($id)
     {
-        if (($model = QuestionEntity::findOne($id)) !== null) {
+        if (($model = QuestionEntity::getQuestionByQuestionId($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

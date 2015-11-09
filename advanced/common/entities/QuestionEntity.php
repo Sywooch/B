@@ -28,17 +28,22 @@ class QuestionEntity extends Question
     const MAX_TAGS_LENGTH = 15; //标签最长的字符数，“我是1”长度为3
     const MIN_TAGS_LENGTH = 2; //标签最短的字符数，“我是1”长度为3
 
-    const MIN_SUBJECT_LENGTH = 6;
+    const MIN_SUBJECT_LENGTH = 6;//问题长度
+
+
+    const STATUS_ANONYMOUS = 'yes';
+    const STATUS_UNANONYMOUS = 'no';
 
     const STATUS_ORIGINAL = 'original'; //原稿，初始状态
     const STATUS_REVIEW = 'review';     //审核
-    const STATUS_ENABLE = 'enable';     //正常
+    const STATUS_EDITED = 'edited';     //正常
+    const STATUS_RECOMMEND = 'recommend';     //正常
     const STATUS_DISABLE = 'disable';   //禁止
     const STATUS_LOCK = 'lock';         //锁定，不允许回答
     const STATUS_CRAWL = 'crawl';       //抓取
 
-    const STATUS_DISPLAY = 'original,review,enable,lock'; //允许显示的状态
-    const STATUS_DISPLAY_FOR_SPIDER = 'enable,lock'; //允许显示的状态，给搜索引擎
+    const STATUS_DISPLAY = 'original,review,edited,lock'; //允许显示的状态
+    const STATUS_DISPLAY_FOR_SPIDER = 'edited,recommend,lock'; //允许显示的状态，给搜索引擎
 
 
     //
@@ -166,6 +171,11 @@ class QuestionEntity extends Question
         //$this->on(self::EVENT_QUESTION_MODIFY, [NotificationService::className(), 'questionModify']);
     }
 
+    public static function getQuestionByQuestionId($question_id)
+    {
+        return self::findOne($question_id);
+    }
+
     /**
      * @param $question_id
      * @return $this
@@ -184,7 +194,7 @@ class QuestionEntity extends Question
                 where ht.question_id=:question_id
                 ';
 
-        return $this->getDb()->createCommand($sql, [':question_id' => $question_id])->queryAll();
+        return self::getDb()->createCommand($sql, [':question_id' => $question_id])->queryAll();
     }
 
     /**
@@ -206,83 +216,92 @@ class QuestionEntity extends Question
             ['id' => $id]
         )->execute();
     }
+
+    public static function fetchCount($type, $is_spider)
+    {
+        switch ($type) {
+            case 'latest':
+                $count = self::find()->allowShowStatus($is_spider)->orderByTime()->count(1);
+                break;
+
+            case 'hot':
+                $count = self::find()->allowShowStatus($is_spider)->recent()->answered()->orderByTime()->count(1);
+                break;
+
+            case 'unAnswer':
+                $count = self::find()->allowShowStatus($is_spider)->unAnswered()->orderByTime()->count(1);
+                break;
+
+            default:
+                $count = 0;
+        }
+
+
+        #总数不得超过 1000
+        return min($count, 1000);
+    }
     
-    public function fetchLatest($limit = 10, $is_spider)
+    public static function fetchLatest($limit = 10, $offset = 0, $is_spider = false)
     {
-        $cache_key = [REDIS_KEY_QUESTION, 'LATEST_' . $is_spider];
+        $cache_key = [REDIS_KEY_QUESTION_BLOCK, 'LATEST_' . $is_spider];
         $cache_data = Yii::$app->redis->get($cache_key);
 
-        if (!$cache_data) {
-            $model = self::find()->where(
-                ['status' => $this->getAllowShowStatus($is_spider)]
-            )->andWhere('count_answer>=0')->orderBy('create_at DESC')->limit($limit)->asArray()->all();
+        if ($cache_data === false) {
+            $model = self::find()->allowShowStatus($is_spider)->orderByTime()->limit($limit)->offset(
+                $offset
+            )->asArray()->all();
             $cache_data = $model;
-            Yii::$app->redis->set([REDIS_KEY_QUESTION, 'HOT'], $cache_data);
+
+            if ($cache_data) {
+                Yii::$app->redis->set($cache_key, $cache_data);
+            }
         }
 
         return $cache_data;
     }
 
-    public function fetchHot($limit = 10, $is_spider, $period = 7)
+    public static function fetchHot($limit = 10, $offset = 0, $is_spider = false, $period = 7)
     {
-        $cache_key = [REDIS_KEY_QUESTION, 'HOT_' . $is_spider];
+        $cache_key = [REDIS_KEY_QUESTION_BLOCK, 'HOT_' . $is_spider];
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if (!$cache_data) {
-            $model = self::find()->where(
-                ['status' => $this->getAllowShowStatus($is_spider)]
-            )->andWhere(
-                'create_at>=:create_at',
-                [
-                    ':create_at' => time() - $period * 86400,
-                ]
-            )->andWhere(
-                'count_answer>0'
-            )->orderBy('count_views DESC')->limit($limit)->asArray()->all();
+            $model = self::find()->answered(3)->allowShowStatus($is_spider)->recent()->answered()->orderByTime()->limit(
+                $limit
+            )->offset($offset)->asArray()->all();
 
             $cache_data = $model;
-            Yii::$app->redis->set([REDIS_KEY_QUESTION, 'HOT'], $cache_data);
+
+            if ($cache_data) {
+                Yii::$app->redis->set($cache_key, $cache_data);
+            }
         }
 
         return $cache_data;
     }
 
-    public function fetchUnAnswer($limit = 10, $is_spider, $period = 7)
+    public static function fetchUnAnswer($limit = 10, $offset = 0, $is_spider = false, $period = 7)
     {
-        $cache_key = [REDIS_KEY_QUESTION, 'UNANSWER_' . $is_spider];
+        $cache_key = [REDIS_KEY_QUESTION_BLOCK, 'UNANSWER_' . $is_spider];
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if (!$cache_data) {
-            $model = self::find()->where(
-                ['status' => $this->getAllowShowStatus($is_spider)]
-            )->andWhere(
-                'create_at>=:create_at',
-                [
-                    ':create_at' => time() - $period * 86400,
-                ]
-            )->andWhere(
-                'count_answer=0'
-            )->orderBy('count_views DESC')->limit($limit)->asArray()->all();
+            $model = self::find()->allowShowStatus($is_spider)->recent()->unAnswered()->orderByTime()->limit(
+                $limit
+            )->offset($offset)->asArray()->all();
 
             $cache_data = $model;
-            Yii::$app->redis->set([REDIS_KEY_QUESTION, 'HOT'], $cache_data);
+
+            if ($cache_data) {
+                Yii::$app->redis->set($cache_key, $cache_data);
+            }
         }
 
         return $cache_data;
     }
-
-    /**
-     * @param $is_spider
-     * @return array
-     */
-    private function getAllowShowStatus($is_spider)
+    
+    public static function getSimilarQuestion(array $tags)
     {
-        if ($is_spider) {
-            $status = self::STATUS_DISPLAY_FOR_SPIDER;
-        } else {
-            $status = self::STATUS_DISPLAY;
-        }
-
-        return array_filter(explode(',', $status));
+        
     }
 }

@@ -9,11 +9,12 @@
 namespace common\components\cws;
 
 
+use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\base\Object;
 
-class CWS extends Object
+class CWS extends Component
 {
     public static $instance = null;
     public $dict, $rule, $text;
@@ -25,50 +26,91 @@ class CWS extends Object
 
     public function init()
     {
-        if (class_exists('scws_new')) {
-            self::$instance = new scws_new;
+
+
+        if (function_exists('scws_open')) {
+            if (self::$instance !== null) {
+                self::$instance = scws_open();
+                scws_set_charset(self::$instance, 'utf8');
+                scws_set_multi(self::$instance, true);
+            }
         } else {
-            require_once(dirname(__FILE__) . '/pscws4.class.php');
-            self::$instance = new PSCWS4();
+            Yii::error('can not find function scws_open');
 
-            self::$instance->set_dict(dirname(__FILE__) . '/etc/dict.utf8.xdb');
-            self::$instance->set_rule(dirname(__FILE__) . '/etc/rules.utf8.ini');
+            return self::$instance = false;
         }
-
-        self::$instance->set_charset('utf8');
-        self::$instance->set_ignore(true);
-        //按位异或的 1 | 2 | 4 | 8 分别表示: 短词 | 二元 | 主要单字 | 所有单字
-        self::$instance->set_multi(4);
     }
+
+    public function __destroy()
+    {
+        if (self::$instance) {
+            scws_close(self::$instance);
+        }
+    }
+
+    /*public function __call($action, $params)
+    {
+        return false;
+    }*/
 
     public function text($text)
     {
         $this->text = $text;
 
+        if (!$this->checkLegal()) {
+            return $this;
+        }
+
+        scws_send_text(self::$instance, $text);
+
         return $this;
     }
-
-    public function getWords()
+    
+    private function checkLegal()
     {
         if (!$this->text) {
             throw new InvalidConfigException();
         }
 
-        while ($some = self::$instance->get_result()) {
+        if (!self::$instance) {
+            return false;
+        }
+    }
+
+    public function debug()
+    {
+        if (!$this->checkLegal()) {
+            return null;
+        }
+
+        return scws_set_debug(self::$instance);
+    }
+
+    public function getWords()
+    {
+        if (!$this->checkLegal()) {
+            return null;
+        }
+        
+        while ($some = scws_get_result(self::$instance)) {
             foreach ($some as $word) {
                 print_r($word);
             }
         }
     }
     
-    public function getTops($limit = 10, $attr = null)
+    public function getTops($limit = 10, $attr = 'n,an,nr,ns,nt,nz')
     {
+
+        if (!$this->checkLegal()) {
+            return null;
+        }
+
         if (!$this->text) {
             throw new InvalidConfigException();
         }
 
-        $result = self::$instance->get_tops($limit, $attr);
+        return scws_get_tops(self::$instance, $limit, $attr);
 
-        print_r($result);
     }
 }

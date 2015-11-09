@@ -196,6 +196,11 @@ return [
             'prefix' => 'YIIREDIS',
             'config' => $redis,
         ],
+        #授权管理
+        'authManager' => [
+            'class' => 'common\components\AuthManager',
+            'defaultRoles' => ['guest'],
+        ],
         #站点设置
         'setting'   => [
             'class' => 'common\components\setting\Setting',
@@ -225,6 +230,9 @@ return [
             'class'        => 'hightman\xunsearch\Connection',
             'iniDirectory' => '@common/config/xunsearch',    // 搜索 ini 文件目录，默认：@vendor/hightman/xunsearch/app
             'charset'      => 'utf-8',
+        ],
+        'cws'   => [
+            'class' => 'common\components\cws\CWS',
         ],
     ],
     'controllerMap' => [

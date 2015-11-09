@@ -5,6 +5,7 @@
  * Date: 2015/10/31
  * Time: 13:09
  */
+use common\entities\AnswerEntity;
 use common\helpers\TemplateHelper;
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
@@ -54,12 +55,36 @@ use yii\widgets\LinkPager;
         </div>
 
         <div class="post-offset">
-            <?= TemplateHelper::showUserAvatar($item['create_by'], 24, true, $item['is_anonymous']) ?>
-            <strong><?= TemplateHelper::showUsername($item['create_by'], true, $item['is_anonymous']) ?></strong>
+            <?= TemplateHelper::showUserAvatar(
+                    $item['create_by'],
+                    24,
+                    true,
+                    $item['is_anonymous']
+            ) ?>
+            <strong><?= TemplateHelper::showUsername(
+                        $item['create_by'],
+                        true,
+                        $item['is_anonymous']
+                ) ?></strong>
 
         <span class="ml10 text-muted">
-            <?= TemplateHelper::showhumanTime($item['create_at']) ?>
-                    </span>
+            <?= TemplateHelper::showhumanTime(
+                    $item['modify_at'] ? $item['modify_at'] : $item['create_at']
+            ) ?>
+            <?php if ($item['modify_at'] > 0): ?>
+                <?= Html::a(
+                        '更新回答',
+                        [
+                                'answer-version/index',
+                                'answer_id' => $item['id'],
+                        ]
+                ); ?>
+            <?php elseif ($item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS): ?>
+                匿名回答
+            <?php else: ?>
+                回答
+            <?php endif; ?>
+        </span>
 
             <div class="answer fmt mt10 mb10">
                 <?= $item['content']; ?>
@@ -68,38 +93,90 @@ use yii\widgets\LinkPager;
 
             <div class="post-opt">
                 <ul class="list-inline mb0">
-
                     <li><?= Html::a(
                                 '链接',
                                 [
-                                        'question/answer',
-                                        'question_id' => $question_id,
-                                        'answer_id'   => $item['id'],
+                                        'question/view',
+                                        'id'        => $question_id,
+                                        'answer_id' => $item['id'],
                                 ]
-                        ) ?></li>
-                    <li><a href="javascript:void(0);"
-                           class="comments"
-                           data-id="1020000003903993"
-                           data-target="#comment-1020000003903993"> 评论</a></li>
+                        ) ?>
+                    </li>
+                    <? if ($item['create_by'] == Yii::$app->user->id): ?>
+                        <li><?= Html::a(
+                                    '编辑',
+                                    [
+                                            'answer/update',
+                                            'id'          => $item['id'],
+                                            'question_id' => $question_id,
+                                    ]
+                            ) ?>
+                        </li>
+                    <? endif; ?>
+                    <li>
+                        <?= Html::a(
+                                '评论' . $item['count_comment'] > 0 ? sprintf(
+                                        '<data>(%s)</data>)',
+                                        $item['count_comment']
+                                ) : '',
+                                'javascript:void(0);',
+                                [
+                                        'data-href'    => Url::to(
+                                                ['answer/get-comment-list', 'id' => $item['id']]
+                                        ),
+                                        'data-on-done' => 'afterShowCommentList',
+                                ]
+                        ) ?>
+                    </li>
                     <li class="dropdown">
-                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">更多<b
+                        <a href="javascript:void(0);"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown">更多<b
                                     class="caret"></b></a>
-                        <ul class="dropdown-menu dropdown-menu-left">
-                            <li><a href="#911"
-                                   data-id="1020000003903993"
-                                   data-toggle="modal"
-                                   data-target="#911"
-                                   data-type="answer"
-                                   data-typetext="答案">举报</a></li>
-                        </ul>
+                        <?= Dropdown::widget(
+                                [
+                                        'items' => [
+                                                [
+                                                        'label'   => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
+                                                        'url'     => '/',
+                                                        'visible' => $item['create_at'] == Yii::$app->user->id,
+                                                ],
+                                                [
+                                                        'label'   => '删除',
+                                                        'url'     => '/',
+                                                        'visible' => $item['create_at'] == Yii::$app->user->id,
+                                                ],
+                                                [
+                                                        'label'   => $item['is_fol'] == AnswerEntity::STATUS_FOLD ? '取消折叠' : '折叠',
+                                                        'url'     => '/',
+                                                        'visible' => $item['create_at'] != Yii::$app->user->id,
+                                                ],
+                                                [
+                                                        'label'   => '公众编辑',
+                                                        'url'     => '/',
+                                                        'visible' => $item['create_at'] != Yii::$app->user->id && true,
+                                                ],
+                                                [
+                                                        'label'   => '举报',
+                                                        'url'     => '#',
+                                                        'visible' => $item['create_at'] != Yii::$app->user->id,
+                                                ],
+                                        ],
+                                ]
+                        ); ?>
                     </li>
                 </ul>
             </div>
 
-            <div class="widget-comments hidden" id="comment-1020000003903993" data-id="1020000003903993">
+            <div class="widget-comments hidden"
+                 id="comment-1020000003903993"
+                 data-id="1020000003903993">
                 <div class="widget-comments__form row">
                     <div class="col-md-12">
-                        请先 <a class="commentLogin" href="javascript:void(0);">登录</a> 后评论
+                        请先
+                        <a class="commentLogin"
+                           href="javascript:void(0);">登录</a>
+                        后评论
                     </div>
 
                 </div>
@@ -112,5 +189,7 @@ use yii\widgets\LinkPager;
     </article>
 <?php endforeach; ?>
 
-<?= $pages ? LinkPager::widget(['pagination' => $pages]) : ''; ?>
+<?= $pages ? LinkPager::widget(
+        ['pagination' => $pages]
+) : ''; ?>
 <?php \yii\widgets\Pjax::end(); ?>

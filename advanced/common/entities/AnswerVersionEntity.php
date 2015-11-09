@@ -48,6 +48,7 @@ class AnswerVersionEntity extends AnswerVersion
             } else {
                 Yii::error(sprintf('%s insert error', __FUNCTION__));
                 Yii::error($model->getErrors());
+
                 return false;
             }
         }
@@ -79,6 +80,14 @@ class AnswerVersionEntity extends AnswerVersion
                 }
             }
         }
+    }
 
+    public static function getAnswerVersionList($answer_id, $limit = 10, $offset = 0)
+    {
+        return self::find()->where(
+            [
+                'answer_id' => $answer_id,
+            ]
+        )->limit($limit)->offset($offset)->orderBy('id DESC')->asArray()->all();
     }
 }
