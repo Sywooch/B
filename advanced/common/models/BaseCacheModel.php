@@ -16,7 +16,7 @@ class BaseCacheModel extends Model
     public function filterAttributes($data)
     {
         if (empty($data) || !is_array($data)) {
-            return false;
+            return [];
         }
 
         $attributes = parent::attributes();

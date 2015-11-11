@@ -2,6 +2,7 @@
 namespace common\components\redis;
 
 use common\helpers\ArrayHelper;
+use Redis;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
@@ -10,24 +11,26 @@ use yii\base\Exception;
  * 使用 prefix:category:key 的形式组成一个redis key，保存redis action的第一个参数为一个数组,$redis::set([category, key]);
  * 参考：yii\redis\Connection
  * Class Connection
- * @property \Redis $instance
+ * @property Redis $instance
  * @package common\components\redis
  */
 class Connection extends Component
 {
 
     private static $instance;
-    public $config;#总配置
-    public $prefix;#前端
-    public $params;#参数
+    public $config; #总配置
+    public $prefix; #前端
+    public $params; #参数
 
     private $redis_key_config, $cache_category, $cache_key, $instance_key;
 
-    #todo 需要设置过期时间的方法，此方法有待完善
+    #todo 以下方法，将会在执行后重新设置过期时间的方法，此方法有待完善
     public $need_set_expire_command = [
         'SET',
+        'MSET',
         'SADD',
         'HSET',
+        'HMSET',
         'LSET',
     ];
     #TODO 需要特殊对待的命令
@@ -60,11 +63,7 @@ class Connection extends Component
             if (ArrayHelper::isPureAssociative($this->cache_key)) {
                 #关联数组，即 mset 之类的方法，第一个参数　['a'=> 1, 'b'=> 2]
                 foreach ($this->cache_key as $key => $value) {
-                    if ($this->prefix) {
-                        $cache_prefix = implode(':', [$this->prefix, $this->cache_category]);
-                    } else {
-                        $cache_prefix = $this->cache_category;
-                    }
+                    $cache_prefix = $this->cache_category;
                     $cache_key = implode(':', [$cache_prefix, $key]);
                     $data[$cache_key] = $value;
 
@@ -72,11 +71,7 @@ class Connection extends Component
             } else {
                 #非关联数组，即 mget 之类的方法，第一个参数　['a','b']
                 foreach ($this->cache_key as $value) {
-                    if ($this->prefix) {
-                        $cache_prefix = implode(':', [$this->prefix, $this->cache_category]);
-                    } else {
-                        $cache_prefix = $this->cache_category;
-                    }
+                    $cache_prefix = $this->cache_category;
                     $cache_key = implode(':', [$cache_prefix, $value]);
                     $data[] = $cache_key;
                 }
@@ -85,11 +80,7 @@ class Connection extends Component
             $this->params[0] = $data;
         } else {
             #非数组
-            if ($this->prefix) {
-                $cache_prefix = implode(':', [$this->prefix, $this->cache_category]);
-            } else {
-                $cache_prefix = $this->cache_category;
-            }
+            $cache_prefix = $this->cache_category;
             $this->params[0] = implode(':', [$cache_prefix, $this->cache_key]);
         }
     }
@@ -135,11 +126,11 @@ class Connection extends Component
 
         if (self::$instance[$this->instance_key] === null) {
 
-            $redis = new \Redis();
+            $redis = new Redis();
             if (!$redis->connect(
                 $this->redis_key_config['server']['hostname'],
                 $this->redis_key_config['server']['port'],
-                1
+                2
             )
             ) {
                 if (YII_DEBUG) {
@@ -175,7 +166,11 @@ class Connection extends Component
             }
 
             #自动序列化，用 igbinary 会节约很多内存
-            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_IGBINARY);
+            $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_IGBINARY);
+
+            if ($this->prefix) {
+                $redis->setOption(Redis::OPT_PREFIX, $this->prefix . ':');
+            }
 
             self::$instance[$this->instance_key] = $redis;
         }
