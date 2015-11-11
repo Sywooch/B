@@ -9,6 +9,7 @@
 namespace common\entities;
 
 
+use common\behaviors\AnswerCommentBehavior;
 use common\behaviors\IpBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
@@ -43,8 +44,8 @@ class AnswerCommentEntity extends AnswerComment
             'ip'        => [
                 'class' => IpBehavior::className(),
             ],
-            'ip'        => [
-                'class' => CommentBehavior::className(),
+            'behavior'        => [
+                'class' => AnswerCommentBehavior::className(),
             ],
         ];
     }

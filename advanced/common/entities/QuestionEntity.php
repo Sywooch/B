@@ -236,7 +236,6 @@ class QuestionEntity extends Question
                 $count = 0;
         }
 
-
         #总数不得超过 1000
         return min($count, 1000);
     }
@@ -252,9 +251,9 @@ class QuestionEntity extends Question
             )->asArray()->all();
             $cache_data = $model;
 
-            if ($cache_data) {
-                Yii::$app->redis->set($cache_key, $cache_data);
-            }
+            //if ($cache_data) {
+            Yii::$app->redis->set($cache_key, $cache_data);
+            //}
         }
 
         return $cache_data;
@@ -265,16 +264,17 @@ class QuestionEntity extends Question
         $cache_key = [REDIS_KEY_QUESTION_BLOCK, 'HOT_' . $is_spider];
         $cache_data = Yii::$app->redis->get($cache_key);
 
-        if (!$cache_data) {
+        if ($cache_data === false) {
             $model = self::find()->answered(3)->allowShowStatus($is_spider)->recent()->answered()->orderByTime()->limit(
                 $limit
             )->offset($offset)->asArray()->all();
 
             $cache_data = $model;
 
-            if ($cache_data) {
-                Yii::$app->redis->set($cache_key, $cache_data);
-            }
+            #没有数据也写入缓存，‘’，
+            //if ($cache_data) {
+            Yii::$app->redis->set($cache_key, $cache_data);
+            // }
         }
 
         return $cache_data;
@@ -285,16 +285,16 @@ class QuestionEntity extends Question
         $cache_key = [REDIS_KEY_QUESTION_BLOCK, 'UNANSWER_' . $is_spider];
         $cache_data = Yii::$app->redis->get($cache_key);
 
-        if (!$cache_data) {
+        if ($cache_data === false) {
             $model = self::find()->allowShowStatus($is_spider)->recent()->unAnswered()->orderByTime()->limit(
                 $limit
             )->offset($offset)->asArray()->all();
 
             $cache_data = $model;
 
-            if ($cache_data) {
-                Yii::$app->redis->set($cache_key, $cache_data);
-            }
+            //if ($cache_data) {
+            Yii::$app->redis->set($cache_key, $cache_data);
+            //}
         }
 
         return $cache_data;

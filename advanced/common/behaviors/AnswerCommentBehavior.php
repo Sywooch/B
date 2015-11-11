@@ -10,6 +10,7 @@ namespace common\behaviors;
 
 
 use common\components\Notifier;
+use common\entities\AnswerEntity;
 use common\entities\NotificationEntity;
 use common\entities\UserEntity;
 use common\helpers\AtHelper;
@@ -43,9 +44,12 @@ class AnswerCommentBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        Notifier::build()->from(Yii::$app->user->id)->to()->set(
-            NotificationEntity::TYPE_MY_ANSWER_HAS_NEW_COMMENT
-        )->send();
+        $answer_data = AnswerEntity::getAnswerByAnswerId($this->owner->answer_id);
+        if ($answer_data && isset($answer_data['create_by'])) {
+            Notifier::build()->from($this->owner->create_by)->to($answer_data['create_by'])->set(
+                NotificationEntity::TYPE_MY_ANSWER_HAS_NEW_COMMENT
+            )->send();
+        }
     }
 
     /**

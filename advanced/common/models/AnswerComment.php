@@ -18,8 +18,8 @@ use Yii;
  * @property string $ip
  * @property string $status
  *
- * @property User $createBy
  * @property Answer $answer
+ * @property User $createBy
  */
 class AnswerComment extends \common\models\BaseActiveRecord
 {
@@ -37,7 +37,7 @@ class AnswerComment extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['answer_id', 'content', 'create_by', 'modify_by'], 'required'],
+            [['answer_id', 'content', 'create_by'], 'required'],
             [['answer_id', 'create_at', 'create_by', 'modify_at', 'modify_by', 'ip'], 'integer'],
             [['content', 'is_anonymous', 'status'], 'string']
         ];
@@ -65,16 +65,16 @@ class AnswerComment extends \common\models\BaseActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreateBy()
+    public function getAnswer()
     {
-        return $this->hasOne(User::className(), ['id' => 'create_by']);
+        return $this->hasOne(Answer::className(), ['id' => 'answer_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAnswer()
+    public function getCreateBy()
     {
-        return $this->hasOne(Answer::className(), ['id' => 'answer_id']);
+        return $this->hasOne(User::className(), ['id' => 'create_by']);
     }
 }

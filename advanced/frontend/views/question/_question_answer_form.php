@@ -84,7 +84,7 @@ use common\entities\AnswerEntity;
         </div>
 
         <?php
-        //$this->registerJs("$('#btn_ajax_answer').click(handleAjaxLink);", \yii\web\View::POS_READY);
+        //$this->registerJs("$('#btn_ajax_answer').click(ajaxHandle);", \yii\web\View::POS_READY);
         ?>
 
         <?php ActiveForm::end(); ?>

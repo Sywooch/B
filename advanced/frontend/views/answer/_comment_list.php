@@ -6,36 +6,39 @@
  * Time: 13:17
  */
 use common\helpers\TemplateHelper;
-
+use common\widgets\UEditor\UEditor;
+use yii\bootstrap\Html;
+use yii\helpers\Url;
+use yii\widgets\ActiveForm;
 ?>
 
-<div class="widget-comments in">
-    <? foreach ($comments_data as $index => $item): ?>
-        <div class="widget-comments__item hover-show" id="1050000003912333">
-            <div class="votes widget-vote">
-                <button class="like "
-                        data-id="1050000003912333"
-                        type="button"
-                        data-do="like"
-                        data-type="comment"></button>
-                <span class="count">&nbsp;</span></div>
-            <div class="comment-content wordbreak">
-                <div class="content fmt">
-                    <?= $item['content']; ?>
-                </div>
 
-                <p class="comment-meta">
-                    <a href="/c/1050000003912333"
-                       class="text-muted">#<?= $index ?></a>&nbsp;
-                    <?= TemplateHelper::showUsername($item['create_by']) ?>· <span class="createdDate">
+<? foreach ($comments_data as $index => $item): ?>
+    <div class="widget-comments__item hover-show" id="1050000003912333">
+        <div class="votes widget-vote">
+            <button class="like "
+                    data-id="1050000003912333"
+                    type="button"
+                    data-do="like"
+                    data-type="comment"></button>
+            <span class="count">&nbsp;</span></div>
+        <div class="comment-content wordbreak">
+            <div class="content fmt">
+                <?= $item['content']; ?>
+            </div>
+
+            <p class="comment-meta">
+                <a href="/c/1050000003912333"
+                   class="text-muted">#<?= $index ?></a>&nbsp;
+                <?= TemplateHelper::showUsername($item['create_by']) ?>· <span class="createdDate">
                         <?= TemplateHelper::showhumanTime(
                                 $item['create_at']
                         ) ?></span> ·
-                    <a href="#"
-                       class="commentReply"
-                       data-userid="1030000002644202"
-                       data-id="1050000003912333"
-                       data-username="青龙道人">回复</a>
+                <a href="#"
+                   class="commentReply"
+                   data-userid="1030000002644202"
+                   data-id="1050000003912333"
+                   data-username="青龙道人">回复</a>
                 <span class="pull-right commentTools hover-show-obj">                                                <a
                             href="#911"
                             class="ml10"
@@ -46,35 +49,59 @@ use common\helpers\TemplateHelper;
                             data-typetext="评论"
                             data-placement="top"
                             title="举报">举报</a>            </span></p></div>
-        </div>
-    <? endforeach; ?>
+    </div>
+<? endforeach; ?>
+
+<?php if (Yii::$app->user->isGuest): ?>
 
     <div class="widget-comments__form row">
-        <form class="col-md-10 col-xs-12">
-            <div class="form-group mb0">
-                <input name="id" type="hidden" value="1020000003912194">
-                <textarea name="text"
-                          class="form-control"
-                          id="commentText-1020000003912194"
-                          data-id="1020000003912194"
-                          placeholder="添加评论"
-                          style="overflow: hidden; word-wrap: break-word; height: 28px;"></textarea>
-            </div>
-        </form>
-        <div class="col-md-2 col-xs-12">
-            <button type="submit"
-                    class="btn btn-primary btn-sm btn-block postComment m-mt15"
-                    data-id="1020000003912194">提交评论
-            </button>
-            <div class="mt10"><a href="javascript:void(0);" class="toggle-comment-helper">语法提示</a></div>
+        <div class="col-md-12">
+            请先 <?= \common\helpers\TemplateHelper::showLoginAndRegisterBtn() ?> 后评论！
         </div>
-        <div class="col-md-10 col-xs-12 fmt comment-helper" data-rank="203" style="display:none;">
-            <div class="alert alert-warning mb10 mt10">评论支持部分 Markdown 语法：<code>**bold**</code> <code>_italic_</code>
-                <code>[link](http://example.com)</code> <code>&gt; 引用</code> <code>`code`</code> <code>- 列表</code>。<br>同时，被你
-                                                       @ 的用户也会收到通知
-            </div>
+    </div>
+
+<?php else: ?>
+    <?php $form = ActiveForm::begin(
+            [
+                    'id' => 'comment_form',
+            ]
+    ); ?>
+
+
+    <?= $form->field($comment_form, 'content', [
+        //'class' => 'form-control',
+    ])->label(false)->widget(
+            UEditor::className(),
+            ['style' => 'comment']
+    ); ?>
+
+
+    <div class="form-group">
+        <div class="checkbox pull-left">
+            <?= $form->field($comment_form, 'is_anonymous')->checkbox() ?>
         </div>
 
+        <div class="pull-right">
+            <?= Html::submitButton(
+                    '评论',
+                    [
+                            'class'        => 'btn btn-primary',
+                            'id'           => 'btn_ajax_answer',
+                            'data-href'    => Url::to(
+                                    ['answer-comment/create', 'answer_id' => $answer_model->id]
+                            ),
+                            'data-on-done' => 'afterCommentCreateSuccess',
+                            'data-form-id' => 'comment_form',
+                    ]
+            ) ?><br>
+        </div>
     </div>
-    <!-- /.widget-comments__form -->
-</div>
+
+    <?php
+    //$this->registerJs("$('#btn_ajax_answer').click(ajaxHandle);", \yii\web\View::POS_READY);
+    ?>
+
+    <?php ActiveForm::end(); ?>
+
+<?php endif; ?>
+

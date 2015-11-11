@@ -77,7 +77,12 @@ AppAsset::register($this);
 
         ];
         $menuItems[] = [
-                'label' => '注册 & 登录',
+                'label' => '注册',
+                'url'   => ['/user/registration/register'],
+
+        ];
+        $menuItems[] = [
+                'label' => ' 登录',
                 'url'   => ['/user/security/login'],
 
         ];
@@ -172,7 +177,17 @@ AppAsset::register($this);
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>
 </footer>
+<script>
+    (function () {
+        var app = {
+            user: {
+                login:<?=(var_export(!Yii::$app->user->isGuest, true)) ?>
+            }
+        };
 
+        window.app = app;
+    })(window);
+</script>
 <?php $this->endBody() ?>
 </body>
 </html>

@@ -23,7 +23,7 @@ use yii\helpers\FileHelper;
 class UserEntity extends User
 {
     #官方账号的最大ID
-    const MAX_OFFICIAL_ACCOUNT_ID = 784;
+    const MAX_OFFICIAL_ACCOUNT_ID = 785;
     
     public $avatar;
     #注册用户名正则，允许中英文

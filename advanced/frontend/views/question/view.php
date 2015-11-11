@@ -54,7 +54,19 @@ $this->beginBlock('top-header');
                         <strong><?= TemplateHelper::showUsername($question_model->create_by, false) ?></strong>
                     </a>
                     <?= TemplateHelper::showhumanTime($question_model->create_at) ?>
-                    <?php if ($question_model->is_anonymous == QuestionEntity::STATUS_ANONYMOUS): ?>匿名<?php endif; ?>提问
+                    <?php if ($question_model->active_at > 0): ?>
+                        <?= Html::a(
+                                '更新问题',
+                                [
+                                        'question-version/index',
+                                        'question_id' => $question_model->id,
+                                ]
+                        ); ?>
+                    <?php elseif ($question_model->is_anonymous == QuestionEntity::STATUS_ANONYMOUS): ?>
+                        匿名提问
+                    <?php else: ?>
+                        提问
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="col-md-3">
@@ -148,29 +160,27 @@ $this->endBlock();
                                 <a href="javascript:void(0);"
                                    class="dropdown-toggle"
                                    data-toggle="dropdown">更多<b class="caret"></b></a>
-                                <?php
-                                echo Dropdown::widget(
+                                <?= Dropdown::widget(
                                         [
                                                 'items' => [
                                                         [
                                                                 'label'   => $question_model->is_anonymous == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
                                                                 'url'     => '/',
-                                                                'visible' => $question_model->create_at == Yii::$app->user->id,
+                                                                'visible' => $question_model->create_by == Yii::$app->user->id,
                                                         ],
                                                         [
                                                                 'label'   => '删除',
                                                                 'url'     => '/',
-                                                                'visible' => $question_model->create_at == Yii::$app->user->id,
+                                                                'visible' => $question_model->create_by == Yii::$app->user->id && $question_model->create_at > $question_model->getBeforeTime(1),
                                                         ],
                                                         [
                                                                 'label'   => '举报',
                                                                 'url'     => '#',
-                                                                'visible' => $question_model->create_at != Yii::$app->user->id,
+                                                                'visible' => $question_model->create_by != Yii::$app->user->id,
                                                         ],
                                                 ],
                                         ]
-                                );
-                                ?>
+                                ); ?>
                             </li>
                         </ul>
                     </div>

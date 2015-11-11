@@ -85,7 +85,8 @@
 
     "fedemotta/yii2-cronjob": "*",
 
-    "php-imap/php-imap": "~2.0"
+    "php-imap/php-imap": "~2.0",
+    "insolita/yii2-redisedrbac": "*"
 
   },
   "require-dev": {

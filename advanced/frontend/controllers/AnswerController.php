@@ -159,13 +159,17 @@ class AnswerController extends BaseController
         }
     }
 
-    public function getCommentList($id)
+    public function actionGetCommentList($id)
     {
+        $comment_form = new AnswerCommentEntity();
+        $answer_model = AnswerEntity::findOne($id);
         $comments_data = AnswerCommentEntity::getCommentListByAnswerId($id);
 
-        $html = $this->render(
+        $html = $this->renderPartial(
             '_comment_list',
             [
+                'comment_form'   => $comment_form,
+                'answer_model'  => $answer_model,
                 'comments_data' => $comments_data,
             ]
         );

@@ -9,9 +9,10 @@
 namespace common\modules\user\models;
 
 
-class RegistrationForm extends  \dektrium\user\models\RegistrationForm
+class RegistrationForm extends \dektrium\user\models\RegistrationForm
 {
     public $captcha;
+
     /**
      * @inheritdoc
      */
@@ -19,7 +20,16 @@ class RegistrationForm extends  \dektrium\user\models\RegistrationForm
     {
         $rules = parent::rules();
         $rules[] = ['captcha', 'required'];
-        $rules[] = ['captcha', 'captcha'];
+        $rules[] = ['captcha', 'captcha', 'message'=>'验证码错误，请重新输入或点击验证码图片重试。'];
+
         return $rules;
+    }
+
+    public function attributeLabels()
+    {
+        $attributeLabels = parent::attributeLabels();
+
+        return $attributeLabels[] = ['captcha' => '验证码'];
+
     }
 }

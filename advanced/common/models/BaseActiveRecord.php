@@ -36,38 +36,54 @@ class BaseActiveRecord extends ActiveRecord
     
     public function beforeValidate()
     {
-        $this->setPerformanceRecordAnchor(sprintf('开始准备数据验证：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__)));
+        $this->setPerformanceRecordAnchor(
+            sprintf('开始准备数据验证：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__))
+        );
         $result = parent::beforeValidate();
-        $this->setPerformanceRecordAnchor(sprintf('完成准备数据验证：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__)));
+        $this->setPerformanceRecordAnchor(
+            sprintf('完成准备数据验证：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__))
+        );
         
         return $result;
     }
     
     public function afterValidate()
     {
-        $this->setPerformanceRecordAnchor(sprintf('开始完成数据验证：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__)));
+        $this->setPerformanceRecordAnchor(
+            sprintf('开始完成数据验证：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__))
+        );
         if (parent::afterValidate()) {
             if ($this->getErrors()) {
                 Yii::error($this->getErrors(), implode('-', ['BaseActiveRecord', $this->tableName()]));
             }
         }
-        $this->setPerformanceRecordAnchor(sprintf('结束完成数据验证：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__)));
+        $this->setPerformanceRecordAnchor(
+            sprintf('结束完成数据验证：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__))
+        );
     }
     
     public function beforeSave($insert)
     {
-        $this->setPerformanceRecordAnchor(sprintf('开始准备保存：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__)));
+        $this->setPerformanceRecordAnchor(
+            sprintf('开始准备保存：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__))
+        );
         $result = parent::beforeSave($insert);
-        $this->setPerformanceRecordAnchor(sprintf('完成准备保存：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__)));
+        $this->setPerformanceRecordAnchor(
+            sprintf('完成准备保存：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__))
+        );
         
         return $result;
     }
     
     public function afterSave($insert, $changedAttributes)
     {
-        $this->setPerformanceRecordAnchor(sprintf('开始保存后触发：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__)));
+        $this->setPerformanceRecordAnchor(
+            sprintf('开始保存后触发：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__))
+        );
         $result = parent::afterSave($insert, $changedAttributes);
-        $this->setPerformanceRecordAnchor(sprintf('完成保存后触发：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__)));
+        $this->setPerformanceRecordAnchor(
+            sprintf('完成保存后触发：%s::%s', self::className(), $this->getCurrentMethod(__METHOD__))
+        );
         
         return $result;
     }
@@ -94,5 +110,29 @@ class BaseActiveRecord extends ActiveRecord
         } else {
             return $methods[1];
         }
+    }
+
+    /**
+     * 获取当前时间
+     * @return int
+     */
+    protected function getCurrentTime()
+    {
+        return time();
+    }
+
+    /**
+     * 获取距X天前最迟的时间
+     * @param int $period
+     * @return int
+     */
+    public function getBeforeTime($period = 7)
+    {
+        return $this->getCurrentTime() - $period * 86400;
+    }
+
+    public function getAfterTime($period = 7)
+    {
+        return $this->getCurrentTime() + $period * 86400;
     }
 }

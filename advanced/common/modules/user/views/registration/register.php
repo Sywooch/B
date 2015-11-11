@@ -9,6 +9,7 @@
  * file that was distributed with this source code.
  */
 
+use yii\captcha\Captcha;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -28,11 +29,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 <h3 class="panel-title"><?= Html::encode($this->title) ?></h3>
             </div>
             <div class="panel-body">
-                <?php $form = ActiveForm::begin([
-                    'id'                     => 'registration-form',
-                    'enableAjaxValidation'   => true,
-                    'enableClientValidation' => false
-                ]); ?>
+                <?php $form = ActiveForm::begin(
+                        [
+                                'id'                     => 'registration-form',
+                                'enableAjaxValidation'   => true,
+                                'enableClientValidation' => false,
+                        ]
+                ); ?>
 
                 <?= $form->field($model, 'username') ?>
 
@@ -42,9 +45,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $form->field($model, 'password')->passwordInput() ?>
                 <?php endif ?>
 
-                <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
-                        'captchaAction' => ['user/registration/captcha']
-                ]) ?>
+                <?= $form->field($model, 'captcha')->widget(
+                        Captcha::className(),
+                        [
+                                'captchaAction' => [
+                                        '/user/registration/captcha',
+                                ],
+                                'imageOptions' => [
+                                        'id'=>'captchaImg',
+                                        'alt'   => '点击换图',
+                                        'title' => '点击换图',
+                                        'style' => 'cursor:pointer',
+                                ],
+                        ]
+                ) ?>
 
                 <?= Html::submitButton(Yii::t('user', 'Sign up'), ['class' => 'btn btn-success btn-block']) ?>
 

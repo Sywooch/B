@@ -38,7 +38,7 @@ const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation';
 
 #QUESTION
 const REDIS_KEY_QUESTION = 'question';
-const REDIS_KEY_QUESTION_BLOCK = 'question_BLOCK';
+const REDIS_KEY_QUESTION_BLOCK = 'question_block';
 
 #ANSWER
 const REDIS_KEY_ANSWER_LIST = 'answer_list';
@@ -53,6 +53,7 @@ const REDIS_KEY_UPDATER = 'updater';
 const REDIS_KEY_UPDATER_SET = 'updater_set';
 
 const REDIS_KEY_EMAIL = 'email';
+const REDIS_KEY_RBAC = 'rbac';
 
 /**
  * 注意，返回的 key　不得为数字，必须为字符串, expire = 0 表示永久存在
@@ -96,6 +97,11 @@ return [
         'server' => $servers['master'],
         'expire' => 0,
     ],
+    #RBAC权限
+    REDIS_KEY_RBAC              => [
+        'server' => $servers['master'],
+        'expire' => 86400 * 7,
+    ],
     /***************************************************/
     #用户数据
     REDIS_KEY_USER              => [
@@ -138,7 +144,7 @@ return [
         'server' => $servers['master'],
         'expire' => 86400 * 2, #有效期
     ],
-    REDIS_KEY_QUESTION_BLOCK          => [
+    REDIS_KEY_QUESTION_BLOCK    => [
         'server' => $servers['master'],
         'expire' => 3600, #有效期
     ],

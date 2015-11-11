@@ -50,6 +50,16 @@ class AnswerEntity extends Answer
     }
 
 
+    public function addAnswer($data)
+    {
+        if ($this->load($data) && $this->save()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     public static function foldAnswer($answer_id, $user_id)
     {
         $model = self::findOne(['answer_id' => $answer_id]);
@@ -158,15 +168,6 @@ class AnswerEntity extends Answer
         return $data;
     }
 
-    public static function addAnswer($data)
-    {
-        $model = new self;
-        if ($model->load($data) && $model->save()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     public static function checkWhetherHasAnswered($question_id, $user_id)
     {
@@ -177,6 +178,15 @@ class AnswerEntity extends Answer
             ]
         )->scalar();
     }
+
+    public static function getAnswerByAnswerId($answer_id)
+    {
+        $query = self::find();
+        $data = $query->where(['id' => $answer_id])->asArray()->one();
+
+        return $data;
+    }
+
 
     public static function getAnswerListByAnswerId(array $answer_id)
     {

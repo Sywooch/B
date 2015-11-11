@@ -118,7 +118,7 @@ class MailerCronJobController extends Controller
                 }
             }
 
-            if (preg_match('/qq\.com/i', $mail, $is_qq_mail)) {
+            //if (preg_match('/qq\.com/i', $mail, $is_qq_mail)) {
                 $user_interactive_mail_log = UserInteractiveMailLog::find()->where(
                     [
                         'user_Id' => $user->id,
@@ -135,7 +135,7 @@ class MailerCronJobController extends Controller
                 if (!$result) {
                     echo '未成功保存到 user_has_qq_mail', PHP_EOL;
                 }
-            }
+            //}
         }
     }
 

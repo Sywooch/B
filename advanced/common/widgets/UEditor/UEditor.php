@@ -28,11 +28,11 @@ class UEditor extends BaseUEditor
             ],
             true
         );
-
+        $this->config['elementPathEnabled'] = false;
         switch ($this->style) {
             case 'answer':
                 $this->config['initialFrameHeight'] = 150;
-                $this->config['elementPathEnabled'] = false;
+
                 $this->config['toolbars'] = [
                     [
                         'fullscreen',
@@ -70,6 +70,7 @@ class UEditor extends BaseUEditor
                 ];
                 break;
             case 'comment':
+                $this->config['initialFrameHeight'] = 150;
                 $this->config['toolbars'] = [
                     [
                         //'fullscreen',

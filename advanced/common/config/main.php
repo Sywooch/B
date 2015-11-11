@@ -14,9 +14,9 @@ return [
             'class'                    => 'common\modules\user\Module',
             'modelMap'                 => [
                 'User'    => 'common\entities\UserEntity',
-                #使用自定义的User模型
                 'Profile' => 'common\entities\UserProfileEntity',
-                #使用自定义的User模型
+                'RegistrationForm' => 'common\modules\user\models\RegistrationForm',
+
             ],
             'controllerMap'            => [
                 'admin'    => 'common\modules\user\controllers\AdminController',
@@ -121,6 +121,7 @@ return [
                         'updater',
                         'redis',
                         'log',
+                        'rbac',
                     ],
                     'logFile'     => '@app/runtime/logs/trace_' . date('Y-m-d') . '.log',
                     'maxFileSize' => 1024 * 2,

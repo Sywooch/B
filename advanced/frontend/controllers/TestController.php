@@ -327,5 +327,22 @@ class TestController extends BaseController
         var_dump($result);
 
     }
+
+    public function actionRbac()
+    {
+        //$result = $this->autoLoginById(3);
+        //var_dump($result);
+
+        echo '<pre />';
+        echo Yii::$app->user->id;
+        echo '<br />';
+
+        var_dump(Yii::$app->user->can('elect'));
+
+
+        $count = Yii::$app->authManager->deleteAllCache();
+
+        var_dump($count);
+    }
 }
 

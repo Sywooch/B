@@ -7,7 +7,9 @@
  */
 use common\entities\AnswerEntity;
 use common\helpers\TemplateHelper;
+use yii\bootstrap\Dropdown;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\LinkPager;
 
 //print_r($data);exit;
@@ -115,16 +117,17 @@ use yii\widgets\LinkPager;
                     <? endif; ?>
                     <li>
                         <?= Html::a(
-                                '评论' . $item['count_comment'] > 0 ? sprintf(
+                                '评论' . ($item['count_comment'] > 0 ? sprintf(
                                         '<data>(%s)</data>)',
                                         $item['count_comment']
-                                ) : '',
+                                ) : ''),
                                 'javascript:void(0);',
                                 [
                                         'data-href'    => Url::to(
                                                 ['answer/get-comment-list', 'id' => $item['id']]
                                         ),
                                         'data-on-done' => 'afterShowCommentList',
+                                        'data-id'      => $item['id'],
                                 ]
                         ) ?>
                     </li>
@@ -139,27 +142,27 @@ use yii\widgets\LinkPager;
                                                 [
                                                         'label'   => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
                                                         'url'     => '/',
-                                                        'visible' => $item['create_at'] == Yii::$app->user->id,
+                                                        'visible' => $item['create_by'] == Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => '删除',
                                                         'url'     => '/',
-                                                        'visible' => $item['create_at'] == Yii::$app->user->id,
+                                                        'visible' => $item['create_by'] == Yii::$app->user->id,
                                                 ],
                                                 [
-                                                        'label'   => $item['is_fol'] == AnswerEntity::STATUS_FOLD ? '取消折叠' : '折叠',
+                                                        'label'   => $item['is_fold'] == AnswerEntity::STATUS_FOLD ? '取消折叠' : '折叠',
                                                         'url'     => '/',
-                                                        'visible' => $item['create_at'] != Yii::$app->user->id,
+                                                        'visible' => $item['create_by'] != Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => '公众编辑',
                                                         'url'     => '/',
-                                                        'visible' => $item['create_at'] != Yii::$app->user->id && true,
+                                                        'visible' => $item['create_by'] != Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => '举报',
                                                         'url'     => '#',
-                                                        'visible' => $item['create_at'] != Yii::$app->user->id,
+                                                        'visible' => $item['create_by'] != Yii::$app->user->id,
                                                 ],
                                         ],
                                 ]
@@ -168,23 +171,7 @@ use yii\widgets\LinkPager;
                 </ul>
             </div>
 
-            <div class="widget-comments hidden"
-                 id="comment-1020000003903993"
-                 data-id="1020000003903993">
-                <div class="widget-comments__form row">
-                    <div class="col-md-12">
-                        请先
-                        <a class="commentLogin"
-                           href="javascript:void(0);">登录</a>
-                        后评论
-                    </div>
-
-                </div>
-                <!-- /.widget-comments__form -->
-            </div>
-            <!-- /.widget-comments -->
-
-
+            <div class="widget-comments hidden" id="comment-<?= $item['id'] ?>"></div>
         </div>
     </article>
 <?php endforeach; ?>
