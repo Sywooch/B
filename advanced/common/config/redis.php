@@ -146,12 +146,12 @@ return [
     ],
     REDIS_KEY_QUESTION_BLOCK    => [
         'server' => $servers['master'],
-        'expire' => 3600, #有效期
+        'expire' => 86400, #有效期
     ],
     #answer
     REDIS_KEY_ANSWER_LIST       => [
         'server' => $servers['master'],
-        'expire' => 3600, #有效期
+        'expire' => 86400, #有效期
     ],
     /*************************************************************/
     #临时测试类的缓存

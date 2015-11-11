@@ -340,9 +340,9 @@ class TestController extends BaseController
         var_dump(Yii::$app->user->can('elect'));
 
 
-        $count = Yii::$app->authManager->deleteAllCache();
+        //$count = Yii::$app->authManager->deleteAllCache();
 
-        var_dump($count);
+        //var_dump($count);
     }
 }
 

@@ -202,8 +202,26 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
         $redis_keys = Yii::$app->redis->keys([REDIS_KEY_RBAC, '*']);
 
         if ($redis_keys) {
-            //print_r([[REDIS_KEY_RBAC, $redis_keys]]);exit;
-            return call_user_func_array([Yii::$app->redis, 'delete'], [[REDIS_KEY_RBAC, $redis_keys]]);
+            $keys = [];
+            foreach ($redis_keys as $redis_key) {
+                if (strpos($redis_key, Yii::$app->redis->prefix) === 0) {
+                    $keys[] = substr(
+                        $redis_key,
+                        strlen(
+                            implode(
+                                ':',
+                                [
+                                    Yii::$app->redis->prefix,
+                                    REDIS_KEY_RBAC,
+                                ]
+                            )
+                        ) + 1
+                    );
+                }
+            }
+
+            //print_r([[REDIS_KEY_RBAC, $keys]]);exit;
+            return call_user_func_array([Yii::$app->redis, 'delete'], [[REDIS_KEY_RBAC, $keys]]);
         }
     }
 }
