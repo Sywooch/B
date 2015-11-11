@@ -18,6 +18,8 @@ use common\entities\FollowTagPassiveEntity;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
 use common\entities\TagEntity;
+use common\helpers\TimeHelper;
+use common\models\CacheAnswerModel;
 use Yii;
 use yii\base\ModelEvent;
 use yii\db\ActiveRecord;
@@ -43,6 +45,7 @@ class AnswerBehavior extends BaseBehavior
     
     public function beforeAnswerInsert(ModelEvent $event)
     {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $owner = $this->owner;
         $hasAnswered = $owner->checkWhetherHasAnswered($owner->question_id, $owner->create_by);
         
@@ -58,14 +61,41 @@ class AnswerBehavior extends BaseBehavior
     
     public function afterAnswerInsert($event)
     {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotification(NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER);
         $this->dealWithAddCounter();
         $this->dealWithUpdateQuestionActiveTime();
         $this->dealWithAddPassiveFollowTag();
+        $this->dealWithCache();
+    }
+
+    public function dealWithCache()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        #marked user has answered this question
+        $cache_key = [
+            REDIS_KEY_QUESTION_HAS_ANSWERED,
+            implode(':', [$this->owner->create_by, $this->owner->question_id]),
+        ];
+        Yii::$app->redis->set($cache_key, $this->owner->id);
+
+        #add answer to list
+
+        Yii::$app->redis->zAdd(
+            [REDIS_KEY_ANSWER_LIST_TIME, $this->owner->question_id],
+            TimeHelper::getCurrentTime(),
+            $this->owner->id
+        );
+        Yii::$app->redis->zAdd([REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id], 0, $this->owner->id);
+
+        $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
+        Yii::$app->redis->HMSET([REDIS_KEY_ANSWER_ENTITY, $this->owner->id], $item);
     }
     
     public function afterAnswerUpdate($event)
     {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotification(NotificationEntity::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
         #not creator himself, create new version
         if (Yii::$app->user->id != $this->owner->create_by) {
@@ -76,11 +106,12 @@ class AnswerBehavior extends BaseBehavior
     
     public function afterAnswerDelete($event)
     {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }
     
     public function dealWithCheckWhetherHasAnswered()
     {
-        
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }
     
     public function dealWithUpdateQuestionActiveTime()

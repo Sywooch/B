@@ -55,23 +55,13 @@ class AnswerEntity extends Answer
     public function addAnswer($data)
     {
         if ($this->load($data) && $this->save()) {
-            $this->addAnswerToRedis($this);
+
 
             return true;
         } else {
             return false;
         }
     }
-
-    protected function addAnswerToRedis(self $model)
-    {
-        Yii::$app->redis->zAdd([REDIS_KEY_ANSWER_LIST_TIME, $model->question_id], $this->getCurrentTime(), $model->id);
-        Yii::$app->redis->zAdd([REDIS_KEY_ANSWER_LIST_SCORE, $model->question_id], 0, $model->id);
-
-        $item = (new CacheAnswerModel())->filterAttributes($model->getAttributes());
-        Yii::$app->redis->HMSET([REDIS_KEY_ANSWER_ENTITY, $model->id], $item);
-    }
-
 
     public static function foldAnswer($answer_id, $user_id)
     {
@@ -184,37 +174,52 @@ class AnswerEntity extends Answer
 
     public static function checkWhetherHasAnswered($question_id, $user_id)
     {
-        return self::find()->select('id')->where(
-            [
-                'question_id' => $question_id,
-                'create_by'   => $user_id,
-            ]
-        )->scalar();
+        $cache_key = [REDIS_KEY_QUESTION_HAS_ANSWERED, implode(':', [$user_id, $question_id])];
+
+        $cache_data = Yii::$app->redis->get($cache_key);
+
+        if ($cache_data === false) {
+            $cache_data = self::find()->select('id')->where(
+                [
+                    'question_id' => $question_id,
+                    'create_by'   => $user_id,
+                ]
+            )->scalar();
+
+            Yii::$app->redis->set($cache_key, $cache_data);
+        }
+
+        return $cache_data;
     }
 
     public static function getAnswerCountByQuestionId($question_id)
     {
-        $cache_key = [REDIS_KEY_ANSWER_LIST_TIME, $question_id];
-        $count = Yii::$app->redis->zCard($cache_key);
-        if (0 == $count) {
-            $count = AnswerEntity::find()->select('id')->where(
-                ['question_id' => $question_id]
-            )->count(1);
+        $cache_key = [REDIS_KEY_QUESTION, $question_id];
+        $count = Yii::$app->redis->hGet($cache_key, 'count_answer');
+        if (false === $count) {
+            $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
+            $count = $question_data['count_answer'];
         }
 
         return $count;
     }
 
-    public static function getAnswerListByQuestionIdOrderByTime($question_id, $limit = 10, $offset = 0)
+    private static function getAnswerListByQuestionIdOrderByTime($question_id, $page_no = 1, $page_size = 10)
     {
         $cache_key = [REDIS_KEY_ANSWER_LIST_TIME, $question_id];
-        if (0 == Yii::$app->redis->zCard($cache_key)) {
-            $answer_ids = AnswerEntity::find()->select('id')->where(
-                ['question_id' => $question_id]
-            )->limit($limit)->offset($offset)->orderBy('create_at DESC')->column();
-        } else {
+        #answer_count
+        if (self::getAnswerCountByQuestionId($question_id) > 0) {
+            if (0 == Yii::$app->redis->zCard($cache_key)) {
+                self::setAnswerListByQuestionIdOrderToCache($question_id);
+            }
             //zrevrange score 0 -1 withscores
-            $answer_ids = Yii::$app->redis->zRevRange($cache_key, $offset, $offset + $limit);
+            $page_no = max($page_no, 1);
+            $start = ($page_no - 1) * $page_size;
+            $end = $page_size * $page_no - 1;
+
+            $answer_ids = Yii::$app->redis->zRevRange($cache_key, $start, $end);
+        } else {
+            $answer_ids = [];
         }
 
         if ($answer_ids) {
@@ -226,20 +231,24 @@ class AnswerEntity extends Answer
         return $data;
     }
 
-    public static function getAnswerListByQuestionIdOrderByScore($question_id, $limit = 10, $offset = 0)
+    private static function getAnswerListByQuestionIdOrderByScore($question_id, $page_no = 1, $page_size = 10)
     {
         $cache_key = [REDIS_KEY_ANSWER_LIST_SCORE, $question_id];
-        if (0 == Yii::$app->redis->zCard($cache_key)) {
-            $answer_ids = AnswerEntity::find()->select(
-                [
-                    'id',
-                ]
-            )->where(
-                ['question_id' => $question_id]
-            )->limit($limit)->offset($offset)->orderBy('count_useful DESC, create_at DESC')->column();
+        #answer_count > 0
+        $answer_count = self::getAnswerCountByQuestionId($question_id);
+        if ($answer_count > 0) {
+            if (0 == Yii::$app->redis->zCard($cache_key)) {
+
+                self::setAnswerListByQuestionIdOrderToCache($question_id);
+            }
+
+            $page_no = max($page_no, 1);
+            $start = ($page_no - 1) * $page_size;
+            $end = $page_size * $page_no - 1;
+
+            $answer_ids = Yii::$app->redis->zRevRange($cache_key, $start, $end);
         } else {
-            //zrevrange score 0 -1 withscores
-            $answer_ids = Yii::$app->redis->zRevRange($cache_key, $offset, $offset + $limit);
+            $answer_ids = [];
         }
 
         if ($answer_ids) {
@@ -251,6 +260,35 @@ class AnswerEntity extends Answer
         return $data;
     }
 
+    private static function setAnswerListByQuestionIdOrderToCache($question_id)
+    {
+        $answer_data = AnswerEntity::find()->select(['id', 'count_useful', 'create_at'])->where(
+            ['question_id' => $question_id]
+        )->asArray()->all();
+
+
+        $score_params = [
+            [REDIS_KEY_ANSWER_LIST_SCORE, $question_id],
+        ];
+
+        foreach ($answer_data as $item) {
+            $score_params[] = $item['count_useful'];
+            $score_params[] = $item['id'];
+        }
+        call_user_func_array([Yii::$app->redis, 'zAdd'], $score_params);
+
+
+        #add to time list
+        $time_params = [
+            [REDIS_KEY_ANSWER_LIST_TIME, $question_id],
+        ];
+
+        foreach ($answer_data as $item) {
+            $time_params[] = $item['create_at'];
+            $time_params[] = $item['id'];
+        }
+        call_user_func_array([Yii::$app->redis, 'zAdd'], $time_params);
+    }
 
     public static function getAnswerByAnswerId($answer_id)
     {
@@ -266,8 +304,9 @@ class AnswerEntity extends Answer
         foreach ($answer_ids as $answer_id) {
             $cache_key = [REDIS_KEY_ANSWER_ENTITY, $answer_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
-            if ($cache_data === false) {
+            if (empty($cache_data)) {
                 $cache_miss_key[] = $answer_id;
+                $result[$answer_id] = null;
             } else {
                 $result[$answer_id] = $cache_data;
             }
@@ -277,9 +316,11 @@ class AnswerEntity extends Answer
             $query = self::find();
             $data = $query->where(['id' => $cache_miss_key])->asArray()->all();
 
+            $cache_answer_model = new CacheAnswerModel();
             foreach ($data as $item) {
                 $answer_id = $item['id'];
-                $item = (new CacheAnswerModel())->filterAttributes($item);
+                #filter attributes
+                $item = $cache_answer_model->filterAttributes($item);
                 $result[$answer_id] = $item;
                 $cache_key = [REDIS_KEY_ANSWER_ENTITY, $answer_id];
                 Yii::$app->redis->hMset($cache_key, $item);
@@ -289,42 +330,22 @@ class AnswerEntity extends Answer
         return $result;
     }
 
-    public static function getAnswerListByQuestionId($question_id, $limit, $offset, $sort = 'default')
+    public static function getAnswerListByQuestionId($question_id, $page_no, $page_size, $sort = 'default')
     {
-
-        $query = self::find();
         switch ($sort) {
             case 'created':
-                $query->addOrderBy('create_at DESC');
+                $data = self::getAnswerListByQuestionIdOrderByTime($question_id, $page_no, $page_size);
                 break;
 
+            case 'default':
+                $data = self::getAnswerListByQuestionIdOrderByScore($question_id, $page_no, $page_size);
+                break;
             default:
-                $query->addOrderBy('count_useful DESC');
-        }
-
-        //$data = $this->getAnswerListByQuestionIdByCache($question_id, $limit, $offset);
-        $data = false;
-        if ($data === false) {
-            $query = $query->where(['question_id' => $question_id])->offset($offset)->limit($limit)->asArray();
-            $data = $query->all();
-
-            //$this->setAnswerListByQuestionIdByCache($question_id, $limit, $offset, $data);
+                $data = [];
         }
 
         return $data;
     }
 
-    private static function getAnswerListByQuestionIdByCache($question_id, $limit, $offset)
-    {
-        $cache_key = [REDIS_KEY_ANSWER_LIST, implode(':', [$question_id, $limit, $offset])];
 
-        return Yii::$app->redis->get($cache_key);
-    }
-
-    private static function setAnswerListByQuestionIdByCache($question_id, $limit, $offset, $data)
-    {
-        $cache_key = [REDIS_KEY_ANSWER_LIST, implode(':', [$question_id, $limit, $offset])];
-
-        return Yii::$app->redis->set($cache_key, $data);
-    }
 }

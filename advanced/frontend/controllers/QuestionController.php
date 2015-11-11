@@ -70,7 +70,7 @@ class QuestionController extends BaseController
             [
                 'question_data' => $html,
                 'active'        => 'latest',
-                'pages' => $pages,
+                'pages'         => $pages,
             ]
         );
     }
@@ -92,7 +92,7 @@ class QuestionController extends BaseController
             $html = $this->renderPartial(
                 '/default/question_item_view',
                 [
-                    'data' => $data,
+                    'data'  => $data,
                     'pages' => $pages,
                 ]
             );
@@ -105,7 +105,7 @@ class QuestionController extends BaseController
             [
                 'question_data' => $html,
                 'active'        => 'hot',
-                'pages' => $pages,
+                'pages'         => $pages,
             ]
         );
     }
@@ -139,7 +139,7 @@ class QuestionController extends BaseController
             [
                 'question_data' => $html,
                 'active'        => 'un-answer',
-                'pages' => $pages,
+                'pages'         => $pages,
             ]
         );
     }
@@ -155,10 +155,10 @@ class QuestionController extends BaseController
     public function actionView($id, $sort = 'default', $answer_id = null)
     {
 
-        $question_model = $this->findModel($id);
+        $question_data = QuestionEntity::getQuestionByQuestionId($id);
 
         if (ServerHelper::checkIsSpider() && !in_array(
-                $question_model->status,
+                $question_data['status'],
                 explode(',', QuestionEntity::STATUS_DISPLAY_FOR_SPIDER)
             )
         ) {
@@ -172,23 +172,24 @@ class QuestionController extends BaseController
 
         if ($answer_id) {
             $pages = null;
-            $answer_data = $answer_model->getAnswerListByAnswerId([$answer_id]);
+            $answer_data = AnswerEntity::getAnswerByAnswerId($answer_id);
         } else {
             $pages = new Pagination(
                 [
-                    'totalCount' => $question_model->count_answer,
+                    'totalCount' => AnswerEntity::getAnswerCountByQuestionId($id),
                     'pageSize'   => 20,
                     'params'     => array_merge($_GET, ['#' => 'answer-list']),
                 ]
             );
-            $answer_data = $answer_model->getAnswerListByQuestionId($id, $pages->pageSize, $pages->offset, $sort);
+            $answer_data = AnswerEntity::getAnswerListByQuestionId($id, $pages->pageSize, $pages->offset, $sort);
         }
 
+        //print_r($answer_data);exit;
 
         return $this->render(
             'view',
             [
-                'question_model'   => $question_model,
+                'question_data'    => $question_data,
                 'answer_model'     => $answer_model,
                 'answer_item_html' => $this->renderPartial(
                     '_question_answer_item',
@@ -294,9 +295,8 @@ class QuestionController extends BaseController
             $answer_user_ids = AnswerEntity::getAnswerUserIdsByQuestionId($question_id);
             $user_ids = array_merge($user_ids, $answer_user_ids);
         }
-        /* @var $user_entity UserEntity */
-        $user_entity = Yii::createObject(UserEntity::className());
-        $user = $user_entity->getUserById($user_ids);
+
+        $user = UserEntity::getUserListByIds($user_ids);
 
         exit(json_encode($user));
         echo Json::encode($user);

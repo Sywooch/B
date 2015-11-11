@@ -5,6 +5,7 @@ namespace common\entities;
 
 use common\components\Updater;
 use common\helpers\StringHelper;
+use common\models\CacheQuestionModel;
 use common\models\Tag;
 use common\services\NotificationService;
 use Yii;
@@ -173,7 +174,44 @@ class QuestionEntity extends Question
 
     public static function getQuestionByQuestionId($question_id)
     {
-        return self::findOne($question_id);
+        $data = self::getQuestionListByQuestionIds([$question_id]);
+
+        return $data ? array_shift($data) : [];
+    }
+
+    public static function getQuestionListByQuestionIds(array $question_ids)
+    {
+        $result = $cache_miss_key = $cache_data = [];
+        foreach ($question_ids as $question_id) {
+            $cache_key = [REDIS_KEY_QUESTION, $question_id];
+            $cache_data = Yii::$app->redis->hGetAll($cache_key);
+            if (empty($cache_data)) {
+                $cache_miss_key[] = $question_id;
+                $result[$question_id] = null;
+            } else {
+                $result[$question_id] = $cache_data;
+            }
+        }
+
+        if ($cache_miss_key) {
+            $cache_data = self::find()->where(
+                [
+                    'id' => $cache_miss_key,
+                ]
+            )->asArray()->all();
+
+            $cache_question_model = new CacheQuestionModel();
+            foreach ($cache_data as $item) {
+                #filter attributes
+                $item = $cache_question_model->filterAttributes($item);
+                $question_id = $item['id'];
+                $result[$question_id] = $item;
+                $cache_key = [REDIS_KEY_QUESTION, $question_id];
+                Yii::$app->redis->hMset($cache_key, $item);
+            }
+        }
+
+        return $result;
     }
 
     /**

@@ -24,19 +24,19 @@ use common\entities\AnswerEntity;
             </div>
         </div>
 
-    <?php elseif ($answer_id = $answer_model->checkWhetherHasAnswered($question_model->id, Yii::$app->user->id)): ?>
+    <?php elseif ($answer_id = $answer_model->checkWhetherHasAnswered($question_data['id'], Yii::$app->user->id)): ?>
 
-        <?php if (isset($_GET['answer_id']) && $_GET['answer_id'] && $question_model->count_answer > 1): ?>
+        <?php if (isset($_GET['answer_id']) && $_GET['answer_id'] && $question_data['count_answer'] > 1): ?>
             <div class="mt20">
                 <?= Html::a(
                         sprintf(
                                 '<strong>查看全部 %d 个回答</strong>',
-                                $question_model->count_answer
+                                $question_data['count_answer']
 
                         ),
                         [
                                 'question/view',
-                                'id' => $question_model->id,
+                                'id' => $question_data['id'],
                         ]
                 ); ?>
             </div>
@@ -45,7 +45,7 @@ use common\entities\AnswerEntity;
         <?= $this->render(
                 '_question_has_answered',
                 [
-                        'question_id' => $question_model->id,
+                        'question_id' => $question_data['id'],
                         'answer_id'   => $answer_id,
                 ]
         ); ?>
@@ -75,7 +75,7 @@ use common\entities\AnswerEntity;
                         [
                                 'class'        => 'btn btn-primary',
                                 'id'           => 'btn_ajax_answer',
-                                'data-href'    => Url::to(['answer/create', 'question_id' => $question_model->id]),
+                                'data-href'    => Url::to(['answer/create', 'question_id' => $question_data['id']]),
                                 'data-on-done' => 'afterAnswerCreateSuccess',
                                 'data-form-id' => 'answer_form',
                         ]

@@ -154,7 +154,7 @@ class TestController extends BaseController
 
     public function actionRedis()
     {
-        echo '<pre />';
+        /*echo '<pre />';
         Yii::$app->redis->set(['s', 'test'], 'value:a');
         print_r(Yii::$app->redis->get(['s', 'test']));
         echo '<hr />';
@@ -179,17 +179,33 @@ class TestController extends BaseController
         );
 
 
-        print_r(Yii::$app->redis->mget(['m', ['a', 'b', 'd', 'c']]));
+        print_r(Yii::$app->redis->mget(['m', ['a', 'b', 'd', 'c']]));*/
 
+        /*$cache_key = [REDIS_KEY_QUESTION, 'ABC'];
+        $result = Yii::$app->redis->hMset($cache_key, ['a' => 1,'b' => 1000]);
+        var_dump(empty($result));*/
+
+
+        $result  = QuestionEntity::getQuestionListByQuestionIds([2,3,4,5]);
+
+        //var_dump($result);
     }
 
-    public function actionGetUser()
+    public function actionUser()
     {
         /* @var $user UserEntity */
-        $user = Yii::createObject(UserEntity::className());
+        /*$user = Yii::createObject(UserEntity::className());
         $data = $user->getUserById([1]);
 
-        print_r($data);
+        print_r($data);*/
+
+        //$result = UserEntity::getUserListByIds([1]);
+        //print_r($result);
+        //print_r(Yii::$app->redis->config);
+
+        $result = UserEntity::getUserIdByUsername(['admin','瞎猫']);
+        print_r($result);
+
     }
 
     public function actionGetUsername()

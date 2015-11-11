@@ -28,6 +28,7 @@ class Connection extends Component
     public $need_set_expire_command = [
         'SET',
         'MSET',
+        'ZADD',
         'SADD',
         'HSET',
         'HMSET',
@@ -89,11 +90,28 @@ class Connection extends Component
      * 设置过期时间
      * @param $action
      */
-    public function buildCacheKeyExpire($action)
+    private function buildCacheKeyExpire($action)
     {
         if ($this->redis_key_config['expire'] && in_array(strtoupper($action), $this->need_set_expire_command)) {
-            self::$instance[$this->instance_key]->setTimeout($this->params[0], $this->redis_key_config['expire']);
+            if (is_array($this->params[0])) {
+                if (ArrayHelper::isPureAssociative($this->params[0])) {
+                    foreach ($this->params[0] as $cache_key => $cache_value) {
+                        $this->setCacheKeyExpire($cache_key, $this->redis_key_config['expire']);
+                    }
+                } else {
+                    foreach ($this->params[0] as $cache_key) {
+                        $this->setCacheKeyExpire($cache_key, $this->redis_key_config['expire']);
+                    }
+                }
+            } else {
+                $this->setCacheKeyExpire($this->params[0], $this->redis_key_config['expire']);
+            }
         }
+    }
+
+    private function setCacheKeyExpire($cache_key, $cache_expire_time)
+    {
+        self::$instance[$this->instance_key]->setTimeout($cache_key, $cache_expire_time);
     }
 
     private function getKeyConfig()

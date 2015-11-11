@@ -14,9 +14,8 @@ use yii\widgets\LinkPager;
 use yii\widgets\ListView;
 
 /* @var $this yii\web\View */
-/* @var $question_model common\models\Question */
 
-$this->title = $question_model->subject;
+$this->title = $question_data['subject'];
 $this->params['breadcrumbs'][] = ['label' => '问答'];
 
 /* $var $user_entity UserEntity */
@@ -45,24 +44,24 @@ $this->beginBlock('top-header');
                 ) ?>
 
                 <h1 class="title">
-                    <?= $question_model->subject ?>
+                    <?= $question_data['subject'] ?>
                 </h1>
 
                 <div class="author">
                     <a href="/u/smallkiss" class="mr5">
-                        <?= TemplateHelper::showUserAvatar($question_model->create_by, 24, false) ?>
-                        <strong><?= TemplateHelper::showUsername($question_model->create_by, false) ?></strong>
+                        <?= TemplateHelper::showUserAvatar($question_data['create_by'], 24, false) ?>
+                        <strong><?= TemplateHelper::showUsername($question_data['create_by'], false) ?></strong>
                     </a>
-                    <?= TemplateHelper::showhumanTime($question_model->create_at) ?>
-                    <?php if ($question_model->active_at > 0): ?>
+                    <?= TemplateHelper::showhumanTime($question_data['create_at']) ?>
+                    <?php if ($question_data['active_at'] > 0): ?>
                         <?= Html::a(
                                 '更新问题',
                                 [
                                         'question-version/index',
-                                        'question_id' => $question_model->id,
+                                        'question_id' => $question_data['id'],
                                 ]
                         ); ?>
-                    <?php elseif ($question_model->is_anonymous == QuestionEntity::STATUS_ANONYMOUS): ?>
+                    <?php elseif ($question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS): ?>
                         匿名提问
                     <?php else: ?>
                         提问
@@ -83,7 +82,7 @@ $this->beginBlock('top-header');
                                 title=""
                                 data-original-title="关注后将获得更新提醒">关注
                         </button>
-                        <strong><?= $question_model->count_follow ?></strong> 关注
+                        <strong><?= $question_data['count_follow'] ?></strong> 关注
                     </li>
                     <li>
                         <button type="button"
@@ -92,8 +91,8 @@ $this->beginBlock('top-header');
                                 data-id="1010000003903942"
                                 data-type="question">收藏
                         </button>
-                        <strong id="sideBookmarked"><?= $question_model->count_favorite ?></strong> 收藏，
-                        <strong class="no-stress"><?= $question_model->count_views ?></strong> 浏览
+                        <strong id="sideBookmarked"><?= $question_data['count_favorite'] ?></strong> 收藏，
+                        <strong class="no-stress"><?= $question_data['count_views'] ?></strong> 浏览
                     </li>
                 </ul>
             </div>
@@ -140,20 +139,20 @@ $this->endBlock();
 
                 <div class="post-offset">
                     <div class="question fmt">
-                        <?= $question_model->content ?>
+                        <?= $question_data['content'] ?>
 
                     </div>
                     <ul class="taglist--inline mb20">
-                        <?= TemplateHelper::showTagLiLabelByName($question_model->tags) ?>
+                        <?= TemplateHelper::showTagLiLabelByName($question_data['tags']) ?>
                     </ul>
 
                     <div class="post-opt">
                         <ul class="list-inline mb0">
-                            <li><?= Html::a('链接', ['question/view', 'id' => $question_model->id]); ?></li>
-                            <? if ($question_model->create_by == Yii::$app->user->id): ?>
+                            <li><?= Html::a('链接', ['question/view', 'id' => $question_data['id']]); ?></li>
+                            <? if ($question_data['create_by'] == Yii::$app->user->id): ?>
                                 <li><?= Html::a(
                                             '编辑',
-                                            ['question/update', 'id' => $question_model->id]
+                                            ['question/update', 'id' => $question_data['id']]
                                     ) ?></li>
                             <? endif; ?>
                             <li class="dropdown">
@@ -164,19 +163,19 @@ $this->endBlock();
                                         [
                                                 'items' => [
                                                         [
-                                                                'label'   => $question_model->is_anonymous == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
+                                                                'label'   => $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
                                                                 'url'     => '/',
-                                                                'visible' => $question_model->create_by == Yii::$app->user->id,
+                                                                'visible' => $question_data['create_by'] == Yii::$app->user->id,
                                                         ],
                                                         [
                                                                 'label'   => '删除',
                                                                 'url'     => '/',
-                                                                'visible' => $question_model->create_by == Yii::$app->user->id && $question_model->create_at > $question_model->getBeforeTime(1),
+                                                                'visible' => $question_data['create_by'] == Yii::$app->user->id,
                                                         ],
                                                         [
                                                                 'label'   => '举报',
                                                                 'url'     => '#',
-                                                                'visible' => $question_model->create_by != Yii::$app->user->id,
+                                                                'visible' => $question_data['create_by'] != Yii::$app->user->id,
                                                         ],
                                                 ],
                                         ]
@@ -206,7 +205,7 @@ $this->endBlock();
                             '默认排序',
                             [
                                     'question/view',
-                                    'id'   => $question_model->id,
+                                    'id'   => $question_data['id'],
                                     'sort' => 'default',
                             ],
                             [
@@ -218,7 +217,7 @@ $this->endBlock();
                             '时间排序',
                             [
                                     'question/view',
-                                    'id'   => $question_model->id,
+                                    'id'   => $question_data['id'],
                                     'sort' => 'created',
                             ],
                             [
@@ -230,7 +229,7 @@ $this->endBlock();
 
                 </div>
 
-                <h2 class="title h4 mt30 mb20 post-title" id="answers-title"><?= $question_model->count_answer ?>
+                <h2 class="title h4 mt30 mb20 post-title" id="answers-title"><?= $question_data['count_answer'] ?>
                     个回答</h2>
                 <?= $answer_item_html ?>
                 <div class="text-center"></div>
@@ -240,7 +239,7 @@ $this->endBlock();
             <?= $this->render(
                     '_question_answer_form',
                     [
-                            'question_model' => $question_model,
+                            'question_data' => $question_data,
                             'answer_model'   => $answer_model,
                     ]
             ); ?>

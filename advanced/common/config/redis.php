@@ -25,38 +25,40 @@ $servers = [
 
 /*应用级缓存*/
 #USER
-const REDIS_KEY_USER = 'user';
-const REDIS_KEY_USER_USERNAME_ID = 'username_id';
-const REDIS_KEY_USER_FOLLOW = 'user_follow';
-const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation';
+const REDIS_KEY_USER = 'user:hash';
+const REDIS_KEY_USER_USERNAME_USERID = 'username_userid:string';
+
+const REDIS_KEY_USER_FOLLOW = 'user_follow:string';
+const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation:string';
 
 #TAG
-const REDIS_KEY_TAG_ID_NAME = 'tag_id_name';
-const REDIS_KEY_TAG_NAME_ID = 'tag_name_id';
-const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation';
+const REDIS_KEY_TAG_ID_NAME = 'tag_id_name:string';
+const REDIS_KEY_TAG_NAME_ID = 'tag_name_id:string';
+const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:string';
 
 
 #QUESTION
-const REDIS_KEY_QUESTION = 'question';
-const REDIS_KEY_QUESTION_BLOCK = 'question_block_string';
-
+const REDIS_KEY_QUESTION = 'question:hash';
+const REDIS_KEY_QUESTION_BLOCK = 'question_block:string';
+const REDIS_KEY_QUESTION_HAS_ANSWERED = 'question_has_answered:string';
 #ANSWER
-const REDIS_KEY_ANSWER_LIST = 'answer_list_string';
-const REDIS_KEY_ANSWER_LIST_TIME = 'answer_list_time_sset';
-const REDIS_KEY_ANSWER_LIST_SCORE = 'answer_list_score_sset';
-const REDIS_KEY_ANSWER_ENTITY = 'answer_entity_list';
+const REDIS_KEY_ANSWER_LIST = 'answer_list:string';
+const REDIS_KEY_ANSWER_LIST_TIME = 'answer_list_time:sset';
+const REDIS_KEY_ANSWER_LIST_SCORE = 'answer_list_score:sset';
+const REDIS_KEY_ANSWER_ENTITY = 'answer_entity:list';
 
 /*系统级缓存*/
-const REDIS_KEY_SETTING = 'setting';
-const REDIS_KEY_COUNTER = 'counter';
-const REDIS_KEY_COUNTER_SET = 'counter_set';
-const REDIS_KEY_NOTIFIER = 'notifier';
-const REDIS_KEY_NOTIFIER_SET = 'notifier_set';
-const REDIS_KEY_UPDATER = 'updater';
-const REDIS_KEY_UPDATER_SET = 'updater_set';
+const REDIS_KEY_SETTING = 'setting:string';
 
-const REDIS_KEY_EMAIL = 'email';
-const REDIS_KEY_RBAC = 'rbac';
+const REDIS_KEY_COUNTER = 'counter:list';
+const REDIS_KEY_COUNTER_SET = 'counter:set';
+const REDIS_KEY_NOTIFIER = 'notifier:list';
+const REDIS_KEY_NOTIFIER_SET = 'notifier:set';
+const REDIS_KEY_UPDATER = 'updater:list';
+const REDIS_KEY_UPDATER_SET = 'updater:set';
+
+const REDIS_KEY_EMAIL = 'email:list';
+const REDIS_KEY_RBAC = 'rbac:string';
 
 /**
  * 注意，返回的 key　不得为数字，必须为字符串, expire = 0 表示永久存在
@@ -112,9 +114,9 @@ return [
         'expire' => 86400 * 7, #有效期
     ],
     #用户名与用户ID间的关系
-    REDIS_KEY_USER_USERNAME_ID  => [
+    REDIS_KEY_USER_USERNAME_USERID  => [
         'server' => $servers['master'],
-        'expire' => 86400 * 7, #有效期
+            'expire' => 86400 * 7, #有效期
     ],
     #用户关注的用户
     REDIS_KEY_USER_FOLLOW       => [
@@ -145,26 +147,30 @@ return [
     #question
     REDIS_KEY_QUESTION          => [
         'server' => $servers['master'],
-        'expire' => 86400 * 2, #有效期
+        'expire' => 86400, #有效期
     ],
     REDIS_KEY_QUESTION_BLOCK    => [
         'server' => $servers['master'],
         'expire' => 86400, #有效期
+    ],
+    REDIS_KEY_QUESTION_HAS_ANSWERED    => [
+        'server' => $servers['master'],
+        'expire' => 86400*7, #有效期
     ],
     /*------------- answer ---------------*/
     REDIS_KEY_ANSWER_LIST       => [
         'server' => $servers['master'],
         'expire' => 86400, #有效期
     ],
-    REDIS_KEY_ANSWER_LIST_TIME       => [
+    REDIS_KEY_ANSWER_LIST_TIME  => [
         'server' => $servers['master'],
         'expire' => 86400, #有效期
     ],
-    REDIS_KEY_ANSWER_LIST_SCORE       => [
+    REDIS_KEY_ANSWER_LIST_SCORE => [
         'server' => $servers['master'],
         'expire' => 86400, #有效期
     ],
-    REDIS_KEY_ANSWER_ENTITY       => [
+    REDIS_KEY_ANSWER_ENTITY     => [
         'server' => $servers['master'],
         'expire' => 86400, #有效期
     ],

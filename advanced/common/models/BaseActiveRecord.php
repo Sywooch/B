@@ -11,6 +11,7 @@ namespace common\models;
 
 
 use common\controllers\PerformanceRecordController;
+use common\helpers\TimeHelper;
 use yii\base\Event;
 use yii\db\ActiveRecord;
 use Yii;
@@ -118,7 +119,7 @@ class BaseActiveRecord extends ActiveRecord
      */
     protected function getCurrentTime()
     {
-        return time();
+        return TimeHelper::getCurrentTime();
     }
 
     /**
@@ -128,11 +129,11 @@ class BaseActiveRecord extends ActiveRecord
      */
     public function getBeforeTime($period = 7)
     {
-        return $this->getCurrentTime() - $period * 86400;
+        return TimeHelper::getBeforeTime($period);
     }
 
     public function getAfterTime($period = 7)
     {
-        return $this->getCurrentTime() + $period * 86400;
+        return TimeHelper::getAfterTime($period);
     }
 }
