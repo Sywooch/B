@@ -29,4 +29,9 @@ class StringHelper extends \yii\helpers\StringHelper
             return count($ar[0]);
         }
     }
+
+    public static function checkEmailFormat($email)
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
 }

@@ -47,10 +47,10 @@ class QuestionInviteBehavior extends BaseBehavior
     private function dealWithNotifier()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = Notifier::build()->from($this->owner->create_by)->to($this->owner->invited_user_id)->set(
+        $result = Notifier::build()->from($this->owner->create_by)->to($this->owner->invited_user_id)->notice(
             NotificationEntity::TYPE_INVITE_ME_TO_ANSWER,
             $this->owner->question_id
-        )->send();
+        );
 
         return $result;
     }

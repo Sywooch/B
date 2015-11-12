@@ -46,9 +46,10 @@ class AnswerCommentBehavior extends BaseBehavior
 
         $answer_data = AnswerEntity::getAnswerByAnswerId($this->owner->answer_id);
         if ($answer_data && isset($answer_data['create_by'])) {
-            Notifier::build()->from($this->owner->create_by)->to($answer_data['create_by'])->set(
-                NotificationEntity::TYPE_MY_ANSWER_HAS_NEW_COMMENT
-            )->send();
+            Notifier::build()->from($this->owner->create_by)->to($answer_data['create_by'])->notice(
+                NotificationEntity::TYPE_MY_ANSWER_HAS_NEW_COMMENT,
+                $this->owner->id
+            );
         }
     }
 
@@ -66,7 +67,7 @@ class AnswerCommentBehavior extends BaseBehavior
 
         $user_ids = $user_entity->getUserIdByUsername($username);
 
-        Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->set(
+        Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->notice(
             NotificationEntity::TYPE_COMMENT_AT_ME,
             $this->owner->id
         );

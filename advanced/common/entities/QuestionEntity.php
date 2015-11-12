@@ -342,4 +342,22 @@ class QuestionEntity extends Question
     {
         
     }
+
+    public static function ensureQuestionHasCache($question_id)
+    {
+        $cache_key = [REDIS_KEY_QUESTION, $question_id];
+        if (Yii::$app->redis->hLen($cache_key) === 0) {
+            $item = self::find()->where(
+                [
+                    'id' => $question_id,
+                ]
+            )->asArray()->all();
+
+            $item = (new CacheQuestionModel())->filterAttributes($item);
+
+            return Yii::$app->redis->hMset($cache_key, $item);
+        }
+
+        return true;
+    }
 }

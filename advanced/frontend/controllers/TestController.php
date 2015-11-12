@@ -98,15 +98,18 @@ class TestController extends BaseController
     public function actionNotifier()
     {
 
-        $result = Notifier::build()->priority(true)->from(1)->to([1, 2])->set(
+        $result = Notifier::build()->priority(true)->from(1)->to([1, 2])->notice(
             NotificationEntity::TYPE_ANSWER_AT_ME,
             1
-        )->send();
+        )->email('a','b');
 
-        $result = Notifier::build()->priority(false)->from(1)->to([1, 2])->set(
+        var_dump($result->result);
+        exit;
+
+        $result = Notifier::build()->priority(false)->from(1)->to([1, 2])->notice(
             NotificationEntity::TYPE_ANSWER_AT_ME,
             1
-        )->send();
+        );
 
         var_dump($result);
 
@@ -186,7 +189,7 @@ class TestController extends BaseController
         var_dump(empty($result));*/
 
 
-        $result  = QuestionEntity::getQuestionListByQuestionIds([2,3,4,5]);
+        $result = QuestionEntity::getQuestionListByQuestionIds([2, 3, 4, 5]);
 
         //var_dump($result);
     }
@@ -203,7 +206,7 @@ class TestController extends BaseController
         //print_r($result);
         //print_r(Yii::$app->redis->config);
 
-        $result = UserEntity::getUserIdByUsername(['admin','瞎猫']);
+        $result = UserEntity::getUserIdByUsername(['admin', '瞎猫']);
         print_r($result);
 
     }
@@ -337,7 +340,9 @@ class TestController extends BaseController
 
     public function actionCws()
     {
-        $result = Yii::$app->cws->text('红旗Linux是由北京中科红旗软件技术有限公司开发的一系列Linux发行版，包括桌面版、工作站版、数据中心服务器版、HA集群版和红旗嵌入式Linux等产品。目前在中国各软件专卖店可以购买到光盘版，同时官方网站也提供光盘镜像免费下载。红旗Linux是中国较大、较成熟的Linux发行版之一。')->getTops();
+        $result = Yii::$app->cws->text(
+            '红旗Linux是由北京中科红旗软件技术有限公司开发的一系列Linux发行版，包括桌面版、工作站版、数据中心服务器版、HA集群版和红旗嵌入式Linux等产品。目前在中国各软件专卖店可以购买到光盘版，同时官方网站也提供光盘镜像免费下载。红旗Linux是中国较大、较成熟的Linux发行版之一。'
+        )->getTops();
 
         var_dump($result);
 

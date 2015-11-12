@@ -190,7 +190,7 @@ return [
             ],
             'messageConfig'    => [
                 'charset' => 'UTF-8',
-                'from'    => ['sendmail0@ribenyu.cn' => 'admin'],
+                'from'    => ['admin@bo-u.cn' => 'admin'],
             ],
         ],
         #redis定义

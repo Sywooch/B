@@ -7,6 +7,7 @@ use common\behaviors\TagBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
 use common\exceptions\ParamsInvalidException;
+use common\models\CacheTagModel;
 use common\models\FollowTag;
 use common\models\TagQuery;
 use Yii;
@@ -293,5 +294,23 @@ class TagEntity extends Tag
         }
 
         return $tags;
+    }
+
+    public static function ensureTagHasCached($tag_id)
+    {
+        $cache_key = [REDIS_KEY_TAG, $tag_id];
+        if (Yii::$app->redis->hLen($cache_key) === 0) {
+            $item = self::find()->where(
+                [
+                    'id' => $tag_id,
+                ]
+            )->asArray()->all();
+
+            $item = (new CacheTagModel())->filterAttributes($item);
+
+            return Yii::$app->redis->hMset($cache_key, $item);
+        }
+
+        return true;
     }
 }

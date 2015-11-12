@@ -31,7 +31,7 @@ class NotifierCronJobController extends Controller
             return Controller::EXIT_CODE_ERROR;
         } else {
             foreach ($dates as $date) {
-                $this->consume();
+                $this->consumeNotice();
 
             }
             $command->finish();
@@ -40,7 +40,7 @@ class NotifierCronJobController extends Controller
         }
     }
 
-    private function consume()
+    private function consumeNotice()
     {
         $notifier_set = Notifier::getSet();
 

@@ -60,6 +60,17 @@ class UserEntity extends User
         //$scenarios['register'][] = 'field';
         return $scenarios;
     }
+
+    /*public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors[] = [
+            'user_behavior' => [
+                'class' => QuestionBehavior::className(),
+            ],
+        ];
+        return $behaviors;
+    }*/
     
     /**
      * 字段规则
@@ -157,8 +168,6 @@ class UserEntity extends User
                 ]
             )->with('profile')->asArray()->all();
 
-            #print_r($cache_data);exit;
-
             $cache_user_model = new CacheUserModel();
             $username_id_data = [];
             foreach ($cache_data as $item) {
@@ -172,7 +181,6 @@ class UserEntity extends User
 
                 #cache username to userid
                 $username_id_data[$item['username']] = $item['id'];
-
             }
 
             #cache username id relation data
@@ -250,6 +258,24 @@ class UserEntity extends User
         }
 
         return $username;
+    }
+
+    public static function ensureUserHasCached($user_id)
+    {
+        $cache_key = [REDIS_KEY_USER, $user_id];
+        if (Yii::$app->redis->hLen($cache_key) === 0) {
+            $item = self::find()->where(
+                [
+                    'id' => $user_id,
+                ]
+            )->with('profile')->asArray()->all();
+
+            $item = (new CacheUserModel())->filterAttributes($item);
+
+            return Yii::$app->redis->hMset($cache_key, $item);
+        }
+
+        return true;
     }
     
     //    private static function getUserByUserIdUseCache(array $user_id)

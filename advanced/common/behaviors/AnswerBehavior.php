@@ -139,10 +139,10 @@ class AnswerBehavior extends BaseBehavior
         $followQuestionEntity = Yii::createObject(FollowQuestionEntity::className());
         $user_ids = $followQuestionEntity->getFollowUserIds($this->owner->question_id);
         if ($user_ids) {
-            Notifier::build()->from($this->owner->create_by)->to($user_ids)->set(
+            Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice(
                 $type,
                 $this->owner->question_id
-            )->send();
+            );
         }
     }
     
