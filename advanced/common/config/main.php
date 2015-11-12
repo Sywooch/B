@@ -13,8 +13,8 @@ return [
         'user'    => [
             'class'                    => 'common\modules\user\Module',
             'modelMap'                 => [
-                'User'    => 'common\entities\UserEntity',
-                'Profile' => 'common\entities\UserProfileEntity',
+                'User'             => 'common\entities\UserEntity',
+                'Profile'          => 'common\entities\UserProfileEntity',
                 'RegistrationForm' => 'common\modules\user\models\RegistrationForm',
 
             ],
@@ -61,7 +61,7 @@ return [
 
     ],
     'components'    => [
-        'formatter' => [ //for the showing of date datetime
+        'formatter'   => [ //for the showing of date datetime
             'class'             => 'common\helpers\FormatterHelper',
             'dateFormat'        => 'yyyy-MM-dd',
             'locale'            => 'zh-CN',
@@ -70,12 +70,14 @@ return [
             'thousandSeparator' => ' ',
             'currencyCode'      => 'CNY',
         ],
-        'cache'     => [
+        'cache'       => [
             'class' => 'yii\caching\FileCache',
         ],
-        'session'   => [
-            'class'        => 'yii\web\Session',
-            'timeout'      => 7200,
+        'session'     => [
+            //'class'        => 'yii\web\Session',
+            'class'        => 'common\components\redis\Session',
+            'keyPrefix'    => REDIS_KEY_SESSION, #需要在redis.php文件中配置
+            //'timeout'      => 7200,
             'name'         => 'PHPSESSID',
             'cookieParams' => [
                 'domain'   => '.yii2.com', #todo 记得修改
@@ -85,7 +87,7 @@ return [
 
         ],
         #日志设置
-        'log'       => [
+        'log'         => [
             'traceLevel' => YII_DEBUG ? 0 : 3,
             'targets'    => [
                 'file'        => [
@@ -175,7 +177,7 @@ return [
             ],
         ],
         #邮件发送配置
-        'mailer'    => [
+        'mailer'      => [
             'class'            => 'yii\swiftmailer\Mailer',
             'useFileTransport' => false, #true 测试用，在runtime/mail文件夹下生成
             'transport'        => [
@@ -192,22 +194,22 @@ return [
             ],
         ],
         #redis定义
-        'redis'     => [
+        'redis'       => [
             'class'  => 'common\components\redis\Connection',
             'prefix' => 'YIIREDIS',
             'config' => $redis,
         ],
         #授权管理
         'authManager' => [
-            'class' => 'common\components\AuthManager',
+            'class'        => 'common\components\AuthManager',
             'defaultRoles' => ['guest'],
         ],
         #站点设置
-        'setting'   => [
+        'setting'     => [
             'class' => 'common\components\setting\Setting',
         ],
         #自定义模板目录
-        'view'      => [
+        'view'        => [
             'theme' => [
                 'pathMap' => [
                     #用户模板
@@ -227,12 +229,12 @@ return [
             ],
         ],*/
         #xunsearch
-        'xunsearch' => [
+        'xunsearch'   => [
             'class'        => 'hightman\xunsearch\Connection',
             'iniDirectory' => '@common/config/xunsearch',    // 搜索 ini 文件目录，默认：@vendor/hightman/xunsearch/app
             'charset'      => 'utf-8',
         ],
-        'cws'   => [
+        'cws'         => [
             'class' => 'common\components\cws\CWS',
         ],
     ],

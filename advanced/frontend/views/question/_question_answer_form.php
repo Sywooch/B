@@ -5,42 +5,47 @@
  * Date: 2015/10/31
  * Time: 13:09
  */
+use common\helpers\TemplateHelper;
 use common\widgets\UEditor\UEditor;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use common\entities\AnswerEntity;
 
+
 /* @var $answer_model AnswerEntity */
 ?>
 
 <div id="answer_form_area">
+
+    <?php if (Yii::$app->request->get('answer_id') && $question_data['count_answer'] > 1): ?>
+        <div class="mt20">
+            <?= Html::a(
+                    sprintf(
+                            '<strong>查看全部 %d 个回答</strong>',
+                            $question_data['count_answer']
+
+                    ),
+                    [
+                            'question/view',
+                            'id' => $question_data['id'],
+                    ]
+            ); ?>
+        </div>
+    <?php endif; ?>
+
     <?php if (Yii::$app->user->isGuest): ?>
         <div class="widget-comments">
             <div class="widget-comments__form row">
                 <div class="col-md-12">
-                    请先 <?= \common\helpers\TemplateHelper::showLoginAndRegisterBtn() ?> 后回答！
+                    请先 <?= TemplateHelper::showLoginAndRegisterBtn() ?> 后回答！
                 </div>
             </div>
         </div>
 
     <?php elseif ($answer_id = $answer_model->checkWhetherHasAnswered($question_data['id'], Yii::$app->user->id)): ?>
 
-        <?php if (isset($_GET['answer_id']) && $_GET['answer_id'] && $question_data['count_answer'] > 1): ?>
-            <div class="mt20">
-                <?= Html::a(
-                        sprintf(
-                                '<strong>查看全部 %d 个回答</strong>',
-                                $question_data['count_answer']
 
-                        ),
-                        [
-                                'question/view',
-                                'id' => $question_data['id'],
-                        ]
-                ); ?>
-            </div>
-        <?php endif; ?>
 
         <?= $this->render(
                 '_question_has_answered',
@@ -52,11 +57,7 @@ use common\entities\AnswerEntity;
 
     <?php else: ?>
         <h4>撰写答案</h4>
-        <?php $form = ActiveForm::begin(
-                [
-                        'id' => 'answer_form',
-                ]
-        ); ?>
+        <?php $form = ActiveForm::begin(['id' => 'answer_form',]); ?>
 
         <?= $form->field($answer_model, 'content')->label(false)->widget(
                 UEditor::className(),
@@ -75,11 +76,14 @@ use common\entities\AnswerEntity;
                         [
                                 'class'        => 'btn btn-primary',
                                 'id'           => 'btn_ajax_answer',
-                                'data-href'    => Url::to(['answer/create', 'question_id' => $question_data['id']]),
+                                'data-href'    => Url::to(
+                                        ['answer/create', 'question_id' => $question_data['id']]
+                                ),
                                 'data-on-done' => 'afterAnswerCreateSuccess',
                                 'data-form-id' => 'answer_form',
                         ]
-                ) ?><br>
+                ) ?>
+                <br>
             </div>
         </div>
 

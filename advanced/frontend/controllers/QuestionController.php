@@ -172,7 +172,7 @@ class QuestionController extends BaseController
 
         if ($answer_id) {
             $pages = null;
-            $answer_data = AnswerEntity::getAnswerByAnswerId($answer_id);
+            $answer_data = AnswerEntity::getAnswerListByAnswerId([$answer_id]);
         } else {
             $pages = new Pagination(
                 [

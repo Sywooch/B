@@ -1386,3 +1386,30 @@ input[type="date"].input-lg, .form-horizontal .form-group-lg input[type="date"].
 .form-group {
     margin-bottom: 15px
 }
+
+/*顶部菜单开始*/
+
+#global-nav {
+    background: #1B805E
+}
+
+#global-nav .logo {
+    float: left;
+    margin: 0;
+    display: inline-block
+}
+
+#global-nav .logo a {
+    text-decoration: none;
+    float: left
+}
+
+#global-nav .navbar-brand{
+    color: #FFF;
+}
+
+.navbar-default .navbar-nav > li > a{
+    color: #FFF;
+}
+
+/*顶部菜单结束*/

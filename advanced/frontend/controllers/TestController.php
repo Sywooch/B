@@ -229,10 +229,9 @@ class TestController extends BaseController
 
     public function actionTag()
     {
-        /* @var $tag TagEntity */
-        $tag = Yii::createObject(TagEntity::className());
-        //$data = $tag->getTagIdByName( ['中国人', '大家好']);
-        $data = $tag->getTagNameById([1, 2]);
+
+        //$data = TagEntity::getTagIdByName( ['中国人', '大家好']);
+        $data = TagEntity::getTagNameById([1, 2]);
 
         print_r($data);
     }

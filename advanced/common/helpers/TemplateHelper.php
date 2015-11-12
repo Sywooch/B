@@ -86,9 +86,7 @@ class TemplateHelper
 
         $html = [];
 
-        /* @var $tag_entity TagEntity */
-        $tag_entity = Yii::createObject(TagEntity::className());
-        $tag_ids = $tag_entity->getTagIdByName($tag_name);
+        $tag_ids = TagEntity::getTagIdByName($tag_name);
 
         foreach ($tag_name as $key => $tag) {
             $html[] = sprintf(

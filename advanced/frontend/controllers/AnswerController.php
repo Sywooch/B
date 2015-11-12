@@ -114,7 +114,7 @@ class AnswerController extends BaseController
      */
     public function actionUpdate($id, $question_id)
     {
-        $question_model = QuestionEntity::getQuestionByQuestionId($question_id);
+        $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
         $answer_model = $this->findModel($id);
 
         if ($answer_model->load(Yii::$app->request->post()) && $answer_model->save()) {
@@ -123,8 +123,28 @@ class AnswerController extends BaseController
             return $this->render(
                 'update',
                 [
-                    'answer_model'   => $answer_model,
-                    'question_model' => $question_model,
+                    'answer_model'  => $answer_model,
+                    'question_data' => $question_data,
+                ]
+            );
+        }
+    }
+
+    public function actionCommonEdit($id, $question_id)
+    {
+        $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
+        $answer_model = $this->findModel($id);
+        
+        //$answer_model->scenario = '';
+        #todo 公共编辑状态，有些字段不允许提交
+        if ($answer_model->load(Yii::$app->request->post()) && $answer_model->save()) {
+            return $this->redirect(['question/view', 'id' => $question_id, 'answer_id' => $id]);
+        } else {
+            return $this->render(
+                'update',
+                [
+                    'answer_model'  => $answer_model,
+                    'question_data' => $question_data,
                 ]
             );
         }
@@ -168,7 +188,7 @@ class AnswerController extends BaseController
         $html = $this->renderPartial(
             '_comment_list',
             [
-                'comment_form'   => $comment_form,
+                'comment_form'  => $comment_form,
                 'answer_model'  => $answer_model,
                 'comments_data' => $comments_data,
             ]

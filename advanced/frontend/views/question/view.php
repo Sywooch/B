@@ -173,6 +173,14 @@ $this->endBlock();
                                                                 'visible' => $question_data['create_by'] == Yii::$app->user->id,
                                                         ],
                                                         [
+                                                                'label'   => '公众编辑',
+                                                                'url'     => [
+                                                                        'question/common-edit',
+                                                                        'id' => $question_data['id'],
+                                                                ],
+                                                                'visible' => $question_data['create_by'] != Yii::$app->user->id,
+                                                        ],
+                                                        [
                                                                 'label'   => '举报',
                                                                 'url'     => '#',
                                                                 'visible' => $question_data['create_by'] != Yii::$app->user->id,
@@ -240,7 +248,7 @@ $this->endBlock();
                     '_question_answer_form',
                     [
                             'question_data' => $question_data,
-                            'answer_model'   => $answer_model,
+                            'answer_model'  => $answer_model,
                     ]
             ); ?>
         </div>

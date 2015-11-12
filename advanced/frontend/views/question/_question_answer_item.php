@@ -156,7 +156,11 @@ use yii\widgets\LinkPager;
                                                 ],
                                                 [
                                                         'label'   => '公众编辑',
-                                                        'url'     => '/',
+                                                        'url'     => [
+                                                                'answer/common-edit',
+                                                                'id'          => $item['id'],
+                                                                'question_id' => $question_id,
+                                                        ],
                                                         'visible' => $item['create_by'] != Yii::$app->user->id,
                                                 ],
                                                 [

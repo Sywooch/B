@@ -148,7 +148,7 @@ class TagEntity extends Tag
         return $followTagEntity->addFollowTag($user_id, $tag_ids);
     }
 
-    public function getTagNameById($tag_id)
+    public static function getTagNameById($tag_id)
     {
         if (is_array($tag_id)) {
             $multiple = true;
@@ -159,7 +159,7 @@ class TagEntity extends Tag
 
 
         $tag_id = array_filter($tag_id);
-        $data = $this->getTagNameByIdUseCache($tag_id);
+        $data = self::getTagNameByIdUseCache($tag_id);
 
         if ($multiple) {
             $result = $data;
@@ -170,7 +170,7 @@ class TagEntity extends Tag
         return $result;
     }
 
-    public function getTagIdByName($tag_name)
+    public static function getTagIdByName($tag_name)
     {
         if (is_array($tag_name)) {
             $multiple = true;
@@ -181,7 +181,7 @@ class TagEntity extends Tag
 
 
         $tag_name = array_filter($tag_name);
-        $data = $this->getTagIdByNameUseCache($tag_name);
+        $data = self::getTagIdByNameUseCache($tag_name);
 
         if ($multiple) {
             $result = $data;
@@ -192,7 +192,7 @@ class TagEntity extends Tag
         return $result;
     }
 
-    private function getTagNameByIdUseCache($tag_id)
+    private static function getTagNameByIdUseCache($tag_id)
     {
         $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_TAG_ID_NAME, $tag_id]);
         $cache_miss_key = Yii::$app->redis->getMissKey($tag_id, $cache_hit_data);
@@ -237,7 +237,7 @@ class TagEntity extends Tag
         return $cache_hit_data;
     }
 
-    private function getTagIdByNameUseCache($tag_name)
+    private static function getTagIdByNameUseCache($tag_name)
     {
         $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_TAG_NAME_ID, $tag_name]);
         $cache_miss_key = Yii::$app->redis->getMissKey($tag_name, $cache_hit_data);
