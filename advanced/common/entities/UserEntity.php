@@ -277,56 +277,7 @@ class UserEntity extends User
 
         return true;
     }
-    
-    //    private static function getUserByUserIdUseCache(array $user_id)
-    //    {
-    //        $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USER, $user_id]);
-    //        $cache_miss_key = Yii::$app->redis->getMissKey($user_id, $cache_hit_data);
-    //
-    //        if (count($cache_miss_key)) {
-    //            $sql = sprintf(
-    //                "SELECT u.id, u.username, u.last_login_at, up.nickname, up.sex, up.title, up.bio, up.avatar
-    //                FROM `%s` u
-    //                LEFT JOIN `%s` up
-    //                ON u.id=up.user_id
-    //                WHERE u.id
-    //                IN(%s)",
-    //                UserEntity::tableName(),
-    //                UserProfileEntity::tableName(),
-    //                "'" . implode("','", $cache_miss_key) . "'"
-    //            );
-    //
-    //            $model = self::getDb()->createCommand($sql)->queryAll();
-    //
-    //            #cache_miss_data 为数组，格式key为索引ID，value为保存到redis中的数据
-    //            $cache_miss_data = [];
-    //            $username_id_data = [];
-    //            foreach ($model as $key => $item) {
-    //                #load useful attributes
-    //                $data = (new CacheUserModel())->filterAttributes($item);
-    //                $cache_miss_data[$item['id']] = $data;
-    //                $username_id_data[$item['username']] = $item['id'];
-    //            }
-    //
-    //            if ($cache_miss_data) {
-    //                #cache user miss databases data
-    //                Yii::$app->redis->mset([REDIS_KEY_USER, $cache_miss_data]);
-    //
-    //                #cache username id relation data
-    //                Yii::$app->redis->mset([REDIS_KEY_USER_USERNAME_ID, $username_id_data]);
-    //
-    //                #padding miss data
-    //                $cache_hit_data = Yii::$app->redis->paddingMissData(
-    //                    $cache_hit_data,
-    //                    $cache_miss_key,
-    //                    $cache_miss_data
-    //                );
-    //            }
-    //        }
-    //
-    //        return $cache_hit_data;
-    //    }
-    
+
     private static function getUserIdByUsernameUseCache(array $username)
     {
         $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USER_USERNAME_USERID, $username]);
@@ -367,46 +318,14 @@ class UserEntity extends User
 
         return $cache_hit_data;
     }
-    
-    /*private static function getUserByUsernameUseCache(array $username)
-    {
-        $user_ids = self::getUserIdByUsernameUseCache($username);
-        if ($user_ids) {
-            $result = self::getUserByUserIdUseCache($user_ids);
-        } else {
-            $result = null;
-        }
-        
-        return $result;
-    }*/
-    
-    /*private static function getUsernameByUserIdUseCache(array $user_id)
-    {
-        $user = self::getUserByUserIdUseCache($user_id);
-        if ($user) {
-            $result = ArrayHelper::getColumn($user, 'username');
-        } else {
-            $result = null;
-        }
-        
-        return $result;
-    }*/
-    
-    /* public static function updateUserCache($user_id, $user_data)
-     {
-         $user_cache_data = Yii::$app->redis->hGetAll([REDIS_KEY_USER, $user_id]);
-         if ($user_cache_data) {
-             $user_data = array_merge($user_cache_data, $user_data);
-         }
-
-         $data = (new CacheUserModel())->filterAttributes($user_data);
-
-         return Yii::$app->redis->set([REDIS_KEY_USER, $user_id], $data);
-     }*/
 
     public static function checkWhetherIsOfficialAccount($user_id)
     {
         return $user_id <= self::MAX_OFFICIAL_ACCOUNT_ID;
     }
 
+    public function getProfile()
+    {
+        return $this->hasOne(UserProfileEntity::className(), ['user_id' => 'id']);
+    }
 }

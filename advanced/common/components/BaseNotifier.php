@@ -32,6 +32,8 @@ class BaseNotifier extends Object
     private $receiver; #发送给谁
     private $method; #通知方法:notice,email,sms,weixin
 
+    private $notice_code, $notice_message, $notice_associate_id;
+
 
     public static function build()
     {
@@ -85,7 +87,7 @@ class BaseNotifier extends Object
         return $this;
     }
 
-    public function notice($type, $associate_id = null)
+    public function notice($type, $associate_data = null)
     {
         $this->method = 'notice';
 
@@ -95,15 +97,17 @@ class BaseNotifier extends Object
 
         if (!$type) {
             throw new ParamsInvalidException(['notify_type']);
+        } else {
+            $this->notice_code = NotificationEntity::getNotificationCode($type, $associate_data);
         }
 
         #filter to_user_id
         if ($this->filterToUserId()) {
             #priority = true 为马上执行
             if ($this->priority) {
-                $result = $this->noticeImmediately($type, $associate_id);
+                $result = $this->noticeDatabase($this->sender, $this->receiver, $this->notice_code, $associate_data);
             } else {
-                $result = $this->noticeQueue($type, $associate_id);
+                $result = $this->noticeQueue($this->sender, $this->receiver, $this->notice_code, $associate_data);
             }
             Yii::trace(sprintf('Notifier::notice Result: %s', var_export($result, true)), 'notifier');
 
@@ -113,13 +117,19 @@ class BaseNotifier extends Object
         return $this;
     }
 
-    public function email($subject, $message = null, $template_view = null)
+    public function email($subject = null, $message = null, $template_view = null)
     {
+        $this->method = 'email';
+
+        if (empty($subject) && empty($message) && empty ($template_view) && $this->notice_code) {
+
+        }
+
         #priority = true 为马上执行
         if ($this->priority) {
-            $result = $this->emailImmediately($subject, $message, $template_view);
+            $result = $this->emailSend($this->receiver, $subject, $message, $template_view);
         } else {
-            $result = $this->emailQueue($subject, $message, $template_view);
+            $result = $this->emailQueue($this->receiver, $subject, $message, $template_view);
         }
 
         Yii::trace(sprintf('Notifier::email Result: %s', var_export($result, true)), 'notifier');
@@ -136,21 +146,6 @@ class BaseNotifier extends Object
     public function weixin()
     {
         return $this;
-    }
-
-    /**
-     * @param string|array $method 'notice,sms,email,weixin'
-     */
-    public function send($method = 'notice')
-    {
-        if (is_string($method)) {
-            $method = explode(',', $method);
-        }
-
-        foreach ($method as $item) {
-            $this->method = $item;
-            $this->$item();
-        }
     }
 
     public function test()
@@ -178,59 +173,57 @@ class BaseNotifier extends Object
         return $this->receiver;
     }
     
-    private function noticeImmediately($type, $associate_id)
+    public function noticeDatabase($sender, $receiver, $notice_code, $associate_data, $current_time = null)
     {
-        /* @var $notificationEntity NotificationEntity */
-        $notificationEntity = Yii::createObject(NotificationEntity::className());
-
-        return $notificationEntity->addNotify(
-            $this->sender,
-            $this->receiver,
-            $type,
-            $associate_id,
-            TimeHelper::getCurrentTime()
+        return NotificationEntity::addNotify(
+            $sender,
+            $receiver,
+            $notice_code,
+            $associate_data,
+            $current_time ? $current_time : TimeHelper::getCurrentTime()
         );
     }
-    
-    private function noticeQueue($type, $associate_id)
+
+
+    public function noticeQueue($sender, $receiver, $notice_code, $associate_data, $current_time = null)
     {
         Yii::trace(
             [
-                'from_user_id' => $this->sender,
-                'to_user_id'   => $this->receiver,
-                'type'         => $type,
-                'associate_id' => $associate_id,
-                'status'       => NotificationEntity::STATUS_UNREAD,
-                'create_at'    => TimeHelper::getCurrentTime(),
+                'sender'         => $sender,
+                'receiver'       => $receiver,
+                'notice_code'    => $notice_code,
+                'associate_data' => $associate_data,
+                'status'         => NotificationEntity::STATUS_UNREAD,
+                'create_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
             ],
             'notifier'
         );
 
-        $cache_key = [REDIS_KEY_NOTIFIER, implode(':', [$this->method, $type])];
+        $cache_key = [REDIS_KEY_NOTIFIER, implode(':', [$this->method, $notice_code])];
 
-        self::addSet($this->method, $type);
+        $this->addSet($this->method, $notice_code);
 
         return Yii::$app->redis->rPush(
             $cache_key,
             [
-                'from_user_id' => $this->sender,
-                'to_user_id'   => $this->receiver,
-                'type'         => $type,
-                'associate_id' => $associate_id,
-                'status'       => NotificationEntity::STATUS_UNREAD,
-                'create_at'    => TimeHelper::getCurrentTime(),
+                'sender'         => $sender,
+                'receiver'       => $receiver,
+                'notice_code'    => $notice_code,
+                'associate_data' => $associate_data,
+                'status'         => NotificationEntity::STATUS_UNREAD,
+                'create_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
             ]
         );
     }
 
-    private function emailImmediately($subject, $message, $template_view)
+    public function emailSend($receivers, $subject, $message, $template_view)
     {
         $mailer = Yii::$app->mailer->compose($template_view);
 
-        foreach ($this->receiver as $receiver) {
+        foreach ($receivers as $receiver) {
             $result = false;
             if (is_numeric($receiver)) {
-                $user = UserEntity::getUserById($this->sender);
+                $user = UserEntity::getUserById($receiver);
                 $receiver = $user['email'];
             }
 
@@ -245,49 +238,45 @@ class BaseNotifier extends Object
         return true;
     }
 
-    private function emailQueue($subject, $message, $template_view)
+    public function emailQueue($receiver, $subject, $message, $template_view)
     {
         Yii::trace(
             [
-                'from_user_id' => $this->sender,
-                'to_user_id'   => $this->receiver,
-                'type'         => $type,
-                'associate_id' => $associate_id,
-                'status'       => NotificationEntity::STATUS_UNREAD,
-                'create_at'    => TimeHelper::getCurrentTime(),
+                'receiver'      => $receiver,
+                'subject'       => $subject,
+                'message'       => $message,
+                'template_view' => $template_view,
             ],
             'notifier'
         );
 
-        $cache_key = [REDIS_KEY_NOTIFIER, implode(':', [$this->method, $type])];
+        $cache_key = [REDIS_KEY_NOTIFIER, $this->method];
 
-        self::addSet($this->method, $type);
+        $this->addSet($this->method);
 
         return Yii::$app->redis->rPush(
             $cache_key,
             [
-                'from_user_id' => $this->sender,
-                'to_user_id'   => $this->receiver,
-                'type'         => $type,
-                'associate_id' => $associate_id,
-                'status'       => NotificationEntity::STATUS_UNREAD,
-                'create_at'    => TimeHelper::getCurrentTime(),
+                'receiver'      => $this->receiver,
+                'subject'       => $subject,
+                'message'       => $message,
+                'template_view' => $template_view,
             ]
         );
     }
 
-    public static function popUpQueue($table)
+    public function popUpQueue($method)
     {
-        return Yii::$app->redis->lPop([REDIS_KEY_NOTIFIER, $table]);
+        return Yii::$app->redis->lPop([REDIS_KEY_NOTIFIER, $method]);
     }
 
-    public static function getSet()
+    public function getSet()
     {
         return Yii::$app->redis->SMEMBERS([REDIS_KEY_NOTIFIER_SET]);
     }
 
-    private static function addSet($method, $table)
+    private function addSet($method)
     {
-        return Yii::$app->redis->sAdd([REDIS_KEY_NOTIFIER_SET], implode(':', [$method, $table]));;
+        return Yii::$app->redis->sAdd([REDIS_KEY_NOTIFIER_SET], $method);;
     }
 }

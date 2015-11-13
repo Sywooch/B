@@ -16,7 +16,7 @@ use yii\helpers\Html;
                 <?= $item['count_follow'] ?>
                 <small>关注</small>
             </div>
-            <div class="answers<?=$item['count_answer']>0?' answered':'';?>">
+            <div class="answers<?= $item['count_answer'] > 0 ? ' answered' : ''; ?>">
                 <?= $item['count_answer'] ?>
                 <small>回答</small>
             </div>
@@ -37,12 +37,23 @@ use yii\helpers\Html;
                             ['question/view', 'id' => $item['id']],
                             [
                                     'class' => 'askDate',
+
                             ]
                     ) ?>
                 </li>
             </ul>
             <h2 class="title">
-                <?= Html::a($item['subject'], ['question/view', 'id' => $item['id']]) ?>
+                <?= Html::a(
+                        $item['subject'],
+                        [
+                                'question/view',
+                                'id' => $item['id'],
+
+                        ],
+                        [
+                                'target' => '_blank',
+                        ]
+                ) ?>
             </h2>
             <ul class="taglist--inline ib">
                 <?= TemplateHelper::showTagLiLabelByName($item['tags']) ?>

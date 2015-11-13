@@ -16,19 +16,19 @@ trait ErrorTrait
 
     public static function set($code, $params = null)
     {
-        list($error_prefix, $error_type) = explode(':', $code);
+        list($error_category, $error_type) = explode(':', $code);
 
-        if (!$error_prefix || !$error_type || !isset(self::$error[$error_prefix]) || !isset(self::$error[$error_prefix][$error_type])) {
+        if (!$error_category || !$error_type || !isset(self::$error[$error_category]) || !isset(self::$error[$error_category][$error_type])) {
             throw new Exception(sprintf('Undefined Error Key [%s]', $code));
         }
 
-        self::$code = self::$error[$error_prefix][$error_type][0];
+        self::$code = self::$error[$error_category][$error_type][0];
 
         if ($params) {
             $params = is_array($params) ? $params : [$params];
-            self::$message = vsprintf(self::$error[$error_prefix][$error_type][1], $params);
+            self::$message = vsprintf(self::$error[$error_category][$error_type][1], $params);
         } else {
-            self::$message = self::$error[$error_prefix][$error_type][1];
+            self::$message = self::$error[$error_category][$error_type][1];
         }
 
         return false;

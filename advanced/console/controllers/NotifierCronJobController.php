@@ -11,82 +11,84 @@ namespace console\controllers;
 
 use common\components\Notifier;
 use fedemotta\cronjob\models\CronJob;
+use Yii;
 use yii\console\Controller;
 
 class NotifierCronJobController extends Controller
 {
     const NUMBER_OF_EACH = 1000;
 
-    /**
-     * Run SomeModel::some_method for a period of time
-     * @param string $from
-     * @param string $to
-     * @return int exit code
-     */
-    public function actionInit($from, $to)
+    public function actionIndex()
     {
-        $dates = CronJob::getDateRange($from, $to);
-        $command = CronJob::run($this->id, $this->action->id, 0, CronJob::countDateRange($dates));
-        if ($command === false) {
-            return Controller::EXIT_CODE_ERROR;
-        } else {
-            foreach ($dates as $date) {
-                $this->consumeNotice();
+        /* @var $notifier Notifier */
+        $notifier = Yii::createObject(Notifier::className());
 
-            }
-            $command->finish();
-
-            return Controller::EXIT_CODE_NORMAL;
-        }
-    }
-
-    private function consumeNotice()
-    {
-        $notifier_set = Notifier::getSet();
+        $notifier_set = $notifier->getSet();
 
 
-        foreach ($notifier_set as $object) {
+        foreach ($notifier_set as $method) {
             $i = 0;
-            while ($i <= self::NUMBER_OF_EACH && $item = Notifier::popUpQueue($object)) {
+            while ($i <= self::NUMBER_OF_EACH && $item = $notifier->popUpQueue($method)) {
 
-                $result = Notifier::writeToDatabase(
-                    $item['from_user_id'],
-                    $item['to_user_id'],
-                    $item['type'],
-                    $item['associate_id'],
-                    $item['create_at']
-                );
+                switch ($method) {
+                    case 'notice':
 
-                if (!$result) {
-                    //when update nothing, nothing to do
-                    Notifier::pushToQueue(
-                        $item['from_user_id'],
-                        $item['to_user_id'],
-                        $item['type'],
-                        $item['associate_id'],
-                        $item['create_at']
-                    );
-                    //echo sprintf('Notification Type:  %s, no affected!', $object), PHP_EOL;
-                } else {
-                    echo sprintf('Notification Type:  %s ', $object) . 'Success', PHP_EOL;
+                        $result = $notifier->noticeDatabase(
+                            $item['sender'],
+                            $item['receiver'],
+                            $item['notice_code'],
+                            $item['associate_data'],
+                            $item['create_at']
+                        );
+
+                        if (!$result) {
+                            //when update nothing, nothing to do
+                            $notifier->noticeQueue(
+                                $item['sender'],
+                                $item['receiver'],
+                                $item['notice_code'],
+                                $item['associate_data'],
+                                $item['create_at']
+                            );
+                            //echo sprintf('Notification Type:  %s, no affected!', $object), PHP_EOL;
+                        } else {
+                            echo sprintf('Notification Notice Code:  %s ', $item['notice_code']) . 'Success', PHP_EOL;
+                        }
+
+                        break;
+
+
+                    case 'email':
+                        $result = $notifier->emailSend(
+                            $item['receiver'],
+                            $item['subject'],
+                            $item['message'],
+                            $item['template_view']
+                        );
+
+                        if (!$result) {
+                            //when update nothing, nothing to do
+                            $notifier->emailQueue(
+                                $item['receiver'],
+                                $item['subject'],
+                                $item['message'],
+                                $item['template_view']
+                            );
+                            //echo sprintf('Notification Type:  %s, no affected!', $object), PHP_EOL;
+                        } else {
+                            echo sprintf(
+                                    'Notification Email:  %s ',
+                                    var_export($item['receiver'], true)
+                                ) . 'Success', PHP_EOL;
+                        }
+
+                        break;
                 }
+
 
                 $i++;
             }
         }
     }
 
-    public function actionIndex()
-    {
-        return $this->actionInit(date("Y-m-d"), date("Y-m-d"));
-    }
-
-    /**
-     * Run SomeModel::some_method for yesterday
-     * @return int exit code
-     */
-    public function actionYesterday()
-    {
-        return $this->actionInit(date("Y-m-d", strtotime("-1 days")), date("Y-m-d", strtotime("-1 days")));
-    }
 }

@@ -1,8 +1,5 @@
 <?php
-$redis = array_merge(
-    require(__DIR__ . '/../../common/config/redis.php'),
-    require(__DIR__ . '/../../common/config/redis-local.php')
-);
+$redis = require(__DIR__ . '/../../common/config/redis.php');
 
 return [
     'name'          => '网站名称',
@@ -32,7 +29,7 @@ return [
                 'recoverySubject'       => '更改密码',
 
             ],
-            'enableFlashMessages'      => false,
+            'enableFlashMessages'      => true,
             'enableUnconfirmedLogin'   => true,
             'confirmWithin'            => 86400,
             'cost'                     => 12,
@@ -74,9 +71,10 @@ return [
             'class' => 'yii\caching\FileCache',
         ],
         'session'     => [
-            //'class'        => 'yii\web\Session',
             'class'        => 'common\components\redis\Session',
             'keyPrefix'    => REDIS_KEY_SESSION, #需要在redis.php文件中配置
+
+            //'class'        => 'yii\web\Session',
             //'timeout'      => 7200,
             'name'         => 'PHPSESSID',
             'cookieParams' => [

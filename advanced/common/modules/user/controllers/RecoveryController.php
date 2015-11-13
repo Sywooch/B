@@ -1,5 +1,5 @@
 <?php
-common\modules\user\controllers;
+namespace common\modules\user\controllers;
 
 use dektrium\user\controllers\RecoveryController as BaseRecoveryController;
 

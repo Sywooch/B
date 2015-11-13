@@ -98,15 +98,15 @@ class TestController extends BaseController
     public function actionNotifier()
     {
 
-        $result = Notifier::build()->priority(true)->from(1)->to([1, 2])->notice(
+        /*$result = Notifier::build()->priority(true)->from(1)->to([1, 2])->notice(
             NotificationEntity::TYPE_ANSWER_AT_ME,
             1
-        )->email('a','b');
+        )->email('a', 'b');
 
         var_dump($result->result);
-        exit;
+        exit;*/
 
-        $result = Notifier::build()->priority(false)->from(1)->to([1, 2])->notice(
+        /*$result = Notifier::build()->priority(false)->from(1)->to([1, 2])->notice(
             NotificationEntity::TYPE_ANSWER_AT_ME,
             1
         );
@@ -117,7 +117,11 @@ class TestController extends BaseController
 
         print_r($data);
 
-        exit;
+        exit;*/
+
+        $notifier = Notifier::build()->priority(false)->to(1)->email('a', 'b');
+
+        print_r($notifier->result);
     }
 
     public function actionCounter()
@@ -202,9 +206,8 @@ class TestController extends BaseController
 
         print_r($data);*/
 
-        //$result = UserEntity::getUserListByIds([1]);
-        //print_r($result);
-        //print_r(Yii::$app->redis->config);
+        $result = UserEntity::getUserListByIds([1]);
+        print_r($result);
 
         $result = UserEntity::getUserIdByUsername(['admin', '瞎猫']);
         print_r($result);
@@ -363,6 +366,35 @@ class TestController extends BaseController
         //$count = Yii::$app->authManager->deleteAllCache();
 
         //var_dump($count);
+    }
+
+    public function actionNotice()
+    {
+        $arr = [
+            'question_id' => 10,
+            'answer_id'   => 10,
+        ];
+
+        //echo json_encode($arr);exit;
+
+        Notifier::build()->priority(0)->from(1)->to(2)->notice(
+            NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
+            [
+                'question_id' => 16,
+            ]
+        );
+        Notifier::build()->priority(0)->from(2)->to(23)->notice(
+            NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
+            [
+                'question_id' => 17,
+            ]
+        );
+
+        $data = NotificationEntity::find()->orderBy('create_at DESC')->asArray()->all();
+
+        $result = NotificationEntity::makeUpNotification($data);
+
+        print_r($result);
     }
 }
 

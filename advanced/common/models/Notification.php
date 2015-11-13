@@ -8,15 +8,15 @@ use Yii;
  * This is the model class for table "notification".
  *
  * @property string $id
- * @property string $from_user_id
- * @property integer $to_user_id
- * @property string $type
- * @property string $source_id
+ * @property integer $sender
+ * @property integer $receiver
+ * @property integer $type_code
+ * @property string $associative_data
  * @property string $status
  * @property string $create_at
  * @property string $read_at
  *
- * @property User $toUser
+ * @property User $receiver0
  */
 class Notification extends \common\models\BaseActiveRecord
 {
@@ -34,10 +34,10 @@ class Notification extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['from_user_id', 'to_user_id', 'create_at', 'read_at'], 'integer'],
-            [['to_user_id', 'type'], 'required'],
+            [['sender', 'receiver', 'type_code', 'create_at', 'read_at'], 'integer'],
+            [['receiver', 'type_code'], 'required'],
             [['status'], 'string'],
-            [['type', 'source_id'], 'string', 'max' => 45]
+            [['associative_data'], 'string', 'max' => 255]
         ];
     }
 
@@ -48,10 +48,10 @@ class Notification extends \common\models\BaseActiveRecord
     {
         return [
             'id' => 'ID',
-            'from_user_id' => '发送通知的用户ID，NULL为系统',
-            'to_user_id' => '接收通知的用户ID',
-            'type' => '通知类型',
-            'source_id' => '通知中关联的对象ID，可以是question_id,answer_id,comment_id等中的一个，视通知类型而定',
+            'sender' => '发送方，为空则为系统通知',
+            'receiver' => '接收通知的用户ID',
+            'type_code' => '通知类型代码',
+            'associative_data' => '关联数据',
             'status' => 'unread未读,  read已读',
             'create_at' => '创建时间',
             'read_at' => '查看时间',
@@ -61,8 +61,8 @@ class Notification extends \common\models\BaseActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getToUser()
+    public function getReceiver0()
     {
-        return $this->hasOne(User::className(), ['id' => 'to_user_id']);
+        return $this->hasOne(User::className(), ['id' => 'receiver']);
     }
 }

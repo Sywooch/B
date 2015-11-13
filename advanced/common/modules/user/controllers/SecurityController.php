@@ -9,16 +9,19 @@
 namespace common\modules\user\controllers;
 
 
+use common\components\Monitor;
 use dektrium\user\controllers\SecurityController as BaseSecurityController;
-use dektrium\user\models\LoginForm;
-use Yii;
 use yii\helpers\Url;
+use Yii;
 
 class SecurityController extends BaseSecurityController
 {
+    
 
     public function actionLogin()
     {
+        Monitor::checkCityWideCurfew();
+
         if (strpos(Yii::$app->request->getReferrer(), 'login') === false) {
             Url::remember(Yii::$app->request->getReferrer());
         }

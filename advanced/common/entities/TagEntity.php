@@ -85,7 +85,7 @@ class TagEntity extends Tag
         return $model;
     }
 
-    public static function getQuestionTagsById($question_id)
+    public static function getTagsByQuestionId($question_id)
     {
 
     }
@@ -312,5 +312,48 @@ class TagEntity extends Tag
         }
 
         return true;
+    }
+
+
+    public static function getTagByTagIs($tag_id)
+    {
+        $data = self::getTagListByTagIds([$tag_id]);
+
+        return $data ? array_shift($data) : [];
+    }
+
+    public static function getTagListByTagIds(array $tag_ids)
+    {
+        $result = $cache_miss_key = $cache_data = [];
+        foreach ($tag_ids as $tag_id) {
+            $cache_key = [REDIS_KEY_TAG, $tag_id];
+            $cache_data = Yii::$app->redis->hGetAll($cache_key);
+            if (empty($cache_data)) {
+                $cache_miss_key[] = $tag_id;
+                $result[$tag_id] = null;
+            } else {
+                $result[$tag_id] = $cache_data;
+            }
+        }
+
+        if ($cache_miss_key) {
+            $cache_data = self::find()->where(
+                [
+                    'id' => $cache_miss_key,
+                ]
+            )->asArray()->all();
+
+            $cache_question_model = new CacheTagModel();
+            foreach ($cache_data as $item) {
+                #filter attributes
+                $item = $cache_question_model->filterAttributes($item);
+                $tag_id = $item['id'];
+                $result[$tag_id] = $item;
+                $cache_key = [REDIS_KEY_QUESTION, $tag_id];
+                Yii::$app->redis->hMset($cache_key, $item);
+            }
+        }
+
+        return $result;
     }
 }
