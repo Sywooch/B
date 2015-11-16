@@ -54,6 +54,7 @@ app.ajax = {
         });
 
         app.ajax.callbacks.target = $link;
+
         // Assign done handler
         if (typeof onDone === "string" && app.ajax.callbacks.hasOwnProperty(onDone)) {
             ajaxRequest.done(app.ajax.callbacks[onDone]);
@@ -101,10 +102,14 @@ app.ajax = {
 
             var comment = $('#comment-' + app.ajax.callbacks.target.data('id'));
 
-            console.log(comment);
-
             comment.removeClass('hidden');
             comment.html(response);
+        },
+        'afterCommentCreateSuccess': function (response) {
+            if (app.ajax.validate(response)) {
+                $('#comment_item_area_' + app.ajax.callbacks.target.data('id')).append(response.data);
+                $('#comment-content-' + app.ajax.callbacks.target.data('id')).val('');
+            }
         }
     }
 };
@@ -113,6 +118,16 @@ app.ajax = {
 jQuery(function ($) {
     //ajax操作
     $(document).on('click', '[data-href]', function (e) {
+        var that = $(e.target);
+        //评论
+        if (that.data('do') == 'comment') {
+            //判断是否已经加载过
+            if ($('#comment-' + that.data('id') + '>div').length != 0) {
+                $('#comment-' + that.data('id')).toggleClass('hidden');
+                return;
+            }
+        }
+
         app.ajax.handle(e);
     });
 });

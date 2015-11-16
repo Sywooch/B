@@ -45,6 +45,7 @@ $(document).ready(function () {
 jQuery(function ($) {
 
     //赞, 踩, 收藏 等操作
+/*
     $(document).on('click', '[data-do]', function (e) {
         var _this = $(this),
             _id = _this.data('id'),
@@ -99,4 +100,5 @@ jQuery(function ($) {
 
 
     });
+*/
 });

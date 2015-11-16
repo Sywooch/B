@@ -42,11 +42,12 @@ const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:string';
 const REDIS_KEY_QUESTION = 'question:hash';
 const REDIS_KEY_QUESTION_BLOCK = 'question_block:string';
 const REDIS_KEY_QUESTION_HAS_ANSWERED = 'question_has_answered:string';
+
 #ANSWER
+const REDIS_KEY_ANSWER = 'answer:hash';
 const REDIS_KEY_ANSWER_LIST = 'answer_list:string';
 const REDIS_KEY_ANSWER_LIST_TIME = 'answer_list_time:sset';
 const REDIS_KEY_ANSWER_LIST_SCORE = 'answer_list_score:sset';
-const REDIS_KEY_ANSWER_ENTITY = 'answer_entity:list';
 
 /*系统级缓存*/
 const REDIS_KEY_SESSION = 'session:string';
@@ -170,6 +171,10 @@ return [
         'expire' => 86400 * 7, #有效期
     ],
     /*------------- answer ---------------*/
+    REDIS_KEY_ANSWER                => [
+        'server' => $servers['master'],
+        'expire' => 86400, #有效期
+    ],
     REDIS_KEY_ANSWER_LIST           => [
         'server' => $servers['master'],
         'expire' => 86400, #有效期
@@ -179,10 +184,6 @@ return [
         'expire' => 86400, #有效期
     ],
     REDIS_KEY_ANSWER_LIST_SCORE     => [
-        'server' => $servers['master'],
-        'expire' => 86400, #有效期
-    ],
-    REDIS_KEY_ANSWER_ENTITY         => [
         'server' => $servers['master'],
         'expire' => 86400, #有效期
     ],

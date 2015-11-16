@@ -12,19 +12,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
 
-//print_r($data);exit;
 ?>
-<?php \yii\widgets\Pjax::begin(
-        [
-                'timeout'       => 10000,
-                'clientOptions' => [
-                        'container' => 'pjax-container',
-                ],
-                'options'       => [
-                        'id' => 'answer_item_area',
-                ],
-        ]
-); ?>
 <?php foreach ($data as $item): ?>
     <article class="clearfix widget-answers__item">
         <div class="post-col">
@@ -79,7 +67,8 @@ use yii\widgets\LinkPager;
                         [
                                 'answer-version/index',
                                 'answer_id' => $item['id'],
-                        ]
+                        ],
+                        ['rel' => 'nofollow',]
                 ); ?>
             <?php elseif ($item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS): ?>
                 匿名回答
@@ -117,10 +106,7 @@ use yii\widgets\LinkPager;
                     <? endif; ?>
                     <li>
                         <?= Html::a(
-                                '评论' . ($item['count_comment'] > 0 ? sprintf(
-                                        '<data>(%s)</data>)',
-                                        $item['count_comment']
-                                ) : ''),
+                                '评论',
                                 'javascript:void(0);',
                                 [
                                         'data-href'    => Url::to(
@@ -128,8 +114,13 @@ use yii\widgets\LinkPager;
                                         ),
                                         'data-on-done' => 'afterShowCommentList',
                                         'data-id'      => $item['id'],
+                                        'data-do'      => 'comment',
                                 ]
                         ) ?>
+                        <?= ($item['count_comment'] > 0) ? sprintf(
+                                '<span>(%s)</span>',
+                                $item['count_comment']
+                        ) : '' ?>
                     </li>
                     <li class="dropdown">
                         <a href="javascript:void(0);"
@@ -179,8 +170,3 @@ use yii\widgets\LinkPager;
         </div>
     </article>
 <?php endforeach; ?>
-
-<?= $pages ? LinkPager::widget(
-        ['pagination' => $pages]
-) : ''; ?>
-<?php \yii\widgets\Pjax::end(); ?>

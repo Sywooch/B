@@ -10,53 +10,42 @@ use common\widgets\UEditor\UEditor;
 use yii\bootstrap\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+use yii\widgets\LinkPager;
+
 ?>
+<?php \yii\widgets\Pjax::begin(
+        [
+                'id'              => 'comment-pajax',
+                'linkSelector'    => '#comment-page a',
+                'enablePushState' => false,
+                'timeout'         => 10000,
+                'clientOptions'   => [
+                        'container' => 'pjax-container-comment',
+                ],
+                'options'         => [
+                        'id' => 'comment_item_area_' . $answer_data['id'],
+                ],
+        ]
+); ?>
+<?= $comment_item_html ?>
 
+<?php \yii\widgets\Pjax::end(); ?>
 
-<? foreach ($comments_data as $index => $item): ?>
-    <div class="widget-comments__item hover-show" id="1050000003912333">
-        <div class="votes widget-vote">
-            <button class="like "
-                    data-id="1050000003912333"
-                    type="button"
-                    data-do="like"
-                    data-type="comment"></button>
-            <span class="count">&nbsp;</span></div>
-        <div class="comment-content wordbreak">
-            <div class="content fmt">
-                <?= $item['content']; ?>
-            </div>
-
-            <p class="comment-meta">
-                <a href="/c/1050000003912333"
-                   class="text-muted">#<?= $index ?></a>&nbsp;
-                <?= TemplateHelper::showUsername($item['create_by']) ?>· <span class="createdDate">
-                        <?= TemplateHelper::showhumanTime(
-                                $item['create_at']
-                        ) ?></span> ·
-                <a href="#"
-                   class="commentReply"
-                   data-userid="1030000002644202"
-                   data-id="1050000003912333"
-                   data-username="青龙道人">回复</a>
-                <span class="pull-right commentTools hover-show-obj">                                                <a
-                            href="#911"
-                            class="ml10"
-                            data-toggle="modal"
-                            data-target="#911"
-                            data-type="comment"
-                            data-id="1050000003912333"
-                            data-typetext="评论"
-                            data-placement="top"
-                            title="举报">举报</a>            </span></p></div>
-    </div>
-<? endforeach; ?>
+<?= $pages ? LinkPager::widget(
+        [
+                'pagination' => $pages,
+                'options'    => [
+                        'id'    => 'comment-page',
+                        'class' => 'pagination',
+                ],
+        ]
+) : ''; ?>
 
 <?php if (Yii::$app->user->isGuest): ?>
 
     <div class="widget-comments__form row">
         <div class="col-md-12">
-            请先 <?= \common\helpers\TemplateHelper::showLoginAndRegisterBtn() ?> 后评论！
+            请先 <?= TemplateHelper::showLoginAndRegisterBtn() ?> 后评论！
         </div>
     </div>
 
@@ -67,18 +56,24 @@ use yii\widgets\ActiveForm;
             ]
     ); ?>
 
-
-    <?= $form->field($comment_form, 'content', [
-        //'class' => 'form-control',
-    ])->label(false)->widget(
-            UEditor::className(),
-            ['style' => 'comment']
-    ); ?>
+    <h4>评论</h4>
+    <?= $form->field(
+            $comment_form,
+            'content'
+    )->textarea(
+            [
+                    'id'    => 'comment-content-' . $answer_data['id'],
+                    'class' => 'textarea-comment',
+            ]
+    )->label(false); ?>
 
 
     <div class="form-group">
         <div class="checkbox pull-left">
-            <?= $form->field($comment_form, 'is_anonymous')->checkbox() ?>
+            <?= $form->field(
+                    $comment_form,
+                    'is_anonymous'
+            )->checkbox() ?>
         </div>
 
         <div class="pull-right">
@@ -88,20 +83,16 @@ use yii\widgets\ActiveForm;
                             'class'        => 'btn btn-primary',
                             'id'           => 'btn_ajax_answer',
                             'data-href'    => Url::to(
-                                    ['answer-comment/create', 'answer_id' => $answer_model->id]
+                                    ['answer-comment/create', 'answer_id' => $answer_data['id']]
                             ),
                             'data-on-done' => 'afterCommentCreateSuccess',
                             'data-form-id' => 'comment_form',
+                            'data-id'      => $answer_data['id'],
                     ]
             ) ?><br>
         </div>
     </div>
 
-    <?php
-    //$this->registerJs("$('#btn_ajax_answer').click(ajaxHandle);", \yii\web\View::POS_READY);
-    ?>
-
     <?php ActiveForm::end(); ?>
-
 <?php endif; ?>
 

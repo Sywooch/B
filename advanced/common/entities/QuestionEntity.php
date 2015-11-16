@@ -176,7 +176,7 @@ class QuestionEntity extends Question
     {
         $data = self::getQuestionListByQuestionIds([$question_id]);
 
-        return $data ? array_shift($data) : [];
+        return $data ? array_shift($data) : null;
     }
 
     public static function getQuestionListByQuestionIds(array $question_ids)

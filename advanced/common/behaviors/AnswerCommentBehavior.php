@@ -48,7 +48,10 @@ class AnswerCommentBehavior extends BaseBehavior
         if ($answer_data && isset($answer_data['create_by'])) {
             Notifier::build()->from($this->owner->create_by)->to($answer_data['create_by'])->notice(
                 NotificationEntity::TYPE_MY_ANSWER_HAS_NEW_COMMENT,
-                $this->owner->id
+                [
+                    'question_id' => $this->owner->answer_id,
+                    'answer_id'   => $answer_data['id'],
+                ]
             );
         }
     }

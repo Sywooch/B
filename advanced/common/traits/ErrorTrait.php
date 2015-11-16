@@ -12,7 +12,7 @@ use yii\base\Exception;
 
 trait ErrorTrait
 {
-    public static $message = '', $code = 0;
+    public static $message = '操作成功', $code = 0;
 
     public static function set($code, $params = null)
     {

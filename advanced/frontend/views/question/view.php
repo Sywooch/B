@@ -59,6 +59,9 @@ $this->beginBlock('top-header');
                                 [
                                         'question-version/index',
                                         'question_id' => $question_data['id'],
+                                ],
+                                [
+                                        'rel' => 'nofollow',
                                 ]
                         ); ?>
                     <?php elseif ($question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS): ?>
@@ -237,9 +240,41 @@ $this->endBlock();
 
                 </div>
 
-                <h2 class="title h4 mt30 mb20 post-title" id="answers-title"><?= $question_data['count_answer'] ?>
-                    个回答</h2>
+                <h2 class="title h4 mt30 mb20 post-title" id="answers-title">
+                    <?= $question_data['count_answer'] ?>个回答
+                </h2>
+                <?php \yii\widgets\Pjax::begin(
+                        [
+                                'id'              => 'answer-pajax',
+                                'enablePushState' => false,
+                                'linkSelector'    => '#answer-page',
+                                'timeout'         => 10000,
+                                'clientOptions'   => [
+                                        'container' => 'pjax-container-answer',
+                                ],
+                                'options'         => [
+                                        'id' => 'answer_item_area',
+                                ],
+                        ]
+                ); ?>
                 <?= $answer_item_html ?>
+
+
+                <?= $pages ? LinkPager::widget(
+                        [
+                                'pagination'  => $pages,
+                                'options'     => [
+                                        'id'    => 'answer-page',
+                                        'class' => 'pagination',
+
+                                ],
+                                'linkOptions' => [
+                                        'rel' => 'nofollow',
+                                ],
+                        ]
+                ) : ''; ?>
+                <?php \yii\widgets\Pjax::end(); ?>
+
                 <div class="text-center"></div>
             </div>
             <!-- /.widget-answers -->

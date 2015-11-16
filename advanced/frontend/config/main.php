@@ -1,33 +1,43 @@
 <?php
-$params = array_merge(require(__DIR__ . '/../../common/config/params.php'),
-    require(__DIR__ . '/../../common/config/params-local.php'), require(__DIR__ . '/params.php'),
-    require(__DIR__ . '/params-local.php'));
+use common\components\Monitor;
+
+$params = array_merge(
+    require(__DIR__ . '/../../common/config/params.php'),
+    require(__DIR__ . '/../../common/config/params-local.php'),
+    require(__DIR__ . '/params.php'),
+    require(__DIR__ . '/params-local.php')
+);
 
 return [
-    'id' => 'app-frontend',
-    'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
-    'defaultRoute' => 'default/index',
+    'id'                  => 'app-frontend',
+    'basePath'            => dirname(__DIR__),
+    'bootstrap'           => ['log'],
+    'defaultRoute'        => 'default/index',
     'controllerNamespace' => 'frontend\controllers',
-    'modules' => [
+    'modules'             => [
         'user' => [
             // following line will restrict access to admin page
             'as frontend' => 'dektrium\user\filters\FrontendFilter',
         ],
     ],
-    'components' => [
-        'user' => [
+    'components'          => [
+        /*'urlManager'   => [
+            'class'           => 'yii\web\UrlManager',
+            'showScriptName'  => true,
+            'enablePrettyUrl' => true,
+        ],*/
+        'user'         => [
             'identityCookie' => [
-                'name' => '_frontendIdentity',
-                'path' => '/',
+                'name'     => '_frontendIdentity',
+                'path'     => '/',
                 'httpOnly' => true,
             ],
         ],
-        'log' => [
+        'log'          => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
+            'targets'    => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class'  => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
             ],
@@ -36,5 +46,24 @@ return [
             'errorAction' => 'site/error',
         ],
     ],
-    'params' => $params,
+    'params'              => $params,
+    'on beforeRequest'    => function () {
+        Monitor::startMonitor();
+    },
+    'on beforeAction'     => function ($event) {
+        /*$action = $controller = $module = null;
+        if (!empty($event->action)) {
+            $action = $event->action->id;
+            if (!empty($event->action->controller)) {
+                $controller = $event->action->controller->id;
+                if (!empty($event->action->controller->module)) {
+                    $module = $event->action->controller->module->id;
+                }
+            }
+        }
+
+        var_dump($module, $controller, $action);exit('dd');*/
+
+        Monitor::checkMonitorStatus();
+    },
 ];

@@ -34,20 +34,13 @@ AppAsset::register($this);
 </head>
 <body>
 <?php $this->beginBody() ?>
-
-<!--<div class="row">
-    <div class="col-xs-12">
-        <?php /*foreach (Yii::$app->session->getAllFlashes() as $type => $message): */?>
-            <?/*= $message */?>
-            <?php /*if (in_array($type, ['success', 'danger', 'warning', 'info'])): */?>
-                <div class="alert alert-<?/*= $type */?>">
-                    <?/*= $message */?>
-                </div>
-            <?php /*endif */?>
-        <?php /*endforeach */?>
-    </div>
-</div>-->
-
+<?= Alert::widget(
+        [
+                'options' => [
+                        'style' => 'margin-top:-10px',
+                ],
+        ]
+); ?>
 <div class="wrap">
     <?php
     NavBar::begin(
@@ -180,7 +173,6 @@ AppAsset::register($this);
                     ]
             );
         } ?>
-        <?= Alert::widget() ?>
         <?= $content ?>
     </div>
 </div>

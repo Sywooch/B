@@ -1087,7 +1087,8 @@ p {
 }
 
 .post-opt {
-    font-size: 13px
+    font-size: 13px;
+    color: #999;
 }
 
 .post-opt a {
@@ -1316,7 +1317,6 @@ h1 .dropdown {
 
 /*问题显示页面结束*/
 
-
 .form-control {
     display: block;
     width: 100%;
@@ -1404,12 +1404,85 @@ input[type="date"].input-lg, .form-horizontal .form-group-lg input[type="date"].
     float: left
 }
 
-#global-nav .navbar-brand{
+#global-nav .navbar-brand {
     color: #FFF;
 }
 
-.navbar-default .navbar-nav > li > a{
+.navbar-default .navbar-nav > li > a {
     color: #FFF;
 }
 
 /*顶部菜单结束*/
+
+.textarea-comment {
+    display: block;
+    width: 100%;
+    height: 80px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+/*通知页面开始*/
+
+.notify-stream .time {
+    margin: 20px 0 0;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 16px
+}
+
+.notify-stream .time + section {
+    border: none
+}
+
+.notify-stream .stream-list__item {
+    position: relative;
+    padding: 8px 15px 8px 25px;
+    color: #666;
+    border: none;
+    border-top: 1px dotted #eee;
+    background: #FFF9EA
+}
+
+.notify-stream .stream-list__item a {
+    font-weight: bold
+}
+
+.notify-stream .stream-list__item:before {
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #F5A623;
+    -moz-border-radius: 100%;
+    -webkit-border-radius: 100%;
+    border-radius: 100%
+}
+
+.notify-stream .stream-list__item.viewed {
+    background: transparent
+}
+
+.notify-stream .stream-list__item.viewed a {
+    font-weight: normal
+}
+
+.notify-stream .stream-list__item.viewed:before {
+    visibility: hidden
+}
+
+/*通知页面结束*/

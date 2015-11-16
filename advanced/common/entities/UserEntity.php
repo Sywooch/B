@@ -144,7 +144,7 @@ class UserEntity extends User
     {
         $data = self::getUserListByIds([$user_id]);
         
-        return $data ? array_shift($data) : [];
+        return $data ? array_shift($data) : null;
     }
 
     public static function getUserListByIds($user_ids)

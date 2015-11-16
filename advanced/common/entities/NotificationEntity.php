@@ -14,6 +14,7 @@ use common\models\Notification;
 use common\services\UserService;
 use Yii;
 use yii\base\Exception;
+use yii\bootstrap\Html;
 use yii\db\ActiveRecord;
 use yii\helpers\Json;
 
@@ -50,21 +51,27 @@ class NotificationEntity extends Notification
     const TYPE_MY_ANSWER_IS_MODIFIED = 'answer:is_modified';
     const TYPE_MY_ANSWER_IS_FOLD = 'answer:is_fold';
     const TYPE_MY_ANSWER_HAS_NEW_COMMENT = 'answer:has_new_comment';
-    
-    
+
+
     public static $notice_type = [
         'at'              => [
-            'in_answer'  => [200, '[sender]在[question]的中提到我。'],
-            'in_comment' => [201, '[sender]在[question]的中回复我。'],
-            'in_reply'   => [202, '[sender]在[question]的中评论我。'],
+            'in_answer'  => [200, '[user] 在 [question] 的中提到我。'],
+            'in_comment' => [201, '[user] 在 [question] 的中回复我。'],
+            'in_reply'   => [202, '[user] 在 [question] 的中评论我。'],
         ],
         'follow'          => [
-            'me'                => [300, '[sender]关注了我'],
-            'my_special_column' => [301, '[sender]关注了我的专栏'],
+            'me'                => [300, '[user] 关注了我'],
+            'my_special_column' => [301, '[user] 关注了我的专栏'],
         ],
         'follow_question' => [
-            'has_new_answer' => [400, '您关注的[question]，有新的回答！'],
-            'modify_answer'  => [401, '您关注的[question]，有人更新了回答！'],
+            'has_new_answer' => [400, '您关注的 [question]，有新的回答！'],
+            'modify_answer'  => [401, '您关注的 [question]，有人更新了回答！'],
+        ],
+        'answer'          => [
+            'is_agreed'       => [500, '[sender] 赞了你的回答！'],
+            'is_modified'     => [501, '[sender] 修改了你的回答！'],
+            'is_fold'         => [502, '[sender] 折叠了你的回答！'],
+            'has_new_comment' => [503, '[sender] 评论了你的回答！'],
         ],
     ];
 
@@ -133,7 +140,7 @@ class NotificationEntity extends Notification
         }
     }
     
-    public static function getNotificationCode($type, $params)
+    public static function getNotificationCode($type)
     {
         list($notice_category, $notice_type) = explode(':', $type);
         
@@ -159,20 +166,15 @@ class NotificationEntity extends Notification
         $user_id = $question_id = $tag_id = [];
         foreach ($notification as $notice) {
 
-            $mix_index = implode(
-                ':',
-                [
-                    date('Y-m-d', $notice['create_at']),
-                    md5(
-                        $notice['notice_code'] . $notice['associative_data']
-                    ),
-                ]
+            $date_index = date('Y-m-d', $notice['create_at']);
+            $mix_index = md5(
+                $notice['notice_code'] . $notice['associative_data']
             );
 
             $associative_data = Json::decode($notice['associative_data'], true);
 
-            if (!isset($notices[$mix_index])) {
-                $notices[$mix_index] = [
+            if (!isset($notices[$date_index][$mix_index])) {
+                $notices[$date_index][$mix_index] = [
                     'sender'    => [],
                     'template'  => self::getNoticeTemplateByCode($notice['notice_code']),
                     'data'      => $associative_data,
@@ -183,10 +185,10 @@ class NotificationEntity extends Notification
 
             #if one notice status is unread, the group status is unread.
             if (self::STATUS_UNREAD == $notice['status']) {
-                $notices[$mix_index]['status'] = self::STATUS_UNREAD;
+                $notices[$date_index][$mix_index]['status'] = self::STATUS_UNREAD;
             }
 
-            $notices[$mix_index]['sender'][] = $notice['sender'];
+            $notices[$date_index][$mix_index]['sender'][] = $notice['sender'];
 
             #
             $user_id[] = $notice['sender'];
@@ -221,44 +223,52 @@ class NotificationEntity extends Notification
             $tags = TagEntity::getTagListByTagIds(array_unique($tag_id));
         }
 
-        foreach ($notices as $mix_index => &$notice) {
-            $new_index = date('Y-m-d', $notice['create_at']);
-            if (preg_match_all('/\[(.+?)\]/i', $notice['template'], $symbols)) {
-                $finder = $symbols[0];
-                unset($symbols[0]);
+        foreach ($notices as $date_index => &$item) {
+            foreach ($item as $mix_index => &$notice) {
+                $new_index = date('Y-m-d', $notice['create_at']);
+                if (preg_match_all('/\[(.+?)\]/i', $notice['template'], $symbols)) {
+                    $finder = $symbols[0];
+                    unset($symbols[0]);
 
-                #sender data
-                $senders = [];
-                $notice['sender'] = array_unique($notice['sender']);
-                foreach ($notice['sender'] as $sender) {
-                    $senders[] = $users[$sender]['username'];
-                }
+                    #sender data
+                    $senders = [];
+                    $notice['sender'] = array_unique($notice['sender']);
+                    foreach ($notice['sender'] as $sender) {
+                        $senders[] = Html::a($users[$sender]['username'], ['/user/member']);
+                    }
 
-                #other data todo
-                foreach ($symbols[1] as $key => $symbol) {
-                    switch ($symbol) {
-                        case 'sender':
-                            $notice['template'] = str_replace(
-                                $finder[$key],
-                                implode('、', $senders),
-                                $notice['template']
-                            );
-                            break;
-                        case 'question':
-                            if (!empty($notice['data']['question_id'])) {
-                                $replace = $questions[$notice['data']['question_id']]['subject'];
-                            }
-                            $notice['template'] = str_replace($finder[$key], $replace, $notice['template']);
-                            break;
+                    #other data todo
+                    foreach ($symbols[1] as $key => $symbol) {
+                        switch ($symbol) {
+                            case 'user':
+                                $notice['template'] = str_replace(
+                                    $finder[$key],
+                                    implode('、', $senders),
+                                    $notice['template']
+                                );
+                                break;
+                            case 'question':
+                                if (!empty($notice['data']['question_id'])) {
+                                    $replace = Html::a(
+                                        $questions[$notice['data']['question_id']]['subject'],
+                                        ['question/view', 'id' => $notice['data']['question_id']]
+                                    );
 
-                        default:
-                            Yii::error(sprintf('Notice Symbol:%s does not define.'));
-                            break;
+                                }
+                                $notice['template'] = str_replace($finder[$key], $replace, $notice['template']);
+                                break;
+
+                            default:
+                                Yii::error(sprintf('Notice Symbol:%s does not define.'));
+                                break;
+                        }
                     }
                 }
+                unset($notice['sender'], $notice['data']);
             }
+            unset($notice);
         }
-        unset($notice);
+        unset($item);
 
         return $notices;
     }

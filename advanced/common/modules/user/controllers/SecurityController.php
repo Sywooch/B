@@ -20,8 +20,6 @@ class SecurityController extends BaseSecurityController
 
     public function actionLogin()
     {
-        Monitor::checkCityWideCurfew();
-
         if (strpos(Yii::$app->request->getReferrer(), 'login') === false) {
             Url::remember(Yii::$app->request->getReferrer());
         }

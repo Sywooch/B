@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerEntity;
+use common\entities\QuestionEntity;
 use Yii;
 use common\entities\AnswerCommentEntity;
 use yii\data\ActiveDataProvider;
@@ -72,15 +73,25 @@ class AnswerCommentController extends BaseController
      */
     public function actionCreate($answer_id)
     {
-        $answer_model = AnswerEntity::findOne($answer_id);
-
         $model = new AnswerCommentEntity();
         $model->answer_id = $answer_id;
 
+        $answer_data =AnswerEntity::getAnswerByAnswerId($answer_id);
+        $question_data = QuestionEntity::getQuestionByQuestionId($answer_data['question_id']);
+
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $result = Error::get(true);
+            $data =  $this->renderPartial(
+                '/answer/_answer_comment_item',
+                [
+                    'answer_id' => $answer_id,
+                    'answer_create_user_id'   => $answer_data['create_by'],
+                    'question_create_user_id' => $question_data['create_by'],
+                    'data'        => [$model->getAttributes()],
+                ]
+            );
+            $result = Error::get($data);
         } else {
-            print_r($model->getErrors());
             $result = Error::get(false);
         }
 
@@ -115,12 +126,12 @@ class AnswerCommentController extends BaseController
      * @param string $id
      * @return mixed
      */
-    public function actionDelete($id)
+    /*public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
-    }
+    }*/
 
     /**
      * Finds the AnswerCommentEntity model based on its primary key value.

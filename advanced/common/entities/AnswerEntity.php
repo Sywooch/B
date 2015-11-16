@@ -294,7 +294,7 @@ class AnswerEntity extends Answer
     {
         $data = self::getAnswerListByAnswerId([$answer_id]);
 
-        return $data ? array_shift($data) : [];
+        return $data ? array_shift($data) : null;
     }
 
 
@@ -302,7 +302,7 @@ class AnswerEntity extends Answer
     {
         $cache_miss_key = $result = [];
         foreach ($answer_ids as $answer_id) {
-            $cache_key = [REDIS_KEY_ANSWER_ENTITY, $answer_id];
+            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
             if (empty($cache_data)) {
                 $cache_miss_key[] = $answer_id;
@@ -322,7 +322,7 @@ class AnswerEntity extends Answer
                 #filter attributes
                 $item = $cache_answer_model->filterAttributes($item);
                 $result[$answer_id] = $item;
-                $cache_key = [REDIS_KEY_ANSWER_ENTITY, $answer_id];
+                $cache_key = [REDIS_KEY_ANSWER, $answer_id];
                 Yii::$app->redis->hMset($cache_key, $item);
             }
         }

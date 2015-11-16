@@ -16,6 +16,7 @@ use common\behaviors\TimestampBehavior;
 use common\components\Error;
 use common\exceptions\ParamsInvalidException;
 use common\models\AnswerComment;
+use Yii;
 use yii\db\ActiveRecord;
 
 class AnswerCommentEntity extends AnswerComment
@@ -44,7 +45,7 @@ class AnswerCommentEntity extends AnswerComment
             'ip'        => [
                 'class' => IpBehavior::className(),
             ],
-            'behavior'        => [
+            'behavior'  => [
                 'class' => AnswerCommentBehavior::className(),
             ],
         ];
@@ -123,12 +124,25 @@ class AnswerCommentEntity extends AnswerComment
         }
     }
 
-    public static function getCommentListByAnswerId($answer_id)
+    public static function getCommentListByAnswerId($answer_id, $limit = 10, $offset = 0)
     {
         $model = self::find()->where(
             ['answer_id' => $answer_id]
-        )->asArray()->all();
+        )->limit($limit)->offset($offset)->asArray()->all();
 
         return $model;
+    }
+
+
+    public static function getCommentCountByAnswerId($answer_id)
+    {
+        $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+        $count = Yii::$app->redis->hGet($cache_key, 'count_comment');
+        if (false === $count) {
+            $data = AnswerEntity::getAnswerByAnswerId($answer_id);
+            $count = $data['count_comment'];
+        }
+
+        return $count;
     }
 }

@@ -319,7 +319,7 @@ class TagEntity extends Tag
     {
         $data = self::getTagListByTagIds([$tag_id]);
 
-        return $data ? array_shift($data) : [];
+        return $data ? array_shift($data) : null;
     }
 
     public static function getTagListByTagIds(array $tag_ids)

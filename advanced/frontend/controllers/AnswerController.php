@@ -156,12 +156,12 @@ class AnswerController extends BaseController
      * @param string $id
      * @return mixed
      */
-    public function actionDelete($id)
+    /*public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
-    }
+    }*/
 
     /**
      * Finds the AnswerEntity model based on its primary key value.
@@ -182,18 +182,55 @@ class AnswerController extends BaseController
     public function actionGetCommentList($id)
     {
         $comment_form = new AnswerCommentEntity();
-        $answer_model = AnswerEntity::findOne($id);
-        $comments_data = AnswerCommentEntity::getCommentListByAnswerId($id);
+
+        $answer_data = $this->findAnswer($id);
+        $question_data = QuestionEntity::getQuestionByQuestionId($answer_data['question_id']);
+
+        $count = AnswerCommentEntity::getCommentCountByAnswerId($id);
+
+        if ($count == 0) {
+            $pages = null;
+            $comments_data = [];
+        } else {
+            $pages = new Pagination(
+                [
+                    'totalCount' => $count,
+                    'pageSize'   => 10,
+                    'params'     => $_GET,
+                    'pageParam'  => 'comment-page',
+                ]
+            );
+            $comments_data = AnswerCommentEntity::getCommentListByAnswerId($id, $pages->pageSize, $pages->offset);
+        }
+
 
         $html = $this->renderPartial(
             '_comment_list',
             [
-                'comment_form'  => $comment_form,
-                'answer_model'  => $answer_model,
-                'comments_data' => $comments_data,
+                'comment_item_html' => $this->renderPartial(
+                    '_answer_comment_item',
+                    [
+                        'answer_id'               => $id,
+                        'answer_create_user_id'   => $answer_data['create_by'],
+                        'question_create_user_id' => $question_data['create_by'],
+                        'data'                    => $comments_data,
+                    ]
+                ),
+                'comment_form'      => $comment_form,
+                'answer_data'       => $answer_data,
+                'pages'             => $pages,
             ]
         );
 
         $this->htmlOut($html);
+    }
+
+    protected function findAnswer($id)
+    {
+        if (($answer_data = AnswerEntity::getAnswerByAnswerId($id)) !== null) {
+            return $answer_data;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
     }
 }

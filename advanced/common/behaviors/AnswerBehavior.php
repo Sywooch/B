@@ -90,7 +90,7 @@ class AnswerBehavior extends BaseBehavior
         Yii::$app->redis->zAdd([REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id], 0, $this->owner->id);
 
         $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
-        Yii::$app->redis->HMSET([REDIS_KEY_ANSWER_ENTITY, $this->owner->id], $item);
+        Yii::$app->redis->HMSET([REDIS_KEY_ANSWER, $this->owner->id], $item);
     }
     
     public function afterAnswerUpdate($event)

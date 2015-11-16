@@ -177,8 +177,9 @@ class QuestionController extends BaseController
             $pages = new Pagination(
                 [
                     'totalCount' => AnswerEntity::getAnswerCountByQuestionId($id),
-                    'pageSize'   => 20,
+                    'pageSize'   => 10,
                     'params'     => array_merge($_GET, ['#' => 'answer-list']),
+                    'pageParam'  => 'answer-page',
                 ]
             );
             $answer_data = AnswerEntity::getAnswerListByQuestionId($id, $pages->pageSize, $pages->offset, $sort);
@@ -196,14 +197,12 @@ class QuestionController extends BaseController
                     [
                         'question_id' => $id,
                         'data'        => $answer_data,
-                        'pages'       => $pages,
                     ]
                 ),
                 'sort'             => $sort,
+                'pages'            => $pages,
             ]
         );
-
-
     }
 
     /**
@@ -261,12 +260,12 @@ class QuestionController extends BaseController
      * @param string $id
      * @return mixed
      */
-    public function actionDelete($id)
+    /*public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
-    }
+    }*/
 
     /**
      * Finds the Question model based on its primary key value.
