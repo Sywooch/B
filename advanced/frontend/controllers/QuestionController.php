@@ -167,6 +167,16 @@ class QuestionController extends BaseController
 
         $answer_model = new AnswerEntity();
 
+        if ($question_data['tags']) {
+            $tags = explode(',', $question_data['tags']);
+        } else {
+            $tags = [];
+        }
+        $tags = array_merge([$question_data['subject']], $tags);
+        $similar_question = QuestionEntity::getSimilarQuestion($tags);
+
+
+
         #增加查看问题计数
         Counter::addQuestionView($id);
 
@@ -174,6 +184,7 @@ class QuestionController extends BaseController
             $pages = null;
             $answer_data = AnswerEntity::getAnswerListByAnswerId([$answer_id]);
         } else {
+
             $pages = new Pagination(
                 [
                     'totalCount' => AnswerEntity::getAnswerCountByQuestionId($id),
@@ -184,8 +195,6 @@ class QuestionController extends BaseController
             );
             $answer_data = AnswerEntity::getAnswerListByQuestionId($id, $pages->pageSize, $pages->offset, $sort);
         }
-
-        //print_r($answer_data);exit;
 
         return $this->render(
             'view',
@@ -201,6 +210,7 @@ class QuestionController extends BaseController
                 ),
                 'sort'             => $sort,
                 'pages'            => $pages,
+                'similar_question' => $similar_question,
             ]
         );
     }

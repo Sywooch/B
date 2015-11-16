@@ -18,6 +18,7 @@ use common\entities\FollowTagPassiveEntity;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
 use common\entities\TagEntity;
+use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
 use common\models\CacheAnswerModel;
 use Yii;
@@ -31,6 +32,8 @@ use yii\db\ActiveRecord;
  */
 class AnswerBehavior extends BaseBehavior
 {
+    const NEED_NOTIFICATION_ANSWER_CONTENT_LENGTH = 20;
+
     public function events()
     {
         Yii::trace('Begin ' . $this->className(), 'behavior');
@@ -120,7 +123,7 @@ class AnswerBehavior extends BaseBehavior
         
         /* @var $questionEntity QuestionEntity */
         $questionEntity = Yii::createObject(QuestionEntity::className());
-        $result = $questionEntity->updateActiveAt($this->owner->question_id, time());
+        $result = $questionEntity->updateActiveAt($this->owner->question_id, TimeHelper::getCurrentTime());
         
         Yii::trace(sprintf('Update Active At: %s', $result), 'behavior');
     }
@@ -135,14 +138,18 @@ class AnswerBehavior extends BaseBehavior
     public function dealWithNotification($type)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        /* @var $followQuestionEntity FollowQuestionEntity */
-        $followQuestionEntity = Yii::createObject(FollowQuestionEntity::className());
-        $user_ids = $followQuestionEntity->getFollowUserIds($this->owner->question_id);
-        if ($user_ids) {
-            Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice(
-                $type,
-                $this->owner->question_id
-            );
+
+        #notification where answer is enough long.
+        if (StringHelper::countStringLength($this->owner->content) >= self::NEED_NOTIFICATION_ANSWER_CONTENT_LENGTH) {
+            /* @var $followQuestionEntity FollowQuestionEntity */
+            $followQuestionEntity = Yii::createObject(FollowQuestionEntity::className());
+            $user_ids = $followQuestionEntity->getFollowUserIds($this->owner->question_id);
+            if ($user_ids) {
+                Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice(
+                    $type,
+                    $this->owner->question_id
+                );
+            }
         }
     }
     

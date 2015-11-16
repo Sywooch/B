@@ -299,17 +299,26 @@ $this->endBlock();
             </div>
 
 
-            <div class="widget-box no-border">
-                <h2 class="h4 widget-box__title">相似问题</h2>
-                <ul class="widget-links list-unstyled">
-                    <li class="widget-links__item"><a title="如何使php的MD5与C#的MD5一致？" href="/q/1010000000492161">如何使php的MD5与C#的MD5一致？</a>
-                        <small class="text-muted">
-                            1 回答
-                            | 已解决
-                        </small>
-                    </li>
-                </ul>
-            </div>
+            <?php if ($similar_question): ?>
+                <div class="widget-box no-border">
+                    <h2 class="h4 widget-box__title">相似问题</h2>
+                    <ul class="widget-links list-unstyled">
+                        <?php foreach ($similar_question as $question): ?>
+                            <?php if ($question['id'] != $question_data['id']): ?>
+                                <li class="widget-links__item">
+                                    <?= Html::a(
+                                            $question['subject'],
+                                            ['question/view', 'id' => $question['id']]
+                                    ); ?>
+                                    <small class="text-muted">
+                                        <?= $question['count_answer']; ?> 回答
+                                    </small>
+                                </li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
             <div class="widget-share sharer-0" data-text="md5加密问题" style="display: block;">分享
                 <ul id="share" data-title="" class="sn-inline">
                     <li data-network="weibo">

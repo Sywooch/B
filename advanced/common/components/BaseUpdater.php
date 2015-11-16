@@ -15,7 +15,7 @@ use yii\base\Object;
 class BaseUpdater extends Object
 {
     private static $instance;
-    private $priority;
+    private $immediate;
     private $table;
     private $where;
     private $set;
@@ -58,9 +58,9 @@ class BaseUpdater extends Object
         return $this;
     }
 
-    public function priority($priority = true)
+    public function sync($immediate = true)
     {
-        $this->priority = $priority;
+        $this->immediate = $immediate;
 
         return $this;
     }
@@ -80,7 +80,7 @@ class BaseUpdater extends Object
         }
 
         #priority = true 为马上执行
-        if ($this->priority) {
+        if ($this->immediate) {
             $result =  $this->immediately();
         } else {
             $result =  $this->simpleQueue();

@@ -9,6 +9,7 @@ use Yii;
  *
  * @property string $id
  * @property string $question_id
+ * @property string $type
  * @property string $content
  * @property string $count_useful
  * @property string $count_comment
@@ -46,7 +47,7 @@ class Answer extends \common\models\BaseActiveRecord
         return [
             [['question_id', 'content', 'create_by'], 'required'],
             [['question_id', 'count_useful', 'count_comment', 'create_at', 'create_by', 'modify_at', 'modify_by'], 'integer'],
-            [['content', 'is_anonymous', 'is_fold'], 'string'],
+            [['type', 'content', 'is_anonymous', 'is_fold'], 'string'],
             [['reproduce_url'], 'string', 'max' => 45],
             [['reproduce_username'], 'string', 'max' => 255]
         ];
@@ -60,6 +61,7 @@ class Answer extends \common\models\BaseActiveRecord
         return [
             'id' => 'ID',
             'question_id' => '相关问题ID',
+            'type' => 'answer 常规回答,referenced 被引用',
             'content' => '内容',
             'count_useful' => '点赞数',
             'count_comment' => '评论数',
@@ -120,14 +122,5 @@ class Answer extends \common\models\BaseActiveRecord
     public function getAnswerVersions()
     {
         return $this->hasMany(AnswerVersion::className(), ['answer_id' => 'id']);
-    }
-
-    /**
-     * @inheritdoc
-     * @return AnswerQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new AnswerQuery(get_called_class());
     }
 }

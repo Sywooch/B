@@ -27,7 +27,7 @@ class BaseNotifier extends Object
 
     public $result; #结果集
     private static $instance;
-    private $priority; #优先级, true 立马执行　false 队列
+    private $immediate; #优先级, true 立马执行　false 队列
     private $sender; #谁发送
     private $receiver; #发送给谁
     private $method; #通知方法:notice,email,sms,weixin
@@ -48,16 +48,16 @@ class BaseNotifier extends Object
     
     public function init()
     {
-        $this->priority = false;
+        $this->immediate = false;
         $this->sender = null;
         $this->receiver = null;
         $this->result = null;
         $this->method = null;
     }
     
-    public function priority($priority = true)
+    public function sync($immediate = true)
     {
-        $this->priority = $priority;
+        $this->immediate = $immediate;
 
         return $this;
     }
@@ -103,8 +103,8 @@ class BaseNotifier extends Object
 
         #filter to_user_id
         if ($this->filterToUserId()) {
-            #priority = true 为马上执行
-            if ($this->priority) {
+            #immediate = true 为马上执行
+            if ($this->immediate) {
                 $result = $this->noticeDatabase($this->sender, $this->receiver, $this->notice_code, $associate_data);
             } else {
                 $result = $this->noticeQueue($this->sender, $this->receiver, $this->notice_code, $associate_data);
@@ -126,7 +126,7 @@ class BaseNotifier extends Object
         }
 
         #priority = true 为马上执行
-        if ($this->priority) {
+        if ($this->immediate) {
             $result = $this->emailSend($this->receiver, $subject, $message, $template_view);
         } else {
             $result = $this->emailQueue($this->receiver, $subject, $message, $template_view);

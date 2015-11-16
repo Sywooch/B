@@ -2,13 +2,17 @@
 
 namespace frontend\controllers;
 
+use common\components\Error;
+use common\components\Updater;
+use common\controllers\BaseController;
 use common\entities\NotificationEntity;
+use common\entities\UserEntity;
+use common\helpers\TimeHelper;
 use common\modules\user\models\User;
-use yii\data\ActiveDataProvider;
 use Yii;
 use yii\data\Pagination;
 
-class NotificationController extends \yii\web\Controller
+class NotificationController extends BaseController
 {
     public function actionIndex()
     {
@@ -36,12 +40,13 @@ class NotificationController extends \yii\web\Controller
         //print_r($data);
         //exit;
 
-        //NotificationEntity::clearNotifyCount();
+        #
+        Updater::clearNotifyCount(Yii::$app->user->id);
 
         return $this->render(
             'index',
             [
-                'data' => $data,
+                'data'  => $data,
                 'pages' => $pages,
             ]
         );
@@ -51,24 +56,50 @@ class NotificationController extends \yii\web\Controller
      * 返回通知条数
      * @return mixed
      */
-    public function actionCount()
+    public function actionGetNotificationCount()
     {
-        $model = User::findOne(Yii::$app->user->id);
+        $user = UserEntity::getUserById(Yii::$app->user->id);
 
-        return $model->notification_count;
+        return $user['notification_count'];
     }
 
-    /**
-     * 清空通知
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException
-     * @throws \Exception
-     */
-    public function actionClearAll()
-    {
-        NotificationEntity::deleteAll(['user_id' => Yii::$app->user->id]);
 
-        return $this->redirect(['index']);
+    public function actionReadAll()
+    {
+        $data = NotificationEntity::updateAll(
+            [
+                'status'  => NotificationEntity::STATUS_READ,
+                'read_at' => TimeHelper::getCurrentTime(),
+            ],
+            [
+                'user_id' => Yii::$app->user->id,
+                'status'  => NotificationEntity::STATUS_UNREAD,
+            ]
+        );
+
+        $result = Error::get($data);
+
+        return $this->jsonOut($result);
+    }
+
+    public function actionReadOne($id)
+    {
+        $data = NotificationEntity::updateAll(
+            [
+                'status'  => NotificationEntity::STATUS_READ,
+                'read_at' => TimeHelper::getCurrentTime(),
+            ],
+            [
+                'id'      => $id,
+                'user_id' => Yii::$app->user->id,
+                'status'  => NotificationEntity::STATUS_UNREAD,
+            ]
+        );
+
+        $result = Error::get($data);
+
+        return $this->jsonOut($result);
+
     }
 
     protected function findModel($id)

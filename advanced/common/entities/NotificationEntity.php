@@ -10,6 +10,7 @@ namespace common\entities;
 
 
 use common\behaviors\NotificationBehavior;
+use common\components\Updater;
 use common\models\Notification;
 use common\services\UserService;
 use Yii;
@@ -164,7 +165,7 @@ class NotificationEntity extends Notification
     {
         $notices = [];
         $user_id = $question_id = $tag_id = [];
-        foreach ($notification as $notice) {
+        foreach ($notification as $index => $notice) {
 
             $date_index = date('Y-m-d', $notice['create_at']);
             $mix_index = md5(
@@ -186,6 +187,11 @@ class NotificationEntity extends Notification
             #if one notice status is unread, the group status is unread.
             if (self::STATUS_UNREAD == $notice['status']) {
                 $notices[$date_index][$mix_index]['status'] = self::STATUS_UNREAD;
+            }
+
+            #
+            if (count($notices[$date_index][$mix_index]['sender']) >= 10) {
+                continue;
             }
 
             $notices[$date_index][$mix_index]['sender'][] = $notice['sender'];

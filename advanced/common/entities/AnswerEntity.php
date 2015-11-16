@@ -26,6 +26,9 @@ class AnswerEntity extends Answer
     const STATUS_ANONYMOUS = 'yes';
     const STATUS_UNANONYMOUS = 'no';
 
+    const TYPE_ANSWER = 'answer';
+    const TYPE_REFERENCED = 'referenced';
+
     public $reason;
 
     public function behaviors()

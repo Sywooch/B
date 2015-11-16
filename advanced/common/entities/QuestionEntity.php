@@ -14,6 +14,7 @@ use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\behaviors\QuestionBehavior;
 use common\models\Question;
+use yii\base\Exception;
 use yii\db\ActiveRecord;
 
 /**
@@ -243,14 +244,14 @@ class QuestionEntity extends Question
      */
     public function updateContent($id, $content)
     {
-        Updater::build()->priority()->table(self::tableName())->set(['content' => $content])->where(
+        Updater::build()->sync(true)->table(self::tableName())->set(['content' => $content])->where(
             ['id' => $id]
         )->execute();
     }
 
     public function updateActiveAt($id, $active_at)
     {
-        Updater::build()->priority()->table(self::tableName())->set(['active_at' => $active_at])->where(
+        Updater::build()->sync(true)->table(self::tableName())->set(['active_at' => $active_at])->where(
             ['id' => $id]
         )->execute();
     }
@@ -338,24 +339,31 @@ class QuestionEntity extends Question
         return $cache_data;
     }
     
-    public static function getSimilarQuestion(array $tags)
+    public static function getSimilarQuestion(array $tags, $limit = 10)
     {
-        
+        if ($tags) {
+            $params = array_merge(['or'], $tags);
+            try {
+                $question = new \common\models\xunsearch\Question();
+                $result = $question->find()->where($params)->andWhere(['NOT IN', 'count_answer', [0]])->limit(
+                    $limit
+                )->asArray()->all();
+            } catch (Exception $e) {
+                $result = [];
+            }
+
+        } else {
+            $result = [];
+        }
+
+        return $result;
     }
 
     public static function ensureQuestionHasCache($question_id)
     {
         $cache_key = [REDIS_KEY_QUESTION, $question_id];
         if (Yii::$app->redis->hLen($cache_key) === 0) {
-            $item = self::find()->where(
-                [
-                    'id' => $question_id,
-                ]
-            )->asArray()->all();
-
-            $item = (new CacheQuestionModel())->filterAttributes($item);
-
-            return Yii::$app->redis->hMset($cache_key, $item);
+            self::getQuestionByQuestionId($question_id);
         }
 
         return true;

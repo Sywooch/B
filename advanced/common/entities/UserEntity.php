@@ -98,7 +98,7 @@ class UserEntity extends User
     {
         $user = self::getUserById($user_id);
 
-        if (isset($user['avatar']) && $user['avatar']) {
+        if (!empty($user['avatar'])) {
             $avatarPath = Yii::$app->basePath . Yii::$app->params['avatarPath'];
             $avatarCachePath = Yii::$app->basePath . Yii::$app->params['avatarCachePath'];
             
@@ -143,7 +143,6 @@ class UserEntity extends User
     public static function getUserById($user_id)
     {
         $data = self::getUserListByIds([$user_id]);
-        
         return $data ? array_shift($data) : null;
     }
 
@@ -170,6 +169,7 @@ class UserEntity extends User
 
             $cache_user_model = new CacheUserModel();
             $username_id_data = [];
+
             foreach ($cache_data as $item) {
                 #filter attributes
                 $item = $cache_user_model->filterAttributes($item);
@@ -264,15 +264,7 @@ class UserEntity extends User
     {
         $cache_key = [REDIS_KEY_USER, $user_id];
         if (Yii::$app->redis->hLen($cache_key) === 0) {
-            $item = self::find()->where(
-                [
-                    'id' => $user_id,
-                ]
-            )->with('profile')->asArray()->all();
-
-            $item = (new CacheUserModel())->filterAttributes($item);
-
-            return Yii::$app->redis->hMset($cache_key, $item);
+            self::getUserById($user_id);
         }
 
         return true;

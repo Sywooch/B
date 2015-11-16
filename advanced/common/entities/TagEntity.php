@@ -300,22 +300,14 @@ class TagEntity extends Tag
     {
         $cache_key = [REDIS_KEY_TAG, $tag_id];
         if (Yii::$app->redis->hLen($cache_key) === 0) {
-            $item = self::find()->where(
-                [
-                    'id' => $tag_id,
-                ]
-            )->asArray()->all();
-
-            $item = (new CacheTagModel())->filterAttributes($item);
-
-            return Yii::$app->redis->hMset($cache_key, $item);
+            self::getTagByTagId($tag_id);
         }
 
         return true;
     }
 
 
-    public static function getTagByTagIs($tag_id)
+    public static function getTagByTagId($tag_id)
     {
         $data = self::getTagListByTagIds([$tag_id]);
 

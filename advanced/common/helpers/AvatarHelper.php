@@ -9,20 +9,21 @@ namespace common\helpers;
 
 class AvatarHelper
 {
-    public $email;
+    public $user_id;
     public $size;
 
-    public function __construct($email, $size = 50)
+    public function __construct($user_id, $size = 50)
     {
-        $this->email = $email;
+        $this->user_id = $user_id;
         $this->size = $size;
     }
 
     public function getAvater()
     {
         #todo 做缓存
+        //var_dump($this->email, $this->size);exit;
         $identicon = new \Identicon\Identicon();
-        return $identicon->getImageDataUri($this->email, $this->size);
+        return $identicon->getImageDataUri($this->user_id, $this->size);
     }
 
     /**
@@ -31,7 +32,7 @@ class AvatarHelper
      */
     private function getGravatar()
     {
-        $hash = md5(strtolower(trim($this->email)));
+        $hash = md5(strtolower(trim($this->user_id)));
         return sprintf('http://gravatar.com/avatar/%s?s=%d&d=%s', $hash, $this->size, 'identicon');
     }
 
@@ -41,7 +42,7 @@ class AvatarHelper
      */
     private function validateGravatar()
     {
-        $hash = md5(strtolower(trim($this->email)));
+        $hash = md5(strtolower(trim($this->user_id)));
         $uri = 'http://gravatar.com/avatar/' . $hash . '?d=404';
         $headers = @get_headers($uri);
         if (!preg_match("|200|", $headers[0])) {

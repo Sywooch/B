@@ -98,7 +98,7 @@ class TestController extends BaseController
     public function actionNotifier()
     {
 
-        /*$result = Notifier::build()->priority(true)->from(1)->to([1, 2])->notice(
+        /*$result = Notifier::build()->sync(true)->from(1)->to([1, 2])->notice(
             NotificationEntity::TYPE_ANSWER_AT_ME,
             1
         )->email('a', 'b');
@@ -106,7 +106,7 @@ class TestController extends BaseController
         var_dump($result->result);
         exit;*/
 
-        /*$result = Notifier::build()->priority(false)->from(1)->to([1, 2])->notice(
+        /*$result = Notifier::build()->sync(false)->from(1)->to([1, 2])->notice(
             NotificationEntity::TYPE_ANSWER_AT_ME,
             1
         );
@@ -119,18 +119,18 @@ class TestController extends BaseController
 
         exit;*/
 
-        $notifier = Notifier::build()->priority(false)->to(1)->email('a', 'b');
+        $notifier = Notifier::build()->sync(false)->to(1)->email('a', 'b');
 
         print_r($notifier->result);
     }
 
     public function actionCounter()
     {
-        $result = Counter::build()->priority(false)->set('user_profile', 1, 'user_id')->value(
+        $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value(
             'count_answer',
             1
         )->execute();
-        $result = Counter::build()->priority(false)->set('user_profile', 1, 'user_id')->value(
+        $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value(
             'count_question',
             1
         )->execute();
@@ -146,7 +146,7 @@ class TestController extends BaseController
 
     public function actionUpdater()
     {
-        $result = Updater::build()->priority(false)->table(QuestionEntity::tableName())->where(['id' => 1])->set(
+        $result = Updater::build()->sync(false)->table(QuestionEntity::tableName())->where(['id' => 1])->set(
             ['subject' => "我是标题'"]
         )->execute();
 
@@ -253,11 +253,30 @@ class TestController extends BaseController
     public function actionXunsearch()
     {
         echo '<pre />';
-        $question = new Question();
-        //$question->id = 2;
-        //$question->subject = 'abc' . time();
-        //$question->save();
-        $result = $question->findAll([]);
+        /*$subjects = [
+            '深圳户口如何办理？',
+            '深圳目前有多少人口？',
+            '深圳目前有多少外来人口？',
+            '深圳目前有多少本地人口？',
+            '深圳单身人口有多少？',
+            '深圳有哪些商圈？',
+            '深圳有哪些奇怪的现象？',
+            '深圳有哪些奇怪的人？',
+            '深圳有哪些奇怪的名人？',
+        ];
+
+        foreach ($subjects as $key => $subject) {
+            $question = new Question();
+            $question->id = ++$key;
+            $question->subject = $subject . ' ' . date('Y-md-d H:i:s');
+            $result = $question->save();
+            var_dump($result);
+        }*/
+
+        //$question = new Question();
+        //$result = $question->find()->where(['or','深圳','人口'])->all();
+
+        $result = QuestionEntity::getSimilarQuestion(['深圳', '名人','深圳人口']);
 
         print_r($result);
     }
@@ -377,13 +396,13 @@ class TestController extends BaseController
 
         //echo json_encode($arr);exit;
 
-        Notifier::build()->priority(0)->from(1)->to(2)->notice(
+        Notifier::build()->sync(0)->from(1)->to(2)->notice(
             NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
             [
                 'question_id' => 16,
             ]
         );
-        Notifier::build()->priority(0)->from(2)->to(23)->notice(
+        Notifier::build()->sync(0)->from(2)->to(23)->notice(
             NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
             [
                 'question_id' => 17,

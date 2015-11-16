@@ -95,9 +95,10 @@ class Monitor extends Component
             Yii::$app->session->setFlash(
                 'danger',
                 sprintf(
-                    '当前为宵禁时间，期间禁止 [注册、提问、回答]。开放时间为：%d:00~%d：00',
+                    '当前为宵禁时间，期间禁止 [注册、提问、回答]。开放时间为：%d:00~%d:00，当前时间：%d:00',
                     self::OPEN_TIME_START,
-                    self::OPEN_TIME_END
+                    self::OPEN_TIME_END,
+                    date('G:i:s')
                 )
             );
 

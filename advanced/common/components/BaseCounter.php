@@ -24,7 +24,7 @@ class BaseCounter extends Object
     private $id; #
     private $field; #修改的属性
     private $value; #修改的值
-    private $priority; #优先级, true 立马执行　false 队列
+    private $immediate; #优先级, true 立马执行　false 队列
 
     private static $instance;
     
@@ -46,7 +46,7 @@ class BaseCounter extends Object
         $this->id = null;
         $this->field = null;
         $this->value = null;
-        $this->priority = false;
+        $this->immediate = false;
     }
 
     public function set($table_name, $id, $primary_key_name = 'id')
@@ -75,9 +75,9 @@ class BaseCounter extends Object
         return $this;
     }
 
-    public function priority($priority = true)
+    public function sync($immediate = true)
     {
-        $this->priority = $priority;
+        $this->immediate = $immediate;
         
         return $this;
     }
@@ -110,12 +110,12 @@ class BaseCounter extends Object
             throw new ParamsInvalidException(['value']);
         }
         
-        if (empty($this->priority)) {
-            $this->priority = false;
+        if (empty($this->immediate)) {
+            $this->immediate = false;
         }
 
         #priority = true 为马上执行
-        if ($this->priority) {
+        if ($this->immediate) {
             $result = $this->immediately();
         } else {
             $result = $this->simpleQueue();

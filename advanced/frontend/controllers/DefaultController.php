@@ -56,7 +56,7 @@ class DefaultController extends BaseController
 
     public function actionFetchHot()
     {
-        $data = QuestionEntity::fetchHot(30, 0, ServerHelper::checkIsSpider());
+        $data = QuestionEntity::fetchHot(30, 0, ServerHelper::checkIsSpider(), 30);
         if ($data) {
             $html = $this->renderPartial(
                 'question_item_view',
