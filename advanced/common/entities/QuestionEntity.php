@@ -6,6 +6,7 @@ namespace common\entities;
 use common\components\Updater;
 use common\helpers\StringHelper;
 use common\models\CacheQuestionModel;
+use common\models\QuestionTag;
 use common\models\Tag;
 use common\services\NotificationService;
 use Yii;
@@ -221,17 +222,15 @@ class QuestionEntity extends Question
      */
     public function getQuestionTagsByQuestionId($question_id)
     {
-        /*return $this->hasMany(Tag::className(), ['id' => 'tag_id'])->viaTable(
-            'question_has_tag',
-            ['question_id' => 'id']
-        );*/
-
-        $sql = 'select t.id, t.name
-                from `question_has_tag` ht
+        $sql = sprintf(
+            'select t.id, t.name
+                from `%s` qt
                 left join `tag` t
-                on t.id=ht.tag_id
-                where ht.question_id=:question_id
-                ';
+                on t.id=qt.tag_id
+                where qt.question_id=:question_id
+                ',
+            QuestionTag::className()
+        );
 
         return self::getDb()->createCommand($sql, [':question_id' => $question_id])->queryAll();
     }
@@ -254,6 +253,16 @@ class QuestionEntity extends Question
         Updater::build()->sync(true)->table(self::tableName())->set(['active_at' => $active_at])->where(
             ['id' => $id]
         )->execute();
+    }
+
+    public static function updateQuestionCache($question_id, $data)
+    {
+        if ($question_id && $data) {
+            $cache_key = [REDIS_KEY_QUESTION, $question_id];
+
+            return Yii::$app->redis->hMset($cache_key, $data);
+        }
+
     }
 
     public static function fetchCount($type, $is_spider)

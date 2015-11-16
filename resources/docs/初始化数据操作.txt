@@ -1,2 +1,5 @@
 #计划任务
 yii migrate --migrationPath=@fedemotta/cronjob/migrations
+
+#rbac
+yii migrate/up --migrationPath=@yii/rbac/migrations

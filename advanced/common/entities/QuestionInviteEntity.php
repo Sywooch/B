@@ -97,9 +97,7 @@ class QuestionInviteEntity extends QuestionInvite
      */
     public function getRecommendInviteUser(array $tag_id)
     {
-        /* @var $follow_tag_passive FollowTagPassiveEntity */
-        $follow_tag_passive = Yii::createObject(FollowTagPassiveEntity::className());
-        $result = $follow_tag_passive->getRecommendUserIdsByTagIds($tag_id);
+        $result = FollowTagPassiveEntity::getRecommendUserIdsByTagIds($tag_id);
 
         return $result;
     }

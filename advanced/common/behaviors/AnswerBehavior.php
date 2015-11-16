@@ -180,9 +180,7 @@ class AnswerBehavior extends BaseBehavior
         
         if ($tag_ids) {
             $tag_ids = is_array($tag_ids) ? $tag_ids : [$tag_ids];
-            /* @var $follow_tag_passive_entity FollowTagPassiveEntity */
-            $follow_tag_passive_entity = Yii::createObject(FollowTagPassiveEntity::className());
-            $result = $follow_tag_passive_entity->addFollowTag(
+            $result = FollowTagPassiveEntity::addFollowTag(
                 $this->owner->create_by,
                 $tag_ids
             );

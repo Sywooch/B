@@ -30,8 +30,6 @@ use Yii;
  * @property User[] $users
  * @property User $createBy
  * @property QuestionEventHistory[] $questionEventHistories
- * @property QuestionHasTag[] $questionHasTags
- * @property Tag[] $tags0
  * @property QuestionInvite[] $questionInvites
  * @property QuestionReview[] $questionReviews
  */
@@ -123,22 +121,6 @@ class Question extends \common\models\BaseActiveRecord
     public function getQuestionEventHistories()
     {
         return $this->hasMany(QuestionEventHistory::className(), ['question_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getQuestionHasTags()
-    {
-        return $this->hasMany(QuestionHasTag::className(), ['question_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTags0()
-    {
-        return $this->hasMany(Tag::className(), ['id' => 'tag_id'])->viaTable('question_has_tag', ['question_id' => 'id']);
     }
 
     /**

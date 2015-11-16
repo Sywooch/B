@@ -14,8 +14,10 @@ use common\entities\FavoriteRecordEntity;
 use common\entities\FollowQuestionEntity;
 use common\entities\QuestionEntity;
 use common\entities\QuestionEventHistoryEntity;
+use common\entities\QuestionTagEntity;
 use common\entities\TagEntity;
 use common\entities\UserProfileEntity;
+use common\models\QuestionTag;
 use common\models\xunsearch\Question;
 use common\modules\user\models\Profile;
 use Yii;
@@ -71,6 +73,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithUserAddQuestionCounter();
         $this->dealWithAddFollowQuestion();
         $this->dealWithAddAttachments();
+        $this->dealWithRedisCache();
     }
     
     public function afterQuestionUpdate($event)
@@ -79,6 +82,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithQuestionUpdateEvent();
         $this->dealWithUpdateTags();
         $this->dealWithAddAttachments();
+        $this->dealWithRedisCache();
     }
     
     public function afterQuestionDelete($event)
@@ -150,14 +154,11 @@ class QuestionBehavior extends BaseBehavior
         $add_tags = $new_tags;
         
         if ($add_tags) {
-            /* @var $tag_model TagEntity */
-            $tag_model = Yii::createObject(TagEntity::className());
-            
-            $tag_relation = $tag_model->batchAddTags($add_tags);
+            $tag_relation = TagEntity::batchAddTags($add_tags);
             if ($tag_relation) {
                 $tag_ids = array_values($tag_relation);
-                $result = $tag_model->addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
-                
+                $result = QuestionTagEntity::addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
+
                 Yii::trace(sprintf('Add Question Tag Result: %s', var_export($result, true)), 'behavior');
             }
         }
@@ -226,13 +227,10 @@ class QuestionBehavior extends BaseBehavior
         
         
         if ($add_tags) {
-            /* @var $tag_model TagEntity */
-            $tag_model = Yii::createObject(TagEntity::className());
-            
-            $tag_relation = $tag_model->batchAddTags($add_tags);
+            $tag_relation = TagEntity::batchAddTags($add_tags);
             if ($tag_relation) {
                 $tag_ids = array_values($tag_relation);
-                $tag_model->addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
+                QuestionTagEntity::addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
             }
             
             $questionEventHistoryEntity->addTag($add_tags);
@@ -347,6 +345,7 @@ class QuestionBehavior extends BaseBehavior
 
     public function dealWithXunSearch()
     {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
         try {
             $question = new Question();
             $question->load($this->owner->getAttributes(), '');
@@ -354,5 +353,16 @@ class QuestionBehavior extends BaseBehavior
         } catch (Exception $e) {
             Yii::error(__METHOD__, 'xunsearch');
         }
+    }
+
+    public function dealWithRedisCache()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        if ($this->owner->isNewRecord) {
+            QuestionEntity::ensureQuestionHasCache($this->owner->id);
+        } else {
+            QuestionEntity::updateQuestionCache($this->owner->id, $this->owner->getAttributes());
+        }
+
     }
 }

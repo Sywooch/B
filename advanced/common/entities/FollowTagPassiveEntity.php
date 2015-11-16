@@ -1,5 +1,7 @@
 <?php
 /**
+ * 被动TAG关注表，当用户回答某个问题时，则自动被动关注这个问题的TAG
+ * 这些TAG将被计算为用户擅长的TAG
  * Created by PhpStorm.
  * User: yuyj
  * Date: 10/19
@@ -19,7 +21,7 @@ class FollowTagPassiveEntity extends FollowTagPassive
     const MAX_NUMBER_RECOMMEND_USER = 10;
     const RECENT_PERIOD_OF_TIME = 15; #距最后tag活跃的天数
 
-    public function addFollowTag($user_id, array $tag_ids)
+    public static function addFollowTag($user_id, array $tag_ids)
     {
         if (empty($user_id) || empty($tag_ids)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,tag_ids']);
@@ -59,11 +61,11 @@ class FollowTagPassiveEntity extends FollowTagPassive
      * @param int   $number
      * @return array ['tag_id'=>['user_id' => 'count_question', 'user_id' => 'count_question'], 'tag_id' => []]
      */
-    public function getRecommendUserIdsByTagIds(array $tag_ids, $number = self::MAX_NUMBER_RECOMMEND_USER)
+    public static function getRecommendUserIdsByTagIds(array $tag_ids, $number = self::MAX_NUMBER_RECOMMEND_USER)
     {
         $relation = [];
         foreach ($tag_ids as $tag_id) {
-            $relation[$tag_id] = $this->getTagAndUserRelation($tag_id);
+            $relation[$tag_id] = self::getTagAndUserRelation($tag_id);
         }
         //print_r($relation);exit;
 
@@ -77,9 +79,7 @@ class FollowTagPassiveEntity extends FollowTagPassive
         foreach ($relation as $tag_id => $item) {
             $item_length = count($item);
             $split_number = round($item_length / $total_user_number * $number);
-            /*print_r($item);
-            var_dump($item_length, $split_number);
-            echo PHP_EOL;*/
+
             if ($split_number < $item_length) {
                 if ($split_number > 0) {
                     $result[$tag_id] = array_slice($item, 0, $split_number, true);
@@ -92,7 +92,7 @@ class FollowTagPassiveEntity extends FollowTagPassive
         return $result;
     }
 
-    public function getTagAndUserRelation($tag_id)
+    public static function getTagAndUserRelation($tag_id)
     {
         if (!Yii::$app->redis->zCard([REDIS_KEY_TAG_USER_RELATION, $tag_id])) {
             $sql = sprintf(
@@ -130,7 +130,7 @@ class FollowTagPassiveEntity extends FollowTagPassive
             //print_r($relation);exit;
 
             if ($relation) {
-                $this->addTagAndUserRelation($tag_id, $relation);
+                self::addTagAndUserRelation($tag_id, $relation);
             }
         }
 
@@ -147,7 +147,7 @@ class FollowTagPassiveEntity extends FollowTagPassive
         return $result;
     }
 
-    private function addTagAndUserRelation($tag_id, $relation)
+    private static function addTagAndUserRelation($tag_id, $relation)
     {
         $params = [
             [REDIS_KEY_TAG_USER_RELATION, $tag_id],
@@ -165,7 +165,7 @@ class FollowTagPassiveEntity extends FollowTagPassive
         return $result;
     }
 
-    public function cleanTagAndUserRelation($tag_id)
+    public static function cleanTagAndUserRelation($tag_id)
     {
 
     }

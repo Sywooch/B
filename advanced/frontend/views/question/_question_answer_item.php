@@ -171,6 +171,6 @@ use yii\widgets\LinkPager;
             </div>
         </article>
     <?php else: ?>
-        #not answer.
+        <?= $item['type']; ?>
     <?php endif; ?>
 <?php endforeach; ?>

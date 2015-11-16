@@ -12,11 +12,21 @@ use Yii;
  * @property string $alias
  * @property string $content
  * @property integer $weight
- * @property string $status
  * @property string $count_follow
+ * @property string $type
+ * @property string $create_at
+ * @property string $create_by
+ * @property string $modify_at
+ * @property string $modify_by
+ * @property string $active_at
+ * @property string $status
  *
- * @property QuestionHasTag[] $questionHasTags
- * @property Question[] $questions
+ * @property FollowTag[] $followTags
+ * @property User[] $users
+ * @property FollowTagPassive[] $followTagPassives
+ * @property User[] $users0
+ * @property TagRelation[] $tagRelations
+ * @property TagRelation[] $tagRelations0
  * @property TagVersion[] $tagVersions
  */
 class Tag extends \common\models\BaseActiveRecord
@@ -37,8 +47,9 @@ class Tag extends \common\models\BaseActiveRecord
         return [
             [['name'], 'required'],
             [['content', 'status'], 'string'],
-            [['weight', 'count_follow'], 'integer'],
+            [['weight', 'count_follow', 'create_at', 'create_by', 'modify_at', 'modify_by', 'active_at'], 'integer'],
             [['name', 'alias'], 'string', 'max' => 45],
+            [['type'], 'string', 'max' => 3],
             [['name'], 'unique']
         ];
     }
@@ -50,29 +61,67 @@ class Tag extends \common\models\BaseActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => '名称',
             'alias' => '别名',
             'content' => '描述',
             'weight' => '权重',
-            'status' => '状态',
             'count_follow' => '关注数',
+            'type' => '词性，名词，地名等',
+            'create_at' => '创建时间',
+            'create_by' => '创建用户',
+            'modify_at' => '修改时间',
+            'modify_by' => '修改用户',
+            'active_at' => '最后活跃时间',
+            'status' => '状态',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getQuestionHasTags()
+    public function getFollowTags()
     {
-        return $this->hasMany(QuestionHasTag::className(), ['tag_id' => 'id']);
+        return $this->hasMany(FollowTag::className(), ['follow_tag_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getQuestions()
+    public function getUsers()
     {
-        return $this->hasMany(Question::className(), ['id' => 'question_id'])->viaTable('question_has_tag', ['tag_id' => 'id']);
+        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('follow_tag', ['follow_tag_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFollowTagPassives()
+    {
+        return $this->hasMany(FollowTagPassive::className(), ['follow_tag_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUsers0()
+    {
+        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('follow_tag_passive', ['follow_tag_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTagRelations()
+    {
+        return $this->hasMany(TagRelation::className(), ['tag_id_1' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTagRelations0()
+    {
+        return $this->hasMany(TagRelation::className(), ['tag_id_2' => 'id']);
     }
 
     /**
@@ -81,14 +130,5 @@ class Tag extends \common\models\BaseActiveRecord
     public function getTagVersions()
     {
         return $this->hasMany(TagVersion::className(), ['tag_id' => 'id']);
-    }
-
-    /**
-     * @inheritdoc
-     * @return TagQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new TagQuery(get_called_class());
     }
 }

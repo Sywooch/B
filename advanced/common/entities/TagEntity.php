@@ -9,6 +9,7 @@ use common\components\Error;
 use common\exceptions\ParamsInvalidException;
 use common\models\CacheTagModel;
 use common\models\FollowTag;
+use common\models\QuestionTag;
 use common\models\TagQuery;
 use Yii;
 use common\models\Tag;
@@ -50,14 +51,14 @@ class TagEntity extends Tag
      * @param array $tags ['tag_name']
      * @return array ['tag_name'=> 'tag_id']
      */
-    public function batchAddTags(array $tags)
+    public static function batchAddTags(array $tags)
     {
         $data = [];
         foreach ($tags as $tag_name) {
             $model = self::findOne(['name' => $tag_name]);
 
             if (!$model) {
-                $model = new TagEntity();
+                $model = new self;
                 $model->name = $tag_name;
                 if (!$model->save()) {
                     Yii::error($model->getErrors(), __FUNCTION__);
@@ -90,36 +91,6 @@ class TagEntity extends Tag
 
     }
 
-    /**
-     * add question tag
-     * @param       $user_id
-     * @param       $question_id
-     * @param array $tag_ids
-     * @return bool
-     * @throws ParamsInvalidException
-     */
-    public function addQuestionTag($user_id, $question_id, array $tag_ids)
-    {
-        if (empty($user_id) || empty($question_id) || empty($tag_ids)) {
-            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id,tag_ids']);
-        }
-
-        $data = [];
-        $create_at = time();
-
-        foreach ($tag_ids as $tag_id) {
-            $data[] = [$question_id, $tag_id, $user_id, $create_at];
-        }
-
-        #batch add
-        self::getDb()->createCommand()->batchInsert(
-            'question_has_tag',
-            ['question_id', 'tag_id', 'create_by', 'create_at'],
-            $data
-        )->execute();
-
-        return $this->addFollowTag($user_id, $tag_ids);
-    }
 
     /**
      * remove question tag
@@ -131,7 +102,7 @@ class TagEntity extends Tag
     public function removeQuestionTag($user_id, $question_id, array $tag_ids)
     {
         $result = self::getDb()->createCommand()->delete(
-            'question_has_tag',
+            QuestionTag::tableName(),
             [
                 'create_by'   => $user_id,
                 'question_id' => $question_id,
@@ -140,13 +111,6 @@ class TagEntity extends Tag
         )->execute();
 
         return $result;
-    }
-
-    public function addFollowTag($user_id, array $tag_ids)
-    {
-        $followTagEntity = Yii::createObject(FollowTagEntity::className());
-
-        return $followTagEntity->addFollowTag($user_id, $tag_ids);
     }
 
     public static function getTagNameById($tag_id)
@@ -347,5 +311,21 @@ class TagEntity extends Tag
         }
 
         return $result;
+    }
+    
+    public static function getHotTags($limit = 20)
+    {
+        $result = self::find()->where(
+            'count_follow>=:count_follow',
+            [':count_follow' => 10]
+
+        )->orderBy('active_at DESC')->limit($limit)->asArray()->all();
+
+        return $result;
+    }
+
+    public static function updateTagCountUse(array $tag_ids)
+    {
+        return self::updateAllCounters(['count_use' => 1], ['id' => $tag_ids]);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 /**
+ * 主动关注TAG表，当用户提问时添加TAG时，这些TAG将自动关注。
+ * 这些TAG只是用户主动关注的TAG，并不表示用户擅长这些，擅长TAG查看 FollowTagPassiveEntity
  * Created by PhpStorm.
  * User: yuyj
  * Date: 10/19
@@ -15,7 +17,7 @@ use common\models\FollowTag;
 
 class FollowTagEntity extends FollowTag
 {
-    public function addFollowTag($user_id, array $tag_ids)
+    public static function addFollowTag($user_id, array $tag_ids)
     {
         if (empty($user_id) || empty($tag_ids)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,tag_ids']);
@@ -44,7 +46,9 @@ class FollowTagEntity extends FollowTag
         )->execute();
 
         if ($result) {
+            #user follow tag count
             Counter::followTag($user_id, count($tag_ids));
+
         } else {
             Yii::error(sprintf('Batch Add Follow Tag %s', $result), __FUNCTION__);
         }
