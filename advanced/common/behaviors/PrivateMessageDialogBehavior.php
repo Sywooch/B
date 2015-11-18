@@ -54,8 +54,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
         $dialog_user_id = $private_message->getDialogUserId($this->owner->private_message_id, Yii::$app->user->id);
 
         $result = Notifier::build()->from(Yii::$app->user->id)->to($dialog_user_id)->notice(
-            NotificationEntity::TYPE_PRIVATE_MESSAGE_TO_ME,
-            $this->owner->private_message_id
+            NotificationEntity::TYPE_PRIVATE_MESSAGE_TO_ME
         );
 
         return $result;

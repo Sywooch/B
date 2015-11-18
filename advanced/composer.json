@@ -29,6 +29,7 @@
     "2amigos/yii2-file-upload-widget": "~1.0",
     "2amigos/yii2-qrcode-helper": "~1.0",
     "2amigos/yii2-selectize-widget": "*",
+    "bower-asset/PACE": "*",
     "bower-asset/emojify.js": "*",
     "bower-asset/font-awesome": "*",
     "bower-asset/highlightjs": "*",
@@ -36,57 +37,41 @@
     "bower-asset/localforage": "*",
     "bower-asset/marked": "*",
     "bower-asset/metisMenu": "*",
-    "bower-asset/PACE": "*",
     "bower-asset/sb-admin-2-assets": "*",
+    "budyaga/yii2-cropper": "*",
+    "callmez/yii2-wechat": "^0.2.0",
+    "crazydb/yii2-ueditor": "*",
+    "daixianceng/yii2-smser": "*",
     "dektrium/yii2-rbac": "dev-master",
     "dektrium/yii2-user": "0.9.*@dev",
     "devgroup/yii2-tag-dependency-helper": "*",
+    "fedemotta/yii2-cronjob": "*",
     "funson86/yii2-setting": "*",
     "fxp/composer-asset-plugin": "~1.0",
     "hightman/xunsearch": "*@beta",
-
-
-    "kop/yii2-scroll-pager": "dev-master",
-
-    "daixianceng/yii2-smser": "*",
-
-    "trntv/yii2-file-kit": "*",
-
     "kartik-v/bootstrap-tabs-x": "dev-master",
-    "kartik-v/yii2-widgets": "*",
+    "kartik-v/yii2-editable": "*",
+    "kartik-v/yii2-grid": "*",
     "kartik-v/yii2-icons": "*",
     "kartik-v/yii2-popover-x": "*",
-    "kartik-v/yii2-widget-depdrop": "@dev",
-    "kartik-v/yii2-widget-select2": "*",
-    "kartik-v/yii2-widget-typeahead": "*",
-    "kartik-v/yii2-widget-fileinput": "@dev",
-    "kartik-v/yii2-grid": "*",
     "kartik-v/yii2-tabs-x": "*",
     "kartik-v/yii2-widget-activeform": "@dev",
-    "kartik-v/yii2-editable": "*",
-
+    "kartik-v/yii2-widget-depdrop": "@dev",
+    "kartik-v/yii2-widget-fileinput": "@dev",
+    "kartik-v/yii2-widget-select2": "*",
+    "kartik-v/yii2-widget-typeahead": "*",
+    "kartik-v/yii2-widgets": "*",
     "kop/yii2-scroll-pager": "dev-master",
-    "nemmo/yii2-attachments": "dev-master",
-    "prawee/yii2-adminlte-theme": "dev-master",
-    "yiier/yii2-backup": "*",
-    "yzalis/identicon": "*",
-
-    "yiidoc/yii2-redactor": "*",
-    "vova07/yii2-imperavi-widget": "*",
     "kucha/ueditor": "*",
-
-    "budyaga/yii2-cropper": "*",
-
+    "nemmo/yii2-attachments": "dev-master",
+    "php-imap/php-imap": "~2.0",
+    "prawee/yii2-adminlte-theme": "dev-master",
     "thamtech/yii2-uuid": "*",
-
-
-    "callmez/yii2-wechat": "^0.2.0",
-    "crazydb/yii2-ueditor": "*",
-
-    "fedemotta/yii2-cronjob": "*",
-
-    "php-imap/php-imap": "~2.0"
-
+    "trntv/yii2-file-kit": "*",
+    "vova07/yii2-imperavi-widget": "*",
+    "yiidoc/yii2-redactor": "*",
+    "yiier/yii2-backup": "*",
+    "yzalis/identicon": "*"
   },
   "require-dev": {
     "yiisoft/yii2-codeception": "*",

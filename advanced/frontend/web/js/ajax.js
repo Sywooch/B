@@ -93,8 +93,8 @@ app.ajax = {
             // This is called by the link attribute 'data-on-done' => 'linkFormDone';
             // the form name is specified via 'data-form-id' => 'link_form'
             if (app.ajax.validate(response)) {
-                $('#answer_item_area').append(response.data.answer_item).animate({opacity: 1.0}, 3000).fadeOut("slow");
-                $('#answer_form_area').html(response.data.answer_form).animate({opacity: 1.0}, 3000).fadeOut("slow");
+                $('#answer_item_area').append(response.data.answer_item);
+                $('#answer_form_area').html(response.data.answer_form);
             }
         },
         'afterShowCommentList': function (response) {

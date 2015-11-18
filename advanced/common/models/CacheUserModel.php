@@ -21,17 +21,17 @@ class CacheUserModel extends BaseCacheModel
     public $title;
     public $bio;
     public $last_login_at;
-    public $count_favorite;
-    public $count_question;
-    public $count_answer;
-    public $count_follow;
-    public $count_be_follow;
-    public $count_usefull;
-    public $count_common_edit;
-    public $count_follow_question;
-    public $count_follow_tag;
-    public $count_home_views;
-    public $count_notification;
+    public $count_favorite = 0;
+    public $count_question = 0;
+    public $count_answer = 0;
+    public $count_follow = 0;
+    public $count_be_follow = 0;
+    public $count_useful = 0;
+    public $count_common_edit = 0;
+    public $count_follow_question = 0;
+    public $count_follow_tag = 0;
+    public $count_home_views = 0;
+    public $count_notification = 0;
 
     public function filterAttributes($data)
     {

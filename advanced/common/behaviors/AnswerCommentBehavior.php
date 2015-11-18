@@ -9,6 +9,7 @@
 namespace common\behaviors;
 
 
+use common\components\Counter;
 use common\components\Notifier;
 use common\entities\AnswerEntity;
 use common\entities\NotificationEntity;
@@ -38,6 +39,7 @@ class AnswerCommentBehavior extends BaseBehavior
     {
         $this->dealWithNotification();
         $this->dealWithAt();
+        $this->dealWithCounter();
     }
 
     public function dealWithNotification()
@@ -64,15 +66,22 @@ class AnswerCommentBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        /* @var $user_entity UserEntity */
-        $user_entity = Yii::createObject(UserEntity::className());
         $username = AtHelper::findAtUsername($this->owner->content);
 
-        $user_ids = $user_entity->getUserIdByUsername($username);
+        $user_ids = UserEntity::getUserIdByUsername($username);
 
         Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->notice(
             NotificationEntity::TYPE_COMMENT_AT_ME,
-            $this->owner->id
+            [
+                'user_id' => $this->owner->id,
+            ]
         );
+    }
+
+    public function dealWithCounter()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        Counter::addAnswerComment($this->owner->answer_id);
     }
 }

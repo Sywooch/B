@@ -312,14 +312,52 @@ class TagEntity extends Tag
 
         return $result;
     }
-    
-    public static function getHotTags($limit = 20)
-    {
-        $result = self::find()->where(
-            'count_follow>=:count_follow',
-            [':count_follow' => 10]
 
-        )->orderBy('active_at DESC')->limit($limit)->asArray()->all();
+    public static function getHotTag()
+    {
+        $tag_ids = self::getHotTagIds();
+        if ($tag_ids) {
+            $tags = self::getTagListByTagIds($tag_ids);
+        } else {
+            $tags = [];
+        }
+
+        return $tags;
+    }
+    
+    private static function getHotTagIds($limit = 20)
+    {
+        $cache_key = [REDIS_KEY_TAG_LIST, 'HOT' . $limit];
+
+        if (0 === Yii::$app->redis->zCard($cache_key)) {
+            $result = self::find()->where(
+                'count_use>=:count_use AND count_follow>=:count_follow',
+                [
+                    ':count_use' => 1,
+                    ':count_follow' => 1,
+                ]
+
+            )->orderBy('active_at DESC')->limit($limit)->asArray()->all();
+
+
+            $params = [
+                $cache_key,
+            ];
+
+            foreach ($result as $item) {
+                $params[] = $item['count_use'] + $item['count_follow'];
+                $params[] = $item['id'];
+            }
+
+            call_user_func_array([Yii::$app->redis, 'zAdd'], $params);
+        }
+
+        $page_no = 1;
+        $page_size = $limit;
+        $start = ($page_no - 1) * $page_size;
+        $end = $page_size * $page_no - 1;
+
+        $result = Yii::$app->redis->zRevRange($cache_key, $start, $end);
 
         return $result;
     }

@@ -20,6 +20,8 @@ class Error extends Object
     const TYPE_SYSTEM_NORMAL = 'system:normal';
     const TYPE_SYSTEM_PARAMS_IS_EMPTY = 'system:params_is_empty';
 
+    /* user */
+    const TYPE_USER_IS_NOT_EXIST = 'user:user_is_not_exist';
     /* answer */
     const TYPE_ANSWER_DATA_IS_WORRY = 'answer:data_is_worry';
     const TYPE_ANSWER_ONE_QUESTION_ONE_ANSWER_PER_PEOPLE = 'answer:one_question_one_answer_per_people';
@@ -36,14 +38,16 @@ class Error extends Object
             'params_is_empty' => [1001, '参数：%s 不得为空!'],
         ],
         #2000
-        'user'            => [],
+        'user'            => [
+            'user_is_not_exist' => [2000, '当前用户不存在或已被删除！'],
+        ],
         #3000
         'question'        => [],
         #4000
         'tag'             => [],
         #5000
         'answer'          => [
-            'data_is_worry' => [5000, '回答数据格式有误'],
+            'data_is_worry'                      => [5000, '回答数据格式有误'],
             'one_question_one_answer_per_people' => [5001, '每个问题只能回答一次，你可以完善你之前的回复。'],
         ],
         #6000

@@ -42,37 +42,52 @@ class NotificationEntity extends Notification
     
     const TYPE_PRIVATE_MESSAGE_TO_ME = 'pm:to_me';
     
-    const TYPE_INVITE_ME_TO_ANSWER = 'invite:to_answer';
+    const TYPE_INVITE_ME_TO_ANSWER_QUESTION = 'invite:to_answer_question';
     
     const TYPE_MY_QUESTION_IS_MODIFIED = 'question:is_modified';
     const TYPE_MY_QUESTION_IS_LOCK = 'question:is_locked';
     const TYPE_MY_QUESTION_IS_CLOSE = 'question:is_close';
-    
+
     const TYPE_MY_ANSWER_IS_AGREED = 'answer:is_agreed';
     const TYPE_MY_ANSWER_IS_MODIFIED = 'answer:is_modified';
     const TYPE_MY_ANSWER_IS_FOLD = 'answer:is_fold';
     const TYPE_MY_ANSWER_HAS_NEW_COMMENT = 'answer:has_new_comment';
 
 
+    /**
+     * 模板中可用的替换变量：[who] [question]
+     * @var array
+     */
     public static $notice_type = [
+        'pm'              => [
+            'to_me' => [100, '[who] 给我发了条私信。'],
+        ],
         'at'              => [
-            'in_answer'  => [200, '[user] 在 [question] 的中提到我。'],
-            'in_comment' => [201, '[user] 在 [question] 的中回复我。'],
-            'in_reply'   => [202, '[user] 在 [question] 的中评论我。'],
+            'in_answer'  => [200, '[who] 在 [question] 的中提到我。'],
+            'in_comment' => [201, '[who] 在 [question] 的中回复我。'],
+            'in_reply'   => [202, '[who] 在 [question] 的中评论我。'],
         ],
         'follow'          => [
-            'me'                => [300, '[user] 关注了我'],
-            'my_special_column' => [301, '[user] 关注了我的专栏'],
+            'me'                => [300, '[who] 关注了我。'],
+            'my_special_column' => [301, '[who] 关注了我的专栏。'],
         ],
         'follow_question' => [
             'has_new_answer' => [400, '您关注的 [question]，有新的回答！'],
             'modify_answer'  => [401, '您关注的 [question]，有人更新了回答！'],
         ],
         'answer'          => [
-            'is_agreed'       => [500, '[sender] 赞了你的回答！'],
-            'is_modified'     => [501, '[sender] 修改了你的回答！'],
-            'is_fold'         => [502, '[sender] 折叠了你的回答！'],
-            'has_new_comment' => [503, '[sender] 评论了你的回答！'],
+            'is_agreed'       => [500, '[who] 赞了你的回答！'],
+            'is_modified'     => [501, '[who] 修改了你的回答！'],
+            'is_fold'         => [502, '[who] 折叠了你的回答！'],
+            'has_new_comment' => [503, '[who] 评论了你的回答！'],
+        ],
+        'question'        => [
+            'is_modified' => [600, '我的问题 [question] 被修改。'],
+            'is_locked'   => [601, '我的问题 [question] 被锁定。'],
+            'is_close'    => [602, '我的问题 [question] 被关闭。'],
+        ],
+        'invite'          => [
+            'to_answer_question' => [700, '[who] 邀请我回答问题 [question]！'],
         ],
     ];
 
@@ -196,10 +211,12 @@ class NotificationEntity extends Notification
 
             $notices[$date_index][$mix_index]['sender'][] = $notice['sender'];
 
+
             #
             $user_id[] = $notice['sender'];
             $user_id[] = $notice['receiver'];
 
+            #todo 关联数据中支持的三个变量 question_id answer_id tag_id
             #
             if (isset($associative_data['question_id'])) {
                 $question_id[] = $associative_data['question_id'];
@@ -243,10 +260,10 @@ class NotificationEntity extends Notification
                         $senders[] = Html::a($users[$sender]['username'], ['/user/member']);
                     }
 
-                    #other data todo
+                    #todo 目前模板中仅支持 [who] [question] 两个替换变量，更多请添加case
                     foreach ($symbols[1] as $key => $symbol) {
                         switch ($symbol) {
-                            case 'user':
+                            case 'who':
                                 $notice['template'] = str_replace(
                                     $finder[$key],
                                     implode('、', $senders),

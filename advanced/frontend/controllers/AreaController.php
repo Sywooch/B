@@ -24,7 +24,7 @@ class AreaController extends BaseController
      * 获取城市
      * @param $province_id
      */
-    public function actionC($province_id)
+    public function actionCity($province_id)
     {
         $count = Area::find()->where(
             [
@@ -54,7 +54,7 @@ class AreaController extends BaseController
      * 获取区域
      * @param $city_id
      */
-    public function actionD($city_id)
+    public function actionDistricts($city_id)
     {
         $count = Area::find()->where(
             [

@@ -11,7 +11,6 @@ use yii\bootstrap\Dropdown;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
-
 ?>
 <?php foreach ($data as $item): ?>
     <?php if ($item['type'] == AnswerEntity::TYPE_ANSWER): ?>

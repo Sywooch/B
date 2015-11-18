@@ -84,7 +84,6 @@ class AnswerBehavior extends BaseBehavior
         Yii::$app->redis->set($cache_key, $this->owner->id);
 
         #add answer to list
-
         Yii::$app->redis->zAdd(
             [REDIS_KEY_ANSWER_LIST_TIME, $this->owner->question_id],
             TimeHelper::getCurrentTime(),
@@ -93,6 +92,7 @@ class AnswerBehavior extends BaseBehavior
         Yii::$app->redis->zAdd([REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id], 0, $this->owner->id);
 
         $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
+
         Yii::$app->redis->HMSET([REDIS_KEY_ANSWER, $this->owner->id], $item);
     }
     
@@ -100,8 +100,8 @@ class AnswerBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotification(NotificationEntity::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
-        #not creator himself, create new version
-        if (Yii::$app->user->id != $this->owner->create_by) {
+        #不是本人，或本人，但创建时间已超过 ? 天
+        if (Yii::$app->user->id != $this->owner->create_by || $this->owner->create_at <= TimeHelper::getBeforeTime(1)) {
             $this->dealWithNewAnswerVersion();
         }
         $this->dealWithUpdateQuestionActiveTime();
@@ -147,7 +147,7 @@ class AnswerBehavior extends BaseBehavior
             if ($user_ids) {
                 Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice(
                     $type,
-                    $this->owner->question_id
+                    ['question_id' => $this->owner->question_id]
                 );
             }
         }

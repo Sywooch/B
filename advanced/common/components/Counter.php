@@ -9,6 +9,7 @@
 namespace common\components;
 
 
+use common\entities\AnswerEntity;
 use common\entities\FavoriteEntity;
 use common\entities\PrivateMessageEntity;
 use common\entities\QuestionEntity;
@@ -375,6 +376,38 @@ class Counter extends BaseCounter
         return $result;
     }
 
+    /******************************************ANSWER***************************************************/
+    public static function addAnswerComment($answer_id)
+    {
+        Yii::trace('增加回答评论数量', 'counter');
+
+        $result = self::build()->set(AnswerEntity::tableName(), $answer_id)->value(
+            'count_comment',
+            1
+        )->execute();
+
+        if ($result && AnswerEntity::ensureAnswerHasCache($answer_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_ANSWER, $answer_id], 'count_answer', 1);
+        }
+
+        return $result;
+    }
+
+    public static function deleteAnswerComment($answer_id)
+    {
+        Yii::trace('减少回答评论数量', 'counter');
+
+        $result = self::build()->set(AnswerEntity::tableName(), $answer_id)->value(
+            'count_comment',
+            -1
+        )->execute();
+
+        if ($result && AnswerEntity::ensureAnswerHasCache($answer_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_ANSWER, $answer_id], 'count_answer', -1);
+        }
+
+        return $result;
+    }
 
     /******************************************MESSAGE***************************************************/
 

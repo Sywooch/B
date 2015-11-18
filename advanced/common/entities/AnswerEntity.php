@@ -58,8 +58,6 @@ class AnswerEntity extends Answer
     public function addAnswer($data)
     {
         if ($this->load($data) && $this->save()) {
-
-
             return true;
         } else {
             return false;
@@ -197,11 +195,11 @@ class AnswerEntity extends Answer
 
     public static function getAnswerCountByQuestionId($question_id)
     {
-        $cache_key = [REDIS_KEY_QUESTION, $question_id];
-        $count = Yii::$app->redis->hGet($cache_key, 'count_answer');
-        if (false === $count) {
-            $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
+        $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
+        if (null !== $question_data) {
             $count = $question_data['count_answer'];
+        } else {
+            $count = 0;
         }
 
         return $count;
@@ -307,6 +305,7 @@ class AnswerEntity extends Answer
         foreach ($answer_ids as $answer_id) {
             $cache_key = [REDIS_KEY_ANSWER, $answer_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
+
             if (empty($cache_data)) {
                 $cache_miss_key[] = $answer_id;
                 $result[$answer_id] = null;
@@ -351,4 +350,13 @@ class AnswerEntity extends Answer
     }
 
 
+    public static function ensureAnswerHasCache($answer_id)
+    {
+        $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+        if (Yii::$app->redis->hLen($cache_key) === 0) {
+            self::getAnswerByAnswerId($answer_id);
+        }
+
+        return true;
+    }
 }

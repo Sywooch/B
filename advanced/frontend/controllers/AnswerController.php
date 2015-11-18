@@ -11,6 +11,7 @@ use Yii;
 use common\entities\AnswerEntity;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -22,10 +23,21 @@ class AnswerController extends BaseController
     public function behaviors()
     {
         return [
-            'verbs' => [
+            'verbs'  => [
                 'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only'  => ['create', 'update', 'common-edit'],
+                'rules' => [
+                    [
+                        'allow'   => true,
+                        'actions' => ['create', 'update', 'common-edit'],
+                        'roles'   => ['@'],
+                    ],
                 ],
             ],
         ];
@@ -76,8 +88,9 @@ class AnswerController extends BaseController
     {
         $model = new AnswerEntity();
         $model->question_id = $question_id;
+        $model->type = AnswerEntity::TYPE_ANSWER;
 
-        if ($model->addAnswer(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $data = [
                 'answer_item' => $this->renderPartial(
                     '/question/_question_answer_item',
@@ -182,8 +195,7 @@ class AnswerController extends BaseController
     public function actionGetCommentList($id)
     {
         $comment_form = new AnswerCommentEntity();
-
-        $answer_data = $this->findAnswer($id);
+        $answer_data = AnswerEntity::getAnswerByAnswerId($id);
         $question_data = QuestionEntity::getQuestionByQuestionId($answer_data['question_id']);
 
         $count = AnswerCommentEntity::getCommentCountByAnswerId($id);
@@ -202,6 +214,8 @@ class AnswerController extends BaseController
             );
             $comments_data = AnswerCommentEntity::getCommentListByAnswerId($id, $pages->pageSize, $pages->offset);
         }
+
+        //print_r($comments_data);exit;
 
 
         $html = $this->renderPartial(

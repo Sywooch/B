@@ -87,6 +87,13 @@ class BaseNotifier extends Object
         return $this;
     }
 
+    /**
+     * @param      $type
+     * @param null $associate_data 目前仅支持三种变量 ['tag_id' => 1,'question_id' => 1, 'answer_id' => 1]
+     * @return $this
+     * @throws ParamsInvalidException
+     * @throws \yii\base\Exception
+     */
     public function notice($type, $associate_data = null)
     {
         $this->method = 'notice';

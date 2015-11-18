@@ -9,6 +9,7 @@ use common\entities\QuestionEntity;
 use Yii;
 use common\entities\AnswerCommentEntity;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,10 +22,21 @@ class AnswerCommentController extends BaseController
     public function behaviors()
     {
         return [
-            'verbs' => [
+            'verbs'  => [
                 'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only'  => ['create', 'update'],
+                'rules' => [
+                    [
+                        'allow'   => true,
+                        'actions' => ['create', 'update'],
+                        'roles'   => ['@'],
+                    ],
                 ],
             ],
         ];
@@ -104,7 +116,7 @@ class AnswerCommentController extends BaseController
      * @param string $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    /*public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
@@ -118,7 +130,7 @@ class AnswerCommentController extends BaseController
                 ]
             );
         }
-    }
+    }*/
 
     /**
      * Deletes an existing AnswerCommentEntity model.

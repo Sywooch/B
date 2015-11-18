@@ -187,6 +187,7 @@ class QuestionEntity extends Question
         foreach ($question_ids as $question_id) {
             $cache_key = [REDIS_KEY_QUESTION, $question_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
+
             if (empty($cache_data)) {
                 $cache_miss_key[] = $question_id;
                 $result[$question_id] = null;
@@ -206,6 +207,7 @@ class QuestionEntity extends Question
             foreach ($cache_data as $item) {
                 #filter attributes
                 $item = $cache_question_model->filterAttributes($item);
+
                 $question_id = $item['id'];
                 $result[$question_id] = $item;
                 $cache_key = [REDIS_KEY_QUESTION, $question_id];

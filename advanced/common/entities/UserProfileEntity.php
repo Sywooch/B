@@ -48,7 +48,7 @@ class UserProfileEntity extends Profile
             'count_answer'          => '回答数',
             'count_follow'          => '关注用户数',
             'count_be_follow'       => '被关注用户数',
-            'count_useful'         => '支持数',
+            'count_useful'          => '支持数',
             'count_common_edit'     => '公共编辑数',
             'count_follow_question' => '关注问题数',
             'count_follow_tag'      => '关注标签数',

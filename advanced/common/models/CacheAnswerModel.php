@@ -15,12 +15,13 @@ class CacheAnswerModel extends BaseCacheModel
     public $id;
     public $question_id;
     public $content;
-    public $count_useful;
-    public $count_comment;
+    public $type;
+    public $count_useful = 0;
+    public $count_comment= 0;
     public $create_at;
     public $create_by;
     public $modify_at;
     public $modify_by;
-    public $is_anonymous;
-    public $is_fold;
+    public $is_anonymous = 'no';
+    public $is_fold = 'no';
 }

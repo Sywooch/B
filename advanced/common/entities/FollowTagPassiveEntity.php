@@ -13,6 +13,7 @@ namespace common\entities;
 
 use common\components\Error;
 use common\helpers\ArrayHelper;
+use common\helpers\TimeHelper;
 use common\models\FollowTagPassive;
 use Yii;
 
@@ -92,9 +93,11 @@ class FollowTagPassiveEntity extends FollowTagPassive
         return $result;
     }
 
-    public static function getTagAndUserRelation($tag_id)
+    public static function getTagAndUserRelation($tag_id, $limit = 12)
     {
-        if (!Yii::$app->redis->zCard([REDIS_KEY_TAG_USER_RELATION, $tag_id])) {
+        $cache_key = [REDIS_KEY_TAG_USER_RELATION, $tag_id];
+
+        if (0 === Yii::$app->redis->zCard($cache_key)) {
             $sql = sprintf(
                 "SELECT
               tp.`follow_tag_id`,
@@ -106,16 +109,16 @@ class FollowTagPassiveEntity extends FollowTagPassive
             AND modify_at>=:modify_at
             GROUP BY tp.`user_id`
             ORDER BY `score` DESC
-            LIMIT 10;",
-                self::tableName()
-
+            LIMIT %d;",
+                self::tableName(),
+                $limit
             );
 
             $command = self::getDb()->createCommand(
                 $sql,
                 [
                     ':follow_tag_id' => $tag_id,
-                    ':modify_at'     => time() - (self::RECENT_PERIOD_OF_TIME * 86400),
+                    ':modify_at'     => TimeHelper::getBeforeTime(self::RECENT_PERIOD_OF_TIME),
                 ]
             );
 
@@ -127,40 +130,27 @@ class FollowTagPassiveEntity extends FollowTagPassive
                 $relation[$item['user_id']] = $item['score'];
             }
 
-            //print_r($relation);exit;
-
             if ($relation) {
-                self::addTagAndUserRelation($tag_id, $relation);
+
+                $params = [
+                    $cache_key,
+                ];
+
+                foreach ($relation as $user_id => $score) {
+                    $params[] = $score;
+                    $params[] = $user_id;
+                }
+
+                call_user_func_array([Yii::$app->redis, 'zAdd'], $params);
             }
         }
 
         $result = Yii::$app->redis->zRevRange(
-            [REDIS_KEY_TAG_USER_RELATION, $tag_id],
+            $cache_key,
             0,
             -1,
             true
         );
-
-        //print_r($result);
-        //exit;
-
-        return $result;
-    }
-
-    private static function addTagAndUserRelation($tag_id, $relation)
-    {
-        $params = [
-            [REDIS_KEY_TAG_USER_RELATION, $tag_id],
-        ];
-
-        foreach ($relation as $user_id => $score) {
-            $params[] = $score;
-            $params[] = $user_id;
-        }
-
-        //print_r($params);exit;
-
-        $result = call_user_func_array([Yii::$app->redis, 'zAdd'], $params);
 
         return $result;
     }

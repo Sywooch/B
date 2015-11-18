@@ -22,7 +22,7 @@ class Monitor extends Component
     const STATUS_SHUTDOWN = 3; #关闭系统，禁止一切访问
     const STATUS_SPIDER = 99; #搜索引擎模式
 
-    const OPEN_TIME_START = 8; #开放开始时间
+    const OPEN_TIME_START = 0; #开放开始时间
     const OPEN_TIME_END = 24; #开放结束时间
 
     private static $status;

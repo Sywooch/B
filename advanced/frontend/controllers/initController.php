@@ -12,10 +12,26 @@ namespace frontend\controllers;
 use common\controllers\BaseController;
 use dektrium\user\models\RegistrationForm;
 use Yii;
+use yii\base\ErrorException;
 
 class InitController extends BaseController
 {
     public $user_names;
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     private function getUserNames()
     {
@@ -1032,6 +1048,10 @@ class InitController extends BaseController
 
     public function actionAutoRegister()
     {
+        if (!Yii::$app->user->isAdmin) {
+            throw new ErrorException('出错啦');
+        }
+
         set_time_limit(0);
         $username_data = $this->getUserNames();
         $registration = Yii::createObject(RegistrationForm::className());

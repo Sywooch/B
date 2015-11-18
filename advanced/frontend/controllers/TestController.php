@@ -237,9 +237,13 @@ class TestController extends BaseController
     {
 
         //$data = TagEntity::getTagIdByName( ['中国人', '大家好']);
-        $data = TagEntity::getTagNameById([1, 2]);
+        /*$data = TagEntity::getTagNameById([1, 2]);
 
-        print_r($data);
+        print_r($data);*/
+
+        $result = TagEntity::getHotTag();
+
+        print_r($result);
     }
 
     public function actionFindAt()
@@ -338,15 +342,16 @@ class TestController extends BaseController
     public function actionQuestion()
     {
 
+        $this->autoLoginById(1);
         /* @var $question QuestionEntity */
         $question = Yii::createObject(QuestionEntity::className());
-        /*$question->subject = 'testtesttesttesttesttesttest';
+        $question->subject = 'testtesttesttesttesttesttest';
         $question->tags = 'aa,bb,cc';
         $question->content = 'testcontent';
         $result = $question->save();
         echo '<pre />';
         print_r($question->getErrors());
-        var_dump($result);*/
+        var_dump($result);
 
         /*$data = $question->fetchLatest(1, true);
 

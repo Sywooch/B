@@ -73,7 +73,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithUserAddQuestionCounter();
         $this->dealWithAddFollowQuestion();
         $this->dealWithAddAttachments();
-        $this->dealWithRedisCache();
+        $this->dealWithRedisCacheInsert();
     }
     
     public function afterQuestionUpdate($event)
@@ -82,7 +82,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithQuestionUpdateEvent();
         $this->dealWithUpdateTags();
         $this->dealWithAddAttachments();
-        $this->dealWithRedisCache();
+        $this->dealWithRedisCacheUpdate();
     }
     
     public function afterQuestionDelete($event)
@@ -336,9 +336,7 @@ class QuestionBehavior extends BaseBehavior
     public function dealWithFavoriteRecordRemove()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        /* @var $favorite_record FavoriteRecordEntity */
-        $favorite_record = Yii::createObject(FavoriteRecordEntity::className());
-        $result = $favorite_record->removeFavoriteRecord(FavoriteRecordEntity::TYPE_QUESTION, $this->owner->id);
+        $result = FavoriteRecordEntity::removeFavoriteRecord(FavoriteRecordEntity::TYPE_QUESTION, $this->owner->id);
 
         Yii::trace(sprintf('Remove Favorite Record Result: %s', var_export($result, true)), 'behavior');
     }
@@ -355,14 +353,15 @@ class QuestionBehavior extends BaseBehavior
         }
     }
 
-    public function dealWithRedisCache()
+    public function dealWithRedisCacheInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        if ($this->owner->isNewRecord) {
-            QuestionEntity::ensureQuestionHasCache($this->owner->id);
-        } else {
-            QuestionEntity::updateQuestionCache($this->owner->id, $this->owner->getAttributes());
-        }
+        QuestionEntity::ensureQuestionHasCache($this->owner->id);
+    }
 
+    public function dealWithRedisCacheUpdate()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        QuestionEntity::updateQuestionCache($this->owner->id, $this->owner->getAttributes());
     }
 }

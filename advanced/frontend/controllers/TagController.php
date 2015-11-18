@@ -7,6 +7,7 @@ use common\entities\TagSearchEntity;
 use Yii;
 use common\models\Tag;
 use common\models\TagSearch;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -19,10 +20,21 @@ class TagController extends BaseController
     public function behaviors()
     {
         return [
-            'verbs' => [
+            'verbs'  => [
                 'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only'  => ['create', 'update'],
+                'rules' => [
+                    [
+                        'allow'   => true,
+                        'actions' => ['create', 'update'],
+                        'roles'   => ['@'],
+                    ],
                 ],
             ],
         ];

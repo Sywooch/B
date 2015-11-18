@@ -14,7 +14,11 @@ return [
     ],
     'components' => [
         'db' => [
-            'dsn' => 'mysql:host=localhost;dbname=yii2_advanced_tests',
+			'class'    => 'yii\db\Connection',
+            'dsn'      => 'mysql:host=222.77.187.108;dbname=yii-bo-u-test',
+            'username' => 'yuyunjian',
+            'password' => 'yu!@#$%^',
+            'charset'  => 'utf8',
         ],
         'mailer' => [
             'useFileTransport' => true,

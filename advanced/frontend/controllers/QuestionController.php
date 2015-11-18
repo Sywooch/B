@@ -8,15 +8,19 @@ use common\controllers\BaseController;
 use common\entities\AnswerEntity;
 use common\entities\FollowUserEntity;
 use common\entities\QuestionEntity;
+use common\entities\QuestionInviteEntity;
 use common\entities\UserEntity;
+use common\exceptions\ParamsInvalidException;
 use common\helpers\ServerHelper;
 use common\models\AnswerQuery;
 use dosamigos\qrcode\lib\Encode;
 use Yii;
 use common\models\Question;
 use common\models\QuestionSearch;
+use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
+use yii\filters\AccessControl;
 use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -30,13 +34,29 @@ class QuestionController extends BaseController
     public function behaviors()
     {
         return [
-            'verbs' => [
+            'verbs'  => [
                 'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only'  => ['create', 'update', 'Invite', 'vote'],
+                'rules' => [
+                    [
+                        'allow'   => true,
+                        'actions' => ['create', 'update', 'Invite', 'vote'],
+                        'roles'   => ['@'],
+                    ],
+                ],
+            ],
         ];
+    }
+
+    public function actionVote()
+    {
+
     }
 
     /**
@@ -176,7 +196,6 @@ class QuestionController extends BaseController
         $similar_question = QuestionEntity::getSimilarQuestion($tags);
 
 
-
         #增加查看问题计数
         Counter::addQuestionView($id);
 
@@ -193,8 +212,11 @@ class QuestionController extends BaseController
                     'pageParam'  => 'answer-page',
                 ]
             );
+
             $answer_data = AnswerEntity::getAnswerListByQuestionId($id, $pages->pageSize, $pages->offset, $sort);
         }
+
+        //print_r($answer_data);exit;
 
         return $this->render(
             'view',
@@ -309,5 +331,51 @@ class QuestionController extends BaseController
 
         exit(json_encode($user));
         echo Json::encode($user);
+    }
+
+    /**
+     * @param string $method
+     * @throws Exception
+     * @throws ParamsInvalidException
+     */
+    public function actionInvite($method = 'username')
+    {
+        $allow_method = ['username', 'email'];
+
+        if (!in_array($method, $allow_method)) {
+            throw new ParamsInvalidException('method');
+        }
+
+        #POST参数
+        $be_invited_user = Yii::$app->request->post('be_invited_user', '');
+        $question_id = Yii::$app->request->post('question_id', '');
+
+        if (!$be_invited_user || !$question_id) {
+            throw new ParamsInvalidException(['be_invited_user', 'question_id']);
+        }
+
+        switch ($method) {
+            case 'username':
+                $user_data = UserEntity::getUserIdByUsername($be_invited_user);
+                if ($user_data) {
+                    $result = QuestionInviteEntity::inviteToAnswerByNotice(
+                        Yii::$app->user->id,
+                        $user_data['id'],
+                        $question_id
+                    );
+                } else {
+                    Error::set(Error::TYPE_USER_IS_NOT_EXIST);
+                }
+
+                break;
+
+            case 'email':
+                $result = QuestionInviteEntity::inviteToAnswerByEmail($question_id, $be_invited_user);
+                break;
+            default:
+                throw new Exception(sprintf('暂未支持 %s 通知', $method));
+        }
+
+        return $this->jsonOut(Error::get($result));
     }
 }

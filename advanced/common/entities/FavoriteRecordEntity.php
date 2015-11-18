@@ -39,7 +39,7 @@ class FavoriteRecordEntity extends FavoriteRecord
     }
 
 
-    public function getFavoriteContent($id)
+    public static function getFavoriteSubject($id)
     {
         $model = self::findOne($id);
         if (!$model) {
@@ -67,7 +67,7 @@ class FavoriteRecordEntity extends FavoriteRecord
         return $result;
     }
 
-    public function removeFavoriteRecord($type, $associate_id)
+    public static function removeFavoriteRecord($type, $associate_id)
     {
         $model = self::find()->where(
             [

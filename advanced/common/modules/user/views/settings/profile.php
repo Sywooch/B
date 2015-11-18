@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'province')->dropDownList(ArrayHelper::map($provinces, 'area_id', 'name'), [
                         'prompt'   => '请选择省',
                         'onchange' => '
-            $.post("index.php?r=area/c&province_id=' . '"+$(this).val(),function(data){
+            $.post("index.php?r=area/city&province_id=' . '"+$(this).val(),function(data){
                 $("select#profile-city").html(data);
                 $("select#profile-district").html("");
             });',
@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'city')->dropDownList(ArrayHelper::map($cities, 'area_id', 'name'), [
                         'prompt'   => '请选择市',
                         'onchange' => '
-            $.post("index.php?r=area/d&city_id=' . '"+$(this).val(),function(data){
+            $.post("index.php?r=area/district&city_id=' . '"+$(this).val(),function(data){
                 $("select#profile-district").html(data);
             });',
                 ]) ?>

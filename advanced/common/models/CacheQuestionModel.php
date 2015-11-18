@@ -17,17 +17,17 @@ class CacheQuestionModel extends BaseCacheModel
     public $alias;
     public $tags;
     public $content;
-    public $count_views;
-    public $count_answer;
-    public $count_favorite;
-    public $count_follow;
-    public $count_like;
-    public $count_hate;
+    public $count_views = 0;
+    public $count_answer = 0;
+    public $count_favorite = 0;
+    public $count_follow = 0;
+    public $count_like = 0;
+    public $count_hate = 0;
     public $create_at;
     public $create_by;
     public $active_at;
-    public $is_anonymous;
-    public $is_lock;
+    public $is_anonymous = 'no';
+    public $is_lock = 'no';
     public $status;
 }
 

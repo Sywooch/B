@@ -11,6 +11,7 @@ namespace common\behaviors;
 
 use common\components\Counter;
 use common\entities\FavoriteEntity;
+use common\entities\FavoriteRecordEntity;
 use yii\base\Behavior;
 use Yii;
 use yii\db\ActiveRecord;
@@ -46,17 +47,22 @@ class FavoriteRecordBehavior extends BaseBehavior
         $this->dealWithRemoveCounter();
     }
 
+    /**
+     * 设置收藏夹最后活动时间及最后一次收藏的内容
+     * @throws \common\exceptions\NotFoundModelException
+     * @throws \yii\base\Exception
+     */
     public function dealWithActiveFavorite()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $result = false;
 
-        $content = $this->owner->getFavoriteContent($this->owner->id);
+        $subject = FavoriteRecordEntity::getFavoriteSubject($this->owner->id);
         $favorite = FavoriteEntity::findOne($this->owner->favorite_id);
 
         if ($favorite) {
             $favorite->active_at = time();
-            $favorite->last_favorite_content = $content;
+            $favorite->last_favorite_content = $subject;
             $result = $favorite->save();
         }
 

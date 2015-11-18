@@ -136,11 +136,12 @@ class AnswerCommentEntity extends AnswerComment
 
     public static function getCommentCountByAnswerId($answer_id)
     {
-        $cache_key = [REDIS_KEY_ANSWER, $answer_id];
-        $count = Yii::$app->redis->hGet($cache_key, 'count_comment');
-        if (false === $count) {
-            $data = AnswerEntity::getAnswerByAnswerId($answer_id);
+        $data = AnswerEntity::getAnswerByAnswerId($answer_id);
+
+        if (null !== $data) {
             $count = $data['count_comment'];
+        } else {
+            $count = 0;
         }
 
         return $count;

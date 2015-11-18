@@ -11,9 +11,26 @@ use common\helpers\TimeHelper;
 use common\modules\user\models\User;
 use Yii;
 use yii\data\Pagination;
+use yii\filters\AccessControl;
 
 class NotificationController extends BaseController
 {
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow'   => true,
+                        'roles'   => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         $count = NotificationEntity::find()->where(['receiver' => Yii::$app->user->id])->count(1);

@@ -9,6 +9,7 @@
 namespace common\models;
 
 
+use ReflectionClass;
 use yii\base\Model;
 
 class BaseCacheModel extends Model
@@ -19,15 +20,21 @@ class BaseCacheModel extends Model
             return [];
         }
 
-        $attributes = parent::attributes();
+        $attributes = $this->attributes();
 
         $result = [];
         foreach ($data as $key => $value) {
-            if (in_array($key, $attributes)) {
-                $result[$key] = $value;
+            if (array_key_exists($key, $attributes)) {
+                $result[$key] =empty($value)? $attributes[$key] : $value;
             }
         }
 
         return $result;
+    }
+
+    public function attributes()
+    {
+        $class = new ReflectionClass($this);
+        return $class->getDefaultProperties();
     }
 }

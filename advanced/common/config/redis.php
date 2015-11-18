@@ -33,6 +33,7 @@ const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation:string';
 
 #TAG
 const REDIS_KEY_TAG = 'tag:hash';
+const REDIS_KEY_TAG_LIST = 'tag_list:sset';
 const REDIS_KEY_TAG_ID_NAME = 'tag_id_name:string';
 const REDIS_KEY_TAG_NAME_ID = 'tag_name_id:string';
 const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:string';
@@ -142,6 +143,10 @@ return [
         'server' => $servers['master'],
         'expire' => 86400 * 7, #有效期
     ],
+    REDIS_KEY_TAG_LIST              => [
+        'server' => $servers['master'],
+        'expire' => 3600*8, #有效期
+    ],
     #tag id & name
     REDIS_KEY_TAG_ID_NAME           => [
         'server' => $servers['master'],
@@ -155,7 +160,7 @@ return [
     #tag has user top 10
     REDIS_KEY_TAG_USER_RELATION     => [
         'server' => $servers['master'],
-        'expire' => 86400 * 2, #有效期
+        'expire' => 3600 * 8, #有效期
     ],
     #question
     REDIS_KEY_QUESTION              => [

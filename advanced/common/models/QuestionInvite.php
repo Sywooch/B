@@ -2,20 +2,21 @@
 
 namespace common\models;
 
+use common\components\Notifier;
+use common\entities\NotificationEntity;
+use common\entities\QuestionEntity;
 use Yii;
 
 /**
  * This is the model class for table "question_invite".
- *
- * @property string $id
- * @property string $question_id
- * @property integer $invited_user_id
- * @property integer $create_by
- * @property string $create_at
- * @property string $status
- *
+ * @property string   $id
+ * @property string   $question_id
+ * @property integer  $invited_user_id
+ * @property integer  $create_by
+ * @property string   $create_at
+ * @property string   $status
  * @property Question $question
- * @property User $createBy
+ * @property User     $createBy
  */
 class QuestionInvite extends \common\models\BaseActiveRecord
 {
@@ -35,7 +36,7 @@ class QuestionInvite extends \common\models\BaseActiveRecord
         return [
             [['question_id', 'create_by'], 'required'],
             [['question_id', 'invited_user_id', 'create_by', 'create_at'], 'integer'],
-            [['status'], 'string']
+            [['status'], 'string'],
         ];
     }
 
@@ -45,12 +46,12 @@ class QuestionInvite extends \common\models\BaseActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'question_id' => '问题ID',
+            'id'              => 'ID',
+            'question_id'     => '问题ID',
             'invited_user_id' => '被邀请的用户ID',
-            'create_by' => '邀请用户',
-            'create_at' => '创建时间',
-            'status' => '状态 progress处理中 completep完成　overtime超时未完成',
+            'create_by'       => '邀请用户',
+            'create_at'       => '创建时间',
+            'status'          => '状态 progress处理中 completep完成　overtime超时未完成',
         ];
     }
 
@@ -68,5 +69,26 @@ class QuestionInvite extends \common\models\BaseActiveRecord
     public function getCreateBy()
     {
         return $this->hasOne(User::className(), ['id' => 'create_by']);
+    }
+
+
+    public static function inviteToAnswerByNotice($invite_user_id, $be_invited_user_id, $question_id)
+    {
+        return Notifier::build()->from($invite_user_id)->to($be_invited_user_id)->notice(
+            NotificationEntity::TYPE_INVITE_ME_TO_ANSWER_QUESTION,
+            [
+                'question_id' => $question_id,
+            ]
+        );
+    }
+
+    public static function inviteToAnswerByEmail($question_id, $email)
+    {
+        $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
+
+        if ($question_data) {
+            #todo 需要模板支持
+            return Notifier::build()->to($email)->email($question_data['subject'], '内容');
+        }
     }
 }
