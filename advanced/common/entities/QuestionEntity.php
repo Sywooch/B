@@ -3,11 +3,13 @@
 namespace common\entities;
 
 
+use common\components\Error;
 use common\components\Updater;
 use common\helpers\StringHelper;
 use common\models\CacheQuestionModel;
 use common\models\QuestionTag;
 use common\models\Tag;
+use common\models\xunsearch\QuestionSearch;
 use common\services\NotificationService;
 use Yii;
 use common\behaviors\IpBehavior;
@@ -185,6 +187,7 @@ class QuestionEntity extends Question
     {
         $result = $cache_miss_key = $cache_data = [];
         foreach ($question_ids as $question_id) {
+
             $cache_key = [REDIS_KEY_QUESTION, $question_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
 
@@ -195,7 +198,6 @@ class QuestionEntity extends Question
                 $result[$question_id] = $cache_data;
             }
         }
-
         if ($cache_miss_key) {
             $cache_data = self::find()->where(
                 [
@@ -349,22 +351,73 @@ class QuestionEntity extends Question
 
         return $cache_data;
     }
-    
-    public static function getSimilarQuestion(array $tags, $limit = 10)
+
+    public static function getSubjectTags($subject, $limit = 5)
+    {
+        try {
+            $question = new QuestionSearch();
+            $tags = $question->fenci($subject, $limit);
+        } catch (Exception $e) {
+            return Error::set(Error::TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION, [$e->getCode(), $e->getMessage()]);
+        }
+
+        return $tags;
+    }
+
+    public static function searchQuestionByTag(array $tags, $limit = 10)
     {
         if ($tags) {
-            $params = array_merge(['or'], $tags);
+            $params = array_merge(['or'], array_unique($tags));
             try {
-                $question = new \common\models\xunsearch\Question();
-                $result = $question->find()->where($params)->andWhere(['NOT IN', 'count_answer', [0]])->limit(
-                    $limit
-                )->asArray()->all();
-            } catch (Exception $e) {
-                $result = [];
-            }
+                $cache_key = [REDIS_KEY_XUNSEARCH_TAG, md5(implode(':', $tags) . $limit)];
+                $cache_data = Yii::$app->redis->get($cache_key);
 
-        } else {
-            $result = [];
+                if ($cache_data === false) {
+
+                    $cache_data = QuestionSearch::find()->where($params)->andWhere(['NOT IN',
+                                                                                                         'count_answer', [0]])->limit(
+                        $limit
+                    )->orderBy('create_at DESC')->asArray()->all();
+                    Yii::$app->redis->set($cache_key, $cache_data);
+                }
+
+            } catch (Exception $e) {
+                return Error::set(Error::TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION, [$e->getCode(), $e->getMessage()]);
+            }
+        }
+
+        return $cache_data;
+    }
+
+    public static function searchQuestionBySubject($subject, $limit = 10)
+    {
+        $result = [];
+
+        if ($subject) {
+            try {
+                $tags = self::getSubjectTags($subject);
+                if ($tags) {
+                    $result = self::searchQuestionByTag($tags, $limit);
+                }
+            } catch (Exception $e) {
+                return Error::set(Error::TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION, [$e->getCode(), $e->getMessage()]);
+            }
+        }
+
+        return $result;
+    }
+
+    public static function getInterestedQuestionByUserId($user_id, $limit = 50)
+    {
+        $tag_ids = FollowTagEntity::getUserFollowTagIds($user_id);
+
+        if ($tag_ids) {
+            $tag_names = TagEntity::getTagNameById($tag_ids);
+            try {
+                $result = self::searchQuestionByTag($tag_names, $limit);
+            } catch (Exception $e) {
+                return Error::set(Error::TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION, [$e->getCode(), $e->getMessage()]);
+            }
         }
 
         return $result;
@@ -373,7 +426,7 @@ class QuestionEntity extends Question
     public static function ensureQuestionHasCache($question_id)
     {
         $cache_key = [REDIS_KEY_QUESTION, $question_id];
-        if (Yii::$app->redis->hLen($cache_key) === 0) {
+        if (Yii::$app->redis->hLen($cache_key) == 0) {
             self::getQuestionByQuestionId($question_id);
         }
 

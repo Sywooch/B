@@ -143,6 +143,7 @@ class UserEntity extends User
     public static function getUserById($user_id)
     {
         $data = self::getUserListByIds([$user_id]);
+
         return $data ? array_shift($data) : null;
     }
 
@@ -202,13 +203,14 @@ class UserEntity extends User
             $username = [$username];
         }
         
-        $username = array_filter($username);
+        $username = array_values(array_unique(array_filter($username)));
         $data = self::getUserByUsernameUseCache($username);
-        
+
+        $combine_data = array_combine($username, $data);
         if ($multiple) {
-            $result = $data;
+            $result = $combine_data;
         } else {
-            $result = array_shift($data);
+            $result = array_shift($combine_data);
         }
         
         return $result;
@@ -228,14 +230,15 @@ class UserEntity extends User
             $username = [$username];
         }
         
-        $username = array_filter($username);
+        $username = array_values(array_unique(array_filter($username)));
 
         $data = self::getUserIdByUsernameUseCache($username);
-        
+
+        $combine_data = array_combine($username, $data);
         if ($multiple) {
-            $result = $data;
+            $result = $combine_data;
         } else {
-            $result = array_shift($data);
+            $result = array_shift($combine_data);
         }
         
         return $result;
@@ -263,7 +266,7 @@ class UserEntity extends User
     public static function ensureUserHasCached($user_id)
     {
         $cache_key = [REDIS_KEY_USER, $user_id];
-        if (Yii::$app->redis->hLen($cache_key) === 0) {
+        if (Yii::$app->redis->hLen($cache_key) == 0) {
             self::getUserById($user_id);
         }
 

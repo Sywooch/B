@@ -22,6 +22,11 @@ class Error extends Object
 
     /* user */
     const TYPE_USER_IS_NOT_EXIST = 'user:user_is_not_exist';
+
+    /* question */
+    const TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION = 'question:xunsearch_get_exception';
+
+
     /* answer */
     const TYPE_ANSWER_DATA_IS_WORRY = 'answer:data_is_worry';
     const TYPE_ANSWER_ONE_QUESTION_ONE_ANSWER_PER_PEOPLE = 'answer:one_question_one_answer_per_people';
@@ -42,7 +47,9 @@ class Error extends Object
             'user_is_not_exist' => [2000, '当前用户不存在或已被删除！'],
         ],
         #3000
-        'question'        => [],
+        'question'        => [
+            'xunsearch_get_exception' => [3000, '搜索服务出现异常！[%d:%s]'],
+        ],
         #4000
         'tag'             => [],
         #5000

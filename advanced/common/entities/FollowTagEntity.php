@@ -14,6 +14,7 @@ namespace common\entities;
 use common\components\Counter;
 use common\components\Error;
 use common\models\FollowTag;
+use Yii;
 
 class FollowTagEntity extends FollowTag
 {
@@ -56,7 +57,7 @@ class FollowTagEntity extends FollowTag
         return $result;
     }
 
-    public function removeFollowTag(array $tag_ids, $user_id = null)
+    public static function removeFollowTag(array $tag_ids, $user_id = null)
     {
         if (empty($user_id) || empty($tag_ids)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,tag_ids']);
@@ -76,5 +77,22 @@ class FollowTagEntity extends FollowTag
         }
 
         return true;
+    }
+
+    public static function getUserFollowTagIds($user_id, $limit = 20)
+    {
+        $cache_key = [REDIS_KEY_FOLLOW_TAG_USER_ID, implode('_', [$user_id, $limit])];
+        $cache_data = Yii::$app->redis->get($cache_key);
+        if ($cache_data === false) {
+            $cache_data = self::find()->select(['follow_tag_id'])->where(
+                [
+                    'user_id' => $user_id,
+                ]
+            )->orderBy('modify_at DESC')->limit($limit)->asArray()->all();
+
+            Yii::$app->redis->set($cache_key, $cache_data);
+        }
+
+        return $cache_data;
     }
 }

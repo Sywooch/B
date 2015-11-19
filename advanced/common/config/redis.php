@@ -34,10 +34,11 @@ const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation:string';
 #TAG
 const REDIS_KEY_TAG = 'tag:hash';
 const REDIS_KEY_TAG_LIST = 'tag_list:sset';
-const REDIS_KEY_TAG_ID_NAME = 'tag_id_name:string';
 const REDIS_KEY_TAG_NAME_ID = 'tag_name_id:string';
 const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:string';
 
+#FOLLOW TAG
+const REDIS_KEY_FOLLOW_TAG_USER_ID = 'follow_tag_user_id:string';
 
 #QUESTION
 const REDIS_KEY_QUESTION = 'question:hash';
@@ -65,6 +66,9 @@ const REDIS_KEY_UPDATER_SET = 'updater:set';
 const REDIS_KEY_EMAIL = 'email:list';
 const REDIS_KEY_RBAC = 'rbac:string';
 
+/* xunsearch */
+const REDIS_KEY_XUNSEARCH_TAG = 'xunsearch_tag:string';
+
 /**
  * 注意，返回的 key　不得为数字，必须为字符串, expire = 0 表示永久存在
  */
@@ -74,7 +78,8 @@ return [
     REDIS_KEY_SESSION               => [
         'server' => $servers['master'],
         'expire' => 86400,
-    ],#应用设置
+    ],
+    #应用设置
     REDIS_KEY_SETTING               => [
         'server' => $servers['master'],
         'expire' => 0,
@@ -116,81 +121,86 @@ return [
         'server' => $servers['master'],
         'expire' => 86400 * 7,
     ],
+    #xunsearch
+    REDIS_KEY_XUNSEARCH_TAG             => [
+        'server' => $servers['master'],
+        'expire' => 3600,
+    ],
     /***************************************************/
     #用户数据
     REDIS_KEY_USER                  => [
         'server' => $servers['master'],
-        'expire' => 86400 * 7, #有效期
+        'expire' => 86400 * 7, 
     ],
     #用户名与用户ID间的关系
     REDIS_KEY_USER_USERNAME_USERID  => [
         'server' => $servers['master'],
-        'expire' => 86400 * 7, #有效期
+        'expire' => 86400 * 7, 
     ],
     #用户关注的用户
     REDIS_KEY_USER_FOLLOW           => [
         'server' => $servers['master'],
-        'expire' => 86400 * 7, #有效期
+        'expire' => 86400 * 7, 
     ],
     #用户关注的tag
     REDIS_KEY_USER_TAG_RELATION     => [
         'server' => $servers['master'],
-        'expire' => 86400 * 7, #有效期
+        'expire' => 86400 * 7, 
     ],
     /*************************************************/
     #tag
     REDIS_KEY_TAG                   => [
         'server' => $servers['master'],
-        'expire' => 86400 * 7, #有效期
+        'expire' => 86400 * 7, 
     ],
     REDIS_KEY_TAG_LIST              => [
         'server' => $servers['master'],
-        'expire' => 3600*8, #有效期
-    ],
-    #tag id & name
-    REDIS_KEY_TAG_ID_NAME           => [
-        'server' => $servers['master'],
-        'expire' => 86400 * 7, #有效期
+        'expire' => 3600 * 8, 
     ],
     #tag name & id
     REDIS_KEY_TAG_NAME_ID           => [
         'server' => $servers['master'],
-        'expire' => 86400 * 7, #有效期
+        'expire' => 86400 * 7, 
     ],
     #tag has user top 10
     REDIS_KEY_TAG_USER_RELATION     => [
         'server' => $servers['master'],
-        'expire' => 3600 * 8, #有效期
+        'expire' => 3600 * 8, 
+    ],
+    #follow tag
+    REDIS_KEY_FOLLOW_TAG_USER_ID =>[
+        'server' => $servers['master'],
+        'expire' => 3600 * 2,
     ],
     #question
     REDIS_KEY_QUESTION              => [
         'server' => $servers['master'],
-        'expire' => 86400, #有效期
+        'expire' => 86400, 
     ],
     REDIS_KEY_QUESTION_BLOCK        => [
         'server' => $servers['master'],
-        'expire' => 86400, #有效期
+        'expire' => 86400, 
     ],
     REDIS_KEY_QUESTION_HAS_ANSWERED => [
         'server' => $servers['master'],
-        'expire' => 86400 * 7, #有效期
+        'expire' => 86400 * 7, 
     ],
     /*------------- answer ---------------*/
     REDIS_KEY_ANSWER                => [
         'server' => $servers['master'],
-        'expire' => 86400, #有效期
+        'expire' => 86400, 
     ],
     REDIS_KEY_ANSWER_LIST           => [
         'server' => $servers['master'],
-        'expire' => 86400, #有效期
+        'expire' => 86400, 
     ],
     REDIS_KEY_ANSWER_LIST_TIME      => [
         'server' => $servers['master'],
-        'expire' => 86400, #有效期
+        'expire' => 86400, 
     ],
     REDIS_KEY_ANSWER_LIST_SCORE     => [
         'server' => $servers['master'],
-        'expire' => 86400, #有效期
+        'expire' => 86400, 
     ],
     /*************************************************************/
     #临时测试类的缓存

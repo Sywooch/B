@@ -23,7 +23,7 @@ use common\entities\TagEntity;
 use common\entities\UserEntity;
 use common\helpers\AtHelper;
 use common\helpers\FormatterHelper;
-use common\models\xunsearch\Question;
+use common\models\xunsearch\QuestionSearch;
 use console\modules\crawler\controllers\crawlers\CrawlerBase;
 use Yii;
 use common\controllers\BaseController;
@@ -277,10 +277,12 @@ class TestController extends BaseController
             var_dump($result);
         }*/
 
-        //$question = new Question();
+        $question = new QuestionSearch();
+        $tags = $question->fenci('在深圳');
+
         //$result = $question->find()->where(['or','深圳','人口'])->all();
 
-        $result = QuestionEntity::getSimilarQuestion(['深圳', '名人','深圳人口']);
+        $result = QuestionEntity::searchQuestionByTag($tags);
 
         print_r($result);
     }

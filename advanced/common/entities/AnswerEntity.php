@@ -353,7 +353,7 @@ class AnswerEntity extends Answer
     public static function ensureAnswerHasCache($answer_id)
     {
         $cache_key = [REDIS_KEY_ANSWER, $answer_id];
-        if (Yii::$app->redis->hLen($cache_key) === 0) {
+        if (Yii::$app->redis->hLen($cache_key) == 0) {
             self::getAnswerByAnswerId($answer_id);
         }
 

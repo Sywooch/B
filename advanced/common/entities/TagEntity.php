@@ -23,6 +23,7 @@ class TagEntity extends Tag
     const STATUS_ENABLE = 'enable';
     const STATUS_DISABLE = 'disable';
 
+
     public function behaviors()
     {
         return [
@@ -122,14 +123,17 @@ class TagEntity extends Tag
             $tag_id = [$tag_id];
         }
 
+        $data = self::getTagListByTagIds($tag_id);
 
-        $tag_id = array_filter($tag_id);
-        $data = self::getTagNameByIdUseCache($tag_id);
+        $tag_name_id = [];
+        foreach ($data as $item) {
+            $tag_name_id[$item['name']] = $item['id'];
+        }
 
         if ($multiple) {
-            $result = $data;
+            $result = $tag_name_id;
         } else {
-            $result = array_shift($data);
+            $result = array_shift($tag_name_id);
         }
 
         return $result;
@@ -145,61 +149,17 @@ class TagEntity extends Tag
         }
 
 
-        $tag_name = array_filter($tag_name);
+        $tag_name = array_values(array_unique(array_filter($tag_name)));
         $data = self::getTagIdByNameUseCache($tag_name);
 
+        $combine_data = array_combine($tag_name, $data);
         if ($multiple) {
-            $result = $data;
+            $result = $combine_data;
         } else {
-            $result = array_shift($data);
+            $result = array_shift($combine_data);
         }
 
         return $result;
-    }
-
-    private static function getTagNameByIdUseCache($tag_id)
-    {
-        $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_TAG_ID_NAME, $tag_id]);
-        $cache_miss_key = Yii::$app->redis->getMissKey($tag_id, $cache_hit_data);
-
-        if (count($cache_miss_key)) {
-            $sql = sprintf(
-                "SELECT t.id, t.name
-                FROM `%s` t
-                WHERE t.id
-                IN(%s)",
-                TagEntity::tableName(),
-                "'" . implode("','", $cache_miss_key) . "'"
-            );
-
-            $model = self::getDb()->createCommand($sql)->queryAll();
-
-            #$cache_miss_data 为数组，格式key为索引ID，value为保存到redis中的数据
-            $cache_miss_data = [];
-            $tag_name_id_data = [];
-            foreach ($model as $key => $item) {
-                #load useful attributes
-                $cache_miss_data[$item['id']] = $item['name'];
-                $tag_name_id_data[$item['name']] = $item['id'];
-            }
-
-            if ($cache_miss_data) {
-                #cache user miss databases data
-                Yii::$app->redis->mset([REDIS_KEY_TAG_ID_NAME, $cache_miss_data]);
-
-                #cache username id relation data
-                Yii::$app->redis->mset([REDIS_KEY_TAG_NAME_ID, $tag_name_id_data]);
-
-                #padding miss data
-                $cache_hit_data = Yii::$app->redis->paddingMissData(
-                    $cache_hit_data,
-                    $cache_miss_key,
-                    $cache_miss_data
-                );
-            }
-        }
-
-        return $cache_hit_data;
     }
 
     private static function getTagIdByNameUseCache($tag_name)
@@ -221,19 +181,15 @@ class TagEntity extends Tag
 
             #$cache_miss_data 为数组，格式key为索引ID，value为保存到redis中的数据
             $cache_miss_data = [];
-            $tag_id_name_data = [];
             foreach ($model as $key => $item) {
                 #load useful attributes
                 $cache_miss_data[$item['name']] = $item['id'];
-                $tag_id_name_data[$item['id']] = $item['name'];
             }
+
 
             if ($cache_miss_data) {
                 #cache user miss databases data
                 Yii::$app->redis->mset([REDIS_KEY_TAG_NAME_ID, $cache_miss_data]);
-
-                #cache username id relation data
-                Yii::$app->redis->mset([REDIS_KEY_TAG_ID_NAME, $tag_id_name_data]);
 
                 #padding miss data
                 $cache_hit_data = Yii::$app->redis->paddingMissData(
@@ -263,7 +219,7 @@ class TagEntity extends Tag
     public static function ensureTagHasCached($tag_id)
     {
         $cache_key = [REDIS_KEY_TAG, $tag_id];
-        if (Yii::$app->redis->hLen($cache_key) === 0) {
+        if (Yii::$app->redis->hLen($cache_key) == 0) {
             self::getTagByTagId($tag_id);
         }
 
@@ -333,7 +289,7 @@ class TagEntity extends Tag
             $result = self::find()->where(
                 'count_use>=:count_use AND count_follow>=:count_follow',
                 [
-                    ':count_use' => 1,
+                    ':count_use'    => 1,
                     ':count_follow' => 1,
                 ]
 

@@ -287,10 +287,14 @@ class Connection extends Component
      */
     public function paddingMissData($cache_hit_data, $cache_miss_key, $cache_miss_data)
     {
-        foreach ($cache_miss_key as $key => $id) {
-            #如果缓存未命中，并且数据中也不存在，则直接跳过。后续如需报错，在这里else修改
-            if (isset($cache_miss_data[$id])) {
-                $cache_hit_data[$key] = $cache_miss_data[$id];
+        if (empty(array_shift($cache_hit_data))) {
+            $cache_hit_data = array_values($cache_miss_data);
+        } else {
+            foreach ($cache_miss_key as $key => $value) {
+                #如果缓存未命中，并且数据中也不存在，则直接跳过。后续如需报错，在这里else修改
+                if (isset($cache_miss_data[$value])) {
+                    $cache_hit_data[$key] = $cache_miss_data[$value];
+                }
             }
         }
 

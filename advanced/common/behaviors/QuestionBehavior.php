@@ -18,7 +18,7 @@ use common\entities\QuestionTagEntity;
 use common\entities\TagEntity;
 use common\entities\UserProfileEntity;
 use common\models\QuestionTag;
-use common\models\xunsearch\Question;
+use common\models\xunsearch\QuestionSearch;
 use common\modules\user\models\Profile;
 use Yii;
 use yii\base\Behavior;
@@ -345,7 +345,7 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         try {
-            $question = new Question();
+            $question = new QuestionSearch();
             $question->load($this->owner->getAttributes(), '');
             $question->save();
         } catch (Exception $e) {

@@ -9,13 +9,11 @@
 namespace common\models\xunsearch;
 
 
-use hightman\xunsearch\ActiveRecord;
-
 /**
- * Class Question
+ * Class QuestionSearch
  * @package common\models\xunsearch
  */
-class Question extends ActiveRecord
+class QuestionSearch extends BaseXunSearch
 {
-    
+
 }

@@ -53,12 +53,12 @@ class QuestionController extends BaseController
             ],
         ];
     }
-
+    
     public function actionVote()
     {
-
+        
     }
-
+    
     /**
      * Lists all Question models.
      * @return mixed
@@ -72,7 +72,7 @@ class QuestionController extends BaseController
                 'params'     => array_merge($_GET),
             ]
         );
-
+        
         $data = QuestionEntity::fetchLatest($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
         if ($data) {
             $html = $this->renderPartial(
@@ -84,7 +84,7 @@ class QuestionController extends BaseController
         } else {
             $html = null;
         }
-
+        
         return $this->render(
             'index',
             [
@@ -94,8 +94,8 @@ class QuestionController extends BaseController
             ]
         );
     }
-
-
+    
+    
     public function actionHot()
     {
         $pages = new Pagination(
@@ -105,9 +105,9 @@ class QuestionController extends BaseController
                 'params'     => array_merge($_GET),
             ]
         );
-
+        
         $data = QuestionEntity::fetchHot($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
-
+        
         if ($data) {
             $html = $this->renderPartial(
                 '/default/question_item_view',
@@ -119,7 +119,7 @@ class QuestionController extends BaseController
         } else {
             $html = null;
         }
-
+        
         return $this->render(
             'index',
             [
@@ -129,7 +129,7 @@ class QuestionController extends BaseController
             ]
         );
     }
-
+    
     public function actionUnAnswer()
     {
         $pages = new Pagination(
@@ -139,10 +139,10 @@ class QuestionController extends BaseController
                 'params'     => array_merge($_GET),
             ]
         );
-
+        
         $data = QuestionEntity::fetchUnAnswer($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
-
-
+        
+        
         if ($data) {
             $html = $this->renderPartial(
                 '/default/question_item_view',
@@ -153,7 +153,7 @@ class QuestionController extends BaseController
         } else {
             $html = null;
         }
-
+        
         return $this->render(
             'index',
             [
@@ -163,7 +163,7 @@ class QuestionController extends BaseController
             ]
         );
     }
-
+    
     /**
      * Displays a single Question model.
      * @param string $id
@@ -174,9 +174,9 @@ class QuestionController extends BaseController
      */
     public function actionView($id, $sort = 'default', $answer_id = null)
     {
-
+        
         $question_data = QuestionEntity::getQuestionByQuestionId($id);
-
+        
         if (ServerHelper::checkIsSpider() && !in_array(
                 $question_data['status'],
                 explode(',', QuestionEntity::STATUS_DISPLAY_FOR_SPIDER)
@@ -184,26 +184,27 @@ class QuestionController extends BaseController
         ) {
             throw new NotFoundHttpException();
         }
-
+        
         $answer_model = new AnswerEntity();
-
+        
         if ($question_data['tags']) {
             $tags = explode(',', $question_data['tags']);
         } else {
             $tags = [];
         }
-        $tags = array_merge([$question_data['subject']], $tags);
-        $similar_question = QuestionEntity::getSimilarQuestion($tags);
-
-
+        
+        $tags = array_merge(QuestionEntity::getSubjectTags($question_data['subject']), $tags);
+        $similar_question = QuestionEntity::searchQuestionByTag($tags);
+        
+        
         #增加查看问题计数
         Counter::addQuestionView($id);
-
+        
         if ($answer_id) {
             $pages = null;
             $answer_data = AnswerEntity::getAnswerListByAnswerId([$answer_id]);
         } else {
-
+            
             $pages = new Pagination(
                 [
                     'totalCount' => AnswerEntity::getAnswerCountByQuestionId($id),
@@ -212,12 +213,12 @@ class QuestionController extends BaseController
                     'pageParam'  => 'answer-page',
                 ]
             );
-
+            
             $answer_data = AnswerEntity::getAnswerListByQuestionId($id, $pages->pageSize, $pages->offset, $sort);
         }
-
+        
         //print_r($answer_data);exit;
-
+        
         return $this->render(
             'view',
             [
@@ -236,7 +237,7 @@ class QuestionController extends BaseController
             ]
         );
     }
-
+    
     /**
      * Creates a new Question model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -245,7 +246,7 @@ class QuestionController extends BaseController
     public function actionCreate()
     {
         $model = new QuestionEntity();
-
+        
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['question/view', 'id' => $model->id]);
         } else {
@@ -257,7 +258,7 @@ class QuestionController extends BaseController
             );
         }
     }
-
+    
     /**
      * Updates an existing Question model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -273,7 +274,7 @@ class QuestionController extends BaseController
             print_r($model->getAttributes());
             exit('dd');
         }*/
-
+        
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['question/view', 'id' => $model->id]);
         } else {
@@ -285,7 +286,7 @@ class QuestionController extends BaseController
             );
         }
     }
-
+    
     /**
      * Deletes an existing Question model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -298,7 +299,7 @@ class QuestionController extends BaseController
 
         return $this->redirect(['index']);
     }*/
-
+    
     /**
      * Finds the Question model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -314,25 +315,25 @@ class QuestionController extends BaseController
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
+    
     public function actionGetAssociateUserIdWhenAnswer($user_id, $question_id = null)
     {
         /* @var $follow_user_entity FollowUserEntity */
         $follow_user_entity = Yii::createObject(FollowUserEntity::className());
         $follow_user_ids = $follow_user_entity->getFollowUserIds($user_id);
-
+        
         $user_ids = $follow_user_ids;
         if ($question_id) {
             $answer_user_ids = AnswerEntity::getAnswerUserIdsByQuestionId($question_id);
             $user_ids = array_merge($user_ids, $answer_user_ids);
         }
-
+        
         $user = UserEntity::getUserListByIds($user_ids);
-
+        
         exit(json_encode($user));
         echo Json::encode($user);
     }
-
+    
     /**
      * @param string $method
      * @throws Exception
@@ -341,19 +342,19 @@ class QuestionController extends BaseController
     public function actionInvite($method = 'username')
     {
         $allow_method = ['username', 'email'];
-
+        
         if (!in_array($method, $allow_method)) {
             throw new ParamsInvalidException('method');
         }
-
+        
         #POST参数
         $be_invited_user = Yii::$app->request->post('be_invited_user', '');
         $question_id = Yii::$app->request->post('question_id', '');
-
+        
         if (!$be_invited_user || !$question_id) {
             throw new ParamsInvalidException(['be_invited_user', 'question_id']);
         }
-
+        
         switch ($method) {
             case 'username':
                 $user_data = UserEntity::getUserIdByUsername($be_invited_user);
@@ -366,16 +367,28 @@ class QuestionController extends BaseController
                 } else {
                     Error::set(Error::TYPE_USER_IS_NOT_EXIST);
                 }
-
+                
                 break;
-
+            
             case 'email':
                 $result = QuestionInviteEntity::inviteToAnswerByEmail($question_id, $be_invited_user);
                 break;
             default:
                 throw new Exception(sprintf('暂未支持 %s 通知', $method));
         }
-
+        
         return $this->jsonOut(Error::get($result));
+    }
+    
+    public function getSimilarQuestionBySubject($subject)
+    {
+        $similar_question = QuestionEntity::searchQuestionBySubject($subject);
+        
+        return $this->jsonOut(Error::get($similar_question));
+    }
+    
+    public function actionExplore()
+    {
+        
     }
 }
