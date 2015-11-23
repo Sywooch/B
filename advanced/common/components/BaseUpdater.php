@@ -11,6 +11,7 @@ namespace common\components;
 
 use Yii;
 use yii\base\Object;
+use yii\helpers\Json;
 
 class BaseUpdater extends Object
 {
@@ -81,12 +82,12 @@ class BaseUpdater extends Object
 
         #priority = true 为马上执行
         if ($this->immediate) {
-            $result =  $this->immediately();
+            $result = $this->immediately();
         } else {
-            $result =  $this->simpleQueue();
+            $result = $this->simpleQueue();
         }
 
-        Yii::trace(sprintf('Updater Result %s', var_export($result, true)), 'counter');
+        Yii::trace(sprintf('Updater Result %s', var_export($result, true)), 'updater');
 
         return $result;
     }
@@ -108,11 +109,13 @@ class BaseUpdater extends Object
     {
         Yii::trace(
             ',',
-            [
-                'table' => $this->table,
-                'set'   => $this->set,
-                'where' => $this->where,
-            ],
+            Json::encode(
+                [
+                    'table' => $this->table,
+                    'set'   => $this->set,
+                    'where' => $this->where,
+                ]
+            ),
             'updater'
         );
 
@@ -131,7 +134,12 @@ class BaseUpdater extends Object
             $where_data[] = sprintf('`%s`="%s"', $field, $value);
         }
 
-        $sql = sprintf('UPDATE `%s` SET %s WHERE %s', $table, implode(' AND ', $set_data), implode(' AND ', $where_data));
+        $sql = sprintf(
+            'UPDATE `%s` SET %s WHERE %s',
+            $table,
+            implode(' AND ', $set_data),
+            implode(' AND ', $where_data)
+        );
 
         //print_r($sql);exit;
 
@@ -151,11 +159,13 @@ class BaseUpdater extends Object
     private function simpleQueue()
     {
         Yii::trace(
-            [
-                'table' => $this->table,
-                'set'   => $this->set,
-                'where' => $this->where,
-            ],
+            Json::encode(
+                [
+                    'table' => $this->table,
+                    'set'   => $this->set,
+                    'where' => $this->where,
+                ]
+            ),
             'updater'
         );
 

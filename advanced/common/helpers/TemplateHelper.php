@@ -80,20 +80,21 @@ class TemplateHelper
      */
     public static function showTagLiLabelByName($tag_name)
     {
+        if (empty($tag_name)) {
+            return;
+        }
         if (!is_array($tag_name)) {
             $tag_name = array_filter(explode(',', $tag_name));
         }
 
         $html = [];
-
         $tag_ids = TagEntity::getTagIdByName($tag_name);
-
         foreach ($tag_name as $key => $tag) {
             $html[] = sprintf(
                 '<li class="tagPopup">%s</li>',
                 Html::a(
                     $tag,
-                    ['tag/view', 'id' => $tag_ids[$key]],
+                    ['tag/view', 'id' => $tag_ids[$tag]],
                     [
                         'class' => 'tag tag-sm',
                     ]

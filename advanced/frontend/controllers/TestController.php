@@ -10,6 +10,7 @@ namespace frontend\controllers;
 
 use common\behaviors\PrivateMessageDialogBehavior;
 use common\components\Counter;
+use common\components\Curl;
 use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
@@ -241,7 +242,10 @@ class TestController extends BaseController
 
         print_r($data);*/
 
-        $result = TagEntity::getHotTag();
+        //$result = TagEntity::getHotTag();
+        //$result = TagEntity::getRelateTag(6);
+
+        $result = TagEntity::getTagIdByName(['深圳游玩1', '情侣游玩1', '深户1','bbaacc']);
 
         print_r($result);
     }
@@ -280,6 +284,8 @@ class TestController extends BaseController
         $question = new QuestionSearch();
         $tags = $question->fenci('在深圳');
 
+        print_r($tags);
+        exit;
         //$result = $question->find()->where(['or','深圳','人口'])->all();
 
         $result = QuestionEntity::searchQuestionByTag($tags);
@@ -421,6 +427,12 @@ class TestController extends BaseController
         $result = NotificationEntity::makeUpNotification($data);
 
         print_r($result);
+    }
+
+    public function actionCurl()
+    {
+        $curl = new Curl();
+
     }
 }
 

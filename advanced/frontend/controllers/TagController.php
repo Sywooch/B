@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\controllers\BaseController;
+use common\entities\TagEntity;
 use common\entities\TagSearchEntity;
 use Yii;
 use common\models\Tag;
@@ -80,11 +81,10 @@ class TagController extends BaseController
                         return $model->getAttributes(['name']);
                     }
                 );
-
             }
         }
 
-        $this->jsonOut($result);
+        return $this->jsonOut($result);
     }
 
     /**
@@ -129,7 +129,7 @@ class TagController extends BaseController
      * @param string $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    /*public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
@@ -143,7 +143,7 @@ class TagController extends BaseController
                 ]
             );
         }
-    }
+    }*/
 
     /**
      * Deletes an existing Tag model.
@@ -172,5 +172,13 @@ class TagController extends BaseController
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+
+    public function actionGetRelateTags($tag_id)
+    {
+        $data = TagEntity::getRelateTag($tag_id);
+
+        return $this->jsonOut($data);
     }
 }

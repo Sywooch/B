@@ -131,7 +131,7 @@ use yii\widgets\LinkPager;
                                     [
                                             'items' => [
                                                     [
-                                                            'label'   => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
+                                                            'label'   => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '置为匿名',
                                                             'url'     => '/',
                                                             'visible' => $item['create_by'] == Yii::$app->user->id,
                                                     ],

@@ -68,14 +68,16 @@ class AnswerCommentBehavior extends BaseBehavior
 
         $username = AtHelper::findAtUsername($this->owner->content);
 
-        $user_ids = UserEntity::getUserIdByUsername($username);
+        if($username){
+            $user_ids = UserEntity::getUserIdByUsername($username);
 
-        Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->notice(
-            NotificationEntity::TYPE_COMMENT_AT_ME,
-            [
-                'user_id' => $this->owner->id,
-            ]
-        );
+            Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->notice(
+                NotificationEntity::TYPE_COMMENT_AT_ME,
+                [
+                    'user_id' => $this->owner->id,
+                ]
+            );
+        }
     }
 
     public function dealWithCounter()

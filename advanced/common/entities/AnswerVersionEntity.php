@@ -8,8 +8,12 @@
 
 namespace common\entities;
 
+use common\behaviors\OperatorBehavior;
+use common\behaviors\TimestampBehavior;
+use common\components\Error;
 use Yii;
 use common\models\AnswerVersion;
+use yii\db\ActiveRecord;
 
 class AnswerVersionEntity extends AnswerVersion
 {
@@ -31,35 +35,39 @@ class AnswerVersionEntity extends AnswerVersion
         ];
     }
 
-    public function addNewVersion($answer_id, $content, $reason)
+    public static function addNewVersion($answer_id, $content, $reason)
     {
-        if ($this->ensureExistTheFirstEdition($answer_id)) {
-            $model = clone $this;
-            if ($model->load(
-                    [
-                        'answer_id' => $answer_id,
-                        'content'   => $content,
-                        'reason'    => $reason,
-                    ],
-                    ''
-                ) && $model->save()
-            ) {
-                return true;
-            } else {
-                Yii::error(sprintf('%s insert error', __FUNCTION__));
-                Yii::error($model->getErrors());
-
-                return false;
-            }
+        if (self::ensureExistTheFirstEdition($answer_id) === false) {
+            return Error::set(Error::TYPE_ANSWER_ENSURE_EXIST_THE_FIRST_EDITION);
         }
+
+        $model = new self;
+        if ($model->load(
+                [
+                    'answer_id' => $answer_id,
+                    'content'   => $content,
+                    'reason'    => $reason,
+                ],
+                ''
+            ) && $model->save()
+        ) {
+            $result = true;
+        } else {
+            Yii::error(sprintf('%s insert error', __FUNCTION__));
+            Yii::error($model->getErrors());
+            $result = false;
+        }
+
+        return $result;
     }
 
-    private function ensureExistTheFirstEdition($answer_id)
+    private static function ensureExistTheFirstEdition($answer_id)
     {
+        $result = false;
         if (!self::findOne(['answer_id' => $answer_id])) {
             $answer = AnswerEntity::findOne(['id' => $answer_id]);
             if ($answer) {
-                $model = clone $this;
+                $model = new self;
                 if ($model->load(
                         [
                             'answer_id' => $answer->id,
@@ -71,15 +79,17 @@ class AnswerVersionEntity extends AnswerVersion
                         ''
                     ) && $model->save()
                 ) {
-                    return true;
+                    $result = true;
                 } else {
                     Yii::error(sprintf('%s insert error', __FUNCTION__));
                     Yii::error($model->getErrors());
-
-                    return false;
                 }
             }
+        } else {
+            $result = true;
         }
+
+        return $result;
     }
 
     public static function getAnswerVersionList($answer_id, $limit = 10, $offset = 0)

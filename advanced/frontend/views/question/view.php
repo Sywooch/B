@@ -258,7 +258,6 @@ $this->endBlock();
                 ); ?>
                 <?= $answer_item_html ?>
 
-
                 <?= $pages ? LinkPager::widget(
                         [
                                 'pagination'  => $pages,
@@ -268,7 +267,7 @@ $this->endBlock();
 
                                 ],
                                 'linkOptions' => [
-                                        'rel' => 'nofollow',
+                                        //'rel' => 'nofollow',
                                 ],
                         ]
                 ) : ''; ?>

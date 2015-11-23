@@ -17,7 +17,7 @@ class CacheAnswerModel extends BaseCacheModel
     public $content;
     public $type;
     public $count_useful = 0;
-    public $count_comment= 0;
+    public $count_comment = 0;
     public $create_at;
     public $create_by;
     public $modify_at;

@@ -88,23 +88,25 @@ class AnswerCommentController extends BaseController
         $model = new AnswerCommentEntity();
         $model->answer_id = $answer_id;
 
-        $answer_data =AnswerEntity::getAnswerByAnswerId($answer_id);
+        $answer_data = AnswerEntity::getAnswerByAnswerId($answer_id);
         $question_data = QuestionEntity::getQuestionByQuestionId($answer_data['question_id']);
 
+        //print_r(Yii::$app->request->post());exit;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $data =  $this->renderPartial(
+            $data = $this->renderPartial(
                 '/answer/_answer_comment_item',
                 [
-                    'answer_id' => $answer_id,
+                    'answer_id'               => $answer_id,
                     'answer_create_user_id'   => $answer_data['create_by'],
                     'question_create_user_id' => $question_data['create_by'],
-                    'data'        => [$model->getAttributes()],
+                    'data'                    => [$model->getAttributes()],
                 ]
             );
             $result = Error::get($data);
         } else {
-            $result = Error::get(false);
+            Error::set(Error::TYPE_ANSWER_COMMENT_CREATE_FAIL);
+            $result = Error::get($model->getErrors());
         }
 
         return $this->jsonOut($result);

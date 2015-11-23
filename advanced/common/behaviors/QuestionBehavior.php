@@ -9,6 +9,7 @@
 namespace common\behaviors;
 
 use common\components\Counter;
+use common\components\Updater;
 use common\entities\AttachmentEntity;
 use common\entities\FavoriteRecordEntity;
 use common\entities\FollowQuestionEntity;
@@ -61,8 +62,9 @@ class QuestionBehavior extends BaseBehavior
     public function beforeQuestionSave($event)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        
+
         $this->dirtyAttributes = $this->owner->getDirtyAttributes();
+        $this->dealWithTagsOrder();
     }
     
     public function afterQuestionInsert($event)
@@ -74,6 +76,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithAddFollowQuestion();
         $this->dealWithAddAttachments();
         $this->dealWithRedisCacheInsert();
+        $this->dealWithTagRelationCount();
     }
     
     public function afterQuestionUpdate($event)
@@ -128,9 +131,7 @@ class QuestionBehavior extends BaseBehavior
     public function dealWithAddFollowQuestion()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        /* @var $model FollowQuestionEntity */
-        $model = Yii::createObject(FollowQuestionEntity::className());
-        $result = $model->addFollow($this->owner->id, $this->owner->create_by);
+        $result = FollowQuestionEntity::addFollow($this->owner->id, $this->owner->create_by);
         
         Yii::trace(sprintf('Add Question Follow: %s', var_export($result, true)), 'behavior');
         
@@ -326,7 +327,7 @@ class QuestionBehavior extends BaseBehavior
             }
             
             $this->owner->content = str_replace($search_rules, $replace_rules, $this->owner->content);
-            $this->owner->updateContent($this->owner->id, $this->owner->content);
+            Updater::updateContent($this->owner->id, $this->owner->content);
             
         } else {
             Yii::trace('No matching data', 'attachment');
@@ -363,5 +364,20 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         QuestionEntity::updateQuestionCache($this->owner->id, $this->owner->getAttributes());
+    }
+
+    public function dealWithTagsOrder()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        if ($this->owner->tags) {
+            $this->owner->tags = str_replace(['，', '、', ' '], ',', $this->owner->tags);
+            $tags = array_unique(array_filter(explode(',', $this->owner->tags)));
+            $this->owner->tags = implode(',', $tags);
+        }
+    }
+
+    public function dealWithTagRelationCount()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }
 }

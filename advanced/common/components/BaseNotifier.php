@@ -16,6 +16,7 @@ use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
 use Yii;
 use yii\base\Object;
+use yii\helpers\Json;
 
 class BaseNotifier extends Object
 {
@@ -195,14 +196,16 @@ class BaseNotifier extends Object
     public function noticeQueue($sender, $receiver, $notice_code, $associate_data, $current_time = null)
     {
         Yii::trace(
-            [
-                'sender'         => $sender,
-                'receiver'       => $receiver,
-                'notice_code'    => $notice_code,
-                'associate_data' => $associate_data,
-                'status'         => NotificationEntity::STATUS_UNREAD,
-                'create_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
-            ],
+            Json::encode(
+                [
+                    'sender'         => $sender,
+                    'receiver'       => $receiver,
+                    'notice_code'    => $notice_code,
+                    'associate_data' => $associate_data,
+                    'status'         => NotificationEntity::STATUS_UNREAD,
+                    'create_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
+                ]
+            ),
             'notifier'
         );
 
@@ -248,12 +251,14 @@ class BaseNotifier extends Object
     public function emailQueue($receiver, $subject, $message, $template_view)
     {
         Yii::trace(
-            [
-                'receiver'      => $receiver,
-                'subject'       => $subject,
-                'message'       => $message,
-                'template_view' => $template_view,
-            ],
+            Json::encode(
+                [
+                    'receiver'      => $receiver,
+                    'subject'       => $subject,
+                    'message'       => $message,
+                    'template_view' => $template_view,
+                ]
+            ),
             'notifier'
         );
 

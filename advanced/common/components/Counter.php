@@ -21,7 +21,7 @@ use yii\base\Object;
 
 class Counter extends BaseCounter
 {
-    /******************************************USER***************************************************/
+    //******************************************USER***************************************************/
     public static function viewPersonalHomePage($user_id)
     {
         Yii::trace('增加个人主页查看数', 'counter');
@@ -263,7 +263,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    /******************************************QUESTION***************************************************/
+    //******************************************QUESTION***************************************************/
     public static function addQuestionView($question_id)
     {
         Yii::trace('增加问题查看数量', 'counter');
@@ -376,7 +376,8 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    /******************************************ANSWER***************************************************/
+    //******************************************ANSWER***************************************************/
+
     public static function addAnswerComment($answer_id)
     {
         Yii::trace('增加回答评论数量', 'counter');
@@ -387,7 +388,11 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && AnswerEntity::ensureAnswerHasCache($answer_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_ANSWER, $answer_id], 'count_answer', 1);
+            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            //var_dump(Yii::$app->redis->hGetAll($cache_key));
+            Yii::$app->redis->hIncrBy($cache_key, 'count_comment', 1);
+            //var_dump(Yii::$app->redis->hGetAll($cache_key));
+            //exit;
         }
 
         return $result;
@@ -403,7 +408,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && AnswerEntity::ensureAnswerHasCache($answer_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_ANSWER, $answer_id], 'count_answer', -1);
+            Yii::$app->redis->hIncrBy([REDIS_KEY_ANSWER, $answer_id], 'count_comment', -1);
         }
 
         return $result;

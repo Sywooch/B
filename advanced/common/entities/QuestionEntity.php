@@ -11,6 +11,7 @@ use common\models\QuestionTag;
 use common\models\Tag;
 use common\models\xunsearch\QuestionSearch;
 use common\services\NotificationService;
+use XSException;
 use Yii;
 use common\behaviors\IpBehavior;
 use common\behaviors\OperatorBehavior;
@@ -52,7 +53,7 @@ class QuestionEntity extends Question
 
 
     //
-
+    
     /**
      * 字段规则
      * @return array
@@ -180,7 +181,7 @@ class QuestionEntity extends Question
     {
         $data = self::getQuestionListByQuestionIds([$question_id]);
 
-        return $data ? array_shift($data) : null;
+        return $data ? array_shift($data) : false;
     }
 
     public static function getQuestionListByQuestionIds(array $question_ids)
@@ -233,30 +234,10 @@ class QuestionEntity extends Question
                 on t.id=qt.tag_id
                 where qt.question_id=:question_id
                 ',
-            QuestionTag::className()
+            QuestionTag::tableName()
         );
 
         return self::getDb()->createCommand($sql, [':question_id' => $question_id])->queryAll();
-    }
-
-    /**
-     * @param $id
-     * @param $content
-     * @return int
-     * @throws \yii\db\Exception
-     */
-    public function updateContent($id, $content)
-    {
-        Updater::build()->sync(true)->table(self::tableName())->set(['content' => $content])->where(
-            ['id' => $id]
-        )->execute();
-    }
-
-    public function updateActiveAt($id, $active_at)
-    {
-        Updater::build()->sync(true)->table(self::tableName())->set(['active_at' => $active_at])->where(
-            ['id' => $id]
-        )->execute();
     }
 
     public static function updateQuestionCache($question_id, $data)
@@ -266,7 +247,6 @@ class QuestionEntity extends Question
 
             return Yii::$app->redis->hMset($cache_key, $data);
         }
-
     }
 
     public static function fetchCount($type, $is_spider)
@@ -294,7 +274,19 @@ class QuestionEntity extends Question
     
     public static function fetchLatest($limit = 10, $offset = 0, $is_spider = false)
     {
-        $cache_key = [REDIS_KEY_QUESTION_BLOCK, 'LATEST_' . $is_spider];
+        $cache_key = [
+            REDIS_KEY_QUESTION_BLOCK,
+            implode(
+                '_',
+                [
+                    'LATEST',
+                    $limit,
+                    $offset,
+                    $is_spider,
+                ]
+            ),
+        ];
+
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if ($cache_data === false) {
@@ -303,9 +295,7 @@ class QuestionEntity extends Question
             )->asArray()->all();
             $cache_data = $model;
 
-            //if ($cache_data) {
             Yii::$app->redis->set($cache_key, $cache_data);
-            //}
         }
 
         return $cache_data;
@@ -313,20 +303,30 @@ class QuestionEntity extends Question
 
     public static function fetchHot($limit = 10, $offset = 0, $is_spider = false, $period = 7)
     {
-        $cache_key = [REDIS_KEY_QUESTION_BLOCK, 'HOT_' . $is_spider];
+        $cache_key = [
+            REDIS_KEY_QUESTION_BLOCK,
+            implode(
+                '_',
+                [
+                    'HOT',
+                    $limit,
+                    $offset,
+                    $period,
+                    $is_spider,
+                ]
+            ),
+        ];
+
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if ($cache_data === false) {
-            $model = self::find()->answered(3)->allowShowStatus($is_spider)->recent()->answered()->orderByTime()->limit(
+            $model = self::find()->answered(3)->allowShowStatus($is_spider)->recent($period)->answered()->orderByTime(
+            )->limit(
                 $limit
             )->offset($offset)->asArray()->all();
 
             $cache_data = $model;
-
-            #没有数据也写入缓存，‘’，
-            //if ($cache_data) {
             Yii::$app->redis->set($cache_key, $cache_data);
-            // }
         }
 
         return $cache_data;
@@ -334,19 +334,29 @@ class QuestionEntity extends Question
 
     public static function fetchUnAnswer($limit = 10, $offset = 0, $is_spider = false, $period = 7)
     {
-        $cache_key = [REDIS_KEY_QUESTION_BLOCK, 'UNANSWER_' . $is_spider];
+        $cache_key = [
+            REDIS_KEY_QUESTION_BLOCK,
+            implode(
+                '_',
+                [
+                    'UNANSWER',
+                    $limit,
+                    $offset,
+                    $period,
+                    $is_spider,
+                ]
+            ),
+        ];
+
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if ($cache_data === false) {
-            $model = self::find()->allowShowStatus($is_spider)->recent()->unAnswered()->orderByTime()->limit(
+            $model = self::find()->allowShowStatus($is_spider)->recent($period)->unAnswered()->orderByTime()->limit(
                 $limit
             )->offset($offset)->asArray()->all();
 
             $cache_data = $model;
-
-            //if ($cache_data) {
             Yii::$app->redis->set($cache_key, $cache_data);
-            //}
         }
 
         return $cache_data;
@@ -357,7 +367,7 @@ class QuestionEntity extends Question
         try {
             $question = new QuestionSearch();
             $tags = $question->fenci($subject, $limit);
-        } catch (Exception $e) {
+        } catch (XSException $e) {
             return Error::set(Error::TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION, [$e->getCode(), $e->getMessage()]);
         }
 
@@ -374,8 +384,13 @@ class QuestionEntity extends Question
 
                 if ($cache_data === false) {
 
-                    $cache_data = QuestionSearch::find()->where($params)->andWhere(['NOT IN',
-                                                                                                         'count_answer', [0]])->limit(
+                    $cache_data = QuestionSearch::find()->where($params)->andWhere(
+                        [
+                            'NOT IN',
+                            'count_answer',
+                            [0],
+                        ]
+                    )->limit(
                         $limit
                     )->orderBy('create_at DESC')->asArray()->all();
                     Yii::$app->redis->set($cache_key, $cache_data);
@@ -394,13 +409,11 @@ class QuestionEntity extends Question
         $result = [];
 
         if ($subject) {
-            try {
-                $tags = self::getSubjectTags($subject);
-                if ($tags) {
-                    $result = self::searchQuestionByTag($tags, $limit);
-                }
-            } catch (Exception $e) {
-                return Error::set(Error::TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION, [$e->getCode(), $e->getMessage()]);
+            $tags = self::getSubjectTags($subject);
+            if ($tags === false) {
+                return false;
+            } else {
+                $result = self::searchQuestionByTag($tags, $limit);
             }
         }
 
@@ -413,11 +426,7 @@ class QuestionEntity extends Question
 
         if ($tag_ids) {
             $tag_names = TagEntity::getTagNameById($tag_ids);
-            try {
-                $result = self::searchQuestionByTag($tag_names, $limit);
-            } catch (Exception $e) {
-                return Error::set(Error::TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION, [$e->getCode(), $e->getMessage()]);
-            }
+            $result = self::searchQuestionByTag($tag_names, $limit);
         }
 
         return $result;
@@ -427,9 +436,10 @@ class QuestionEntity extends Question
     {
         $cache_key = [REDIS_KEY_QUESTION, $question_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
-            self::getQuestionByQuestionId($question_id);
+           return self::getQuestionByQuestionId($question_id);
         }
 
         return true;
     }
+
 }

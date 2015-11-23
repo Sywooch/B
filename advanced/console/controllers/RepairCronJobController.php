@@ -15,13 +15,13 @@ use common\entities\QuestionEntity;
 use Yii;
 use yii\console\Controller;
 
-class RepairController extends Controller
+class RepairCronJobController extends Controller
 {
     const PAGE_SIZE = 500;
 
     public function actionIndex()
     {
-        $this->actionQuestionAnswerCount();
+        //$this->actionQuestionAnswerCount();
         $this->actionAnswerCommentCount();
     }
 
@@ -80,20 +80,17 @@ class RepairController extends Controller
         }
 
         $command = Yii::$app->db->createCommand(implode(PHP_EOL, $sql));
-        //echo $command->getRawSql();
-        //exit;
 
         if ($command->execute() !== false) {
             echo sprintf('update db SUCCESS [%s]', $command->getRawSql()), PHP_EOL;
             foreach ($data as $item) {
                 $cache_key = [REDIS_KEY_QUESTION, $item['question_id']];
-                if (Yii::$app->redis->hLen($cache_key) && $item['total'] != Yii::$app->redis->hGet(
-                        $cache_key,
-                        'count_answer'
+                if (Yii::$app->redis->hLen($cache_key) && Yii::$app->redis->hLen(
+                        $cache_key
                     )
                 ) {
                     echo sprintf('update redis KEY[%s] VALUE[%s]', implode(':', $cache_key), $item['total']), PHP_EOL;
-                    Yii::$app->redis->hSet($cache_key, 'count_answer', $item['total']);
+                    Yii::$app->redis->hSet($cache_key, 'count_answer',intval($item['total']) );
                 }
             }
         } else {
@@ -131,16 +128,16 @@ class RepairController extends Controller
         //exit;
 
         if ($command->execute() !== false) {
-            echo sprintf('update db SUCCESS [%s]', $command->getRawSql()), PHP_EOL;
+            echo sprintf('update db SUCCESS :' . PHP_EOL . '%s', $command->getRawSql()), PHP_EOL;
             foreach ($data as $item) {
                 $cache_key = [REDIS_KEY_ANSWER, $item['answer_id']];
-                if (Yii::$app->redis->hLen($cache_key) && $item['total'] != Yii::$app->redis->hGet(
-                        $cache_key,
-                        'count_answer'
+
+                if (Yii::$app->redis->hLen($cache_key) && Yii::$app->redis->hLen(
+                        $cache_key
                     )
                 ) {
                     echo sprintf('update redis KEY[%s] VALUE[%s]', implode(':', $cache_key), $item['total']), PHP_EOL;
-                    Yii::$app->redis->hSet($cache_key, 'count_comment', $item['total']);
+                    Yii::$app->redis->hSet($cache_key, 'count_comment', intval($item['total']));
                 }
             }
         } else {

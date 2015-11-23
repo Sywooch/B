@@ -150,6 +150,7 @@ class TagEntity extends Tag
 
 
         $tag_name = array_values(array_unique(array_filter($tag_name)));
+            //print_r($tag_name);exit;
         $data = self::getTagIdByNameUseCache($tag_name);
 
         $combine_data = array_combine($tag_name, $data);
@@ -220,7 +221,7 @@ class TagEntity extends Tag
     {
         $cache_key = [REDIS_KEY_TAG, $tag_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
-            self::getTagByTagId($tag_id);
+           return self::getTagByTagId($tag_id);
         }
 
         return true;
@@ -231,7 +232,7 @@ class TagEntity extends Tag
     {
         $data = self::getTagListByTagIds([$tag_id]);
 
-        return $data ? array_shift($data) : null;
+        return $data ? array_shift($data) : false;
     }
 
     public static function getTagListByTagIds(array $tag_ids)
@@ -279,6 +280,32 @@ class TagEntity extends Tag
         }
 
         return $tags;
+    }
+
+    public static function getRelateTag($tag_id, $limit = 20)
+    {
+        $tag_relate_list = TagRelationEntity::find()->where(
+            '`tag_id_1`=:tag_id',
+            [':tag_id' => $tag_id]
+        )->orderBy('count_relation DESC')->limit($limit)->asArray()->all();
+
+
+        $tag_ids = ArrayHelper::getColumn($tag_relate_list, 'tag_id_2');
+        $tags = TagEntity::getTagListByTagIds($tag_ids);
+
+        $result = [];
+        foreach ($tag_relate_list as $key => $tag) {
+            if (!empty($tags[$tag_relate_list[$key]['tag_id_2']]['name'])) {
+                $result[] = [
+                    'id'             => $tag['tag_id_2'],
+                    'name'           => $tags[$tag_relate_list[$key]['tag_id_2']]['name'],
+                    'type'           => $tag['type'],
+                    'count_relation' => $tag['count_relation'],
+                ];
+            }
+        }
+
+        return $result;
     }
     
     private static function getHotTagIds($limit = 20)

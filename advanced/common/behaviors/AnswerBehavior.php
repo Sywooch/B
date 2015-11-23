@@ -12,6 +12,8 @@ namespace common\behaviors;
 use common\components\Counter;
 use common\components\Error;
 use common\components\Notifier;
+use common\components\Updater;
+use common\entities\AnswerEntity;
 use common\entities\AnswerVersionEntity;
 use common\entities\FollowQuestionEntity;
 use common\entities\FollowTagPassiveEntity;
@@ -69,10 +71,10 @@ class AnswerBehavior extends BaseBehavior
         $this->dealWithAddCounter();
         $this->dealWithUpdateQuestionActiveTime();
         $this->dealWithAddPassiveFollowTag();
-        $this->dealWithCache();
+        $this->dealWithAnswerInsertCache();
     }
 
-    public function dealWithCache()
+    public function dealWithAnswerInsertCache()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -93,7 +95,7 @@ class AnswerBehavior extends BaseBehavior
 
         $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
 
-        Yii::$app->redis->HMSET([REDIS_KEY_ANSWER, $this->owner->id], $item);
+        AnswerEntity::updateAnswerCache($this->owner->id, $item);
     }
     
     public function afterAnswerUpdate($event)
@@ -105,6 +107,7 @@ class AnswerBehavior extends BaseBehavior
             $this->dealWithNewAnswerVersion();
         }
         $this->dealWithUpdateQuestionActiveTime();
+        $this->dealWithUpdateAnswerCache();
     }
     
     public function afterAnswerDelete($event)
@@ -120,12 +123,10 @@ class AnswerBehavior extends BaseBehavior
     public function dealWithUpdateQuestionActiveTime()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        $result = Updater::updateActiveAt($this->owner->question_id, TimeHelper::getCurrentTime());
         
-        /* @var $questionEntity QuestionEntity */
-        $questionEntity = Yii::createObject(QuestionEntity::className());
-        $result = $questionEntity->updateActiveAt($this->owner->question_id, TimeHelper::getCurrentTime());
-        
-        Yii::trace(sprintf('Update Active At: %s', $result), 'behavior');
+        Yii::trace(sprintf('Update Active At: %s', var_export($result, true)), 'behavior');
     }
     
     public function dealWithAddCounter()
@@ -141,9 +142,8 @@ class AnswerBehavior extends BaseBehavior
 
         #notification where answer is enough long.
         if (StringHelper::countStringLength($this->owner->content) >= self::NEED_NOTIFICATION_ANSWER_CONTENT_LENGTH) {
-            /* @var $followQuestionEntity FollowQuestionEntity */
-            $followQuestionEntity = Yii::createObject(FollowQuestionEntity::className());
-            $user_ids = $followQuestionEntity->getFollowUserIds($this->owner->question_id);
+            $user_ids = FollowQuestionEntity::getFollowUserIds($this->owner->question_id);
+
             if ($user_ids) {
                 Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice(
                     $type,
@@ -157,15 +157,17 @@ class AnswerBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         #check whether has exist version
-        /* @var $answer_version_entity AnswerVersionEntity */
-        $answer_version_entity = Yii::createObject(AnswerVersionEntity::className());
-        $result = $answer_version_entity->addNewVersion($this->owner->id, $this->owner->content, $this->owner->reason);
+        $result = AnswerVersionEntity::addNewVersion(
+            $this->owner->id,
+            $this->owner->content,
+            $this->owner->reason
+        );
         
-        if ($result) {
+        if ($result && $this->owner->create_by != Yii::$app->user->id) {
             #count_common_edit
             Counter::addCommonEdit(Yii::$app->user->id);
         }
-        Yii::trace(sprintf('add New Version: %s', $result), 'behavior');
+        Yii::trace(sprintf('add New Version: %s', var_export($result, true)), 'behavior');
     }
     
     public function dealWithAddPassiveFollowTag()
@@ -185,7 +187,20 @@ class AnswerBehavior extends BaseBehavior
                 $tag_ids
             );
             
-            Yii::trace(sprintf('Add Passive Follow Tag: %s', $result), 'behavior');
+            Yii::trace(sprintf('Add Passive Follow Tag: %s', var_export($result, true)), 'behavior');
         }
+    }
+
+    public function dealWithUpdateAnswerCache()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        AnswerEntity::updateAnswerCache(
+            $this->owner->id,
+            [
+                'content'   => $this->owner->content,
+                'modify_at' => TimeHelper::getCurrentTime(),
+                'modify_by' => Yii::$app->user->id,
+            ]
+        );
     }
 }

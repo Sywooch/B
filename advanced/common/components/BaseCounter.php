@@ -16,6 +16,7 @@ use common\entities\UserProfileEntity;
 use common\exceptions\ParamsInvalidException;
 use Yii;
 use yii\base\Object;
+use yii\helpers\Json;
 
 class BaseCounter extends Object
 {
@@ -130,13 +131,15 @@ class BaseCounter extends Object
     {
         Yii::trace(
             ',',
-            [
-                'table'            => $this->table,
-                'primary_key_name' => $this->primary_key_name,
-                'id'               => $this->id,
-                'field'            => $this->field,
-                'value'            => $this->value,
-            ],
+            Json::encode(
+                [
+                    'table'            => $this->table,
+                    'primary_key_name' => $this->primary_key_name,
+                    'id'               => $this->id,
+                    'field'            => $this->field,
+                    'value'            => $this->value,
+                ]
+            ),
             'counter'
         );
 
@@ -175,13 +178,15 @@ class BaseCounter extends Object
     private function simpleQueue()
     {
         Yii::trace(
-            [
-                'table'            => $this->table,
-                'primary_key_name' => $this->primary_key_name,
-                'id'               => $this->id,
-                'field'            => $this->field,
-                'value'            => $this->value,
-            ],
+            Json::encode(
+                [
+                    'table'            => $this->table,
+                    'primary_key_name' => $this->primary_key_name,
+                    'id'               => $this->id,
+                    'field'            => $this->field,
+                    'value'            => $this->value,
+                ]
+            ),
             'counter'
         );
 

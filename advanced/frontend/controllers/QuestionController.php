@@ -72,7 +72,7 @@ class QuestionController extends BaseController
                 'params'     => array_merge($_GET),
             ]
         );
-        
+
         $data = QuestionEntity::fetchLatest($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
         if ($data) {
             $html = $this->renderPartial(
@@ -194,8 +194,9 @@ class QuestionController extends BaseController
         }
         
         $tags = array_merge(QuestionEntity::getSubjectTags($question_data['subject']), $tags);
+
+        #相似问题
         $similar_question = QuestionEntity::searchQuestionByTag($tags);
-        
         
         #增加查看问题计数
         Counter::addQuestionView($id);
@@ -204,17 +205,23 @@ class QuestionController extends BaseController
             $pages = null;
             $answer_data = AnswerEntity::getAnswerListByAnswerId([$answer_id]);
         } else {
-            
+            //print_r(array_merge($_GET, ['#' => 'answer-list']));exit;
             $pages = new Pagination(
                 [
-                    'totalCount' => AnswerEntity::getAnswerCountByQuestionId($id),
-                    'pageSize'   => 10,
-                    'params'     => array_merge($_GET, ['#' => 'answer-list']),
-                    'pageParam'  => 'answer-page',
+                    'totalCount'      => AnswerEntity::getAnswerCountByQuestionId($id),
+                    'defaultPageSize' => 10,
+                    'params'          => array_merge($_GET, ['#' => 'answer-list']),
+                    'pageParam'       => 'page',
+                    'pageSizeParam'   => 'per-page',
                 ]
             );
             
-            $answer_data = AnswerEntity::getAnswerListByQuestionId($id, $pages->pageSize, $pages->offset, $sort);
+            $answer_data = AnswerEntity::getAnswerListByQuestionId(
+                $id,
+                Yii::$app->request->get('page', 1),
+                Yii::$app->request->get('per-page', 10),
+                $sort
+            );
         }
         
         //print_r($answer_data);exit;
@@ -268,13 +275,7 @@ class QuestionController extends BaseController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        /*if(Yii::$app->request->isPost){
-            $model->load(Yii::$app->request->post());
-            $model->validate();
-            print_r($model->getAttributes());
-            exit('dd');
-        }*/
-        
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['question/view', 'id' => $model->id]);
         } else {
@@ -309,7 +310,7 @@ class QuestionController extends BaseController
      */
     protected function findModel($id)
     {
-        if (($model = QuestionEntity::getQuestionByQuestionId($id)) !== null) {
+        if (($model = QuestionEntity::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
@@ -318,9 +319,7 @@ class QuestionController extends BaseController
     
     public function actionGetAssociateUserIdWhenAnswer($user_id, $question_id = null)
     {
-        /* @var $follow_user_entity FollowUserEntity */
-        $follow_user_entity = Yii::createObject(FollowUserEntity::className());
-        $follow_user_ids = $follow_user_entity->getFollowUserIds($user_id);
+        $follow_user_ids = FollowUserEntity::getFollowUserIds($user_id);
         
         $user_ids = $follow_user_ids;
         if ($question_id) {

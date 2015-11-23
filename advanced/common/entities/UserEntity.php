@@ -144,7 +144,7 @@ class UserEntity extends User
     {
         $data = self::getUserListByIds([$user_id]);
 
-        return $data ? array_shift($data) : null;
+        return $data ? array_shift($data) : false;
     }
 
     public static function getUserListByIds($user_ids)
@@ -234,12 +234,17 @@ class UserEntity extends User
 
         $data = self::getUserIdByUsernameUseCache($username);
 
-        $combine_data = array_combine($username, $data);
-        if ($multiple) {
-            $result = $combine_data;
+        if ($data) {
+            $combine_data = array_combine($username, $data);
+            if ($multiple) {
+                $result = $combine_data;
+            } else {
+                $result = array_shift($combine_data);
+            }
         } else {
-            $result = array_shift($combine_data);
+            $result = false;
         }
+
         
         return $result;
     }
@@ -267,7 +272,7 @@ class UserEntity extends User
     {
         $cache_key = [REDIS_KEY_USER, $user_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
-            self::getUserById($user_id);
+           return self::getUserById($user_id);
         }
 
         return true;

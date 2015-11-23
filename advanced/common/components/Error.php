@@ -30,6 +30,11 @@ class Error extends Object
     /* answer */
     const TYPE_ANSWER_DATA_IS_WORRY = 'answer:data_is_worry';
     const TYPE_ANSWER_ONE_QUESTION_ONE_ANSWER_PER_PEOPLE = 'answer:one_question_one_answer_per_people';
+    const TYPE_ANSWER_ENSURE_EXIST_THE_FIRST_EDITION = 'answer:ensure_exist_the_first_edition';
+
+    /* answer comment*/
+    const TYPE_ANSWER_COMMENT_CREATE_FAIL = 'answer_comment:create_fail';
+
     /* follow user */
     const TYPE_FOLLOW_USER_FOLLOW_TOO_MUCH_USER = 'follow_user:follow_too_much_user';
     const TYPE_FOLLOW_DO_NOT_ALLOW_TO_FOLLOW = 'follow_user:do_not_allow_to_follow';
@@ -56,11 +61,14 @@ class Error extends Object
         'answer'          => [
             'data_is_worry'                      => [5000, '回答数据格式有误'],
             'one_question_one_answer_per_people' => [5001, '每个问题只能回答一次，你可以完善你之前的回复。'],
+            'ensure_exist_the_first_edition'     => [5002, '生成默认第一版数据出错'],
         ],
         #6000
-        'tag'             => [],
+        'answer_comment'         => [
+            'create_fail' => [6000, '评论失败'],
+        ],
         #7000
-        'comment'         => [],
+        'tag'             => [],
         #8000
         'follow_user'     => [
             'follow_too_much_user'   => [8000, '你当前的关注用户的数量%d个，已超过限制，最多%d个用户，请先清理一下。'],

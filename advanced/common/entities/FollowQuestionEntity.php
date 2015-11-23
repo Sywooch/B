@@ -41,9 +41,8 @@ class FollowQuestionEntity extends FollowQuestion
      * @param $user_id
      * @return bool
      * @throws ErrorException
-     * @throws ParamsInvalidException
      */
-    public function addFollow($question_id, $user_id)
+    public static function addFollow($question_id, $user_id)
     {
         if (empty($user_id) || empty($question_id)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
@@ -64,14 +63,15 @@ class FollowQuestionEntity extends FollowQuestion
             ]
         )
         ) {
-            $this->create_at = $user_id;
-            $this->follow_question_id = $question_id;
-            if ($this->save()) {
+            $model = new self;
+            $model->create_at = $user_id;
+            $model->follow_question_id = $question_id;
+            if ($model->save()) {
                 Counter::followQuestion($user_id);
 
                 return true;
             } else {
-                Yii::error($this->getErrors(), __FUNCTION__);
+                Yii::error($model->getErrors(), __FUNCTION__);
 
                 return false;
             }
@@ -87,7 +87,7 @@ class FollowQuestionEntity extends FollowQuestion
      * @throws ParamsInvalidException
      * @throws \Exception
      */
-    public function removeFollow($question_id, $user_id = null)
+    public static function removeFollow($question_id, $user_id = null)
     {
         if (empty($question_id)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
@@ -109,13 +109,13 @@ class FollowQuestionEntity extends FollowQuestion
         return true;
     }
     
-    public function getFollowUser($question_id)
+    public static function getFollowUser($question_id)
     {
         if (empty($question_id)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
         }
 
-        $model = self::find(
+        $model = self::find()->where(
             [
                 'follow_question_id' => $question_id,
             ]
@@ -124,16 +124,15 @@ class FollowQuestionEntity extends FollowQuestion
         return $model;
     }
 
-    public function getFollowUserIds($question_id)
+    public static function getFollowUserIds($question_id)
     {
-        $data = $this->getFollowUser($question_id);
+        $data = self::getFollowUser($question_id);
 
         if ($data) {
-            $result = ArrayHelper::getColumn($data, 'id');
+            $result = ArrayHelper::getColumn($data, 'user_id');
         } else {
             $result = [];
         }
-
 
         return $result;
     }

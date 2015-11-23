@@ -8,6 +8,7 @@
 
 namespace common\traits;
 
+use Yii;
 use yii\base\Exception;
 
 trait ErrorTrait
@@ -30,6 +31,8 @@ trait ErrorTrait
         } else {
             self::$message = self::$error[$error_category][$error_type][1];
         }
+
+        Yii::error(self::$message, 'error');
 
         return false;
     }

@@ -16,13 +16,13 @@ use common\helpers\TimeHelper;
 use Yii;
 use yii\console\Controller;
 
-class TagController extends Controller
+class TagCronJobController extends Controller
 {
     const LOOP_NUMBER = 500;
 
     public function actionIndex()
     {
-        //$this->dealWithRebuildTagRelation();
+        $this->actionRebuildTagRelation();
     }
 
 
@@ -65,6 +65,8 @@ class TagController extends Controller
             $tag_data = $tag_relations = [];
             foreach ($questions as $item) {
                 $tags = explode(',', $item);
+                #此处排序很重要，只负责A与B的关系，不管B与A的关系
+                sort($tags, SORT_STRING);
                 $tag_relations[] = $tags;
                 $tag_data = array_merge($tag_data, $tags);
             }
@@ -93,7 +95,8 @@ class TagController extends Controller
             $data = [];
             foreach ($all_relations as $tag_name_1 => $item_relation) {
 
-                if (!isset($all_tag_name_id[$tag_name_1])) {
+                if (empty($all_tag_name_id[$tag_name_1])) {
+                    echo sprintf('[F] Tag Name:[%s] is not exist.', $tag_name_1, PHP_EOL);
                     continue;
                 }
 
@@ -111,7 +114,7 @@ class TagController extends Controller
                 }
             }
 
-            if($data){
+            if ($data) {
                 #batch add
                 $insert_sql = Yii::$app->getDb()->createCommand()->batchInsert(
                     TagRelationEntity::tableName(),

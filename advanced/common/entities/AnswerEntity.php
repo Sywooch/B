@@ -217,7 +217,7 @@ class AnswerEntity extends Answer
             $page_no = max($page_no, 1);
             $start = ($page_no - 1) * $page_size;
             $end = $page_size * $page_no - 1;
-
+            
             $answer_ids = Yii::$app->redis->zRevRange($cache_key, $start, $end);
         } else {
             $answer_ids = [];
@@ -239,13 +239,12 @@ class AnswerEntity extends Answer
         $answer_count = self::getAnswerCountByQuestionId($question_id);
         if ($answer_count > 0) {
             if (0 == Yii::$app->redis->zCard($cache_key)) {
-
                 self::setAnswerListByQuestionIdOrderToCache($question_id);
             }
 
             $page_no = max($page_no, 1);
             $start = ($page_no - 1) * $page_size;
-            $end = $page_size * $page_no - 1;
+            $end = ($page_size * $page_no) - 1;
 
             $answer_ids = Yii::$app->redis->zRevRange($cache_key, $start, $end);
         } else {
@@ -295,7 +294,7 @@ class AnswerEntity extends Answer
     {
         $data = self::getAnswerListByAnswerId([$answer_id]);
 
-        return $data ? array_shift($data) : null;
+        return $data ? array_shift($data) : false;
     }
 
 
@@ -354,9 +353,19 @@ class AnswerEntity extends Answer
     {
         $cache_key = [REDIS_KEY_ANSWER, $answer_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
-            self::getAnswerByAnswerId($answer_id);
+            return self::getAnswerByAnswerId($answer_id);
         }
 
         return true;
+    }
+
+    public static function updateAnswerCache($answer_id, $data)
+    {
+        if ($answer_id && $data) {
+            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+
+            return Yii::$app->redis->hMset($cache_key, $data);
+        }
+
     }
 }

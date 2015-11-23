@@ -177,6 +177,7 @@ return [
         'server' => $servers['master'],
         'expire' => 86400, 
     ],
+    #question hot latest ... list
     REDIS_KEY_QUESTION_BLOCK        => [
         'server' => $servers['master'],
         'expire' => 86400, 
@@ -201,27 +202,5 @@ return [
     REDIS_KEY_ANSWER_LIST_SCORE     => [
         'server' => $servers['master'],
         'expire' => 86400, 
-    ],
-    /*************************************************************/
-    #临时测试类的缓存
-    'abcd'                          => [
-        'server' => $servers['master'],
-        'expire' => 500,
-    ],
-    's'                             => [
-        'server' => $servers['master'],
-        'expire' => 500,
-    ],
-    'm'                             => [
-        'server' => $servers['master'],
-        'expire' => 500,
-    ],
-    'master'                        => [
-        'server' => $servers['master'],
-        'expire' => 500,
-    ],
-    'slave'                         => [
-        'server' => $servers['slave'],
-        'expire' => 500,
     ],
 ];

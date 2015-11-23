@@ -52,7 +52,7 @@ use yii\widgets\LinkPager;
 <?php else: ?>
     <?php $form = ActiveForm::begin(
             [
-                    'id' => 'comment_form',
+                    'id' => 'comment-form-'. $answer_data['id'],
             ]
     ); ?>
 
@@ -86,7 +86,7 @@ use yii\widgets\LinkPager;
                                     ['answer-comment/create', 'answer_id' => $answer_data['id']]
                             ),
                             'data-on-done' => 'afterCommentCreateSuccess',
-                            'data-form-id' => 'comment_form',
+                            'data-form-id' => 'comment-form-'.$answer_data['id'],
                             'data-id'      => $answer_data['id'],
                     ]
             ) ?><br>

@@ -12,9 +12,9 @@ namespace common\entities;
 use common\behaviors\TimestampBehavior;
 use common\components\Counter;
 use common\components\Error;
+use common\helpers\TimeHelper;
 use common\models\FollowUser;
 use Yii;
-use yii\base\ErrorException;
 use yii\db\ActiveRecord;
 
 class FollowUserEntity extends FollowUser
@@ -34,7 +34,7 @@ class FollowUserEntity extends FollowUser
         ];
     }
 
-    public function addFollow(array $follow_user_ids, $user_id)
+    public static function addFollow(array $follow_user_ids, $user_id)
     {
         if (empty($user_id) || empty($follow_user_ids)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, 'user_id,follow_user_ids');
@@ -56,7 +56,7 @@ class FollowUserEntity extends FollowUser
             );
         }
 
-        $create_at = time();
+        $create_at = TimeHelper::getCurrentTime();
         foreach ($follow_user_ids as $follow_user_id) {
             $data[] = [$user_id, $follow_user_id, $create_at];
         }
@@ -85,7 +85,7 @@ class FollowUserEntity extends FollowUser
             }
 
             #add to cache
-            $this->addFollowUserToCache($user_id, $follow_user_ids);
+            self::addFollowUserToCache($user_id, $follow_user_ids);
 
         } else {
             Yii::error(sprintf('Batch Add Follow Tag %s', $result), __FUNCTION__);
@@ -98,10 +98,9 @@ class FollowUserEntity extends FollowUser
      * @param array $follow_user_id
      * @param null  $user_id when user_id is null, means delete user_id
      * @return bool
-     * @throws ParamsInvalidException
      * @throws \Exception
      */
-    public function removeFollow(array $follow_user_id, $user_id = null)
+    public static function removeFollow(array $follow_user_id, $user_id = null)
     {
         if (empty($follow_user_id)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,follow_user_id']);
@@ -126,19 +125,19 @@ class FollowUserEntity extends FollowUser
 
         #udpate follow use cache
         if ($user_id) {
-            $this->removeFollowUserToCache($user_id, $follow_user_id);
+            self::removeFollowUserToCache($user_id, $follow_user_id);
         }
 
         return true;
     }
 
 
-    public function getFollowUserIds($user_id, $limit = 1000)
+    public static function getFollowUserIds($user_id, $limit = 1000)
     {
-        return $this->getFollowUserIdsUseCache($user_id, $limit);
+        return self::getFollowUserIdsUseCache($user_id, $limit);
     }
 
-    private function getFollowUserIdsUseCache($user_id, $limit)
+    private static function getFollowUserIdsUseCache($user_id, $limit)
     {
         $cache_data = Yii::$app->redis->sMembers([REDIS_KEY_USER_FOLLOW, $user_id]);
 
@@ -149,7 +148,7 @@ class FollowUserEntity extends FollowUser
                 ]
             )->orderBy('create_at DESC')->limit($limit)->column();
 
-            if ($this->addFollowUserToCache($user_id, $model)) {
+            if (self::addFollowUserToCache($user_id, $model)) {
                 $cache_data = $model;
             }
         }
@@ -157,7 +156,7 @@ class FollowUserEntity extends FollowUser
         return $cache_data;
     }
 
-    private function addFollowUserToCache($user_id, array $follow_user_id)
+    private static function addFollowUserToCache($user_id, array $follow_user_id)
     {
         if ($follow_user_id) {
             $params = array_merge(
@@ -172,7 +171,7 @@ class FollowUserEntity extends FollowUser
         }
     }
 
-    private function removeFollowUserToCache($user_id, array $follow_user_id)
+    private static function removeFollowUserToCache($user_id, array $follow_user_id)
     {
         if ($follow_user_id) {
             $params = array_merge(

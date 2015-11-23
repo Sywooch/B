@@ -274,7 +274,6 @@ class Connection extends Component
             $miss_key = $query_key;
         }
 
-
         return $miss_key;
     }
 
@@ -287,7 +286,7 @@ class Connection extends Component
      */
     public function paddingMissData($cache_hit_data, $cache_miss_key, $cache_miss_data)
     {
-        if (empty(array_shift($cache_hit_data))) {
+        if (empty($cache_hit_data)) {
             $cache_hit_data = array_values($cache_miss_data);
         } else {
             foreach ($cache_miss_key as $key => $value) {

@@ -127,6 +127,15 @@ return [
                     'maxFileSize' => 1024 * 2,
                     'logVars'     => [],
                 ],
+                'domain'      => [
+                    'class'       => 'yii\log\FileTarget',
+                    'levels'      => ['trace'],
+                    'maxLogFiles' => 20,
+                    'categories'  => ['domain'],
+                    'logFile'     => '@app/runtime/logs/domain_' . date('Y-m-d') . '.log',
+                    'maxFileSize' => 1024 * 2,
+                    'logVars'     => [],
+                ],
                 'performance' => [
                     'class'       => 'yii\log\FileTarget',
                     'levels'      => ['trace'],

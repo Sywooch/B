@@ -83,9 +83,7 @@ class QuestionInviteEntity extends QuestionInvite
 
     public function getInviteUserIds($user_id)
     {
-        /* @var $follow_user FollowUserEntity */
-        $follow_user = Yii::createObject(FollowUserEntity::className());
-        $follow_user_ids = $follow_user->getFollowUserIds($user_id);
+        $follow_user_ids = FollowUserEntity::getFollowUserIds($user_id);
 
         return $follow_user_ids;
     }
