@@ -8,16 +8,13 @@
 
 namespace common\components;
 
-
 use common\entities\AnswerEntity;
 use common\entities\FavoriteEntity;
 use common\entities\PrivateMessageEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserEntity;
 use common\entities\UserProfileEntity;
-use common\exceptions\ParamsInvalidException;
 use Yii;
-use yii\base\Object;
 
 class Counter extends BaseCounter
 {
@@ -414,7 +411,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    /******************************************MESSAGE***************************************************/
+    //******************************************MESSAGE***************************************************/
 
 
     public static function addPrivateMessage($private_message_id)
@@ -437,7 +434,7 @@ class Counter extends BaseCounter
         )->value('count_message', -1)->execute();
     }
 
-    /******************************************FAVORITE***************************************************/
+    //******************************************FAVORITE***************************************************/
 
     public static function addFavorite($favorite_id)
     {
@@ -458,5 +455,4 @@ class Counter extends BaseCounter
             $favorite_id
         )->value('count_favorite', -1)->execute();
     }
-
 }

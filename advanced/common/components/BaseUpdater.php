@@ -8,7 +8,7 @@
 
 namespace common\components;
 
-
+use common\exceptions\ParamsInvalidException;
 use Yii;
 use yii\base\Object;
 use yii\helpers\Json;
@@ -108,14 +108,11 @@ class BaseUpdater extends Object
     private function immediately()
     {
         Yii::trace(
-            ',',
-            Json::encode(
-                [
-                    'table' => $this->table,
-                    'set'   => $this->set,
-                    'where' => $this->where,
-                ]
-            ),
+            [
+                'table' => $this->table,
+                'set'   => $this->set,
+                'where' => $this->where,
+            ],
             'updater'
         );
 
@@ -199,6 +196,6 @@ class BaseUpdater extends Object
 
     private static function addSet($table)
     {
-        return Yii::$app->redis->sAdd([REDIS_KEY_UPDATER_SET], $table);;
+        return Yii::$app->redis->sAdd([REDIS_KEY_UPDATER_SET], $table);
     }
 }

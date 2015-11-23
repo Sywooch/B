@@ -8,7 +8,6 @@
 
 namespace common\exceptions;
 
-
 use yii\base\Exception;
 
 class NotFoundModelException extends Exception

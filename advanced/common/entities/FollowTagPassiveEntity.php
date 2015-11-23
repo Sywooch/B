@@ -10,9 +10,7 @@
 
 namespace common\entities;
 
-
 use common\components\Error;
-use common\helpers\ArrayHelper;
 use common\helpers\TimeHelper;
 use common\models\FollowTagPassive;
 use Yii;

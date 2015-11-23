@@ -181,4 +181,11 @@ class TagController extends BaseController
 
         return $this->jsonOut($data);
     }
+
+    public function actionGetHotTags()
+    {
+        $data = TagEntity::getHotTag();
+
+        return $this->jsonOut($data);
+    }
 }

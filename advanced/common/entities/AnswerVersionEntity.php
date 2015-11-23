@@ -42,15 +42,13 @@ class AnswerVersionEntity extends AnswerVersion
         }
 
         $model = new self;
-        if ($model->load(
-                [
-                    'answer_id' => $answer_id,
-                    'content'   => $content,
-                    'reason'    => $reason,
-                ],
-                ''
-            ) && $model->save()
-        ) {
+        $data = [
+            'answer_id' => $answer_id,
+            'content'   => $content,
+            'reason'    => $reason,
+        ];
+
+        if ($model->load($data, '') && $model->save()) {
             $result = true;
         } else {
             Yii::error(sprintf('%s insert error', __FUNCTION__));
@@ -68,17 +66,14 @@ class AnswerVersionEntity extends AnswerVersion
             $answer = AnswerEntity::findOne(['id' => $answer_id]);
             if ($answer) {
                 $model = new self;
-                if ($model->load(
-                        [
-                            'answer_id' => $answer->id,
-                            'content'   => $answer->content,
-                            'reason'    => null,
-                            'create_by' => $answer->create_by,
-                            'create_at' => $answer->create_at,
-                        ],
-                        ''
-                    ) && $model->save()
-                ) {
+                $data = [
+                    'answer_id' => $answer->id,
+                    'content'   => $answer->content,
+                    'reason'    => null,
+                    'create_by' => $answer->create_by,
+                    'create_at' => $answer->create_at,
+                ];
+                if ($model->load($data, '') && $model->save()) {
                     $result = true;
                 } else {
                     Yii::error(sprintf('%s insert error', __FUNCTION__));

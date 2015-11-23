@@ -52,9 +52,7 @@ class Curl extends BaseCurl
     public function setCookies($cookies)
     {
         $this->setOption(CURLOPT_COOKIE, $cookies);
-        $this->cookie_file = Yii::getAlias(
-                '@frontend'
-            ) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . $this->symbol;
+        $this->cookie_file = Yii::getAlias('@frontend') . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . $this->symbol;
 
         return $this;
     }

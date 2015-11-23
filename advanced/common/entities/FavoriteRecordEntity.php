@@ -8,10 +8,9 @@
 
 namespace common\entities;
 
-
+use common\behaviors\FavoriteRecordBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Counter;
-use common\components\Updater;
 use common\exceptions\NotFoundModelException;
 use common\models\FavoriteRecord;
 use Yii;

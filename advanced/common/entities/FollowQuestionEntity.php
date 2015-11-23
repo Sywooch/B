@@ -2,7 +2,6 @@
 
 namespace common\entities;
 
-use common\behaviors\FollowQuestionBehavior;
 use common\components\Counter;
 use common\components\Error;
 use Yii;
@@ -36,11 +35,10 @@ class FollowQuestionEntity extends FollowQuestion
     }
 
     /**
-     * ��ӹ�ע
+     * 添加关注
      * @param $question_id
      * @param $user_id
      * @return bool
-     * @throws ErrorException
      */
     public static function addFollow($question_id, $user_id)
     {
@@ -94,7 +92,7 @@ class FollowQuestionEntity extends FollowQuestion
         }
 
         #delete
-        $model = self::find(
+        $model = self::find()->where(
             [
                 'follow_question_id' => $question_id,
             ]

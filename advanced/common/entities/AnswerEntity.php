@@ -8,15 +8,16 @@
 
 namespace common\entities;
 
-
 use common\behaviors\AnswerBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
+use common\helpers\ArrayHelper;
 use common\models\Answer;
 use common\models\CacheAnswerModel;
 use Yii;
 use yii\db\ActiveRecord;
+use yii\helpers\Url;
 
 class AnswerEntity extends Answer
 {
@@ -367,5 +368,6 @@ class AnswerEntity extends Answer
             return Yii::$app->redis->hMset($cache_key, $data);
         }
 
+        return true;
     }
 }

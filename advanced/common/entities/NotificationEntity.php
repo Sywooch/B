@@ -8,15 +8,11 @@
 
 namespace common\entities;
 
-
-use common\behaviors\NotificationBehavior;
-use common\components\Updater;
 use common\models\Notification;
 use common\services\UserService;
 use Yii;
 use yii\base\Exception;
 use yii\bootstrap\Html;
-use yii\db\ActiveRecord;
 use yii\helpers\Json;
 
 class NotificationEntity extends Notification
@@ -132,14 +128,12 @@ class NotificationEntity extends Notification
         
         //echo $command->getSql();
         if ($command->execute()) {
-            
             #increase count_notification BY trigger
             //$this->trigger(ActiveRecord::EVENT_AFTER_INSERT);
             
             /* @var $userService UserService */
             $userService = Yii::createObject(UserService::className());
             $userService->increaseNotificationCount($receivers);
-            
             
             return true;
         } else {
@@ -180,8 +174,8 @@ class NotificationEntity extends Notification
     {
         $notices = [];
         $user_id = $question_id = $tag_id = [];
-        foreach ($notification as $index => $notice) {
 
+        foreach ($notification as $index => $notice) {
             $date_index = date('Y-m-d', $notice['create_at']);
             $mix_index = md5(
                 $notice['notice_code'] . $notice['associative_data']
@@ -233,6 +227,7 @@ class NotificationEntity extends Notification
             }
         }
 
+        $users = $questions = $tags = [];
         #prebuild cache data
         if ($user_id) {
             $users = UserEntity::getUserListByIds(array_unique($user_id));
@@ -243,12 +238,12 @@ class NotificationEntity extends Notification
         }
 
         if ($tag_id) {
-            $tags = TagEntity::getTagListByTagIds(array_unique($tag_id));
+            //$tags = TagEntity::getTagListByTagIds(array_unique($tag_id));
         }
 
         foreach ($notices as $date_index => &$item) {
             foreach ($item as $mix_index => &$notice) {
-                $new_index = date('Y-m-d', $notice['create_at']);
+                //$new_index = date('Y-m-d', $notice['create_at']);
                 if (preg_match_all('/\[(.+?)\]/i', $notice['template'], $symbols)) {
                     $finder = $symbols[0];
                     unset($symbols[0]);
@@ -277,8 +272,9 @@ class NotificationEntity extends Notification
                                         ['question/view', 'id' => $notice['data']['question_id']]
                                     );
 
+                                    $notice['template'] = str_replace($finder[$key], $replace, $notice['template']);
                                 }
-                                $notice['template'] = str_replace($finder[$key], $replace, $notice['template']);
+
                                 break;
 
                             default:

@@ -8,11 +8,6 @@
 
 namespace common\components;
 
-
-use common\entities\FavoriteEntity;
-use common\entities\PrivateMessageEntity;
-use common\entities\QuestionEntity;
-use common\entities\UserProfileEntity;
 use common\exceptions\ParamsInvalidException;
 use Yii;
 use yii\base\Object;
@@ -130,16 +125,13 @@ class BaseCounter extends Object
     private function immediately()
     {
         Yii::trace(
-            ',',
-            Json::encode(
-                [
-                    'table'            => $this->table,
-                    'primary_key_name' => $this->primary_key_name,
-                    'id'               => $this->id,
-                    'field'            => $this->field,
-                    'value'            => $this->value,
-                ]
-            ),
+            [
+                'table'            => $this->table,
+                'primary_key_name' => $this->primary_key_name,
+                'id'               => $this->id,
+                'field'            => $this->field,
+                'value'            => $this->value,
+            ],
             'counter'
         );
 
@@ -222,8 +214,6 @@ class BaseCounter extends Object
 
     private static function addSet($table)
     {
-        return Yii::$app->redis->sAdd([REDIS_KEY_COUNTER_SET], $table);;
+        return Yii::$app->redis->sAdd([REDIS_KEY_COUNTER_SET], $table);
     }
-
-
 }

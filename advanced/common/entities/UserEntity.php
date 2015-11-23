@@ -11,9 +11,11 @@ namespace common\entities;
 use common\helpers\AvatarHelper;
 use common\models\CacheUserModel;
 use \dektrium\user\models\User;
+use Imagine\Exception\InvalidArgumentException;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
+use yii\imagine\Image;
 
 /**
  * Class User
@@ -118,13 +120,13 @@ class UserEntity extends User
                     if (!file_exists($avatar_dir)) {
                         mkdir($avatar_dir, 0777, true);
                     }
-                    \yii\imagine\Image::thumbnail(
+                    Image::thumbnail(
                         $avatarPath . $user['avatar'],
                         $size,
                         $size
                     )->save($avatarCachePath . $size . '_' . $user['avatar'], ['quality' => 100]);
                     $avatar = Yii::$app->params['avatarCacheUrl'] . $size . '_' . $user['avatar'];
-                } catch (\Imagine\Exception\InvalidArgumentException $e) {
+                } catch (InvalidArgumentException $e) {
                     $avatar = null;
                 }
             }
@@ -204,13 +206,19 @@ class UserEntity extends User
         }
         
         $username = array_values(array_unique(array_filter($username)));
-        $data = self::getUserByUsernameUseCache($username);
+        $user_ids = self::getUserIdByUsername($username);
 
-        $combine_data = array_combine($username, $data);
-        if ($multiple) {
-            $result = $combine_data;
+        if ($user_ids) {
+            $user = self::getUserListByIds($user_ids);
         } else {
-            $result = array_shift($combine_data);
+            $user = [];
+        }
+
+
+        if ($multiple) {
+            $result = $user;
+        } else {
+            $result = array_shift($user);
         }
         
         return $result;
@@ -272,7 +280,7 @@ class UserEntity extends User
     {
         $cache_key = [REDIS_KEY_USER, $user_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
-           return self::getUserById($user_id);
+            return self::getUserById($user_id);
         }
 
         return true;
@@ -304,7 +312,6 @@ class UserEntity extends User
             //print_r($cache_miss_data);exit;
 
             if ($cache_miss_data) {
-
                 #add to redis cache
                 Yii::$app->redis->mset([REDIS_KEY_USER_USERNAME_USERID, $cache_miss_data]);
 

@@ -2,18 +2,13 @@
 
 namespace common\entities;
 
-
 use common\components\Error;
-use common\components\Updater;
 use common\helpers\StringHelper;
 use common\models\CacheQuestionModel;
 use common\models\QuestionTag;
-use common\models\Tag;
 use common\models\xunsearch\QuestionSearch;
-use common\services\NotificationService;
 use XSException;
 use Yii;
-use common\behaviors\IpBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\behaviors\QuestionBehavior;
@@ -188,7 +183,6 @@ class QuestionEntity extends Question
     {
         $result = $cache_miss_key = $cache_data = [];
         foreach ($question_ids as $question_id) {
-
             $cache_key = [REDIS_KEY_QUESTION, $question_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
 
@@ -247,6 +241,8 @@ class QuestionEntity extends Question
 
             return Yii::$app->redis->hMset($cache_key, $data);
         }
+
+        return false;
     }
 
     public static function fetchCount($type, $is_spider)

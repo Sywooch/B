@@ -8,7 +8,6 @@
 
 namespace common\entities;
 
-
 use common\behaviors\TimestampBehavior;
 use common\exceptions\NotFoundModelException;
 use common\models\PrivateMessage;
@@ -18,7 +17,6 @@ use yii\db\ActiveRecord;
 
 class PrivateMessageEntity extends PrivateMessage
 {
-
     const STATUS_REMOVE_YES = 'yes';
     const STATUS_REMOVE_NO = 'no';
 
@@ -78,7 +76,6 @@ class PrivateMessageEntity extends PrivateMessage
         }
 
         if ($model->save()) {
-
             if ($model->sender_remove == self::STATUS_REMOVE_YES && $model->sender_remove == self::STATUS_REMOVE_YES) {
                 $model->delete();
             }
@@ -91,10 +88,9 @@ class PrivateMessageEntity extends PrivateMessage
         }
     }
 
-    public function updateLastActive($id, $active_by, $last_message, $active_at)
+    public static function updateLastActive($id, $active_by, $last_message, $active_at)
     {
         $model = self::findOne($id);
-
 
         if ($model) {
             $model->last_message = $last_message;
@@ -102,7 +98,7 @@ class PrivateMessageEntity extends PrivateMessage
             $model->active_at = $active_at;
 
             #update read status
-            $currentUserRole = $this->checkUserRole($model, $active_by);
+            $currentUserRole = self::checkUserRole($model, $active_by);
             if ($currentUserRole == self::ROLE_SENDER) {
                 $model->sender_read_at = time();
             } else {
@@ -118,6 +114,8 @@ class PrivateMessageEntity extends PrivateMessage
             }
         } else {
             Yii::error(sprintf('model no exist, id: %d', $id), __FUNCTION__);
+
+            return false;
         }
     }
 
@@ -144,7 +142,7 @@ class PrivateMessageEntity extends PrivateMessage
         return $dialog_user_id;
     }
 
-    private function checkUserRole(PrivateMessage $model, $user_id)
+    private static function checkUserRole(PrivateMessage $model, $user_id)
     {
         if ($user_id == $model->sender) {
             $role = self::ROLE_SENDER;

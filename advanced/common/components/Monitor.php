@@ -8,7 +8,6 @@
 
 namespace common\components;
 
-
 use common\helpers\ServerHelper;
 use common\helpers\TimeHelper;
 use yii\base\Component;
@@ -67,12 +66,14 @@ class Monitor extends Component
 
         #todo，关闭系统模式下，直接跳转
         if (self::$status == self::STATUS_SHUTDOWN) {
-
+            #todo
         }
+
     }
 
     public static function checkMonitorStatus()
     {
+        $module = $controller = $action = null;
         if (!empty(Yii::$app->controller)) {
             $controller = Yii::$app->controller->id;
         }
@@ -91,7 +92,6 @@ class Monitor extends Component
         $router = trim(implode('/', [$module, $controller, $action]), '/');
 
         if (self::$status === self::STATUS_CURFEW && in_array($router, self::$curfew_actions)) {
-
             Yii::$app->session->setFlash(
                 'danger',
                 sprintf(
@@ -107,7 +107,7 @@ class Monitor extends Component
         }
 
         if (self::$status === self::STATUS_MARTIAL_LAW && in_array($router, self::$martial_law_actions)) {
-
+            #todo
         }
     }
 }

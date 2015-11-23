@@ -8,7 +8,6 @@
 
 namespace common\entities;
 
-
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Counter;
@@ -46,8 +45,9 @@ class QuestionReviewEntity extends QuestionReview
         ];
     }
 
-    public function getQuestionId($user_id)
+    public static function getQuestionId($user_id)
     {
+        /* @var $model QuestionReviewEntity */
         $model = self::find()->where(
             [
                 'create_by' => $user_id,
@@ -58,6 +58,7 @@ class QuestionReviewEntity extends QuestionReview
         $question_id = null;
 
         if (!$model) {
+            /* @var $overtime_model QuestionReviewEntity */
             $overtime_model = self::find()->where(
                 [
                     'status' => self::STATUS_OVERTIME,
@@ -97,8 +98,9 @@ class QuestionReviewEntity extends QuestionReview
         return $question_id;
     }
 
-    public function completeReview($user_id, $question_id)
+    public static function completeReview($user_id, $question_id)
     {
+        /* @var $model QuestionReviewEntity */
         $model = self::find()->where(
             'create_by=:create_by AND question_id=:question_id AND status!=:status',
             [
@@ -116,9 +118,7 @@ class QuestionReviewEntity extends QuestionReview
 
             return true;
         } else {
-
             return false;
         }
     }
-
 }

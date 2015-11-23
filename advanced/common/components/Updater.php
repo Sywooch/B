@@ -8,7 +8,6 @@
 
 namespace common\components;
 
-
 use common\entities\QuestionEntity;
 use common\entities\UserEntity;
 use common\entities\UserProfileEntity;

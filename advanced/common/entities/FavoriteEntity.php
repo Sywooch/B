@@ -8,8 +8,9 @@
 
 namespace common\entities;
 
-
+use common\behaviors\OperatorBehavior;
 use common\models\Favorite;
+use yii\db\ActiveRecord;
 
 class FavoriteEntity extends Favorite
 {

@@ -213,6 +213,12 @@ class TestController extends BaseController
         $result = UserEntity::getUserIdByUsername(['admin', '瞎猫']);
         print_r($result);
 
+
+        $result = UserEntity::getUserByUsername(['admin', '瞎猫']);
+        print_r($result);
+
+
+
     }
 
     public function actionGetUsername()

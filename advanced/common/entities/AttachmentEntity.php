@@ -8,9 +8,10 @@
 
 namespace common\entities;
 
-
+use common\behaviors\TimestampBehavior;
 use common\models\Attachment;
 use Yii;
+use yii\db\ActiveRecord;
 
 class AttachmentEntity extends Attachment
 {
@@ -94,5 +95,4 @@ class AttachmentEntity extends Attachment
             )
         )->send();
     }
-
 }

@@ -13,7 +13,9 @@ use yii\base\Exception;
 
 trait ErrorTrait
 {
-    public static $message = '操作成功', $code = 0;
+    public static $message = '操作成功';
+    public static $code = 0;
+    public static $error;
 
     public static function set($code, $params = null)
     {
@@ -32,7 +34,7 @@ trait ErrorTrait
             self::$message = self::$error[$error_category][$error_type][1];
         }
 
-        Yii::error(self::$message, 'error');
+        Yii::error(sprintf('[%d] %s', self::$code, self::$message));
 
         return false;
     }

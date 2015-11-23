@@ -10,7 +10,6 @@
 
 namespace common\entities;
 
-
 use common\components\Counter;
 use common\components\Error;
 use common\models\FollowTag;
@@ -64,7 +63,7 @@ class FollowTagEntity extends FollowTag
         }
 
         #delete
-        $model = self::find(
+        $model = self::find()->where(
             [
                 'follow_tag_id' => $tag_ids,
             ]

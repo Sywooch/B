@@ -8,13 +8,12 @@
 
 namespace common\behaviors;
 
-
 use common\components\Counter;
 use common\components\Notifier;
 use common\entities\NotificationEntity;
 use common\entities\PrivateMessageEntity;
-use yii\base\Behavior;
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * Class PrivateMessageDialogBehavior
@@ -64,9 +63,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        /* @var $private_message PrivateMessageEntity */
-        $private_message = Yii::createObject(PrivateMessageEntity::className());
-        $result = $private_message->updateLastActive(
+        $result = PrivateMessageEntity::updateLastActive(
             $this->owner->private_message_id,
             Yii::$app->user->id,
             $this->owner->content,

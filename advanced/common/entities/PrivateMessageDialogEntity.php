@@ -8,7 +8,6 @@
 
 namespace common\entities;
 
-
 use common\behaviors\IpBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\PrivateMessageDialogBehavior;
@@ -58,7 +57,6 @@ class PrivateMessageDialogEntity extends PrivateMessageDialog
             'private_message_id' => $private_message_id,
             'content'            => $message,
             'status'             => self::STATUS_UNREAD,
-            'status'             => self::STATUS_UNREAD,
         ];
 
         if ($model->load($data, '') && $model->save()) {
@@ -69,5 +67,4 @@ class PrivateMessageDialogEntity extends PrivateMessageDialog
             return false;
         }
     }
-
 }

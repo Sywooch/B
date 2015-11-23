@@ -11,7 +11,6 @@
 
 namespace common\exceptions;
 
-
 use yii\base\Exception;
 
 class ParamsInvalidException extends Exception

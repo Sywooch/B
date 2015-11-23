@@ -8,7 +8,6 @@
 
 namespace common\components;
 
-
 use common\entities\NotificationEntity;
 use common\entities\UserEntity;
 use common\exceptions\ParamsInvalidException;
@@ -33,8 +32,7 @@ class BaseNotifier extends Object
     private $receiver; #发送给谁
     private $method; #通知方法:notice,email,sms,weixin
 
-    private $notice_code, $notice_message, $notice_associate_id;
-
+    private $notice_code;
 
     public static function build()
     {
@@ -106,7 +104,7 @@ class BaseNotifier extends Object
         if (!$type) {
             throw new ParamsInvalidException(['notify_type']);
         } else {
-            $this->notice_code = NotificationEntity::getNotificationCode($type, $associate_data);
+            $this->notice_code = NotificationEntity::getNotificationCode($type);
         }
 
         #filter to_user_id
@@ -130,7 +128,7 @@ class BaseNotifier extends Object
         $this->method = 'email';
 
         if (empty($subject) && empty($message) && empty ($template_view) && $this->notice_code) {
-
+            return false;
         }
 
         #priority = true 为马上执行
@@ -147,7 +145,6 @@ class BaseNotifier extends Object
 
     public function sms($message)
     {
-
         return $this;
     }
 
@@ -156,21 +153,6 @@ class BaseNotifier extends Object
         return $this;
     }
 
-    public function test()
-    {
-        echo '<pre />';
-        print_r(
-            [
-                'from_user_id' => $this->sender,
-                'to_user_id'   => $this->receiver,
-                'type'         => $this->type,
-                'associate_id' => $this->associate_id,
-                'status'       => NotificationEntity::STATUS_UNREAD,
-            ]
-        );
-        Yii::$app->end();
-    }
-    
     private function filterToUserId()
     {
         #exclude myself
@@ -196,22 +178,20 @@ class BaseNotifier extends Object
     public function noticeQueue($sender, $receiver, $notice_code, $associate_data, $current_time = null)
     {
         Yii::trace(
-            Json::encode(
-                [
-                    'sender'         => $sender,
-                    'receiver'       => $receiver,
-                    'notice_code'    => $notice_code,
-                    'associate_data' => $associate_data,
-                    'status'         => NotificationEntity::STATUS_UNREAD,
-                    'create_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
-                ]
-            ),
+            [
+                'sender'         => $sender,
+                'receiver'       => $receiver,
+                'notice_code'    => $notice_code,
+                'associate_data' => $associate_data,
+                'status'         => NotificationEntity::STATUS_UNREAD,
+                'create_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
+            ],
             'notifier'
         );
 
         $cache_key = [REDIS_KEY_NOTIFIER, implode(':', [$this->method, $notice_code])];
 
-        $this->addSet($this->method, $notice_code);
+        $this->addSet($this->method);
 
         return Yii::$app->redis->rPush(
             $cache_key,
@@ -289,6 +269,6 @@ class BaseNotifier extends Object
 
     private function addSet($method)
     {
-        return Yii::$app->redis->sAdd([REDIS_KEY_NOTIFIER_SET], $method);;
+        return Yii::$app->redis->sAdd([REDIS_KEY_NOTIFIER_SET], $method);
     }
 }

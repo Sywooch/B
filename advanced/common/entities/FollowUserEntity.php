@@ -8,7 +8,6 @@
 
 namespace common\entities;
 
-
 use common\behaviors\TimestampBehavior;
 use common\components\Counter;
 use common\components\Error;
@@ -56,6 +55,7 @@ class FollowUserEntity extends FollowUser
             );
         }
 
+        $data = [];
         $create_at = TimeHelper::getCurrentTime();
         foreach ($follow_user_ids as $follow_user_id) {
             $data[] = [$user_id, $follow_user_id, $create_at];
@@ -107,7 +107,7 @@ class FollowUserEntity extends FollowUser
         }
 
         #delete
-        $model = self::find(
+        $model = self::find()->where(
             [
                 'follow_user_id' => $follow_user_id,
             ]
@@ -169,6 +169,8 @@ class FollowUserEntity extends FollowUser
 
             return call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
         }
+
+        return false;
     }
 
     private static function removeFollowUserToCache($user_id, array $follow_user_id)
@@ -184,5 +186,7 @@ class FollowUserEntity extends FollowUser
 
             return call_user_func_array([Yii::$app->redis, 'sRem'], $params);
         }
+
+        return false;
     }
 }

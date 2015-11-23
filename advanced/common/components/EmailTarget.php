@@ -8,7 +8,6 @@
 
 namespace common\components;
 
-
 use yii\log\EmailTarget as BaseEmailTarget;
 use Yii;
 

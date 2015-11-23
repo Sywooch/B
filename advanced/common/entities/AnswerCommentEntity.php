@@ -14,7 +14,6 @@ use common\behaviors\IpBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
-use common\exceptions\ParamsInvalidException;
 use common\models\AnswerComment;
 use Yii;
 use yii\db\ActiveRecord;
@@ -77,7 +76,6 @@ class AnswerCommentEntity extends AnswerComment
                 ''
             ) && $model->save()
         ) {
-
             return true;
         } else {
             return false;

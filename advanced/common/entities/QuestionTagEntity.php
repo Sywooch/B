@@ -19,7 +19,6 @@ class QuestionTagEntity extends QuestionTag
      * @param       $question_id
      * @param array $tag_ids
      * @return bool
-     * @throws ParamsInvalidException
      */
     public static function addQuestionTag($user_id, $question_id, array $tag_ids)
     {

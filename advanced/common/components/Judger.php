@@ -8,7 +8,6 @@
 
 namespace common\components;
 
-
 use yii\base\Object;
 
 class Judger extends Object

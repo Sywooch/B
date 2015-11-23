@@ -8,12 +8,9 @@
 
 namespace common\components;
 
-
-use common\entities\NotificationEntity;
-use common\exceptions\ParamsInvalidException;
 use Yii;
-use yii\base\Object;
 
 class Notifier extends BaseNotifier
 {
+    #todo
 }

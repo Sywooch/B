@@ -6,16 +6,13 @@ use common\behaviors\OperatorBehavior;
 use common\behaviors\TagBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
-use common\exceptions\ParamsInvalidException;
+use common\helpers\TimeHelper;
 use common\models\CacheTagModel;
-use common\models\FollowTag;
 use common\models\QuestionTag;
-use common\models\TagQuery;
-use Yii;
 use common\models\Tag;
 use yii\db\ActiveRecord;
-use yii\db\QueryBuilder;
 use yii\helpers\ArrayHelper;
+use Yii;
 
 class TagEntity extends Tag
 {
@@ -80,9 +77,9 @@ class TagEntity extends Tag
      * @param array $tags
      * @return mixed
      */
-    public function batchGetTagIds(array $tags)
+    public static function batchGetTagIds(array $tags)
     {
-        $model = self::find()->where(['name' => $tags, 'status' => SELF::STATUS_ENABLE])->asArray()->all();
+        $model = self::find()->where(['name' => $tags, 'status' => self::STATUS_ENABLE])->asArray()->all();
 
         return $model;
     }
@@ -100,7 +97,7 @@ class TagEntity extends Tag
      * @param array $tag_ids
      * @return int
      */
-    public function removeQuestionTag($user_id, $question_id, array $tag_ids)
+    public static function removeQuestionTag($user_id, $question_id, array $tag_ids)
     {
         $result = self::getDb()->createCommand()->delete(
             QuestionTag::tableName(),
@@ -150,7 +147,7 @@ class TagEntity extends Tag
 
 
         $tag_name = array_values(array_unique(array_filter($tag_name)));
-            //print_r($tag_name);exit;
+        //print_r($tag_name);exit;
         $data = self::getTagIdByNameUseCache($tag_name);
 
         $combine_data = array_combine($tag_name, $data);
@@ -221,7 +218,7 @@ class TagEntity extends Tag
     {
         $cache_key = [REDIS_KEY_TAG, $tag_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
-           return self::getTagByTagId($tag_id);
+            return self::getTagByTagId($tag_id);
         }
 
         return true;
@@ -308,19 +305,19 @@ class TagEntity extends Tag
         return $result;
     }
     
-    private static function getHotTagIds($limit = 20)
+    private static function getHotTagIds($limit = 20, $period = 30)
     {
-        $cache_key = [REDIS_KEY_TAG_LIST, 'HOT' . $limit];
+        $cache_key = [REDIS_KEY_TAG_LIST, implode('_', ['HOT', $limit, $period])];
 
         if (0 === Yii::$app->redis->zCard($cache_key)) {
             $result = self::find()->where(
-                'count_use>=:count_use AND count_follow>=:count_follow',
+                'count_use>=:count_use AND count_follow>=:count_follow AND active_at>=:active_at',
                 [
                     ':count_use'    => 1,
                     ':count_follow' => 1,
+                    ':active_at'    => TimeHelper::getBeforeTime($period),
                 ]
-
-            )->orderBy('active_at DESC')->limit($limit)->asArray()->all();
+            )->orderBy('count_follow DESC')->limit($limit)->asArray()->all();
 
 
             $params = [

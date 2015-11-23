@@ -8,7 +8,6 @@
 
 namespace common\entities;
 
-
 use common\behaviors\IpBehavior;
 use common\behaviors\TimestampBehavior;
 use common\models\QuestionEventHistory;
@@ -137,11 +136,6 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
     }
 
     public function getEvent($question_id)
-    {
-
-    }
-
-    private function formatEventData()
     {
 
     }

@@ -8,10 +8,10 @@
 
 namespace common\entities;
 
-
 use common\behaviors\OperatorBehavior;
 use common\behaviors\QuestionInviteBehavior;
 use common\behaviors\TimestampBehavior;
+use common\components\Error;
 use common\models\QuestionInvite;
 use yii\db\ActiveRecord;
 use Yii;
@@ -55,6 +55,8 @@ class QuestionInviteEntity extends QuestionInvite
             } else {
                 return false;
             }
+        } else {
+            return Error::set(Error::TYPE_ANSWER_HAS_BEEN_INVITED);
         }
     }
 

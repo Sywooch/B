@@ -167,9 +167,8 @@ class QuestionBehavior extends BaseBehavior
     
     public function dealWithQuestionUpdateEvent()
     {
-        //if ($this->owner->create_by != Yii::$app->user->id) {
-        #print_r($this->dirtyAttributes);exit;
-        
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
         if ($this->dirtyAttributes) {
             /* @var $questionEventHistoryEntity QuestionEventHistoryEntity */
             $questionEventHistoryEntity = Yii::createObject(
@@ -182,14 +181,14 @@ class QuestionBehavior extends BaseBehavior
             
             if (array_key_exists('subject', $this->dirtyAttributes)) {
                 $result = $questionEventHistoryEntity->modifyQuestionSubject($this->dirtyAttributes['subject']);
+                Yii::trace(sprintf('Modify　Question　Subject Result: %s', var_export($result, true)), 'behavior');
             }
             
             if (array_key_exists('content', $this->dirtyAttributes)) {
                 $result = $questionEventHistoryEntity->modifyQuestionContent($this->dirtyAttributes['content']);
+                Yii::trace(sprintf('Modify　Question　Content Result: %s', var_export($result, true)), 'behavior');
             }
         }
-        
-        //}
     }
     
     /**
@@ -238,13 +237,11 @@ class QuestionBehavior extends BaseBehavior
         }
         
         if ($remove_tags) {
-            /* @var $tag_model TagEntity */
-            $tag_model = Yii::createObject(TagEntity::className());
-            $tag_relation = $tag_model->batchGetTagIds($remove_tags);
+            $tag_relation = TagEntity::batchGetTagIds($remove_tags);
             
             $tag_ids = ArrayHelper::getColumn($tag_relation, 'id');
             if ($tag_ids) {
-                $tag_model->removeQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
+                TagEntity::removeQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
             }
             
             $questionEventHistoryEntity->removeTag($remove_tags);
@@ -293,7 +290,6 @@ class QuestionBehavior extends BaseBehavior
                 
                 
                 if (file_exists($old_file_physical_path)) {
-                    
                     $new_file_path_without_attachment_dir = substr(
                         $file_path,
                         strlen(AttachmentEntity::TEMP_ATTACHMENT_PATH)

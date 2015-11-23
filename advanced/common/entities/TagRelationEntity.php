@@ -8,7 +8,6 @@
 
 namespace common\entities;
 
-
 use common\models\TagRelation;
 
 class TagRelationEntity extends TagRelation
@@ -21,5 +20,4 @@ class TagRelationEntity extends TagRelation
     const TYPE_BROTHER = 'brother';
     const TYPE_CHILD = 'child';
     const TYPE_ALIAS = 'alias';
-    
 }
