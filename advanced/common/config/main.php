@@ -18,6 +18,7 @@ return [
             'controllerMap'            => [
                 'admin'    => 'common\modules\user\controllers\AdminController',
                 'settings' => 'common\modules\user\controllers\SettingsController',
+                'registration' => 'common\modules\user\controllers\RegistrationController',
             ],
             'mailer'                   => [
                 #发件人

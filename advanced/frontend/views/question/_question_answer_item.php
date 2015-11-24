@@ -14,7 +14,7 @@ use yii\widgets\LinkPager;
 ?>
 <?php foreach ($data as $item): ?>
     <?php if ($item['type'] == AnswerEntity::TYPE_ANSWER): ?>
-        <article class="clearfix widget-answers__item">
+        <article class="clearfix widget-answers__item" id="answer-<?= $item['id'] ?>">
             <div class="post-col">
                 <div class="widget-vote">
                     <button type="button"
@@ -82,7 +82,7 @@ use yii\widgets\LinkPager;
                 </div>
 
 
-                <div class="post-opt">
+                <div class="post-opt"">
                     <ul class="list-inline mb0">
                         <li><?= Html::a(
                                     '链接',

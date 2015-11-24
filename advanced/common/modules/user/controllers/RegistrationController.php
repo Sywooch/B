@@ -3,19 +3,19 @@ namespace common\modules\user\controllers;
 
 use dektrium\user\controllers\RegistrationController as BaseRegistrationController;
 use yii\filters\AccessControl;
-use yii\helpers\ArrayHelper;
 
 class RegistrationController extends BaseRegistrationController
 {
+
     public function actions()
     {
         return [
             'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
+                'class'         => 'yii\captcha\CaptchaAction',
                 //'height' => 50,
                 //'width' => 80,
-                'minLength' => 4,
-                'maxLength' => 4
+                'minLength'     => 4,
+                'maxLength'     => 4,
             ],
         ];
     }
@@ -26,8 +26,23 @@ class RegistrationController extends BaseRegistrationController
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
-                    ['allow' => true, 'actions' => ['captcha','register', 'connect'], 'roles' => ['?']],
-                    ['allow' => true, 'actions' => ['confirm', 'resend'], 'roles' => ['?', '@']],
+                    [
+                        'allow'   => true,
+                        'actions' => [
+                            'captcha',
+                            'register',
+                            'connect',
+                        ],
+                        'roles'   => ['?'],
+                    ],
+                    [
+                        'allow'   => true,
+                        'actions' => [
+                            'confirm',
+                            'resend',
+                        ],
+                        'roles'   => ['?', '@'],
+                    ],
                 ],
             ],
         ];

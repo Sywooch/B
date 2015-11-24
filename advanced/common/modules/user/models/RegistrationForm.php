@@ -9,6 +9,8 @@
 namespace common\modules\user\models;
 
 
+use common\entities\UserEntity;
+
 class RegistrationForm extends \dektrium\user\models\RegistrationForm
 {
     public $captcha;
@@ -20,7 +22,12 @@ class RegistrationForm extends \dektrium\user\models\RegistrationForm
     {
         $rules = parent::rules();
         $rules[] = ['captcha', 'required'];
-        $rules[] = ['captcha', 'captcha', 'message'=>'验证码错误，请重新输入或点击验证码图片重试。'];
+        $rules[] = [
+            'captcha',
+            'captcha',
+            'captchaAction' => UserEntity::CAPTCHA_ACTION,
+            'message'       => '验证码错误，请重新输入或点击验证码图片重试。',
+        ];
 
         return $rules;
     }

@@ -206,22 +206,27 @@ class AnswerController extends BaseController
         } else {
             $pages = new Pagination(
                 [
-                    'totalCount' => $count,
-                    'pageSize'   => 10,
-                    'params'     => $_GET,
-                    'pageParam'  => 'comment-page',
+                    'totalCount'    => $count,
+                    'pageSize'      => 10,
+                    'params'        => array_merge($_GET, ['#' => 'answer-' . $id]),
+                    'pageParam'     => 'comment-page',
+                    'pageSizeParam' => 'comment-per-page',
                 ]
             );
-            $comments_data = AnswerCommentEntity::getCommentListByAnswerId($id, $pages->pageSize, $pages->offset);
+            $comments_data = AnswerCommentEntity::getCommentListByAnswerId(
+                $id,
+                $pages->limit,
+                $pages->offset
+            );
         }
 
         //print_r($comments_data);exit;
 
 
-        $html = $this->renderPartial(
+        $html = $this->renderAjax(
             '_comment_list',
             [
-                'comment_item_html' => $this->renderPartial(
+                'comment_item_html' => $this->renderAjax(
                     '_answer_comment_item',
                     [
                         'answer_id'               => $id,

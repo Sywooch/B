@@ -138,11 +138,20 @@ class Connection extends Component
 
         #创建instance key
         $this->instance_key = md5(
-            $this->redis_key_config['server']['hostname'] . ':' . $this->redis_key_config['server']['port']
+            implode(
+                ':',
+                [
+                    $this->redis_key_config['server']['hostname'],
+                    $this->redis_key_config['server']['port'],
+                    $this->redis_key_config['server']['auth'],
+                    $this->redis_key_config['server']['database'],
+                    $this->redis_key_config['serializer'],
+                ]
+            )
         );
 
 
-        if (self::$instance[$this->instance_key] === null) {
+        if (empty(self::$instance[$this->instance_key])) {
 
             $redis = new Redis();
             if (!$redis->connect(
@@ -183,8 +192,12 @@ class Connection extends Component
                 $redis->select($this->redis_key_config['server']['database']);
             }
 
-            #自动序列化，用 igbinary 会节约很多内存
-            $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_IGBINARY);
+            #自动序列化，用 igbinary 会节约很多内存，但开始SERIALIZER后，INCR, INCRBY, or HINCRBY将会存在问题。
+            #暂定 hash类型的数据不使用SERIALIZER
+            //$redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_IGBINARY);
+            if ($this->redis_key_config['serializer']) {
+                $redis->setOption(Redis::OPT_SERIALIZER, $this->redis_key_config['serializer']);
+            }
 
             if ($this->prefix) {
                 $redis->setOption(Redis::OPT_PREFIX, $this->prefix . ':');
@@ -193,7 +206,7 @@ class Connection extends Component
             self::$instance[$this->instance_key] = $redis;
         }
 
-        return true;
+        return self::$instance[$this->instance_key];
     }
 
     public function buildRedisConfig($params)

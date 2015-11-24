@@ -211,15 +211,15 @@ class QuestionController extends BaseController
                     'totalCount'      => AnswerEntity::getAnswerCountByQuestionId($id),
                     'defaultPageSize' => 10,
                     'params'          => array_merge($_GET, ['#' => 'answer-list']),
-                    'pageParam'       => 'page',
-                    'pageSizeParam'   => 'per-page',
+                    'pageParam'       => 'answer-page',
+                    'pageSizeParam'   => 'answer-per-page',
                 ]
             );
             
             $answer_data = AnswerEntity::getAnswerListByQuestionId(
                 $id,
-                Yii::$app->request->get('page', 1),
-                Yii::$app->request->get('per-page', 10),
+                Yii::$app->request->get('answer-page', 1),
+                Yii::$app->request->get('answer-per-page', 10),
                 $sort
             );
         }

@@ -12,10 +12,10 @@ use common\helpers\AvatarHelper;
 use common\models\CacheUserModel;
 use \dektrium\user\models\User;
 use Imagine\Exception\InvalidArgumentException;
-use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use yii\imagine\Image;
+use Yii;
 
 /**
  * Class User
@@ -26,7 +26,8 @@ class UserEntity extends User
 {
     #官方账号的最大ID
     const MAX_OFFICIAL_ACCOUNT_ID = 785;
-    
+    const CAPTCHA_ACTION = '/user/registration/captcha';
+
     public $avatar;
     #注册用户名正则，允许中英文
     public static $usernameRegexp = '/^[_-a-zA-Z0-9\.\x{4e00}-\x{9fa5}]+$/u';

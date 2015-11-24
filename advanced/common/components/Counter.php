@@ -386,10 +386,10 @@ class Counter extends BaseCounter
 
         if ($result && AnswerEntity::ensureAnswerHasCache($answer_id)) {
             $cache_key = [REDIS_KEY_ANSWER, $answer_id];
-            //var_dump(Yii::$app->redis->hGetAll($cache_key));
+            var_dump(Yii::$app->redis->hGetAll($cache_key));
             Yii::$app->redis->hIncrBy($cache_key, 'count_comment', 1);
-            //var_dump(Yii::$app->redis->hGetAll($cache_key));
-            //exit;
+            var_dump(Yii::$app->redis->hGetAll($cache_key));
+            exit;
         }
 
         return $result;

@@ -29,8 +29,6 @@ use yii\widgets\LinkPager;
 ); ?>
 <?= $comment_item_html ?>
 
-<?php \yii\widgets\Pjax::end(); ?>
-
 <?= $pages ? LinkPager::widget(
         [
                 'pagination' => $pages,
@@ -40,6 +38,10 @@ use yii\widgets\LinkPager;
                 ],
         ]
 ) : ''; ?>
+
+<?php \yii\widgets\Pjax::end(); ?>
+
+
 
 <?php if (Yii::$app->user->isGuest): ?>
 

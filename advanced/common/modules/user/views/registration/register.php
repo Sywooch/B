@@ -9,6 +9,7 @@
  * file that was distributed with this source code.
  */
 
+use common\entities\UserEntity;
 use yii\captcha\Captcha;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -48,11 +49,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'captcha')->widget(
                         Captcha::className(),
                         [
-                                'captchaAction' => [
-                                        '/user/registration/captcha',
-                                ],
-                                'imageOptions' => [
-                                        'id'=>'captchaImg',
+                                'captchaAction' => UserEntity::CAPTCHA_ACTION,
+                                'imageOptions'  => [
+                                        'id'    => 'captchaImg',
                                         'alt'   => '点击换图',
                                         'title' => '点击换图',
                                         'style' => 'cursor:pointer',
