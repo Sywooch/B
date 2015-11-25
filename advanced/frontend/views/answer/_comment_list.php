@@ -45,7 +45,7 @@ use yii\widgets\LinkPager;
 
 <?php if (Yii::$app->user->isGuest): ?>
 
-    <div class="widget-comments__form row">
+    <div class="widget-comments__form">
         <div class="col-md-12">
             请先 <?= TemplateHelper::showLoginAndRegisterBtn() ?> 后评论！
         </div>
@@ -54,7 +54,7 @@ use yii\widgets\LinkPager;
 <?php else: ?>
     <?php $form = ActiveForm::begin(
             [
-                    'id' => 'comment-form-'. $answer_data['id'],
+                    'id' => 'comment-form-' . $answer_data['id'],
             ]
     ); ?>
 
@@ -69,15 +69,7 @@ use yii\widgets\LinkPager;
             ]
     )->label(false); ?>
 
-
     <div class="form-group">
-        <div class="checkbox pull-left">
-            <?= $form->field(
-                    $comment_form,
-                    'is_anonymous'
-            )->checkbox() ?>
-        </div>
-
         <div class="pull-right">
             <?= Html::submitButton(
                     '评论',
@@ -88,13 +80,19 @@ use yii\widgets\LinkPager;
                                     ['answer-comment/create', 'answer_id' => $answer_data['id']]
                             ),
                             'data-on-done' => 'afterCommentCreateSuccess',
-                            'data-form-id' => 'comment-form-'.$answer_data['id'],
+                            'data-form-id' => 'comment-form-' . $answer_data['id'],
                             'data-id'      => $answer_data['id'],
                     ]
             ) ?><br>
         </div>
-    </div>
 
+        <div class="checkbox" class="pull-left" style="width:200px;">
+            <?= $form->field(
+                    $comment_form,
+                    'is_anonymous'
+            )->checkbox() ?>
+        </div>
+    </div>
     <?php ActiveForm::end(); ?>
 <?php endif; ?>
 

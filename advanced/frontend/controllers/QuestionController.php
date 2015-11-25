@@ -224,8 +224,6 @@ class QuestionController extends BaseController
             );
         }
         
-        //print_r($answer_data);exit;
-        
         return $this->render(
             'view',
             [

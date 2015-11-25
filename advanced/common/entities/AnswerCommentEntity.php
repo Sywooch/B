@@ -136,7 +136,7 @@ class AnswerCommentEntity extends AnswerComment
     {
         $data = AnswerEntity::getAnswerByAnswerId($answer_id);
 
-        if (null !== $data) {
+        if (false !== $data) {
             $count = $data['count_comment'];
         } else {
             $count = 0;

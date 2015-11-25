@@ -197,7 +197,7 @@ class AnswerEntity extends Answer
     public static function getAnswerCountByQuestionId($question_id)
     {
         $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
-        if (null !== $question_data) {
+        if (false !== $question_data) {
             $count = $question_data['count_answer'];
         } else {
             $count = 0;
@@ -236,8 +236,8 @@ class AnswerEntity extends Answer
     private static function getAnswerListByQuestionIdOrderByScore($question_id, $page_no = 1, $page_size = 10)
     {
         $cache_key = [REDIS_KEY_ANSWER_LIST_SCORE, $question_id];
-        #answer_count > 0
         $answer_count = self::getAnswerCountByQuestionId($question_id);
+
         if ($answer_count > 0) {
             if (0 == Yii::$app->redis->zCard($cache_key)) {
                 self::setAnswerListByQuestionIdOrderToCache($question_id);

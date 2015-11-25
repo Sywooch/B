@@ -56,7 +56,7 @@ class AnswerComment extends \common\models\BaseActiveRecord
             'create_by' => 'Create By',
             'modify_at' => '修改时间',
             'modify_by' => '修改用户',
-            'is_anonymous' => '是否匿名发表',
+            'is_anonymous' => '匿名评论',
             'ip' => 'IP地址',
             'status' => '状态',
         ];

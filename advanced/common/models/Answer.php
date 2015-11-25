@@ -71,7 +71,7 @@ class Answer extends \common\models\BaseActiveRecord
             'modify_by' => '修改用户',
             'reproduce_url' => '转载网址',
             'reproduce_username' => '转载谁的',
-            'is_anonymous' => '匿名发表',
+            'is_anonymous' => '匿名回答',
             'is_fold' => '是否被折叠',
         ];
     }

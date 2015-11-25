@@ -15,7 +15,6 @@ trait ErrorTrait
 {
     public static $message = '操作成功';
     public static $code = 0;
-    public static $error;
 
     public static function set($code, $params = null)
     {

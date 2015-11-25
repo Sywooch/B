@@ -205,7 +205,7 @@ return [
     #question hot latest ... list
     REDIS_KEY_QUESTION_BLOCK        => [
         'server'     => $servers['master'],
-        'expire'     => 86400,
+        'expire'     => 600,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     REDIS_KEY_QUESTION_HAS_ANSWERED => [
