@@ -12,8 +12,17 @@ use dektrium\user\controllers\ProfileController as BaseProfileController;
 
 class ProfileController extends BaseProfileController
 {
-    public function actionCreate()
+    public function actionShow($id)
     {
-        // do your magic
+        $profile = $this->finder->findProfileById($id);
+
+        if ($profile === null) {
+            throw new NotFoundHttpException();
+        }
+
+
+        return $this->render('show', [
+            'profile' => $profile,
+        ]);
     }
 }

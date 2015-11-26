@@ -336,4 +336,13 @@ class UserEntity extends User
     {
         return $this->hasOne(UserProfileEntity::className(), ['user_id' => 'id']);
     }
+    
+    public function getQuestions()
+    {
+        return $this->hasMany(QuestionEntity::className(), ['user_id' => 'id']);
+    }
+    public function getAnswers()
+    {
+        return $this->hasMany(AnswerEntity::className(), ['user_id' => 'id']);
+    }
 }
