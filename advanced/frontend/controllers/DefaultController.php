@@ -2,10 +2,9 @@
 namespace frontend\controllers;
 
 use common\controllers\BaseController;
-use common\entities\QuestionEntity;
 use common\helpers\ServerHelper;
+use common\services\QuestionService;
 use Yii;
-use yii\helpers\Json;
 
 /**
  * default controller
@@ -34,7 +33,7 @@ class DefaultController extends BaseController
 
     public function actionIndex()
     {
-        $data = QuestionEntity::fetchLatest(30, 0, ServerHelper::checkIsSpider());
+        $data = QuestionService::fetchLatest(30, 0, ServerHelper::checkIsSpider());
         if ($data) {
             $html = $this->renderPartial(
                 'question_item_view',
@@ -56,7 +55,7 @@ class DefaultController extends BaseController
 
     public function actionFetchHot()
     {
-        $data = QuestionEntity::fetchHot(30, 0, ServerHelper::checkIsSpider(), 30);
+        $data = QuestionService::fetchHot(30, 0, ServerHelper::checkIsSpider(), 30);
         if ($data) {
             $html = $this->renderPartial(
                 'question_item_view',
@@ -73,7 +72,7 @@ class DefaultController extends BaseController
 
     public function actionFetchUnAnswer()
     {
-        $data = QuestionEntity::fetchUnAnswer(30, 0, ServerHelper::checkIsSpider());
+        $data = QuestionService::fetchUnAnswer(30, 0, ServerHelper::checkIsSpider());
         if ($data) {
             $html = $this->renderPartial(
                 'question_item_view',

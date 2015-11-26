@@ -19,7 +19,7 @@ $this->title = $question_data['subject'];
 $this->params['breadcrumbs'][] = ['label' => '问答'];
 
 /* $var $user_entity UserEntity */
-$user_entity = Yii::createObject(UserEntity::className());
+//$user_entity = Yii::createObject(UserEntity::className());
 ?>
 <?php
 $this->beginBlock('meta-header');

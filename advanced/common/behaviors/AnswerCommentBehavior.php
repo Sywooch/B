@@ -13,9 +13,9 @@ use common\components\Counter;
 use common\components\Notifier;
 use common\entities\AnswerEntity;
 use common\entities\NotificationEntity;
-use common\entities\UserEntity;
 use common\helpers\AtHelper;
-use yii\base\Behavior;
+use common\services\AnswerService;
+use common\services\UserService;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -46,7 +46,7 @@ class AnswerCommentBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        $answer_data = AnswerEntity::getAnswerByAnswerId($this->owner->answer_id);
+        $answer_data = AnswerService::getAnswerByAnswerId($this->owner->answer_id);
         if ($answer_data && isset($answer_data['create_by'])) {
             Notifier::build()->from($this->owner->create_by)->to($answer_data['create_by'])->notice(
                 NotificationEntity::TYPE_MY_ANSWER_HAS_NEW_COMMENT,
@@ -69,7 +69,7 @@ class AnswerCommentBehavior extends BaseBehavior
         $username = AtHelper::findAtUsername($this->owner->content);
 
         if($username){
-            $user_ids = UserEntity::getUserIdByUsername($username);
+            $user_ids = UserService::getUserIdByUsername($username);
 
             Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->notice(
                 NotificationEntity::TYPE_COMMENT_AT_ME,

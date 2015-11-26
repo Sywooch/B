@@ -18,11 +18,12 @@ use common\entities\AnswerVersionEntity;
 use common\entities\FollowQuestionEntity;
 use common\entities\FollowTagPassiveEntity;
 use common\entities\NotificationEntity;
-use common\entities\QuestionEntity;
-use common\entities\TagEntity;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
 use common\models\CacheAnswerModel;
+use common\services\AnswerService;
+use common\services\FollowService;
+use common\services\TagService;
 use Yii;
 use yii\base\ModelEvent;
 use yii\db\ActiveRecord;
@@ -52,7 +53,7 @@ class AnswerBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $owner = $this->owner;
-        $hasAnswered = $owner->checkWhetherHasAnswered($owner->question_id, $owner->create_by);
+        $hasAnswered = AnswerService::checkWhetherHasAnswered($owner->question_id, $owner->create_by);
         
         $owner->is_anonymous = $owner->is_anonymous == 1 ? $owner::STATUS_ANONYMOUS : $owner::STATUS_UNANONYMOUS;
 
@@ -95,7 +96,7 @@ class AnswerBehavior extends BaseBehavior
 
         $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
 
-        AnswerEntity::updateAnswerCache($this->owner->id, $item);
+        AnswerService::updateAnswerCache($this->owner->id, $item);
     }
     
     public function afterAnswerUpdate($event)
@@ -142,7 +143,7 @@ class AnswerBehavior extends BaseBehavior
 
         #notification where answer is enough long.
         if (StringHelper::countStringLength($this->owner->content) >= self::NEED_NOTIFICATION_ANSWER_CONTENT_LENGTH) {
-            $user_ids = FollowQuestionEntity::getFollowUserIds($this->owner->question_id);
+            $user_ids = FollowService::getFollowQuestionUserIdsByQuestionId($this->owner->question_id);
 
             if ($user_ids) {
                 Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice(
@@ -175,14 +176,12 @@ class AnswerBehavior extends BaseBehavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         
         $question = $this->owner->question;
-        
-        /* @var $tag_entity TagEntity */
-        $tag_entity = Yii::createObject(TagEntity::className());
-        $tag_ids = $tag_entity->getTagIdByName($question->tags);
+
+        $tag_ids = TagService::getTagIdByName($question->tags);
         
         if ($tag_ids) {
             $tag_ids = is_array($tag_ids) ? $tag_ids : [$tag_ids];
-            $result = FollowTagPassiveEntity::addFollowTag(
+            $result = FollowService::addFollowTagPassive(
                 $this->owner->create_by,
                 $tag_ids
             );
@@ -194,7 +193,7 @@ class AnswerBehavior extends BaseBehavior
     public function dealWithUpdateAnswerCache()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        AnswerEntity::updateAnswerCache(
+        AnswerService::updateAnswerCache(
             $this->owner->id,
             [
                 'content'   => $this->owner->content,

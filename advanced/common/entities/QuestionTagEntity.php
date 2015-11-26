@@ -10,6 +10,8 @@ namespace common\entities;
 
 use common\components\Error;
 use common\models\QuestionTag;
+use common\services\FollowService;
+use common\services\TagService;
 
 class QuestionTagEntity extends QuestionTag
 {
@@ -43,9 +45,9 @@ class QuestionTagEntity extends QuestionTag
         #add follow tag
         if ($result) {
             #add user follow tag
-            FollowTagEntity::addFollowTag($user_id, $tag_ids);
+            FollowService::addFollowTag($user_id, $tag_ids);
             #tag use count
-            TagEntity::updateTagCountUse($tag_ids);
+            TagService::updateTagCountUse($tag_ids);
         }
 
         return $result;

@@ -15,6 +15,7 @@ use common\helpers\TimeHelper;
 use yii\base\Event;
 use yii\db\ActiveRecord;
 use Yii;
+use yii\db\ActiveQuery;
 
 class BaseActiveRecord extends ActiveRecord
 {
@@ -136,4 +137,15 @@ class BaseActiveRecord extends ActiveRecord
     {
         return TimeHelper::getAfterTime($period);
     }
+
+
+    /**
+     * 重写find方法，以便使用 BaseActiveQuery
+     * @inheritdoc
+     * @return ActiveQuery the newly created [[ActiveQuery]] instance.
+     */
+    public static function find()
+{
+    return Yii::createObject(BaseActiveQuery::className(), [get_called_class()]);
+}
 }

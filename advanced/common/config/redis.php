@@ -28,8 +28,10 @@ $servers = [
 const REDIS_KEY_USER = 'user:hash';
 const REDIS_KEY_USER_USERNAME_USERID = 'username_userid:string';
 
-const REDIS_KEY_USER_FOLLOW = 'user_follow:string';
+const REDIS_KEY_USER_FOLLOW_USER = 'user_follow_user:string';
 const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation:string';
+
+const REDIS_KEY_USER_BE_GOOD_AT_TAG_IDS = 'user_be_good_at_tag_ids:string';
 
 #TAG
 const REDIS_KEY_TAG = 'tag:hash';
@@ -38,7 +40,7 @@ const REDIS_KEY_TAG_NAME_ID = 'tag_name_id:string';
 const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:string';
 
 #FOLLOW TAG
-const REDIS_KEY_FOLLOW_TAG_USER_ID = 'follow_tag_user_id:string';
+const REDIS_KEY_FOLLOW_TAG_ID_USER_ID = 'follow_tag_id_user_id:string';
 
 #QUESTION
 const REDIS_KEY_QUESTION = 'question:hash';
@@ -79,157 +81,163 @@ const REDIS_KEY_XUNSEARCH_TAG = 'xunsearch_tag:string';
 return [
     /************************************************/
     #SESSION设置
-    REDIS_KEY_SESSION               => [
+    REDIS_KEY_SESSION                 => [
         'server'     => $servers['master'],
         'expire'     => 86400,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #应用设置
-    REDIS_KEY_SETTING               => [
+    REDIS_KEY_SETTING                 => [
         'server'     => $servers['master'],
         'expire'     => 0,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #打点器队列
-    REDIS_KEY_COUNTER               => [
+    REDIS_KEY_COUNTER                 => [
         'server'     => $servers['master'],
         'expire'     => 0,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
-    REDIS_KEY_COUNTER_SET           => [
+    REDIS_KEY_COUNTER_SET             => [
         'server'     => $servers['master'],
         'expire'     => 0,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #通知器队列
-    REDIS_KEY_NOTIFIER              => [
+    REDIS_KEY_NOTIFIER                => [
         'server'     => $servers['master'],
         'expire'     => 0,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
-    REDIS_KEY_NOTIFIER_SET          => [
+    REDIS_KEY_NOTIFIER_SET            => [
         'server'     => $servers['master'],
         'expire'     => 0,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #更新器队列
-    REDIS_KEY_UPDATER               => [
+    REDIS_KEY_UPDATER                 => [
         'server'     => $servers['master'],
         'expire'     => 0,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
-    REDIS_KEY_UPDATER_SET           => [
+    REDIS_KEY_UPDATER_SET             => [
         'server'     => $servers['master'],
         'expire'     => 0,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #注册邮件激活
-    REDIS_KEY_EMAIL                 => [
+    REDIS_KEY_EMAIL                   => [
         'server'     => $servers['master'],
         'expire'     => 0,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #RBAC权限
-    REDIS_KEY_RBAC                  => [
+    REDIS_KEY_RBAC                    => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #xunsearch
-    REDIS_KEY_XUNSEARCH_TAG         => [
+    REDIS_KEY_XUNSEARCH_TAG           => [
         'server'     => $servers['master'],
         'expire'     => 3600,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     /***************************************************/
     #用户数据
-    REDIS_KEY_USER                  => [
+    REDIS_KEY_USER                    => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_NONE,
     ],
     #用户名与用户ID间的关系
-    REDIS_KEY_USER_USERNAME_USERID  => [
+    REDIS_KEY_USER_USERNAME_USERID    => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #用户关注的用户
-    REDIS_KEY_USER_FOLLOW           => [
+    REDIS_KEY_USER_FOLLOW_USER        => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #用户关注的tag
-    REDIS_KEY_USER_TAG_RELATION     => [
+    REDIS_KEY_USER_TAG_RELATION       => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
+    #用户擅长的标签
+    REDIS_KEY_USER_BE_GOOD_AT_TAG_IDS => [
+        'server'     => $servers['master'],
+        'expire'     => 86400,
+        'serializer' => Redis::SERIALIZER_IGBINARY,
+    ],
     /*************************************************/
     #tag
-    REDIS_KEY_TAG                   => [
+    REDIS_KEY_TAG                     => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_NONE,
     ],
-    REDIS_KEY_TAG_LIST              => [
+    REDIS_KEY_TAG_LIST                => [
         'server'     => $servers['master'],
         'expire'     => 3600 * 8,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #tag name & id
-    REDIS_KEY_TAG_NAME_ID           => [
+    REDIS_KEY_TAG_NAME_ID             => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #tag has user top 10
-    REDIS_KEY_TAG_USER_RELATION     => [
+    REDIS_KEY_TAG_USER_RELATION       => [
         'server'     => $servers['master'],
         'expire'     => 3600 * 8,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #follow tag
-    REDIS_KEY_FOLLOW_TAG_USER_ID    => [
+    REDIS_KEY_FOLLOW_TAG_ID_USER_ID   => [
         'server'     => $servers['master'],
         'expire'     => 3600 * 2,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #question
-    REDIS_KEY_QUESTION              => [
+    REDIS_KEY_QUESTION                => [
         'server'     => $servers['master'],
         'expire'     => 86400,
         'serializer' => Redis::SERIALIZER_NONE,
     ],
     #question hot latest ... list
-    REDIS_KEY_QUESTION_BLOCK        => [
+    REDIS_KEY_QUESTION_BLOCK          => [
         'server'     => $servers['master'],
         'expire'     => 600,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
-    REDIS_KEY_QUESTION_HAS_ANSWERED => [
+    REDIS_KEY_QUESTION_HAS_ANSWERED   => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     /*------------- answer ---------------*/
-    REDIS_KEY_ANSWER                => [
+    REDIS_KEY_ANSWER                  => [
         'server'     => $servers['master'],
         'expire'     => 86400,
         'serializer' => Redis::SERIALIZER_NONE,
     ],
-    REDIS_KEY_ANSWER_LIST           => [
+    REDIS_KEY_ANSWER_LIST             => [
         'server'     => $servers['master'],
         'expire'     => 86400,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
-    REDIS_KEY_ANSWER_LIST_TIME      => [
+    REDIS_KEY_ANSWER_LIST_TIME        => [
         'server'     => $servers['master'],
         'expire'     => 86400,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
-    REDIS_KEY_ANSWER_LIST_SCORE     => [
+    REDIS_KEY_ANSWER_LIST_SCORE       => [
         'server'     => $servers['master'],
         'expire'     => 86400,
         'serializer' => Redis::SERIALIZER_IGBINARY,

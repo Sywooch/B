@@ -8,23 +8,21 @@
 
 namespace frontend\controllers;
 
-use common\behaviors\PrivateMessageDialogBehavior;
 use common\components\Counter;
 use common\components\Curl;
 use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
-use common\entities\AnswerEntity;
-use common\entities\FollowTagPassiveEntity;
-use common\entities\FollowUserEntity;
 use common\entities\NotificationEntity;
-use common\entities\PrivateMessageEntity;
 use common\entities\QuestionEntity;
 use common\entities\TagEntity;
 use common\entities\UserEntity;
 use common\helpers\AtHelper;
-use common\helpers\FormatterHelper;
 use common\models\xunsearch\QuestionSearch;
+use common\services\FollowService;
+use common\services\QuestionService;
+use common\services\TagService;
+use common\services\UserService;
 use console\modules\crawler\controllers\crawlers\CrawlerBase;
 use Yii;
 use common\controllers\BaseController;
@@ -194,7 +192,7 @@ class TestController extends BaseController
         var_dump(empty($result));*/
 
 
-        $result = QuestionEntity::getQuestionListByQuestionIds([2, 3, 4, 5]);
+        $result = QuestionService::getQuestionListByQuestionIds([2, 3, 4, 5]);
 
         //var_dump($result);
     }
@@ -207,14 +205,14 @@ class TestController extends BaseController
 
         print_r($data);*/
 
-        $result = UserEntity::getUserListByIds([1]);
+        $result = UserService::getUserListByIds([1]);
         print_r($result);
 
-        $result = UserEntity::getUserIdByUsername(['admin', '瞎猫']);
+        $result = UserService::getUserIdByUsername(['admin', '瞎猫']);
         print_r($result);
 
 
-        $result = UserEntity::getUserByUsername(['admin', '瞎猫']);
+        $result = UserService::getUserByUsername(['admin', '瞎猫']);
         print_r($result);
 
 
@@ -242,16 +240,18 @@ class TestController extends BaseController
 
     public function actionTag()
     {
-
-        //$data = TagEntity::getTagIdByName( ['中国人', '大家好']);
-        /*$data = TagEntity::getTagNameById([1, 2]);
+        $result = FollowService::getUserBeGoodAtTagsByUserId(1);
+        print_r($result);
+        exit;
+        //$data = TagService::getTagIdByName( ['中国人', '大家好']);
+        /*$data = TagService::getTagNameById([1, 2]);
 
         print_r($data);*/
 
-        //$result = TagEntity::getHotTag();
-        //$result = TagEntity::getRelateTag(6);
+        //$result = TagService::getHotTag();
+        //$result = TagService::getRelateTag(6);
 
-        $result = TagEntity::getTagIdByName(['深圳游玩1', '情侣游玩1', '深户1','bbaacc']);
+        $result = TagService::getTagIdByName(['深圳游玩1', '情侣游玩1', '深户1','bbaacc']);
 
         print_r($result);
     }
@@ -294,7 +294,7 @@ class TestController extends BaseController
         exit;
         //$result = $question->find()->where(['or','深圳','人口'])->all();
 
-        $result = QuestionEntity::searchQuestionByTag($tags);
+        $result = QuestionService::searchQuestionByTag($tags);
 
         print_r($result);
     }

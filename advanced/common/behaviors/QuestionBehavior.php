@@ -13,16 +13,15 @@ use common\components\Updater;
 use common\entities\AttachmentEntity;
 use common\entities\FavoriteRecordEntity;
 use common\entities\FollowQuestionEntity;
-use common\entities\QuestionEntity;
 use common\entities\QuestionEventHistoryEntity;
 use common\entities\QuestionTagEntity;
-use common\entities\TagEntity;
-use common\entities\UserProfileEntity;
-use common\models\QuestionTag;
 use common\models\xunsearch\QuestionSearch;
 use common\modules\user\models\Profile;
+use common\services\FavoriteService;
+use common\services\FollowService;
+use common\services\QuestionService;
+use common\services\TagService;
 use Yii;
-use yii\base\Behavior;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -131,7 +130,7 @@ class QuestionBehavior extends BaseBehavior
     public function dealWithAddFollowQuestion()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = FollowQuestionEntity::addFollow($this->owner->id, $this->owner->create_by);
+        $result = FollowService::addFollowQuestion($this->owner->id, $this->owner->create_by);
         
         Yii::trace(sprintf('Add Question Follow: %s', var_export($result, true)), 'behavior');
         
@@ -141,9 +140,7 @@ class QuestionBehavior extends BaseBehavior
     public function dealWithRemoveFollowQuestion()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        /* @var $model FollowQuestionEntity */
-        $model = Yii::createObject(FollowQuestionEntity::className());
-        $model->removeFollow($this->owner->id);
+        FollowService::removeFollowQuestion($this->owner->id);
     }
     
     public function dealWithInsertTags()
@@ -155,7 +152,7 @@ class QuestionBehavior extends BaseBehavior
         $add_tags = $new_tags;
         
         if ($add_tags) {
-            $tag_relation = TagEntity::batchAddTags($add_tags);
+            $tag_relation = TagService::batchAddTags($add_tags);
             if ($tag_relation) {
                 $tag_ids = array_values($tag_relation);
                 $result = QuestionTagEntity::addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
@@ -203,7 +200,7 @@ class QuestionBehavior extends BaseBehavior
         $new_tags = $owner->tags ? explode(',', $owner->tags) : [];
         $old_tags = $add_tags = $remove_tags = [];
         
-        $tags = $this->owner->getQuestionTagsByQuestionId($this->owner->id);
+        $tags = QuestionService::getQuestionTagsByQuestionId($this->owner->id);
         
         if (!empty($tags)) {
             foreach ($tags as $tag) {
@@ -227,7 +224,7 @@ class QuestionBehavior extends BaseBehavior
         
         
         if ($add_tags) {
-            $tag_relation = TagEntity::batchAddTags($add_tags);
+            $tag_relation = TagService::batchAddTags($add_tags);
             if ($tag_relation) {
                 $tag_ids = array_values($tag_relation);
                 QuestionTagEntity::addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
@@ -237,11 +234,11 @@ class QuestionBehavior extends BaseBehavior
         }
         
         if ($remove_tags) {
-            $tag_relation = TagEntity::batchGetTagIds($remove_tags);
+            $tag_relation = TagService::batchGetTagIds($remove_tags);
             
             $tag_ids = ArrayHelper::getColumn($tag_relation, 'id');
             if ($tag_ids) {
-                TagEntity::removeQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
+                TagService::removeQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
             }
             
             $questionEventHistoryEntity->removeTag($remove_tags);
@@ -333,7 +330,7 @@ class QuestionBehavior extends BaseBehavior
     public function dealWithFavoriteRecordRemove()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = FavoriteRecordEntity::removeFavoriteRecord(FavoriteRecordEntity::TYPE_QUESTION, $this->owner->id);
+        $result = FavoriteService::removeFavoriteRecord(FavoriteRecordEntity::TYPE_QUESTION, $this->owner->id);
 
         Yii::trace(sprintf('Remove Favorite Record Result: %s', var_export($result, true)), 'behavior');
     }
@@ -353,13 +350,13 @@ class QuestionBehavior extends BaseBehavior
     public function dealWithRedisCacheInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        QuestionEntity::ensureQuestionHasCache($this->owner->id);
+        QuestionService::ensureQuestionHasCache($this->owner->id);
     }
 
     public function dealWithRedisCacheUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        QuestionEntity::updateQuestionCache($this->owner->id, $this->owner->getAttributes());
+        QuestionService::updateQuestionCache($this->owner->id, $this->owner->getAttributes());
     }
 
     public function dealWithTagsOrder()

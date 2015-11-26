@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\controllers\BaseController;
 use common\entities\TagEntity;
 use common\entities\TagSearchEntity;
+use common\services\TagService;
 use Yii;
 use common\models\Tag;
 use common\models\TagSearch;
@@ -177,14 +178,14 @@ class TagController extends BaseController
 
     public function actionGetRelateTags($tag_id)
     {
-        $data = TagEntity::getRelateTag($tag_id);
+        $data = TagService::getRelateTag($tag_id);
 
         return $this->jsonOut($data);
     }
 
     public function actionGetHotTags()
     {
-        $data = TagEntity::getHotTag();
+        $data = TagService::getHotTag();
 
         return $this->jsonOut($data);
     }

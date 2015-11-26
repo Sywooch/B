@@ -6,6 +6,7 @@
  * Time: 13:09
  */
 use common\helpers\TemplateHelper;
+use common\services\AnswerService;
 use common\widgets\UEditor\UEditor;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -43,7 +44,7 @@ use common\entities\AnswerEntity;
             </div>
         </div>
 
-    <?php elseif ($answer_id = $answer_model->checkWhetherHasAnswered($question_data['id'], Yii::$app->user->id)): ?>
+    <?php elseif ($answer_id = AnswerService::checkWhetherHasAnswered($question_data['id'], Yii::$app->user->id)): ?>
 
 
 

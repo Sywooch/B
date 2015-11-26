@@ -13,6 +13,7 @@ use common\behaviors\QuestionInviteBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
 use common\models\QuestionInvite;
+use common\services\FollowService;
 use yii\db\ActiveRecord;
 use Yii;
 
@@ -85,7 +86,7 @@ class QuestionInviteEntity extends QuestionInvite
 
     public function getInviteUserIds($user_id)
     {
-        $follow_user_ids = FollowUserEntity::getFollowUserIds($user_id);
+        $follow_user_ids = FollowService::getFollowUserIds($user_id);
 
         return $follow_user_ids;
     }
@@ -97,7 +98,7 @@ class QuestionInviteEntity extends QuestionInvite
      */
     public function getRecommendInviteUser(array $tag_id)
     {
-        $result = FollowTagPassiveEntity::getRecommendUserIdsByTagIds($tag_id);
+        $result = FollowService::getRecommendUserIdsByTagIds($tag_id);
 
         return $result;
     }

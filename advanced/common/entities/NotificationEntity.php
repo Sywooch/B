@@ -9,6 +9,7 @@
 namespace common\entities;
 
 use common\models\Notification;
+use common\services\QuestionService;
 use common\services\UserService;
 use Yii;
 use yii\base\Exception;
@@ -130,10 +131,8 @@ class NotificationEntity extends Notification
         if ($command->execute()) {
             #increase count_notification BY trigger
             //$this->trigger(ActiveRecord::EVENT_AFTER_INSERT);
-            
-            /* @var $userService UserService */
-            $userService = Yii::createObject(UserService::className());
-            $userService->increaseNotificationCount($receivers);
+
+            UserService::increaseNotificationCount($receivers);
             
             return true;
         } else {
@@ -230,15 +229,15 @@ class NotificationEntity extends Notification
         $users = $questions = $tags = [];
         #prebuild cache data
         if ($user_id) {
-            $users = UserEntity::getUserListByIds(array_unique($user_id));
+            $users = UserService::getUserListByIds(array_unique($user_id));
         }
 
         if ($question_id) {
-            $questions = QuestionEntity::getQuestionListByQuestionIds(array_unique($question_id));
+            $questions = QuestionService::getQuestionListByQuestionIds(array_unique($question_id));
         }
 
         if ($tag_id) {
-            //$tags = TagEntity::getTagListByTagIds(array_unique($tag_id));
+            //$tags = TagService::getTagListByTagIds(array_unique($tag_id));
         }
 
         foreach ($notices as $date_index => &$item) {

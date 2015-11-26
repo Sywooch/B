@@ -6,12 +6,12 @@ use common\components\Error;
 use common\components\Updater;
 use common\controllers\BaseController;
 use common\entities\NotificationEntity;
-use common\entities\UserEntity;
 use common\helpers\TimeHelper;
-use common\modules\user\models\User;
-use Yii;
+use common\services\UserService;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
+use Yii;
+use yii\web\NotFoundHttpException;
 
 class NotificationController extends BaseController
 {
@@ -75,7 +75,7 @@ class NotificationController extends BaseController
      */
     public function actionGetNotificationCount()
     {
-        $user = UserEntity::getUserById(Yii::$app->user->id);
+        $user = UserService::getUserById(Yii::$app->user->id);
 
         return $user['notification_count'];
     }
@@ -95,8 +95,8 @@ class NotificationController extends BaseController
         );
 
         $result = Error::get($data);
+        $this->jsonOut($result);
 
-        return $this->jsonOut($result);
     }
 
     public function actionReadOne($id)
@@ -115,8 +115,7 @@ class NotificationController extends BaseController
 
         $result = Error::get($data);
 
-        return $this->jsonOut($result);
-
+        $this->jsonOut($result);
     }
 
     protected function findModel($id)

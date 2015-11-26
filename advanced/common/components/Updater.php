@@ -9,8 +9,9 @@
 namespace common\components;
 
 use common\entities\QuestionEntity;
-use common\entities\UserEntity;
 use common\entities\UserProfileEntity;
+use common\services\QuestionService;
+use common\services\UserService;
 use Yii;
 
 class Updater extends BaseUpdater
@@ -23,7 +24,7 @@ class Updater extends BaseUpdater
             ]
         )->execute();
 
-        if ($result && UserEntity::ensureUserHasCached($user_id)) {
+        if ($result && UserService::ensureUserHasCached($user_id)) {
             Yii::$app->redis->hSet([REDIS_KEY_USER, $user_id], 'count_notification', 0);
         }
 
@@ -36,8 +37,8 @@ class Updater extends BaseUpdater
             ['id' => $id]
         )->execute();
 
-        if ($result && QuestionEntity::ensureQuestionHasCache($id)) {
-            QuestionEntity::updateQuestionCache($id, ['content' => $content]);
+        if ($result && QuestionService::ensureQuestionHasCache($id)) {
+            QuestionService::updateQuestionCache($id, ['content' => $content]);
         }
 
         return $result;
@@ -51,8 +52,8 @@ class Updater extends BaseUpdater
             ['id' => $id]
         )->execute();
 
-        if ($result && QuestionEntity::ensureQuestionHasCache($id)) {
-            QuestionEntity::updateQuestionCache($id, ['active_at' => $active_at]);
+        if ($result && QuestionService::ensureQuestionHasCache($id)) {
+            QuestionService::updateQuestionCache($id, ['active_at' => $active_at]);
         }
 
         return $result;

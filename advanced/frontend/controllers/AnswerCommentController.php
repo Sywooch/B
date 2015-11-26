@@ -5,12 +5,12 @@ namespace frontend\controllers;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerEntity;
-use common\entities\QuestionEntity;
+use common\services\AnswerService;
+use common\services\QuestionService;
 use Yii;
 use common\entities\AnswerCommentEntity;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -88,8 +88,8 @@ class AnswerCommentController extends BaseController
         $model = new AnswerCommentEntity();
         $model->answer_id = $answer_id;
 
-        $answer_data = AnswerEntity::getAnswerByAnswerId($answer_id);
-        $question_data = QuestionEntity::getQuestionByQuestionId($answer_data['question_id']);
+        $answer_data = AnswerService::getAnswerByAnswerId($answer_id);
+        $question_data = QuestionService::getQuestionByQuestionId($answer_data['question_id']);
 
         //print_r(Yii::$app->request->post());exit;
 

@@ -10,8 +10,8 @@ namespace common\helpers;
 
 
 use common\entities\AnswerEntity;
-use common\entities\TagEntity;
-use common\entities\UserEntity;
+use common\services\TagService;
+use common\services\UserService;
 use Yii;
 use yii\helpers\Html;
 
@@ -20,7 +20,7 @@ class TemplateHelper
     public static function showUsername($user_id, $link = true, $anonymity = AnswerEntity::STATUS_UNANONYMOUS)
     {
         if ($user_id == Yii::$app->user->id || $anonymity == AnswerEntity::STATUS_UNANONYMOUS) {
-            $user_name = UserEntity::getUsernameByUserId($user_id);
+            $user_name = UserService::getUsernameByUserId($user_id);
 
             if ($link) {
                 $result = Html::a($user_name, ['/member/' . $user_id]);
@@ -44,7 +44,7 @@ class TemplateHelper
         //不匿名或当前用户是登陆用户
         if ($user_id == Yii::$app->user->id || $anonymity == AnswerEntity::STATUS_UNANONYMOUS) {
 
-            $avatar = UserEntity::getAvatar($user_id, $size, true);
+            $avatar = UserService::getAvatar($user_id, $size, true);
 
             $avatar = Html::img(
                 $avatar,
@@ -88,7 +88,7 @@ class TemplateHelper
         }
 
         $html = [];
-        $tag_ids = TagEntity::getTagIdByName($tag_name);
+        $tag_ids = TagService::getTagIdByName($tag_name);
         foreach ($tag_name as $key => $tag) {
             $html[] = sprintf(
                 '<li class="tagPopup">%s</li>',

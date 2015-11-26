@@ -8,12 +8,11 @@
 
 namespace common\controllers;
 
-use common\entities\UserEntity;
 use common\modules\user\models\LoginForm;
+use common\services\UserService;
 use Yii;
 use yii\helpers\Json;
 use yii\web\Response;
-use yii\web\UnauthorizedHttpException;
 
 class BaseController extends PerformanceRecordController
 {
@@ -31,9 +30,8 @@ class BaseController extends PerformanceRecordController
      * JSON输出
      * @param array $response ['code'=> '', 'msg' => '', 'data' => '']
      * @throws \yii\base\ExitException
-     * @internal param $data
      */
-    protected function jsonOut(array $response)
+    public function jsonOut(array $response)
     {
         Yii::$app->getResponse()->clear();
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -43,7 +41,7 @@ class BaseController extends PerformanceRecordController
         Yii::$app->end();
     }
     
-    protected function htmlOut($html)
+    public function htmlOut($html)
     {
         echo Json::encode($html);
         Yii::$app->end();
@@ -68,7 +66,7 @@ class BaseController extends PerformanceRecordController
 
     protected function autoLoginById($user_id)
     {
-        $username = UserEntity::getUsernameByUserId($user_id);
+        $username = UserService::getUsernameByUserId($user_id);
 
         return $this->autoLogin($username);
     }

@@ -10,9 +10,9 @@
 namespace console\controllers;
 
 use common\entities\QuestionEntity;
-use common\entities\TagEntity;
 use common\entities\TagRelationEntity;
 use common\helpers\TimeHelper;
+use common\services\TagService;
 use Yii;
 use yii\console\Controller;
 
@@ -71,7 +71,7 @@ class TagCronJobController extends Controller
                 $tag_data = array_merge($tag_data, $tags);
             }
 
-            $all_tag_name_id = TagEntity::getTagIdByName($tag_data);
+            $all_tag_name_id = TagService::getTagIdByName($tag_data);
 
             $all_relations = [];
 

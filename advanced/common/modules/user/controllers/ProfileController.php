@@ -8,6 +8,7 @@
 
 namespace common\modules\user\controllers;
 
+use common\services\QuestionService;
 use dektrium\user\controllers\ProfileController as BaseProfileController;
 
 class ProfileController extends BaseProfileController
@@ -20,9 +21,14 @@ class ProfileController extends BaseProfileController
             throw new NotFoundHttpException();
         }
 
+        $question_list = QuestionService::getQuestionListByUserId($id);
 
-        return $this->render('show', [
-            'profile' => $profile,
-        ]);
+        return $this->render(
+            'show',
+            [
+                'profile'       => $profile,
+                'question_list' => $question_list,
+            ]
+        );
     }
 }

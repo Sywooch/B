@@ -12,6 +12,7 @@ namespace common\behaviors;
 use common\components\Counter;
 use common\entities\FavoriteEntity;
 use common\entities\FavoriteRecordEntity;
+use common\services\FavoriteService;
 use yii\base\Behavior;
 use Yii;
 use yii\db\ActiveRecord;
@@ -57,7 +58,7 @@ class FavoriteRecordBehavior extends BaseBehavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $result = false;
 
-        $subject = FavoriteRecordEntity::getFavoriteSubject($this->owner->id);
+        $subject = FavoriteService::getFavoriteSubject($this->owner->id);
         $favorite = FavoriteEntity::findOne($this->owner->favorite_id);
 
         if ($favorite) {

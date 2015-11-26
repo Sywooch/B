@@ -5,8 +5,9 @@ namespace frontend\controllers;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerCommentEntity;
-use common\entities\AnswerVersionEntity;
-use common\entities\QuestionEntity;
+use common\services\AnswerService;
+use common\services\CommentService;
+use common\services\QuestionService;
 use Yii;
 use common\entities\AnswerEntity;
 use yii\data\ActiveDataProvider;
@@ -127,7 +128,7 @@ class AnswerController extends BaseController
      */
     public function actionUpdate($id, $question_id)
     {
-        $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
+        $question_data = QuestionService::getQuestionByQuestionId($question_id);
         $answer_model = $this->findModel($id);
 
         if ($answer_model->load(Yii::$app->request->post()) && $answer_model->save()) {
@@ -145,7 +146,7 @@ class AnswerController extends BaseController
 
     public function actionCommonEdit($id, $question_id)
     {
-        $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
+        $question_data = QuestionService::getQuestionByQuestionId($question_id);
         $answer_model = $this->findModel($id);
         
         //$answer_model->scenario = '';
@@ -195,10 +196,10 @@ class AnswerController extends BaseController
     public function actionGetCommentList($id)
     {
         $comment_form = new AnswerCommentEntity();
-        $answer_data = AnswerEntity::getAnswerByAnswerId($id);
-        $question_data = QuestionEntity::getQuestionByQuestionId($answer_data['question_id']);
+        $answer_data = AnswerService::getAnswerByAnswerId($id);
+        $question_data = QuestionService::getQuestionByQuestionId($answer_data['question_id']);
 
-        $count = AnswerCommentEntity::getCommentCountByAnswerId($id);
+        $count =  CommentService::getCommentCountByAnswerId($id);
 
         if ($count == 0) {
             $pages = null;
@@ -213,7 +214,7 @@ class AnswerController extends BaseController
                     'pageSizeParam' => 'comment-per-page',
                 ]
             );
-            $comments_data = AnswerCommentEntity::getCommentListByAnswerId(
+            $comments_data = CommentService::getCommentListByAnswerId(
                 $id,
                 $pages->limit,
                 $pages->offset
@@ -246,7 +247,7 @@ class AnswerController extends BaseController
 
     protected function findAnswer($id)
     {
-        if (($answer_data = AnswerEntity::getAnswerByAnswerId($id)) !== null) {
+        if (($answer_data = AnswerService::getAnswerByAnswerId($id)) !== null) {
             return $answer_data;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

@@ -13,6 +13,7 @@ use common\entities\UserEntity;
 use common\exceptions\ParamsInvalidException;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
+use common\services\UserService;
 use Yii;
 use yii\base\Object;
 use yii\helpers\Json;
@@ -213,7 +214,7 @@ class BaseNotifier extends Object
         foreach ($receivers as $receiver) {
             $result = false;
             if (is_numeric($receiver)) {
-                $user = UserEntity::getUserById($receiver);
+                $user = UserService::getUserById($receiver);
                 $receiver = $user['email'];
             }
 

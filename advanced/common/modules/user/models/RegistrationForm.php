@@ -8,8 +8,7 @@
 
 namespace common\modules\user\models;
 
-
-use common\entities\UserEntity;
+use common\services\UserService;
 
 class RegistrationForm extends \dektrium\user\models\RegistrationForm
 {
@@ -25,7 +24,7 @@ class RegistrationForm extends \dektrium\user\models\RegistrationForm
         $rules[] = [
             'captcha',
             'captcha',
-            'captchaAction' => UserEntity::CAPTCHA_ACTION,
+            'captchaAction' => UserService::REGISTER_CAPTCHA_ACTION,
             'message'       => '验证码错误，请重新输入或点击验证码图片重试。',
         ];
 

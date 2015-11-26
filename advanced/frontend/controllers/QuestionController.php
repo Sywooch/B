@@ -9,20 +9,18 @@ use common\entities\AnswerEntity;
 use common\entities\FollowUserEntity;
 use common\entities\QuestionEntity;
 use common\entities\QuestionInviteEntity;
-use common\entities\UserEntity;
 use common\exceptions\ParamsInvalidException;
 use common\helpers\ServerHelper;
-use common\models\AnswerQuery;
-use dosamigos\qrcode\lib\Encode;
+use common\services\AnswerService;
+use common\services\FollowService;
+use common\services\QuestionService;
+use common\services\UserService;
 use Yii;
 use common\models\Question;
 use common\models\QuestionSearch;
 use yii\base\Exception;
-use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
-use yii\helpers\Json;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -67,13 +65,13 @@ class QuestionController extends BaseController
     {
         $pages = new Pagination(
             [
-                'totalCount' => QuestionEntity::fetchCount('latest', ServerHelper::checkIsSpider()),
+                'totalCount' => QuestionService::fetchCount('latest', ServerHelper::checkIsSpider()),
                 'pageSize'   => 20,
                 'params'     => array_merge($_GET),
             ]
         );
 
-        $data = QuestionEntity::fetchLatest($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
+        $data = QuestionService::fetchLatest($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
         if ($data) {
             $html = $this->renderPartial(
                 '/default/question_item_view',
@@ -100,13 +98,13 @@ class QuestionController extends BaseController
     {
         $pages = new Pagination(
             [
-                'totalCount' => QuestionEntity::fetchCount('hot', ServerHelper::checkIsSpider()),
+                'totalCount' => QuestionService::fetchCount('hot', ServerHelper::checkIsSpider()),
                 'pageSize'   => 20,
                 'params'     => array_merge($_GET),
             ]
         );
         
-        $data = QuestionEntity::fetchHot($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
+        $data = QuestionService::fetchHot($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
         
         if ($data) {
             $html = $this->renderPartial(
@@ -134,13 +132,13 @@ class QuestionController extends BaseController
     {
         $pages = new Pagination(
             [
-                'totalCount' => QuestionEntity::fetchCount('un-answer', ServerHelper::checkIsSpider()),
+                'totalCount' => QuestionService::fetchCount('un-answer', ServerHelper::checkIsSpider()),
                 'pageSize'   => 20,
                 'params'     => array_merge($_GET),
             ]
         );
         
-        $data = QuestionEntity::fetchUnAnswer($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
+        $data = QuestionService::fetchUnAnswer($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
         
         
         if ($data) {
@@ -175,7 +173,7 @@ class QuestionController extends BaseController
     public function actionView($id, $sort = 'default', $answer_id = null)
     {
         
-        $question_data = QuestionEntity::getQuestionByQuestionId($id);
+        $question_data = QuestionService::getQuestionByQuestionId($id);
         
         if (ServerHelper::checkIsSpider() && !in_array(
                 $question_data['status'],
@@ -193,22 +191,22 @@ class QuestionController extends BaseController
             $tags = [];
         }
         
-        $tags = array_merge(QuestionEntity::getSubjectTags($question_data['subject']), $tags);
+        $tags = array_merge(QuestionService::getSubjectTags($question_data['subject']), $tags);
 
         #相似问题
-        $similar_question = QuestionEntity::searchQuestionByTag($tags);
+        $similar_question = QuestionService::searchQuestionByTag($tags);
         
         #增加查看问题计数
         Counter::addQuestionView($id);
         
         if ($answer_id) {
             $pages = null;
-            $answer_data = AnswerEntity::getAnswerListByAnswerId([$answer_id]);
+            $answer_data = AnswerService::getAnswerListByAnswerId([$answer_id]);
         } else {
             //print_r(array_merge($_GET, ['#' => 'answer-list']));exit;
             $pages = new Pagination(
                 [
-                    'totalCount'      => AnswerEntity::getAnswerCountByQuestionId($id),
+                    'totalCount'      => AnswerService::getAnswerCountByQuestionId($id),
                     'defaultPageSize' => 10,
                     'params'          => array_merge($_GET, ['#' => 'answer-list']),
                     'pageParam'       => 'answer-page',
@@ -216,7 +214,7 @@ class QuestionController extends BaseController
                 ]
             );
             
-            $answer_data = AnswerEntity::getAnswerListByQuestionId(
+            $answer_data = AnswerService::getAnswerListByQuestionId(
                 $id,
                 Yii::$app->request->get('answer-page', 1),
                 Yii::$app->request->get('answer-per-page', 10),
@@ -317,18 +315,17 @@ class QuestionController extends BaseController
     
     public function actionGetAssociateUserIdWhenAnswer($user_id, $question_id = null)
     {
-        $follow_user_ids = FollowUserEntity::getFollowUserIds($user_id);
+        $follow_user_ids = FollowService::getFollowUserIds($user_id);
         
         $user_ids = $follow_user_ids;
         if ($question_id) {
-            $answer_user_ids = AnswerEntity::getAnswerUserIdsByQuestionId($question_id);
+            $answer_user_ids = AnswerService::getAnswerUserIdsByQuestionId($question_id);
             $user_ids = array_merge($user_ids, $answer_user_ids);
         }
         
-        $user = UserEntity::getUserListByIds($user_ids);
-        
-        exit(json_encode($user));
-        echo Json::encode($user);
+        $user = UserService::getUserListByIds($user_ids);
+
+        return $this->jsonOut($user);
     }
     
     /**
@@ -354,7 +351,7 @@ class QuestionController extends BaseController
         
         switch ($method) {
             case 'username':
-                $user_data = UserEntity::getUserIdByUsername($be_invited_user);
+                $user_data = UserService::getUserIdByUsername($be_invited_user);
                 if ($user_data) {
                     $result = QuestionInviteEntity::inviteToAnswerByNotice(
                         Yii::$app->user->id,
@@ -379,7 +376,7 @@ class QuestionController extends BaseController
     
     public function getSimilarQuestionBySubject($subject)
     {
-        $similar_question = QuestionEntity::searchQuestionBySubject($subject);
+        $similar_question = QuestionService::searchQuestionBySubject($subject);
         
         return $this->jsonOut(Error::get($similar_question));
     }

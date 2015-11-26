@@ -4,7 +4,7 @@ namespace common\models;
 
 use common\components\Notifier;
 use common\entities\NotificationEntity;
-use common\entities\QuestionEntity;
+use common\services\QuestionService;
 use Yii;
 
 /**
@@ -84,7 +84,7 @@ class QuestionInvite extends \common\models\BaseActiveRecord
 
     public static function inviteToAnswerByEmail($question_id, $email)
     {
-        $question_data = QuestionEntity::getQuestionByQuestionId($question_id);
+        $question_data = QuestionService::getQuestionByQuestionId($question_id);
 
         if ($question_data) {
             #todo 需要模板支持
