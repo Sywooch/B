@@ -7,7 +7,7 @@ namespace common\models;
  *
  * @see JudgeAction
  */
-class JudgeActionQuery extends \yii\db\ActiveQuery
+class JudgeActionQuery extends BaseActiveQuery
 {
     /*public function active()
     {

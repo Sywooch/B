@@ -7,7 +7,7 @@ namespace common\models;
  *
  * @see JudgeLog
  */
-class JudgeLogQuery extends \yii\db\ActiveQuery
+class JudgeLogQuery extends BaseActiveQuery
 {
     /*public function active()
     {

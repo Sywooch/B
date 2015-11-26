@@ -142,10 +142,10 @@ class BaseActiveRecord extends ActiveRecord
     /**
      * 重写find方法，以便使用 BaseActiveQuery
      * @inheritdoc
-     * @return ActiveQuery the newly created [[ActiveQuery]] instance.
+     * @return BaseActiveQuery the newly created [[ActiveQuery]] instance.
      */
     public static function find()
-{
-    return Yii::createObject(BaseActiveQuery::className(), [get_called_class()]);
-}
+    {
+        return Yii::createObject(BaseActiveQuery::className(), [get_called_class()]);
+    }
 }

@@ -7,7 +7,7 @@ namespace common\models;
  *
  * @see Area
  */
-class AreaQuery extends \yii\db\ActiveQuery
+class AreaQuery extends BaseActiveQuery
 {
     /*public function active()
     {

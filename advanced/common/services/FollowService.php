@@ -532,10 +532,14 @@ class FollowService extends BaseService
 
     }
 
-    public static function getUserFansList($user_id, $page_no = 1, $page_size = 20)
+    public static function getUserFanUserIds($user_id, $page_no = 1, $page_size = 20)
     {
-        $model = FollowUserEntity::find()->select(['user_id', 'create_at'])->where(
+        $query = FollowUserEntity::find()->select(['user_id'])->where(
             ['follow_user_id' => $user_id]
-        )->orderBy('create_at DESC')->page($page_no, $page_size)->all();
+        )->orderBy('create_at DESC')->limiter($page_no, $page_size);
+
+        $model = $query->asArray()->column();
+
+        return $model;
     }
 }

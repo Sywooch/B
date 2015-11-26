@@ -7,7 +7,7 @@ namespace common\models;
  *
  * @see FollowQuestion
  */
-class FollowQuestionQuery extends \yii\db\ActiveQuery
+class FollowQuestionQuery extends BaseActiveQuery
 {
     /*public function active()
     {

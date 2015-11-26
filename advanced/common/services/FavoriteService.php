@@ -65,4 +65,13 @@ class FavoriteService extends BaseService
 
         return true;
     }
+
+    public static function getUserFavoriteRecordList($user_id, $page_no = 1, $page_size = 20)
+    {
+        return FavoriteRecordEntity::find()->where(
+            [
+                'create_at' => $user_id,
+            ]
+        )->limiter($page_no, $page_size)->asArray()->all();
+    }
 }

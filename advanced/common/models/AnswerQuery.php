@@ -9,7 +9,7 @@ use Yii;
  *
  * @see Answer
  */
-class AnswerQuery extends \yii\db\ActiveQuery
+class AnswerQuery extends BaseActiveQuery
 {
     /*public function active()
     {

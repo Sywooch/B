@@ -7,7 +7,7 @@ namespace common\models;
  *
  * @see QuestionEventHistory
  */
-class QuestionEventHistoryQuery extends \yii\db\ActiveQuery
+class QuestionEventHistoryQuery extends BaseActiveQuery
 {
     /*public function active()
     {

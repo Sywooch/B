@@ -7,7 +7,7 @@ namespace common\models;
  *
  * @see JudgeEvent
  */
-class JudgeEventQuery extends \yii\db\ActiveQuery
+class JudgeEventQuery extends BaseActiveQuery
 {
     /*public function active()
     {

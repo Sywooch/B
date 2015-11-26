@@ -7,7 +7,7 @@ namespace common\models;
  *
  * @see FollowTag
  */
-class FollowTagQuery extends \yii\db\ActiveQuery
+class FollowTagQuery extends BaseActiveQuery
 {
     /*public function active()
     {

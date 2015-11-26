@@ -13,7 +13,15 @@ use yii\db\ActiveQuery;
 
 class BaseActiveQuery extends ActiveQuery
 {
-    public function page($page_no, $page_size = 10, $max = null)
+    /**
+     * 限制器
+     * @param      $page_no
+     * @param int  $page_size
+     * @param null $max 如果设置了此项，将表示展示的最多数量，超出将报错
+     * @return $this
+     * @throws Exception
+     */
+    public function limiter($page_no, $page_size = 10, $max = null)
     {
         $limit = $page_size;
         $offset = max($page_no - 1, 0) * $page_size;

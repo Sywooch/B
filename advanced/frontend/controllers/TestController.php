@@ -240,9 +240,13 @@ class TestController extends BaseController
 
     public function actionTag()
     {
-        $result = FollowService::getUserBeGoodAtTagsByUserId(1);
+        $result = FollowService::getUserFansList(1);
         print_r($result);
         exit;
+
+
+        $result = FollowService::getUserBeGoodAtTagsByUserId(1);
+
         //$data = TagService::getTagIdByName( ['中国人', '大家好']);
         /*$data = TagService::getTagNameById([1, 2]);
 
