@@ -10,67 +10,101 @@ namespace common\services;
 
 
 use common\components\Counter;
-use common\entities\FavoriteRecordEntity;
+use common\entities\FavoriteCategoryEntity;
+use common\entities\FavoriteEntity;
 use common\exceptions\NotFoundModelException;
 
 class FavoriteService extends BaseService
 {
     public static function getFavoriteSubject($id)
     {
-        $model = FavoriteRecordEntity::findOne($id);
+        $model = FavoriteEntity::findOne($id);
         if (!$model) {
-            throw new NotFoundModelException(FavoriteRecordEntity::className());
+            throw new NotFoundModelException(FavoriteEntity::className());
         }
         $result = null;
         switch ($model->type) {
-            case FavoriteRecordEntity::TYPE_QUESTION:
+            case FavoriteEntity::TYPE_QUESTION:
                 /* @var $question QuestionEntity */
                 $question = QuestionEntity::findOne($model->associate_id);
                 if ($question) {
                     $result = $question->subject;
                 }
-
+                
                 break;
-            case FavoriteRecordEntity::TYPE_ARTICLE:
+            case FavoriteEntity::TYPE_ARTICLE:
                 #todo
                 throw new Exception('todo');
                 break;
-
+            
             default:
                 throw new Exception('todo');
         }
-
+        
         return $result;
     }
 
-    public static function removeFavoriteRecord($type, $associate_id)
+    public static function removeFavoriteByAssociateId($type, $associate_id)
     {
-        $model = FavoriteRecordEntity::find()->where(
+        $model = FavoriteEntity::find()->where(
             [
                 'type'         => $type,
                 'associate_id' => $associate_id,
             ]
         )->all();
-
-        $favorite_ids = [];
-        foreach ($model as $favorite_record) {
-            if ($favorite_record->delete()) {
-                $favorite_ids[] = $favorite_record->favorite_id;
+        
+        $favorite_category_ids = [];
+        /* @var $favorite FavoriteEntity */
+        foreach ($model as $favorite) {
+            if ($favorite->delete()) {
+                $favorite_category_ids[] = $favorite->favorite_category_id;
             }
         }
-
-        foreach ($favorite_ids as $favorite_id) {
-            Counter::addFavorite($favorite_id);
+        
+        foreach ($favorite_category_ids as $favorite_category_id) {
+            Counter::removeFavorite($favorite_category_id);
         }
-
+        
         return true;
     }
-
-    public static function getUserFavoriteRecordList($user_id, $page_no = 1, $page_size = 20)
+    
+    public static function removeFavoriteByIds(array $ids)
     {
-        return FavoriteRecordEntity::find()->where(
+        $model = FavoriteEntity::find()->where(
             [
-                'create_at' => $user_id,
+                'id' => $ids,
+            ]
+        )->all();
+        
+        $favorite_category_ids = [];
+        /* @var $favorite FavoriteEntity */
+        foreach ($model as $favorite) {
+            if ($favorite->delete()) {
+                $favorite_category_ids[] = $favorite->favorite_category_id;
+            }
+        }
+        
+        foreach ($favorite_category_ids as $favorite_category_id) {
+            Counter::removeFavorite($favorite_category_id);
+        }
+        
+        return true;
+    }
+    
+    public static function getUserFavoriteCategoryList($user_id, $page_no = 1, $page_size = 20)
+    {
+        return FavoriteCategoryEntity::find()->where(
+            [
+                'create_by' => $user_id,
+            ]
+        )->limiter($page_no, $page_size)->asArray()->all();
+    }
+    
+    public static function getUserFavoriteList($user_id, $page_no = 1, $page_size = 20)
+    {
+        return FavoriteEntity::find()->where(
+            [
+                'create_by' => $user_id,
             ]
         )->limiter($page_no, $page_size)->asArray()->all();
     }

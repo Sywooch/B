@@ -115,7 +115,6 @@ class QuestionEntity extends Question
                     );
 
                     return false;
-
                 }
             }
         }
@@ -148,7 +147,7 @@ class QuestionEntity extends Question
             'timestamp'         => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['create_at', 'active_at'],
                     ActiveRecord::EVENT_BEFORE_UPDATE => 'active_at',
                 ],
             ],

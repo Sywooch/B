@@ -11,7 +11,7 @@ namespace common\behaviors;
 use common\components\Counter;
 use common\components\Updater;
 use common\entities\AttachmentEntity;
-use common\entities\FavoriteRecordEntity;
+use common\entities\FavoriteEntity;
 use common\entities\FollowQuestionEntity;
 use common\entities\QuestionEventHistoryEntity;
 use common\entities\QuestionTagEntity;
@@ -44,7 +44,6 @@ class QuestionBehavior extends BaseBehavior
             ActiveRecord::EVENT_AFTER_UPDATE  => 'afterQuestionUpdate',
             ActiveRecord::EVENT_AFTER_DELETE  => 'afterQuestionDelete',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeQuestionSave',
-            //ActiveRecord::EVENT_AFTER_FIND    => 'afterQuestionFind',
         ];
     }
 
@@ -53,12 +52,12 @@ class QuestionBehavior extends BaseBehavior
 
     }*/
 
-    public function beforeQuestionValidate($event)
+    public function beforeQuestionValidate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }
     
-    public function beforeQuestionSave($event)
+    public function beforeQuestionSave()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -66,7 +65,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithTagsOrder();
     }
     
-    public function afterQuestionInsert($event)
+    public function afterQuestionInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithAddQuestionEventHistory();
@@ -78,7 +77,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithTagRelationCount();
     }
     
-    public function afterQuestionUpdate($event)
+    public function afterQuestionUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithQuestionUpdateEvent();
@@ -87,7 +86,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithRedisCacheUpdate();
     }
     
-    public function afterQuestionDelete($event)
+    public function afterQuestionDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithRemoveFollowQuestion();
@@ -320,7 +319,7 @@ class QuestionBehavior extends BaseBehavior
             }
             
             $this->owner->content = str_replace($search_rules, $replace_rules, $this->owner->content);
-            Updater::updateContent($this->owner->id, $this->owner->content);
+            Updater::updateQuestionContent($this->owner->id, $this->owner->content);
             
         } else {
             Yii::trace('No matching data', 'attachment');
@@ -330,7 +329,7 @@ class QuestionBehavior extends BaseBehavior
     public function dealWithFavoriteRecordRemove()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = FavoriteService::removeFavoriteRecord(FavoriteRecordEntity::TYPE_QUESTION, $this->owner->id);
+        $result = FavoriteService::removeFavorite(FavoriteEntity::TYPE_QUESTION, $this->owner->id);
 
         Yii::trace(sprintf('Remove Favorite Record Result: %s', var_export($result, true)), 'behavior');
     }
@@ -363,7 +362,7 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         if ($this->owner->tags) {
-            $this->owner->tags = str_replace(['，', '、', ' '], ',', $this->owner->tags);
+            $this->owner->tags = str_replace(['，', '、'], ',', $this->owner->tags);
             $tags = array_unique(array_filter(explode(',', $this->owner->tags)));
             $this->owner->tags = implode(',', $tags);
         }

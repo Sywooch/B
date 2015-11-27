@@ -25,7 +25,7 @@ class UserService extends BaseService
 
     public static function checkUserSelf($user_id)
     {
-        return (!Yii::$app->user->isGuest && Yii::$app->user->id == $user_id) ? true : false;
+        return (Yii::$app->user && !Yii::$app->user->isGuest && Yii::$app->user->id == $user_id) ? true : false;
     }
 
     public static function checkWhetherIsOfficialAccount($user_id)
@@ -293,7 +293,7 @@ class UserService extends BaseService
 
     public static function getUserFavoriteList($user_id, $page_no = 1, $page_size = 20)
     {
-        return FavoriteService::getUserFavoriteRecordList($user_id, $page_no, $page_size);
+        return FavoriteService::getUserFavoriteList($user_id, $page_no, $page_size);
     }
 
     public static function getUserFollowTagList($user_id, $page_no = 1, $page_size = 20)

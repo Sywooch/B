@@ -216,7 +216,6 @@ class TestController extends BaseController
         print_r($result);
 
 
-
     }
 
     public function actionGetUsername()
@@ -240,7 +239,7 @@ class TestController extends BaseController
 
     public function actionTag()
     {
-        $result = FollowService::getUserFansList(1);
+        $result = UserService::getUserFansList(1);
         print_r($result);
         exit;
 
@@ -255,7 +254,7 @@ class TestController extends BaseController
         //$result = TagService::getHotTag();
         //$result = TagService::getRelateTag(6);
 
-        $result = TagService::getTagIdByName(['深圳游玩1', '情侣游玩1', '深户1','bbaacc']);
+        $result = TagService::getTagIdByName(['深圳游玩1', '情侣游玩1', '深户1', 'bbaacc']);
 
         print_r($result);
     }

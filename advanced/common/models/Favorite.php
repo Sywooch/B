@@ -8,15 +8,14 @@ use Yii;
  * This is the model class for table "favorite".
  *
  * @property string $id
- * @property string $name
- * @property string $is_public
+ * @property string $favorite_category_id
+ * @property string $type
+ * @property string $associate_id
+ * @property string $create_at
  * @property integer $create_by
- * @property integer $active_at
- * @property string $last_favorite_content
- * @property integer $count_follow
- * @property string $count_favorite
+ * @property string $note
  *
- * @property FavoriteRecord[] $favoriteRecords
+ * @property User $createBy
  */
 class Favorite extends \common\models\BaseActiveRecord
 {
@@ -34,10 +33,10 @@ class Favorite extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['name', 'create_by'], 'required'],
-            [['is_public'], 'string'],
-            [['create_by', 'active_at', 'count_follow', 'count_favorite'], 'integer'],
-            [['name', 'last_favorite_content'], 'string', 'max' => 45]
+            [['favorite_category_id', 'create_at', 'create_by'], 'integer'],
+            [['type'], 'string'],
+            [['create_by'], 'required'],
+            [['associate_id', 'note'], 'string', 'max' => 45]
         ];
     }
 
@@ -48,21 +47,20 @@ class Favorite extends \common\models\BaseActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => '收藏夹名称',
-            'is_public' => '是否公开收藏夹',
-            'create_by' => '创建用户',
-            'active_at' => '最后活动时间',
-            'last_favorite_content' => '最后一条收藏内容',
-            'count_follow' => '关注收藏夹的人数',
-            'count_favorite' => '收藏内容的数量',
+            'favorite_category_id' => '收藏夹分类ID',
+            'type' => '类型',
+            'associate_id' => '关联的对象ID',
+            'create_at' => '创建时间',
+            'create_by' => 'Create By',
+            'note' => '注解',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFavoriteRecords()
+    public function getCreateBy()
     {
-        return $this->hasMany(FavoriteRecord::className(), ['favorite_id' => 'id']);
+        return $this->hasOne(User::className(), ['id' => 'create_by']);
     }
 }

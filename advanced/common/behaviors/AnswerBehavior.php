@@ -125,7 +125,7 @@ class AnswerBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        $result = Updater::updateActiveAt($this->owner->question_id, TimeHelper::getCurrentTime());
+        $result = Updater::updateQuestionActiveAt($this->owner->question_id, TimeHelper::getCurrentTime());
         
         Yii::trace(sprintf('Update Active At: %s', var_export($result, true)), 'behavior');
     }

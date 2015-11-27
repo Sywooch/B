@@ -9,7 +9,7 @@
 namespace common\components;
 
 use common\entities\AnswerEntity;
-use common\entities\FavoriteEntity;
+use common\entities\FavoriteCategoryEntity;
 use common\entities\PrivateMessageEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserEntity;
@@ -436,23 +436,23 @@ class Counter extends BaseCounter
 
     //******************************************FAVORITE***************************************************/
 
-    public static function addFavorite($favorite_id)
+    public static function addFavorite($favorite_category_id)
     {
-        Yii::trace('增加用户的问题收藏数量', 'counter');
+        Yii::trace('增加收藏夹分类的收藏数量', 'counter');
 
         return self::build()->set(
-            FavoriteEntity::tableName(),
-            $favorite_id
+            FavoriteCategoryEntity::tableName(),
+            $favorite_category_id
         )->value('count_favorite', 1)->execute();
     }
 
-    public static function removeFavorite($favorite_id)
+    public static function removeFavorite($favorite_category_id)
     {
-        Yii::trace('减少用户的问题收藏数量', 'counter');
+        Yii::trace('减少收藏夹分类的收藏数量', 'counter');
 
         return self::build()->set(
-            FavoriteEntity::tableName(),
-            $favorite_id
+            FavoriteCategoryEntity::tableName(),
+            $favorite_category_id
         )->value('count_favorite', -1)->execute();
     }
 }

@@ -8,6 +8,7 @@
 
 namespace common\components;
 
+use common\entities\FavoriteCategoryEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserProfileEntity;
 use common\services\QuestionService;
@@ -31,7 +32,7 @@ class Updater extends BaseUpdater
         return $result;
     }
 
-    public static function updateContent($id, $content)
+    public static function updateQuestionContent($id, $content)
     {
         $result = self::build()->sync(true)->table(QuestionEntity::tableName())->set(['content' => $content])->where(
             ['id' => $id]
@@ -44,7 +45,7 @@ class Updater extends BaseUpdater
         return $result;
     }
 
-    public static function updateActiveAt($id, $active_at)
+    public static function updateQuestionActiveAt($id, $active_at)
     {
         $result = self::build()->sync(true)->table(QuestionEntity::tableName())->set(
             ['active_at' => $active_at]
@@ -56,6 +57,18 @@ class Updater extends BaseUpdater
             QuestionService::updateQuestionCache($id, ['active_at' => $active_at]);
         }
 
+        return $result;
+    }
+
+    public static function updateFavoriteCategoryActiveAt($id, $active_at)
+    {
+        $result = self::build()->sync(true)->table(FavoriteCategoryEntity::tableName())->set(
+            ['active_at' => $active_at]
+        )->where(
+            ['id' => $id]
+        )->execute();
+
+        //no redis cache
         return $result;
     }
 }

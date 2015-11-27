@@ -41,6 +41,8 @@ class Error extends Object
     /* follow question */
     const TYPE_FOLLOW_QUESTION_FOLLOW_TOO_MUCH_QUESTION = 'follow_question:follow_too_much_question';
 
+    /* favorite */
+    const TYPE_FAVORITE_CATEGORY_DELETE_FAIL = 'favorite:category_delete_fail';
 
     public static $error = [
         #1000
@@ -81,5 +83,8 @@ class Error extends Object
             'follow_too_much_question' => [10000, '你当前的关注问题数量已超过限制，最多%d个，请先清理一下。'],
         ],
         #11000
+        'favorite' => [
+            'category_delete_fail' => [11001, '当前收藏夹下还有 %d 个收藏项，请先删除这些收藏项。']
+        ]
     ];
 }
