@@ -8,22 +8,20 @@
 use common\helpers\TemplateHelper;
 
 ?>
-<? foreach ($data as $index => $item): ?>
+<?php foreach ($data as $index => $item) : ?>
     <div class="widget-comments__item hover-show">
         <div class="comment-content wordbreak">
             <p class="comment-meta">
                 #&nbsp;
                 <?= TemplateHelper::showUsername($item['create_by']) ?>
-                <? if ($answer_create_user_id == $item['create_by']): ?>
+                <?php if ($answer_create_user_id == $item['create_by']) : ?>
                     [答主]
-                <? elseif ($question_create_user_id == $item['create_by']): ?>
-                    [提问者]
-                <? endif; ?>
+                <?php elseif ($question_create_user_id == $item['create_by']) : ?>
+                    [题主]
+                <?php endif; ?>
                 · <span class="createdDate">
-                        <?= TemplateHelper::showhumanTime(
-                                $item['create_at']
-                        ) ?></span>
-                <? if ($item['create_by'] != Yii::$app->user->id): ?>
+                        <?= TemplateHelper::showHumanTime($item['create_at']); ?></span>
+                <?php if ($item['create_by'] != Yii::$app->user->id) : ?>
                     · <a href="#"
                          class="commentReply"
                          data-userid="1030000002644202"
@@ -40,8 +38,7 @@ use common\helpers\TemplateHelper;
                                data-placement="top"
                                title="举报">举报</a>
                 </span>
-                <? endif; ?>
-
+                <?php endif; ?>
             </p>
 
             <div class="content fmt mb-10">
@@ -49,4 +46,4 @@ use common\helpers\TemplateHelper;
             </div>
         </div>
     </div>
-<? endforeach; ?>
+<?php endforeach; ?>

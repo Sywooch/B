@@ -14,8 +14,8 @@ use common\entities\FollowQuestionEntity;
 use common\entities\FollowTagEntity;
 use common\entities\FollowTagPassiveEntity;
 use common\entities\FollowUserEntity;
+use common\entities\UserProfileEntity;
 use common\helpers\TimeHelper;
-use common\services\UserService;
 use Yii;
 
 class FollowService extends BaseService
@@ -33,11 +33,9 @@ class FollowService extends BaseService
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
         }
 
-        $follow_question_count = UserProfileEntity::find()->select('count_follow')->where(
-            ['user_id' => $user_id]
-        )->scalar();
+        $user = UserService::getUserById($user_id);
 
-        if ($follow_question_count > FollowQuestionEntity::MAX_FOLLOW_NUMBER) {
+        if ($user['count_follow_question'] > FollowQuestionEntity::MAX_FOLLOW_NUMBER) {
             return Error::set(
                 Error::TYPE_FOLLOW_QUESTION_FOLLOW_TOO_MUCH_QUESTION,
                 FollowQuestionEntity::MAX_FOLLOW_NUMBER
@@ -55,8 +53,6 @@ class FollowService extends BaseService
             $model->create_at = $user_id;
             $model->follow_question_id = $question_id;
             if ($model->save()) {
-                Counter::followQuestion($user_id);
-
                 return true;
             } else {
                 Yii::error($model->getErrors(), __FUNCTION__);

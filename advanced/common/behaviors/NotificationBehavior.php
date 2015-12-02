@@ -8,9 +8,7 @@
 
 namespace common\behaviors;
 
-
 use Yii;
-use yii\base\Behavior;
 use yii\db\ActiveRecord;
 
 class NotificationBehavior extends BaseBehavior
@@ -24,7 +22,7 @@ class NotificationBehavior extends BaseBehavior
         ];
     }
 
-    public function afterNotificationInsert($event)
+    public function afterNotificationInsert()
     {
         $this->dealWithIncreaseCountNotification();
     }

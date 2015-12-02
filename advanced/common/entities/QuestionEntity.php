@@ -23,8 +23,9 @@ class QuestionEntity extends Question
     const MIN_TAGS_NUMBERS = 1; //最少的标签数
     const MAX_TAGS_LENGTH = 15; //标签最长的字符数，“我是1”长度为3
     const MIN_TAGS_LENGTH = 2; //标签最短的字符数，“我是1”长度为3
-
     const MIN_SUBJECT_LENGTH = 6;//问题长度
+
+    const EVENT_TEST = 'question_test'; //测试事件
 
 
     const STATUS_ANONYMOUS = 'yes';

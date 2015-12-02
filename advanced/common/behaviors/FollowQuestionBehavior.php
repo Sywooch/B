@@ -8,10 +8,9 @@
 
 namespace common\behaviors;
 
-
-use common\services\NotificationService;
+use common\components\Counter;
 use Yii;
-use yii\base\Behavior;
+use yii\db\ActiveRecord;
 
 /**
  * Class FollowQuestionBehavior
@@ -25,8 +24,20 @@ class FollowQuestionBehavior extends BaseBehavior
         Yii::trace('Begin ' . $this->className(), 'behavior');
 
         return [
-            //ActiveRecord::EVENT_AFTER_DELETE => 'afterRemoveFollowQuestion',
+            ActiveRecord::EVENT_AFTER_INSERT => 'afterFollowQuestionInsert',
         ];
     }
 
+    public function afterFollowQuestionInsert()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        $this->dealWithCounter();
+    }
+
+    private function dealWithCounter()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        Counter::followQuestion($this->owner->user_id);
+        Counter::addQuestionFollow($this->owner->follow_question_id);
+    }
 }

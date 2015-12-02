@@ -31,7 +31,7 @@ use yii\helpers\Html;
                     <?= TemplateHelper::showUsername($item['create_by']) ?>
                     <span class="split"></span>
                     <?= Html::a(
-                            TemplateHelper::showhumanTime(
+                            TemplateHelper::showHumanTime(
                                     $item['create_at']
                             ),
                             ['question/view', 'id' => $item['id']],

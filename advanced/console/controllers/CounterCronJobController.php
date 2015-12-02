@@ -21,6 +21,7 @@ class CounterCronJobController extends Controller
         $counter_set = Counter::getSet();
 
         foreach ($counter_set as $object) {
+            echo sprintf('Process Table %s ', $object), PHP_EOL;
             $i = 0;
             while ($i <= self::NUMBER_OF_EACH && $item = Counter::popUpQueue($object)) {
                 $table = $item['table'];
@@ -39,6 +40,7 @@ class CounterCronJobController extends Controller
 
                 $i++;
             }
+            echo sprintf('Done Table %s ', $object), PHP_EOL, PHP_EOL;
         }
     }
 }

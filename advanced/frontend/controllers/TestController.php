@@ -15,9 +15,9 @@ use common\components\Notifier;
 use common\components\Updater;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
-use common\entities\TagEntity;
 use common\entities\UserEntity;
 use common\helpers\AtHelper;
+use common\helpers\TemplateHelper;
 use common\models\xunsearch\QuestionSearch;
 use common\services\FollowService;
 use common\services\QuestionService;
@@ -62,7 +62,7 @@ class TestController extends BaseController
 
         if ($crawler instanceof CrawlerBase) {
             //$crawler->up();
-            $crawler->launch();
+            //$crawler->launch();
             //$crawler->down();
         }
 
@@ -78,9 +78,11 @@ class TestController extends BaseController
 
     public function actionMail()
     {
-        $result = Yii::$app->mailer->compose()->setFrom(Yii::$app->params['senderEmail'])->setTo(
-            '6202551@qq.com'
-        )->setSubject('This is a test mail ')->send();
+        $result = Yii::$app->mailer->compose()
+                                   ->setFrom(Yii::$app->params['senderEmail'])
+                                   ->setTo('6202551@qq.com')
+                                   ->setSubject('This is a test mail ')
+                                   ->send();
 
         var_dump($result);
     }
@@ -118,21 +120,14 @@ class TestController extends BaseController
 
         exit;*/
 
-        $notifier = Notifier::build()->sync(false)->to(1)->email('a', 'b');
-
-        print_r($notifier->result);
+        //$notifier = Notifier::build()->sync(false)->to(1)->email('a', 'b');
     }
 
     public function actionCounter()
     {
-        $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value(
-            'count_answer',
-            1
-        )->execute();
-        $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value(
-            'count_question',
-            1
-        )->execute();
+        $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value('count_answer', 1)->execute();
+        $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value('count_question', 1)->execute(
+        );
 
         $data = Yii::$app->redis->lRange([REDIS_KEY_COUNTER, 'user_profile'], 0, 10);
 
@@ -341,7 +336,7 @@ class TestController extends BaseController
 
     }
 
-    function decodeSubject($subject)
+    public function decodeSubject($subject)
     {
         $data = imap_mime_header_decode($subject);
 
@@ -359,22 +354,21 @@ class TestController extends BaseController
     public function actionQuestion()
     {
 
-        $this->autoLoginById(1);
+        //$this->autoLoginById(1);
         /* @var $question QuestionEntity */
         $question = Yii::createObject(QuestionEntity::className());
-        $question->subject = 'testtesttesttesttesttesttest';
+        $question->subject = sprintf('现在时间为:%s', date('Y年m月d日 H:i:s'));
         $question->tags = 'aa,bb,cc';
-        $question->content = 'testcontent';
+        $question->content = 'test content';
         $result = $question->save();
         echo '<pre />';
-        print_r($question->getErrors());
+        if ($question->hasErrors()) {
+            print_r($question->getErrors());
+        } else {
+            //$question->trigger(QuestionEntity::EVENT_TEST);
+        }
         var_dump($result);
-
-        /*$data = $question->fetchLatest(1, true);
-
-        var_dump($data);*/
-
-
+        print_r($question->getAttributes());
     }
 
     public function actionError()
@@ -441,6 +435,11 @@ class TestController extends BaseController
     public function actionCurl()
     {
         $curl = new Curl();
+
+    }
+    public function actionCurrency()
+    {
+        echo TemplateHelper::showHumanCurrency(1501);
 
     }
 }

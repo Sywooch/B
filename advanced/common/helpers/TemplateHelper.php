@@ -105,7 +105,7 @@ class TemplateHelper
         return implode('', $html);
     }
 
-    public static function showhumanTime($time)
+    public static function showHumanTime($time)
     {
         return Yii::$app->formatter->asRelativeTime($time);
     }
@@ -119,5 +119,25 @@ class TemplateHelper
                 Html::a('注册', ['/member'], ['class' => 'commentLogin']),
             ]
         );
+    }
+
+    public static function showHumanCurrency($currency)
+    {
+        $result = '';
+        if ($currency < 0) {
+            $result = '负债中...';
+        } elseif ($currency >= 0 && $currency < 1000) {
+            $result = $currency . '文钱';
+        } elseif ($currency % 1000 == 0) {
+            $result = sprintf('%d两白银', $currency / 1000);
+        } elseif ($currency > 1000 && $currency < 10000) {
+            $result = sprintf('≈%d两白银', round($currency / 1000));
+        } elseif ($currency % 10000 == 0) {
+            $result = sprintf('%d两黄金', $currency / 10000);
+        } elseif ($currency > 10000) {
+            $result = sprintf('≈%d两黄金', round($currency / 10000));
+        }
+
+        return $result;
     }
 }

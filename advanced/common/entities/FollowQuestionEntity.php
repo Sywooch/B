@@ -2,15 +2,13 @@
 
 namespace common\entities;
 
-use common\components\Counter;
+use common\behaviors\FollowQuestionBehavior;
 use common\components\Error;
 use Yii;
-use common\exceptions\ParamsInvalidException;
 use common\models\FollowQuestion;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\helpers\ArrayHelper;
 
 class FollowQuestionEntity extends FollowQuestion
 {
@@ -30,6 +28,9 @@ class FollowQuestionEntity extends FollowQuestion
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
                 ],
+            ],
+            'follow_question_behavior' => [
+                'class'      => FollowQuestionBehavior::className(),
             ],
         ];
     }

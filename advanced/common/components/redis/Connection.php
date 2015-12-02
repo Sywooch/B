@@ -16,13 +16,15 @@ use yii\base\Exception;
  */
 class Connection extends Component
 {
-
-    private static $instance;
     public $config; #总配置
     public $prefix; #前端
     public $params; #参数
 
-    private $redis_key_config, $cache_category, $cache_key, $instance_key;
+    protected static $instance;
+    private $redis_key_config;
+    private $cache_category;
+    private $cache_key;
+    private $instance_key;
 
     #todo 以下方法，将会在执行后重新设置过期时间的方法，此方法有待完善
     public $need_set_expire_command = [
@@ -34,23 +36,12 @@ class Connection extends Component
         'HMSET',
         'LSET',
     ];
-    #TODO 需要特殊对待的命令
-    public $need_special_handling_command = [
-        'MGET',
-    ];
 
     public function __destruct()
     {
         unset($this->config, $this->prefix, $this->params);
         self::$instance = null;
     }
-
-
-    /*public function init()
-    {
-
-
-    }*/
 
     /**
      * 修饰缓存KEY
@@ -130,7 +121,7 @@ class Connection extends Component
         return $this->config[$this->cache_category];
     }
 
-    public function createInstance()
+    private function createInstance()
     {
         if (empty($this->redis_key_config['server']['hostname']) || empty($this->redis_key_config['server']['port'])) {
             throw new Exception("找不到key {$this->redis_key_config['name']}的redis的配置信息!");
@@ -152,7 +143,6 @@ class Connection extends Component
 
 
         if (empty(self::$instance[$this->instance_key])) {
-
             $redis = new Redis();
             if (!$redis->connect(
                 $this->redis_key_config['server']['hostname'],
@@ -194,7 +184,7 @@ class Connection extends Component
 
             #自动序列化，用 igbinary 会节约很多内存，但开始SERIALIZER后，INCR, INCRBY, or HINCRBY将会存在问题。
             #暂定 hash类型的数据不使用SERIALIZER
-            //$redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_IGBINARY);
+
             if ($this->redis_key_config['serializer']) {
                 $redis->setOption(Redis::OPT_SERIALIZER, $this->redis_key_config['serializer']);
             }
@@ -213,7 +203,7 @@ class Connection extends Component
     {
         #判断第一个参数是否为数组格式，数组格式则为 prefix:array[0]:array[1]，否则为 prefix:array
         if (empty($params[0]) || !is_array($params[0])) {
-            throw new Exception('redis 参数1不得为空，数组格式:[category, id]');
+            throw new Exception(sprintf('REDIS参数1不得为空，格式为:[category, id]，当前为:%s', var_export($params[0], true)));
         } elseif (count($params[0]) == 1) {
             $params[0] = array_merge($params[0], ['']);
         }
@@ -292,9 +282,9 @@ class Connection extends Component
 
     /**
      * 缓存未命中，通过查询数据库得到数据，填充回数组
-     * @param $cache_hit_data  缓存命中的数据
-     * @param $cache_miss_key  缓存未命中的key
-     * @param $cache_miss_data 缓存未命中，查询数据后得到的数据
+     * @param $cache_hit_data  //缓存命中的数据
+     * @param $cache_miss_key  //缓存未命中的key
+     * @param $cache_miss_data //缓存未命中，查询数据后得到的数据
      * @return mixed
      */
     public function paddingMissData($cache_hit_data, $cache_miss_key, $cache_miss_data)
@@ -312,7 +302,4 @@ class Connection extends Component
 
         return $cache_hit_data;
     }
-
 }
-
-?>

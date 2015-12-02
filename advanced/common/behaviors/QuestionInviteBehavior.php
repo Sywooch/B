@@ -8,10 +8,8 @@
 
 namespace common\behaviors;
 
-
 use common\components\Notifier;
 use common\entities\NotificationEntity;
-use yii\base\Behavior;
 use yii\db\ActiveRecord;
 use Yii;
 
@@ -32,13 +30,13 @@ class QuestionInviteBehavior extends BaseBehavior
         ];
     }
 
-    public function afterQuestionInviteInsert($event)
+    public function afterQuestionInviteInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotifier();
     }
 
-    public function afterQuestionInviteUpdate($event)
+    public function afterQuestionInviteUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotifier();
@@ -47,10 +45,7 @@ class QuestionInviteBehavior extends BaseBehavior
     private function dealWithNotifier()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = Notifier::build()->from($this->owner->create_by)->to($this->owner->invited_user_id)->notice(
-            NotificationEntity::TYPE_INVITE_ME_TO_ANSWER_QUESTION,
-            ['question_id' => $this->owner->question_id]
-        );
+        $result = Notifier::build()->from($this->owner->create_by)->to($this->owner->invited_user_id)->notice(NotificationEntity::TYPE_INVITE_ME_TO_ANSWER_QUESTION, ['question_id' => $this->owner->question_id]);
 
         return $result;
     }

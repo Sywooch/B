@@ -67,7 +67,7 @@ class FavoriteBehavior extends BaseBehavior
      * @throws \common\exceptions\NotFoundModelException
      * @throws \yii\base\Exception
      */
-    public function dealWithActiveFavorite()
+    private function dealWithActiveFavorite()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $result = Updater::updateFavoriteCategoryActiveAt(
@@ -78,7 +78,7 @@ class FavoriteBehavior extends BaseBehavior
         Yii::trace(sprintf('Update Favorite Result: %s', $result), 'behavior');
     }
 
-    public function dealWithAddCounter()
+    private function dealWithAddCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $result = Counter::addFavorite($this->owner->favorite_category_id);
@@ -86,7 +86,7 @@ class FavoriteBehavior extends BaseBehavior
         return $result;
     }
 
-    public function dealWithRemoveCounter()
+    private function dealWithRemoveCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $result = Counter::removeFavorite($this->owner->favorite_category_id);
@@ -95,7 +95,7 @@ class FavoriteBehavior extends BaseBehavior
     }
 
 
-    public function dealWithMoveCategory($from_favorite_category_id, $to_favorite_category_id)
+    private function dealWithMoveCategory($from_favorite_category_id, $to_favorite_category_id)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         Counter::removeFavorite($from_favorite_category_id);

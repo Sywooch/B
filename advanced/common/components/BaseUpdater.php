@@ -191,7 +191,7 @@ class BaseUpdater extends Object
 
     public static function getSet()
     {
-        return Yii::$app->redis->SMEMBERS(REDIS_KEY_UPDATER_SET);
+        return Yii::$app->redis->SMEMBERS([REDIS_KEY_UPDATER_SET]);
     }
 
     private static function addSet($table)

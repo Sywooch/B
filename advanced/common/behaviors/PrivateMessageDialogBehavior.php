@@ -35,7 +35,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
         ];
     }
 
-    public function afterPrivateMessageDialogInsert($event)
+    public function afterPrivateMessageDialogInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -44,7 +44,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
         $this->dealWithCounter();
     }
 
-    public function dealWithNotification()
+    private function dealWithNotification()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -59,7 +59,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
         return $result;
     }
 
-    public function dealWithUpdatePrivateMessage()
+    private function dealWithUpdatePrivateMessage()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -73,7 +73,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
         Yii::trace(sprintf('updateLastActive: %s', $result), 'behavior');
     }
 
-    public function dealWithCounter()
+    private function dealWithCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 

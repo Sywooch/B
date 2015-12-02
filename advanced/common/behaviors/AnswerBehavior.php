@@ -8,15 +8,11 @@
 
 namespace common\behaviors;
 
-
 use common\components\Counter;
 use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
-use common\entities\AnswerEntity;
 use common\entities\AnswerVersionEntity;
-use common\entities\FollowQuestionEntity;
-use common\entities\FollowTagPassiveEntity;
 use common\entities\NotificationEntity;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
@@ -63,9 +59,11 @@ class AnswerBehavior extends BaseBehavior
             
             return Error::set(Error::TYPE_ANSWER_ONE_QUESTION_ONE_ANSWER_PER_PEOPLE);
         }
+
+        return true;
     }
     
-    public function afterAnswerInsert($event)
+    public function afterAnswerInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotification(NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER);
@@ -75,7 +73,7 @@ class AnswerBehavior extends BaseBehavior
         $this->dealWithAnswerInsertCache();
     }
 
-    public function dealWithAnswerInsertCache()
+    private function dealWithAnswerInsertCache()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -87,11 +85,10 @@ class AnswerBehavior extends BaseBehavior
         Yii::$app->redis->set($cache_key, $this->owner->id);
 
         #add answer to list
-        Yii::$app->redis->zAdd(
-            [REDIS_KEY_ANSWER_LIST_TIME, $this->owner->question_id],
-            TimeHelper::getCurrentTime(),
-            $this->owner->id
-        );
+        Yii::$app->redis->zAdd([
+            REDIS_KEY_ANSWER_LIST_TIME,
+            $this->owner->question_id,
+        ], TimeHelper::getCurrentTime(), $this->owner->id);
         Yii::$app->redis->zAdd([REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id], 0, $this->owner->id);
 
         $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
@@ -99,7 +96,7 @@ class AnswerBehavior extends BaseBehavior
         AnswerService::updateAnswerCache($this->owner->id, $item);
     }
     
-    public function afterAnswerUpdate($event)
+    public function afterAnswerUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotification(NotificationEntity::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
@@ -111,17 +108,17 @@ class AnswerBehavior extends BaseBehavior
         $this->dealWithUpdateAnswerCache();
     }
     
-    public function afterAnswerDelete($event)
+    public function afterAnswerDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }
     
-    public function dealWithCheckWhetherHasAnswered()
+    private function dealWithCheckWhetherHasAnswered()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }
     
-    public function dealWithUpdateQuestionActiveTime()
+    private function dealWithUpdateQuestionActiveTime()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -130,14 +127,14 @@ class AnswerBehavior extends BaseBehavior
         Yii::trace(sprintf('Update Active At: %s', var_export($result, true)), 'behavior');
     }
     
-    public function dealWithAddCounter()
+    private function dealWithAddCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         Counter::addAnswer($this->owner->create_by);
         Counter::addQuestionAnswer($this->owner->question_id);
     }
     
-    public function dealWithNotification($type)
+    private function dealWithNotification($type)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -146,23 +143,16 @@ class AnswerBehavior extends BaseBehavior
             $user_ids = FollowService::getFollowQuestionUserIdsByQuestionId($this->owner->question_id);
 
             if ($user_ids) {
-                Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice(
-                    $type,
-                    ['question_id' => $this->owner->question_id]
-                );
+                Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice($type, ['question_id' => $this->owner->question_id]);
             }
         }
     }
     
-    public function dealWithNewAnswerVersion()
+    private function dealWithNewAnswerVersion()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         #check whether has exist version
-        $result = AnswerVersionEntity::addNewVersion(
-            $this->owner->id,
-            $this->owner->content,
-            $this->owner->reason
-        );
+        $result = AnswerVersionEntity::addNewVersion($this->owner->id, $this->owner->content, $this->owner->reason);
         
         if ($result && $this->owner->create_by != Yii::$app->user->id) {
             #count_common_edit
@@ -171,7 +161,7 @@ class AnswerBehavior extends BaseBehavior
         Yii::trace(sprintf('add New Version: %s', var_export($result, true)), 'behavior');
     }
     
-    public function dealWithAddPassiveFollowTag()
+    private function dealWithAddPassiveFollowTag()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         
@@ -181,25 +171,19 @@ class AnswerBehavior extends BaseBehavior
         
         if ($tag_ids) {
             $tag_ids = is_array($tag_ids) ? $tag_ids : [$tag_ids];
-            $result = FollowService::addFollowTagPassive(
-                $this->owner->create_by,
-                $tag_ids
-            );
+            $result = FollowService::addFollowTagPassive($this->owner->create_by, $tag_ids);
             
             Yii::trace(sprintf('Add Passive Follow Tag: %s', var_export($result, true)), 'behavior');
         }
     }
 
-    public function dealWithUpdateAnswerCache()
+    private function dealWithUpdateAnswerCache()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        AnswerService::updateAnswerCache(
-            $this->owner->id,
-            [
-                'content'   => $this->owner->content,
+        AnswerService::updateAnswerCache($this->owner->id, [
+                'content' => $this->owner->content,
                 'modify_at' => TimeHelper::getCurrentTime(),
                 'modify_by' => Yii::$app->user->id,
-            ]
-        );
+            ]);
     }
 }

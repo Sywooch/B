@@ -42,7 +42,7 @@ class AnswerCommentBehavior extends BaseBehavior
         $this->dealWithCounter();
     }
 
-    public function dealWithNotification()
+    private function dealWithNotification()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -62,7 +62,7 @@ class AnswerCommentBehavior extends BaseBehavior
      * todo untest
      * @throws \yii\base\InvalidConfigException
      */
-    public function dealWithAt()
+    private function dealWithAt()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
@@ -80,7 +80,7 @@ class AnswerCommentBehavior extends BaseBehavior
         }
     }
 
-    public function dealWithCounter()
+    private function dealWithCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 

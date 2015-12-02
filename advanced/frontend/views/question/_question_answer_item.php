@@ -58,7 +58,7 @@ use yii\widgets\LinkPager;
                     ) ?></strong>
 
         <span class="ml10 text-muted">
-            <?= TemplateHelper::showhumanTime(
+            <?= TemplateHelper::showHumanTime(
                     $item['modify_at'] ? $item['modify_at'] : $item['create_at']
             ) ?>
             <?php if ($item['modify_at'] > 0): ?>

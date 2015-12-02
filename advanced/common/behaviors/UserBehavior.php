@@ -43,12 +43,12 @@ class UserBehavior extends BaseBehavior
         $this->dealWithCacheUpdate();
     }
 
-    public function dealWithCacheInsert()
+    private function dealWithCacheInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }
 
-    public function dealWithCacheUpdate()
+    private function dealWithCacheUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }

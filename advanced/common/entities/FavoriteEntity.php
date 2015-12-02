@@ -35,7 +35,7 @@ class FavoriteEntity extends Favorite
                     ActiveRecord::EVENT_BEFORE_VALIDATE => 'create_by',
                 ],
             ],
-            'timestamp'                => [
+            'timestamp'         => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',

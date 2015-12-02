@@ -51,7 +51,7 @@ $this->beginBlock('top-header');
                         <?= TemplateHelper::showUserAvatar($question_data['create_by'], 24, false) ?>
                         <strong><?= TemplateHelper::showUsername($question_data['create_by'], false) ?></strong>
                     </a>
-                    <?= TemplateHelper::showhumanTime($question_data['create_at']) ?>
+                    <?= TemplateHelper::showHumanTime($question_data['create_at']) ?>
                     <?php if ($question_data['active_at'] > 0): ?>
                         <?= Html::a(
                                 '更新问题',
