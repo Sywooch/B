@@ -8,14 +8,12 @@
 
 namespace common\services;
 
-
+use common\entities\UserEntity;
 use common\helpers\ArrayHelper;
 use common\models\CacheAnswerModel;
-use common\services\QuestionService;
 use yii\helpers\Url;
 use common\components\Judger;
 use common\entities\AnswerEntity;
-use common\entities\AnswerCommentEntity;
 use Yii;
 
 class AnswerService extends BaseService
@@ -49,6 +47,7 @@ class AnswerService extends BaseService
         if (Judger::checkNeedToJudge($user_id)) {
 
         } else {
+            /* @var $model AnswerEntity */
             $model = AnswerEntity::findOne(['answer_id' => $answer_id]);
             if ($model) {
                 $model->is_fold = AnswerEntity::STATUS_FOLD;
@@ -62,6 +61,7 @@ class AnswerService extends BaseService
         if (Judger::checkNeedToJudge($user_id)) {
 
         } else {
+            /* @var $model AnswerEntity */
             $model = AnswerEntity::findOne(['answer_id' => $answer_id]);
             if ($model) {
                 $model->is_fold = AnswerEntity::STATUS_UNFOLD;
@@ -75,6 +75,7 @@ class AnswerService extends BaseService
         if (Judger::checkNeedToJudge($user_id)) {
 
         } else {
+            /* @var $model AnswerEntity */
             $model = AnswerEntity::findOne(['answer_id' => $answer_id]);
             if ($model) {
                 $model->is_anonymous = AnswerEntity::STATUS_ANONYMOUS;
@@ -88,6 +89,7 @@ class AnswerService extends BaseService
         if (Judger::checkNeedToJudge($user_id)) {
 
         } else {
+            /* @var $model AnswerEntity */
             $model = AnswerEntity::findOne(['answer_id' => $answer_id]);
             if ($model) {
                 $model->is_anonymous = AnswerEntity::STATUS_UNANONYMOUS;
@@ -134,15 +136,14 @@ class AnswerService extends BaseService
 
     public static function getAnswerUserIdsByQuestionId($question_id, $limit = 100)
     {
-        $sql = "
-                SELECT
+        $sql = "SELECT
                   GROUP_CONCAT(
                     CONCAT(
                       a.`create_by`,
                       ',',
                       ac.`create_by`
                     )
-                  )
+                  ) as user_ids
                 FROM
                   `answer` a
                   LEFT JOIN `answer_comment` ac
@@ -151,6 +152,7 @@ class AnswerService extends BaseService
                 ORDER BY a.`create_at` DESC, ac.`create_at` DESC
                 LIMIT :limit ;
                 ";
+
         $command = AnswerEntity::getDb()->createCommand(
             $sql,
             [
@@ -159,10 +161,10 @@ class AnswerService extends BaseService
             ]
         );
 
-        $data = $command->queryAll();
+        $data = $command->queryScalar();
 
         if ($data) {
-            $data = array_unique(array_filter(explode(',', $data)));
+            $data = array_unique(explode(',', $data));
         }
 
         return $data;

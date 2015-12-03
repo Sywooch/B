@@ -56,11 +56,7 @@ class QuestionController extends BaseController
     {
         
     }
-    
-    /**
-     * Lists all Question models.
-     * @return mixed
-     */
+
     public function actionLatest()
     {
         $pages = new Pagination(
@@ -92,7 +88,6 @@ class QuestionController extends BaseController
             ]
         );
     }
-    
     
     public function actionHot()
     {
@@ -161,15 +156,7 @@ class QuestionController extends BaseController
             ]
         );
     }
-    
-    /**
-     * Displays a single Question model.
-     * @param string $id
-     * @param string $sort
-     * @param null   $answer_id
-     * @return mixed
-     * @throws NotFoundHttpException
-     */
+
     public function actionView($id, $sort = 'default', $answer_id = null)
     {
         
@@ -240,12 +227,7 @@ class QuestionController extends BaseController
             ]
         );
     }
-    
-    /**
-     * Creates a new Question model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
+
     public function actionCreate()
     {
         $model = new QuestionEntity();
@@ -261,13 +243,7 @@ class QuestionController extends BaseController
             );
         }
     }
-    
-    /**
-     * Updates an existing Question model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
-     */
+
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
@@ -283,27 +259,7 @@ class QuestionController extends BaseController
             );
         }
     }
-    
-    /**
-     * Deletes an existing Question model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
-     * @return mixed
-     */
-    /*public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }*/
-    
-    /**
-     * Finds the Question model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string $id
-     * @return Question the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($id)
     {
         if (($model = QuestionEntity::findOne($id)) !== null) {
@@ -312,27 +268,24 @@ class QuestionController extends BaseController
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    
-    public function actionGetAssociateUserIdWhenAnswer($user_id, $question_id = null)
+
+    public function actionGetAtWhoUserList($user_id, $question_id = null)
     {
-        $follow_user_ids = FollowService::getFollowUserIds($user_id);
+        $follow_user_ids = FollowService::getFollowQuestionUserIdsByQuestionId($user_id);
         
         $user_ids = $follow_user_ids;
         if ($question_id) {
             $answer_user_ids = AnswerService::getAnswerUserIdsByQuestionId($question_id);
-            $user_ids = array_merge($user_ids, $answer_user_ids);
+            if ($answer_user_ids) {
+                $user_ids = array_merge($user_ids, $answer_user_ids);
+            }
         }
         
         $user = UserService::getUserListByIds($user_ids);
 
         return $this->jsonOut($user);
     }
-    
-    /**
-     * @param string $method
-     * @throws Exception
-     * @throws ParamsInvalidException
-     */
+
     public function actionInvite($method = 'username')
     {
         $allow_method = ['username', 'email'];

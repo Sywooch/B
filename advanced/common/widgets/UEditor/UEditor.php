@@ -22,15 +22,19 @@ class UEditor extends BaseUEditor
     {
         $this->atwho_data_path = Url::to(
             [
-                'question/get-associate-user-id-when-answer',
+                'question/get-at-who-user-list',
                 'user_id'     => Yii::$app->user->id,
                 'question_id' => $this->associate_id,
-            ],
-            true
+            ]
         );
+        //百度应用的APIkey，每个站长必须首先去百度官网注册一个key后方能正常使用app功能，注册介绍，http://app.baidu.com/static/cms/getapikey.html
+        $this->config['webAppKey '] = false;
+
+        //是否启用元素路径，默认是显示
         $this->config['elementPathEnabled'] = false;
+
         switch ($this->style) {
-            case 'answer':
+            case 'answer' :
                 $this->config['initialFrameHeight'] = 150;
 
                 $this->config['toolbars'] = [
@@ -70,7 +74,8 @@ class UEditor extends BaseUEditor
                 ];
                 break;
             case 'comment':
-                $this->config['initialFrameHeight'] = 150;
+                $this->config['maximumWords'] = 1000;
+                $this->config['initialFrameHeight'] = 80;
                 $this->config['toolbars'] = [
                     [
                         //'fullscreen',
@@ -80,18 +85,18 @@ class UEditor extends BaseUEditor
                         'underline',
                         'strikethrough',
                         '|',
-                        'removeformat',
-                        'pasteplain',
-                        '|',
+                        //'removeformat',
+                        //'pasteplain',
+                        //'|',
                         'blockquote',
-                        '|',
-                        'insertimage',
-                        'emotion',
-                        'scrawl',
-                        'insertvideo',
-                        'music',
-                        'attachment',
-                        'map',
+                        //'|',
+                        //'insertimage',
+                        //'emotion',
+                        //'scrawl',
+                        //'insertvideo',
+                        //'music',
+                        //'attachment',
+                        //'map',
                     ],
                 ];
                 break;
@@ -134,8 +139,8 @@ class UEditor extends BaseUEditor
                         'unlink',
                         '|',
                         'insertimage',
-                        'emotion',
-                        'scrawl',
+                        //'emotion',
+                        //'scrawl',
                         'insertvideo',
                         'music',
                         'attachment',
@@ -159,9 +164,12 @@ class UEditor extends BaseUEditor
 
     }
 
+    /**
+     * 运行入口
+     * @return string
+     */
     public function run()
     {
-
         $id = $this->hasModel() ? Html::getInputId($this->model, $this->attribute) : $this->id;
 
         $config = Json::encode($this->config);
@@ -181,11 +189,17 @@ UEDITOR;
         /**
          * 回答输入框中，引入atwho
          */
-        if ($this->style == 'answer') {
+        if (in_array(
+            $this->style,
+            [
+                'answer',
+                'comment',
+            ]
+        )) {
 
             AtWhoAsset::register($this->getView());
 
-            $template = '<li>123</li>';
+            //$template = '<li>123</li>';
             $add_script = sprintf(
                 "
                 var at_config;
@@ -206,7 +220,6 @@ UEDITOR;
                 $this->atwho_data_path,
                 '<li>${username}</li>',
                 '<span>@${username}</span>'
-
             );
 
             $script .= $add_script;
@@ -220,6 +233,4 @@ UEDITOR;
             return Html::textarea($this->name, $this->value, ['id' => $id]);
         }
     }
-
-
 }

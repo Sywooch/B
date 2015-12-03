@@ -14,7 +14,6 @@ use common\entities\FollowQuestionEntity;
 use common\entities\FollowTagEntity;
 use common\entities\FollowTagPassiveEntity;
 use common\entities\FollowUserEntity;
-use common\entities\UserProfileEntity;
 use common\helpers\TimeHelper;
 use Yii;
 
@@ -68,7 +67,6 @@ class FollowService extends BaseService
      * @param      $question_id
      * @param null $user_id is null, delete all follow
      * @return bool
-     * @throws ParamsInvalidException
      * @throws \Exception
      */
     public static function removeFollowQuestion($question_id, $user_id = null)
@@ -116,7 +114,7 @@ class FollowService extends BaseService
             [
                 'user_id' => $user_id,
             ]
-        )->page($page_no, $page_size)->asArray()->column();
+        )->limiter($page_no, $page_size)->asArray()->column();
 
         return $user_ids;
     }
@@ -168,6 +166,7 @@ class FollowService extends BaseService
         }
 
         #delete
+        /* @var $model FollowTagEntity */
         $model = FollowTagEntity::find()->where(
             [
                 'follow_tag_id' => $tag_ids,

@@ -5,6 +5,7 @@
  * Date: 2015/11/14
  * Time: 22:10
  */
+use common\entities\AnswerCommentEntity;
 use common\helpers\TemplateHelper;
 
 ?>
@@ -13,14 +14,29 @@ use common\helpers\TemplateHelper;
         <div class="comment-content wordbreak">
             <p class="comment-meta">
                 #&nbsp;
-                <?= TemplateHelper::showUsername($item['create_by']) ?>
-                <?php if ($answer_create_user_id == $item['create_by']) : ?>
-                    [答主]
-                <?php elseif ($question_create_user_id == $item['create_by']) : ?>
-                    [题主]
+                <?= TemplateHelper::showUsername(
+                        $item['create_by'],
+                        true,
+                        $item['is_anonymous'] == AnswerCommentEntity::STATUS_ANONYMOUS
+                ) ?>
+                <?php if ($item['is_anonymous'] != AnswerCommentEntity::STATUS_ANONYMOUS): ?>
+                    <?php if ($answer_create_user_id == $item['create_by']) : ?>
+                        [答主]
+                    <?php elseif ($question_create_user_id == $item['create_by']) : ?>
+                        [题主]
+                    <?php elseif (!Yii::$app->user->isGuest && $item['create_by'] == Yii::$app->user->id) : ?>
+                        [我]
+                    <?php endif; ?>
                 <?php endif; ?>
                 · <span class="createdDate">
                         <?= TemplateHelper::showHumanTime($item['create_at']); ?></span>
+                <?php if ($item['is_anonymous'] == AnswerCommentEntity::STATUS_ANONYMOUS): ?>
+                    匿名评论
+                <?php else: ?>
+                    评论
+                <?php endif; ?>
+
+
                 <?php if ($item['create_by'] != Yii::$app->user->id) : ?>
                     · <a href="#"
                          class="commentReply"

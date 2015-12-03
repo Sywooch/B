@@ -19,6 +19,7 @@ use common\entities\UserEntity;
 use common\helpers\AtHelper;
 use common\helpers\TemplateHelper;
 use common\models\xunsearch\QuestionSearch;
+use common\services\AnswerService;
 use common\services\FollowService;
 use common\services\QuestionService;
 use common\services\TagService;
@@ -334,6 +335,14 @@ class TestController extends BaseController
         //        }{imap.gmail.com:993/imap/ssl}INBOX
 
 
+        $data = FollowService::getFollowQuestionUserIdsByQuestionId(10);
+
+        print_r($data);
+        $data = AnswerService::getAnswerUserIdsByQuestionId(5);
+
+        print_r($data);
+
+
     }
 
     public function decodeSubject($subject)
@@ -437,9 +446,16 @@ class TestController extends BaseController
         $curl = new Curl();
 
     }
+
     public function actionCurrency()
     {
         echo TemplateHelper::showHumanCurrency(1501);
+
+    }
+
+    public function actionA()
+    {
+
 
     }
 }

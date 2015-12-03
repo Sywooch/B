@@ -13,17 +13,24 @@ use common\services\UserService;
 use Yii;
 use yii\helpers\Json;
 use yii\web\Response;
+use yii\web\UnauthorizedHttpException;
 
 class BaseController extends PerformanceRecordController
 {
     /*public function beforeAction($action)
     {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        $controller = Yii::$app->controller->id;
         $action = Yii::$app->controller->action->id;
-        if (Yii::$app->user->can($action)) {
-            return true;
-        } else {
+        $permissionName = $controller . '/' . $action;
+        if (!Yii::$app->user->can($permissionName) && Yii::$app->getErrorHandler()->exception === null) {
             throw new UnauthorizedHttpException('对不起，您现在还没获此操作的权限');
         }
+
+        return true;
     }*/
     
     /**

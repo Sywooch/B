@@ -8,7 +8,6 @@
 
 namespace common\helpers;
 
-
 use common\entities\AnswerEntity;
 use common\services\TagService;
 use common\services\UserService;
@@ -17,11 +16,16 @@ use yii\helpers\Html;
 
 class TemplateHelper
 {
-    public static function showUsername($user_id, $link = true, $anonymity = AnswerEntity::STATUS_UNANONYMOUS)
+    /**
+     * @param            $user_id
+     * @param bool|true  $link
+     * @param bool|false $anonymity 是否匿名　true:匿名　false:不匿名
+     * @return mixed|string
+     */
+    public static function showUsername($user_id, $link = true, $anonymity = false)
     {
-        if ($user_id == Yii::$app->user->id || $anonymity == AnswerEntity::STATUS_UNANONYMOUS) {
+        if ($user_id == Yii::$app->user->id || !$anonymity) {
             $user_name = UserService::getUsernameByUserId($user_id);
-
             if ($link) {
                 $result = Html::a($user_name, ['/member/' . $user_id]);
             } else {
@@ -63,25 +67,15 @@ class TemplateHelper
         return $avatar;
     }
 
-    /**
-     * @param string|array $tag_id
-     * @param bool|true    $link
-     */
     public static function showTagById($tag_id, $link = true)
     {
 
     }
 
-    /**
-     * @param string|array $tag_name
-     * @return string
-     * @throws \yii\base\InvalidConfigException
-     * @internal param bool|true $link
-     */
     public static function showTagLiLabelByName($tag_name)
     {
         if (empty($tag_name)) {
-            return;
+            return false;
         }
         if (!is_array($tag_name)) {
             $tag_name = array_filter(explode(',', $tag_name));

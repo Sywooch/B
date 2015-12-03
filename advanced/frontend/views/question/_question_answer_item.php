@@ -11,6 +11,7 @@ use yii\bootstrap\Dropdown;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
+
 ?>
 <?php foreach ($data as $item): ?>
     <?php if ($item['type'] == AnswerEntity::TYPE_ANSWER): ?>
@@ -54,7 +55,7 @@ use yii\widgets\LinkPager;
                 <strong><?= TemplateHelper::showUsername(
                             $item['create_by'],
                             true,
-                            $item['is_anonymous']
+                            $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS
                     ) ?></strong>
 
         <span class="ml10 text-muted">
@@ -82,91 +83,92 @@ use yii\widgets\LinkPager;
                 </div>
 
 
-                <div class="post-opt"">
-                    <ul class="list-inline mb0">
+                <div class="post-opt"
+                ">
+                <ul class="list-inline mb0">
+                    <li><?= Html::a(
+                                '链接',
+                                [
+                                        'question/view',
+                                        'id'        => $question_id,
+                                        'answer_id' => $item['id'],
+                                ]
+                        ) ?>
+                    </li>
+                    <? if ($item['create_by'] == Yii::$app->user->id): ?>
                         <li><?= Html::a(
-                                    '链接',
+                                    '编辑',
                                     [
-                                            'question/view',
-                                            'id'        => $question_id,
-                                            'answer_id' => $item['id'],
+                                            'answer/update',
+                                            'id'          => $item['id'],
+                                            'question_id' => $question_id,
                                     ]
                             ) ?>
                         </li>
-                        <? if ($item['create_by'] == Yii::$app->user->id): ?>
-                            <li><?= Html::a(
-                                        '编辑',
-                                        [
-                                                'answer/update',
-                                                'id'          => $item['id'],
-                                                'question_id' => $question_id,
-                                        ]
-                                ) ?>
-                            </li>
-                        <? endif; ?>
-                        <li>
-                            <?= Html::a(
-                                    '评论',
-                                    'javascript:void(0);',
-                                    [
-                                            'data-href'    => Url::to(
-                                                    ['answer/get-comment-list', 'id' => $item['id']]
-                                            ),
-                                            'data-on-done' => 'afterShowCommentList',
-                                            'data-id'      => $item['id'],
-                                            'data-do'      => 'comment',
-                                    ]
-                            ) ?>
-                            <?= ($item['count_comment'] > 0) ? sprintf(
-                                    '<span>(%s)</span>',
-                                    $item['count_comment']
-                            ) : '' ?>
-                        </li>
-                        <li class="dropdown">
-                            <a href="javascript:void(0);"
-                               class="dropdown-toggle"
-                               data-toggle="dropdown">更多<b
-                                        class="caret"></b></a>
-                            <?= Dropdown::widget(
-                                    [
-                                            'items' => [
-                                                    [
-                                                            'label'   => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '置为匿名',
-                                                            'url'     => '/',
-                                                            'visible' => $item['create_by'] == Yii::$app->user->id,
-                                                    ],
-                                                    [
-                                                            'label'   => '删除',
-                                                            'url'     => '/',
-                                                            'visible' => $item['create_by'] == Yii::$app->user->id,
-                                                    ],
-                                                    [
-                                                            'label'   => $item['is_fold'] == AnswerEntity::STATUS_FOLD ? '取消折叠' : '折叠',
-                                                            'url'     => '/',
-                                                            'visible' => $item['create_by'] != Yii::$app->user->id,
-                                                    ],
-                                                    [
-                                                            'label'   => '公众编辑',
-                                                            'url'     => [
-                                                                    'answer/common-edit',
-                                                                    'id'          => $item['id'],
-                                                                    'question_id' => $question_id,
-                                                            ],
-                                                            'visible' => $item['create_by'] != Yii::$app->user->id,
-                                                    ],
-                                                    [
-                                                            'label'   => '举报',
-                                                            'url'     => '#',
-                                                            'visible' => $item['create_by'] != Yii::$app->user->id,
-                                                    ],
-                                            ],
-                                    ]
-                            ); ?>
-                        </li>
-                    </ul>
-                </div>
+                    <? endif; ?>
+                    <li>
+                        <?= Html::a(
+                                '评论',
+                                'javascript:void(0);',
+                                [
+                                        'data-href'    => Url::to(
+                                                ['answer/get-comment-list', 'id' => $item['id']]
+                                        ),
+                                        'data-on-done' => 'afterShowCommentList',
+                                        'data-id'      => $item['id'],
+                                        'data-do'      => 'comment',
+                                ]
+                        ) ?>
+                        <?= ($item['count_comment'] > 0) ? sprintf(
+                                '<span>(%s)</span>',
+                                $item['count_comment']
+                        ) : '' ?>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0);"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown">更多<b
+                                    class="caret"></b></a>
+                        <?= Dropdown::widget(
+                                [
+                                        'items' => [
+                                                [
+                                                        'label'   => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '置为匿名',
+                                                        'url'     => '/',
+                                                        'visible' => $item['create_by'] == Yii::$app->user->id,
+                                                ],
+                                                [
+                                                        'label'   => '删除',
+                                                        'url'     => '/',
+                                                        'visible' => $item['create_by'] == Yii::$app->user->id,
+                                                ],
+                                                [
+                                                        'label'   => $item['is_fold'] == AnswerEntity::STATUS_FOLD ? '取消折叠' : '折叠',
+                                                        'url'     => '/',
+                                                        'visible' => $item['create_by'] != Yii::$app->user->id,
+                                                ],
+                                                [
+                                                        'label'   => '公众编辑',
+                                                        'url'     => [
+                                                                'answer/common-edit',
+                                                                'id'          => $item['id'],
+                                                                'question_id' => $question_id,
+                                                        ],
+                                                        'visible' => $item['create_by'] != Yii::$app->user->id,
+                                                ],
+                                                [
+                                                        'label'   => '举报',
+                                                        'url'     => '#',
+                                                        'visible' => $item['create_by'] != Yii::$app->user->id,
+                                                ],
+                                        ],
+                                ]
+                        ); ?>
+                    </li>
+                </ul>
+            </div>
 
-                <div class="widget-comments hidden" id="comment-<?= $item['id'] ?>"></div>
+            <div class="widget-comments hidden" id="comment-<?= $item['id'] ?>"></div>
             </div>
         </article>
     <?php else: ?>

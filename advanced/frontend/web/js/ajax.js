@@ -88,7 +88,7 @@ app.ajax = {
             $('#ajax_result_01').html(response.body);
         },
 
-
+        //回答
         'afterAnswerCreateSuccess': function (response) {
             // This is called by the link attribute 'data-on-done' => 'linkFormDone';
             // the form name is specified via 'data-form-id' => 'link_form'
@@ -97,19 +97,25 @@ app.ajax = {
                 $('#answer_form_area').html(response.data.answer_form);
             }
         },
-        'afterShowCommentList': function (response) {
-            //console.log(ajaxCallbacks.target);
-
-            var comment = $('#comment-' + app.ajax.callbacks.target.data('id'));
-
-            comment.removeClass('hidden');
-            comment.html(response);
-        },
+        //评论
         'afterCommentCreateSuccess': function (response) {
             if (app.ajax.validate(response)) {
                 $('#comment_item_area_' + app.ajax.callbacks.target.data('id')).append(response.data);
                 $('#comment-content-' + app.ajax.callbacks.target.data('id')).val('');
+                //editor.execCommand('cleardoc');
             }
+        },
+        //显示评论列表
+        'afterShowCommentList': function (response) {
+            var comment = $('#comment-' + app.ajax.callbacks.target.data('id'));
+
+            comment.removeClass('hidden');
+            comment.html(response);
+
+        },
+        //插入AT
+        'insertAT': function(){
+            //editor.execCommand("inserthtml", html,true);
         }
     }
 };

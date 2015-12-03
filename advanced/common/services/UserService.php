@@ -8,6 +8,7 @@
 
 namespace common\services;
 
+use common\components\user\UserGrade;
 use common\helpers\AvatarHelper;
 use common\models\CacheUserModel;
 use Imagine\Exception\InvalidArgumentException;
@@ -136,6 +137,11 @@ class UserService extends BaseService
             foreach ($cache_data as $item) {
                 #filter attributes
                 $item = $cache_user_model->filterAttributes($item);
+                #计算用户等级
+                $user_grade = new UserGrade($item['score']);
+                $item['grade_level'] = $user_grade->grade_level;
+                $item['grade_name'] = $user_grade->grade_name;
+
                 $user_id = $item['id'];
                 $result[$user_id] = $item;
                 #cache user

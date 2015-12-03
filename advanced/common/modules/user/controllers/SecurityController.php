@@ -8,8 +8,6 @@
 
 namespace common\modules\user\controllers;
 
-
-use common\components\Monitor;
 use dektrium\user\controllers\SecurityController as BaseSecurityController;
 use yii\helpers\Url;
 use Yii;

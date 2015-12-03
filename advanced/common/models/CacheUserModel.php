@@ -33,6 +33,13 @@ class CacheUserModel extends BaseCacheModel
     public $count_home_views = 0;
     public $count_notification = 0;
 
+    public $score = 0;//积分
+    public $currency = 0;//货币
+    public $grade_level = 0;//等级级数
+    public $grade_name = '';//等级名称
+
+    public $role = '老百姓';//角色
+
     public function filterAttributes($data)
     {
         if (isset($data['profile'])) {
