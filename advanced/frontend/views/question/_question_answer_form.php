@@ -62,7 +62,7 @@ use common\entities\AnswerEntity;
 
         <?= $form->field($answer_model, 'content')->label(false)->widget(
                 UEditor::className(),
-                ['style' => 'answer']
+                ['style' => 'answer', 'associate_id' => $question_data['id']]
         ); ?>
 
 

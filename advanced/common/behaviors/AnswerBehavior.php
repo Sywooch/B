@@ -67,34 +67,13 @@ class AnswerBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotification(NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER);
+        $this->dealWithAddQuestionFollow();
         $this->dealWithAddCounter();
         $this->dealWithUpdateQuestionActiveTime();
         $this->dealWithAddPassiveFollowTag();
         $this->dealWithAnswerInsertCache();
     }
 
-    private function dealWithAnswerInsertCache()
-    {
-        Yii::trace('Process ' . __FUNCTION__, 'behavior');
-
-        #marked user has answered this question
-        $cache_key = [
-            REDIS_KEY_QUESTION_HAS_ANSWERED,
-            implode(':', [$this->owner->create_by, $this->owner->question_id]),
-        ];
-        Yii::$app->redis->set($cache_key, $this->owner->id);
-
-        #add answer to list
-        Yii::$app->redis->zAdd([
-            REDIS_KEY_ANSWER_LIST_TIME,
-            $this->owner->question_id,
-        ], TimeHelper::getCurrentTime(), $this->owner->id);
-        Yii::$app->redis->zAdd([REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id], 0, $this->owner->id);
-
-        $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
-
-        AnswerService::updateAnswerCache($this->owner->id, $item);
-    }
     
     public function afterAnswerUpdate()
     {
@@ -111,6 +90,41 @@ class AnswerBehavior extends BaseBehavior
     public function afterAnswerDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+    }
+
+
+    private function dealWithAddQuestionFollow()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        FollowService::addFollowQuestion($this->owner->question_id, $this->owner->create_by);
+    }
+
+    private function dealWithAnswerInsertCache()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        #marked user has answered this question
+        $cache_key = [
+            REDIS_KEY_QUESTION_HAS_ANSWERED,
+            implode(':', [$this->owner->create_by, $this->owner->question_id]),
+        ];
+        Yii::$app->redis->set($cache_key, $this->owner->id);
+
+        #add answer to list
+        Yii::$app->redis->zAdd(
+            [
+                REDIS_KEY_ANSWER_LIST_TIME,
+                $this->owner->question_id,
+            ],
+            TimeHelper::getCurrentTime(),
+            $this->owner->id
+        );
+
+        Yii::$app->redis->zAdd([REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id], 0, $this->owner->id);
+
+        $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
+
+        AnswerService::updateAnswerCache($this->owner->id, $item);
     }
     
     private function dealWithCheckWhetherHasAnswered()
@@ -143,7 +157,10 @@ class AnswerBehavior extends BaseBehavior
             $user_ids = FollowService::getFollowQuestionUserIdsByQuestionId($this->owner->question_id);
 
             if ($user_ids) {
-                Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice($type, ['question_id' => $this->owner->question_id]);
+                Notifier::build()->from($this->owner->create_by)->to($user_ids)->notice(
+                    $type,
+                    ['question_id' => $this->owner->question_id]
+                );
             }
         }
     }
@@ -180,10 +197,13 @@ class AnswerBehavior extends BaseBehavior
     private function dealWithUpdateAnswerCache()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        AnswerService::updateAnswerCache($this->owner->id, [
-                'content' => $this->owner->content,
+        AnswerService::updateAnswerCache(
+            $this->owner->id,
+            [
+                'content'   => $this->owner->content,
                 'modify_at' => TimeHelper::getCurrentTime(),
                 'modify_by' => Yii::$app->user->id,
-            ]);
+            ]
+        );
     }
 }

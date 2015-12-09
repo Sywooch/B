@@ -3,6 +3,14 @@
  * @copyright Copyright (c) 2014 Giovanni Derks & Yii Playground contributors
  * @license http://opensource.org/licenses/BSD-3-Clause
  */
+
+app.login = {
+    show: function () {
+        $('#quick-login-modal').modal({
+            show: true
+        })
+    }
+};
 app.notice = {
     warning: function (message) {
         $.notify({
@@ -101,8 +109,9 @@ app.ajax = {
         'afterCommentCreateSuccess': function (response) {
             if (app.ajax.validate(response)) {
                 $('#comment_item_area_' + app.ajax.callbacks.target.data('id')).append(response.data);
-                $('#comment-content-' + app.ajax.callbacks.target.data('id')).val('');
-                //editor.execCommand('cleardoc');
+                //$('#comment-content-' + app.ajax.callbacks.target.data('id')).val('');
+
+                UE.getEditor('answercommententity-content-' + app.ajax.callbacks.target.data('id')).execCommand('cleardoc');
             }
         },
         //显示评论列表
@@ -113,27 +122,13 @@ app.ajax = {
             comment.html(response);
 
         },
-        //插入AT
-        'insertAT': function(){
-            //editor.execCommand("inserthtml", html,true);
-        }
+
     }
 };
 
-
-jQuery(function ($) {
-    //ajax操作
-    $(document).on('click', '[data-href]', function (e) {
-        var that = $(e.target);
-        //评论
-        if (that.data('do') == 'comment') {
-            //判断是否已经加载过
-            if ($('#comment-' + that.data('id') + '>div').length != 0) {
-                $('#comment-' + that.data('id')).toggleClass('hidden');
-                return;
-            }
-        }
-
-        app.ajax.handle(e);
-    });
-});
+app.comment = {
+    //插入AT
+    'insertAT': function (answer_id, username) {
+        UE.getEditor('answercommententity-content-' + answer_id).execCommand("inserthtml", 'at_html', true);
+    }
+}

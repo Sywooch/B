@@ -13,6 +13,8 @@ use common\components\Curl;
 use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
+use common\components\user\User;
+use common\entities\AnswerEntity;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserEntity;
@@ -28,6 +30,7 @@ use console\modules\crawler\controllers\crawlers\CrawlerBase;
 use Yii;
 use common\controllers\BaseController;
 use yii\helpers\Inflector;
+use yii\helpers\VarDumper;
 
 
 class TestController extends BaseController
@@ -79,13 +82,28 @@ class TestController extends BaseController
 
     public function actionMail()
     {
-        $result = Yii::$app->mailer->compose()
-                                   ->setFrom(Yii::$app->params['senderEmail'])
-                                   ->setTo('6202551@qq.com')
-                                   ->setSubject('This is a test mail ')
-                                   ->send();
+        $result = Yii::$app->mailer->compose()->setFrom(Yii::$app->params['senderEmail'])->setTo(
+            '6202551@qq.com'
+        )->setSubject('This is a test mail ')->send();
 
         var_dump($result);
+    }
+
+    public function actionAnswer()
+    {
+        $question_id = 5;
+        $answer_data = AnswerEntity::find()->select(
+            [
+                'id',
+                'count_useful' => '`count_like`-`count_hate`',
+                'create_at',
+            ]
+        )->where(
+            ['question_id' => $question_id]
+        )->asArray()->createCommand()->getRawSql();
+
+        print_r($answer_data);
+        exit;
     }
 
     public function actionAbc()
@@ -375,6 +393,8 @@ class TestController extends BaseController
             print_r($question->getErrors());
         } else {
             //$question->trigger(QuestionEntity::EVENT_TEST);
+
+            var_dump(Yii::$app->user->trigger(User::EVENT_USER_CREATE_QUESTION));
         }
         var_dump($result);
         print_r($question->getAttributes());
@@ -453,8 +473,43 @@ class TestController extends BaseController
 
     }
 
-    public function actionA()
+    public function actionAutoLogin()
     {
+        $this->autoLoginById(rand(1, UserService::MAX_OFFICIAL_ACCOUNT_ID));
+    }
+
+    public function actionTransaction()
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            /* @var $question QuestionEntity */
+            $question = QuestionEntity::findOne(2);
+            echo '<h3>1</h3>';
+            var_dump($question->subject);
+            $question->subject = '深圳人喜欢吃什么？';
+            $result = $question->save();
+
+            print_r($question->getErrors());
+
+            $question = QuestionEntity::findOne(2);
+            echo '<h3>2</h3>';
+            var_dump($question->subject);
+
+
+            $transaction->commit();
+
+            $question = QuestionEntity::findOne(2);
+            echo '<h3>3</h3>';
+            var_dump($question->subject);
+
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            print_r($e->getMessage());
+        }
+
+        $question = QuestionEntity::findOne(2);
+        echo '<h3>4</h3>';
+        var_dump($question->subject);
 
 
     }

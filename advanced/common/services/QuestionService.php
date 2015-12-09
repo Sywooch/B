@@ -2,6 +2,8 @@
 
 namespace common\services;
 
+use common\components\Error;
+use common\entities\QuestionTagEntity;
 use common\models\CacheQuestionModel;
 use common\models\QuestionTag;
 use common\models\xunsearch\QuestionSearch;
@@ -92,9 +94,13 @@ class QuestionService extends BaseService
                 $count = QuestionEntity::find()->allowShowStatus($is_spider)->orderByTime()->count(1);
                 break;
 
-            case 'hot':
-                $count = QuestionEntity::find()->allowShowStatus($is_spider)->recent()->answered()->orderByTime(
-                )->count(1);
+            case 'hottest':
+                $count = QuestionEntity::find()
+                                       ->allowShowStatus($is_spider)
+                                       ->recent()
+                                       ->answered()
+                                       ->orderByTime()
+                                       ->count(1);
                 break;
 
             case 'unAnswer':
@@ -157,10 +163,18 @@ class QuestionService extends BaseService
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if ($cache_data === false) {
-            $model = QuestionEntity::find()->answered(3)->allowShowStatus($is_spider)->recent($period)->answered(
-            )->orderByTime()->limit(
-                $limit
-            )->offset($offset)->asArray()->all();
+            $model = QuestionEntity::find()
+                                   ->answered(3)
+                                   ->allowShowStatus($is_spider)
+                                   ->recent($period)
+                                   ->answered()
+                                   ->orderByTime()
+                                   ->limit(
+                                       $limit
+                                   )
+                                   ->offset($offset)
+                                   ->asArray()
+                                   ->all();
 
             $cache_data = $model;
             Yii::$app->redis->set($cache_key, $cache_data);
@@ -188,10 +202,17 @@ class QuestionService extends BaseService
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if ($cache_data === false) {
-            $model = QuestionEntity::find()->allowShowStatus($is_spider)->recent($period)->unAnswered()->orderByTime(
-            )->limit(
-                $limit
-            )->offset($offset)->asArray()->all();
+            $model = QuestionEntity::find()
+                                   ->allowShowStatus($is_spider)
+                                   ->recent($period)
+                                   ->unAnswered()
+                                   ->orderByTime()
+                                   ->limit(
+                                       $limit
+                                   )
+                                   ->offset($offset)
+                                   ->asArray()
+                                   ->all();
 
             $cache_data = $model;
             Yii::$app->redis->set($cache_key, $cache_data);
@@ -309,5 +330,68 @@ class QuestionService extends BaseService
         }
 
         return $question_list;
+    }
+
+    public static function getQuestionListByTagId($tag_id, $page_no = 1, $page_size = 10)
+    {
+        $query = QuestionTagEntity::find()->select(
+            [
+                'question_id',
+            ]
+        )->where(
+            ['tag_id' => $tag_id]
+        )->orderBy('create_at DESC')->limiter($page_no, $page_size, 200);
+
+        $question_ids = $query->column();
+        if ($question_ids) {
+            $question_list = QuestionService::getQuestionListByQuestionIds($question_ids);
+        } else {
+            $question_list = [];
+        }
+
+        return $question_list;
+    }
+
+    public static function getQuestionCountByTagId($tag_id)
+    {
+        return QuestionTagEntity::find()->where(['tag_id' => $tag_id])->count(1);
+    }
+
+    /**
+     * add question tag
+     * @param       $user_id
+     * @param       $question_id
+     * @param array $tag_ids
+     * @return bool
+     */
+    public static function addQuestionTag($user_id, $question_id, array $tag_ids)
+    {
+        if (empty($user_id) || empty($question_id) || empty($tag_ids)) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id,tag_ids']);
+        }
+
+        $data = [];
+        $create_at = time();
+
+        foreach ($tag_ids as $tag_id) {
+            $data[] = [$question_id, $tag_id, $user_id, $create_at];
+        }
+
+        #batch add question tag
+        $result = QuestionTagEntity::getDb()->createCommand()->batchInsert(
+            QuestionTag::tableName(),
+            ['question_id', 'tag_id', 'create_by', 'create_at'],
+            $data
+        )->execute();
+
+        #add follow tag
+        if ($result) {
+            #add user follow tag
+            FollowService::addFollowTag($user_id, $tag_ids);
+            #tag use count
+            TagService::updateTagCountUse($tag_ids);
+        }
+
+        return $result;
     }
 }

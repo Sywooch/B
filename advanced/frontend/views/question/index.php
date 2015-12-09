@@ -31,9 +31,9 @@ $this->title = '最新问题';
                 ],
                 [
                         'label'   => '<i class="glyphicon glyphicon-user"></i> 热门的',
-                        'content' => $active == 'hot' ? $question_data : '',
-                        'active'  => $active == 'hot' ? true : false,
-                        'url'     => Url::to(['question/hot']),
+                        'content' => $active == 'hottest' ? $question_data : '',
+                        'active'  => $active == 'hottest' ? true : false,
+                        'url'     => Url::to(['question/hottest']),
                 ],
                 [
                         'label'   => '<i class="glyphicon glyphicon-user"></i> 未回答',

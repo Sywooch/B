@@ -594,37 +594,19 @@
         },
         {
             "name": "bower-asset/blueimp-tmpl",
-            "version": "2.5.5",
+            "version": "2.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blueimp/JavaScript-Templates.git",
-                "reference": "8e38f6913c547af5b7b7927df43b941e0ef63d64"
+                "reference": "91d3f6f859521d43d424ad44b191536db0b7168b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blueimp/JavaScript-Templates/zipball/8e38f6913c547af5b7b7927df43b941e0ef63d64",
-                "reference": "8e38f6913c547af5b7b7927df43b941e0ef63d64",
+                "url": "https://api.github.com/repos/blueimp/JavaScript-Templates/zipball/91d3f6f859521d43d424ad44b191536db0b7168b",
+                "reference": "91d3f6f859521d43d424ad44b191536db0b7168b",
                 "shasum": ""
             },
-            "type": "bower-asset-library",
-            "extra": {
-                "bower-asset-main": "js/tmpl.js",
-                "bower-asset-ignore": [
-                    "/*.*",
-                    "css",
-                    "js/demo.js",
-                    "test"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "< 1KB lightweight, fast & powerful JavaScript templating engine with zero dependencies. Compatible with server-side environments like node.js, module loaders like RequireJS and all web browsers.",
-            "keywords": [
-                "javascript",
-                "templates",
-                "templating"
-            ]
+            "type": "bower-asset-library"
         },
         {
             "name": "bower-asset/bootstrap",
@@ -709,16 +691,16 @@
         },
         {
             "name": "bower-asset/font-awesome",
-            "version": "v4.4.0",
+            "version": "v4.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "e554555d73a44e0a7d11b0361ad7a5325a5f551c"
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/e554555d73a44e0a7d11b0361ad7a5325a5f551c",
-                "reference": "e554555d73a44e0a7d11b0361ad7a5325a5f551c",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/fddd2c240452e6c8990c4ef75e0265b455aa7968",
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -2031,16 +2013,16 @@
         },
         {
             "name": "fortawesome/font-awesome",
-            "version": "v4.4.0",
+            "version": "v4.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "e554555d73a44e0a7d11b0361ad7a5325a5f551c"
+                "reference": "dbc8d1b9b67daaab357bcc41dbf549c3684cf5f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/e554555d73a44e0a7d11b0361ad7a5325a5f551c",
-                "reference": "e554555d73a44e0a7d11b0361ad7a5325a5f551c",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/dbc8d1b9b67daaab357bcc41dbf549c3684cf5f1",
+                "reference": "dbc8d1b9b67daaab357bcc41dbf549c3684cf5f1",
                 "shasum": ""
             },
             "require-dev": {
@@ -2075,7 +2057,7 @@
                 "font",
                 "icon"
             ],
-            "time": "2015-07-28 21:55:03"
+            "time": "2015-11-23 14:42:32"
         },
         {
             "name": "funson86/yii2-setting",
@@ -2691,16 +2673,16 @@
         },
         {
             "name": "kartik-v/yii2-krajee-base",
-            "version": "v1.7.8",
+            "version": "v1.7.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-krajee-base.git",
-                "reference": "f90b9ff515ced4e40ff5ec8156a5c9f7f51e2a7f"
+                "reference": "6f10fd0a0bfccd729764c65fa65eb4ccf2cbade9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/f90b9ff515ced4e40ff5ec8156a5c9f7f51e2a7f",
-                "reference": "f90b9ff515ced4e40ff5ec8156a5c9f7f51e2a7f",
+                "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/6f10fd0a0bfccd729764c65fa65eb4ccf2cbade9",
+                "reference": "6f10fd0a0bfccd729764c65fa65eb4ccf2cbade9",
                 "shasum": ""
             },
             "require": {
@@ -2733,7 +2715,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-11-22 06:35:23"
+            "time": "2015-11-25 07:03:35"
         },
         {
             "name": "kartik-v/yii2-popover-x",
@@ -2837,12 +2819,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-activeform.git",
-                "reference": "1ccb21990894bf99cac2ab58605055b40ed18a7b"
+                "reference": "0b799f94e30b5667bad2144c9099184410602140"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-activeform/zipball/1ccb21990894bf99cac2ab58605055b40ed18a7b",
-                "reference": "1ccb21990894bf99cac2ab58605055b40ed18a7b",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-activeform/zipball/0b799f94e30b5667bad2144c9099184410602140",
+                "reference": "0b799f94e30b5667bad2144c9099184410602140",
                 "shasum": ""
             },
             "require": {
@@ -2876,7 +2858,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-11-01 10:14:48"
+            "time": "2015-11-30 11:43:59"
         },
         {
             "name": "kartik-v/yii2-widget-affix",
@@ -4347,31 +4329,34 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.7.6",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "eca9019c88fbe250164affd107bc8057771f3f4d"
+                "reference": "177a015cb0e19ff4a49e0e2e2c5fc1c1bee07002"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/eca9019c88fbe250164affd107bc8057771f3f4d",
-                "reference": "eca9019c88fbe250164affd107bc8057771f3f4d",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/177a015cb0e19ff4a49e0e2e2c5fc1c1bee07002",
+                "reference": "177a015cb0e19ff4a49e0e2e2c5fc1c1bee07002",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.9"
+                "php": ">=5.5.9"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
                     "Symfony\\Component\\Yaml\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -4389,7 +4374,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2015-10-11 09:39:48"
+            "time": "2015-11-30 12:36:17"
         },
         {
             "name": "thamtech/yii2-uuid",
@@ -4683,16 +4668,16 @@
         },
         {
             "name": "yiier/yii2-backup",
-            "version": "v1.0",
+            "version": "1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiier/yii2-backup.git",
-                "reference": "b659dcf0646e0f2d9668dea1923658d36336fafe"
+                "reference": "5163e768befa4e3a8776286f19b6bd0ef63af02b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiier/yii2-backup/zipball/b659dcf0646e0f2d9668dea1923658d36336fafe",
-                "reference": "b659dcf0646e0f2d9668dea1923658d36336fafe",
+                "url": "https://api.github.com/repos/yiier/yii2-backup/zipball/5163e768befa4e3a8776286f19b6bd0ef63af02b",
+                "reference": "5163e768befa4e3a8776286f19b6bd0ef63af02b",
                 "shasum": ""
             },
             "require": {
@@ -4721,7 +4706,7 @@
                 "yii2",
                 "yii2-backup"
             ],
-            "time": "2015-06-29 14:02:21"
+            "time": "2015-11-27 09:53:41"
         },
         {
             "name": "yiisoft/yii2",

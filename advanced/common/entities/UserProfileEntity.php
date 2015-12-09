@@ -21,7 +21,6 @@ class UserProfileEntity extends Profile
 
     public function attributeLabels()
     {
-        #auto generate
         $attributes = [
             'user_id'               => 'User ID',
             'name'                  => '真实姓名',
@@ -56,6 +55,8 @@ class UserProfileEntity extends Profile
             'count_notification'    => '通知数',
             'wx_account'            => '微信账号',
             'wx_openid'             => '微信的openid',
+            'role_name'             => '角色类型名称',
+            'role_grade'            => '角色等级',
         ];
 
         return ArrayHelper::merge(
@@ -97,8 +98,6 @@ class UserProfileEntity extends Profile
      */
     public function rules()
     {
-
-        #auto generate
         $rules = [
             [['user_id'], 'required'],
             [
@@ -148,6 +147,7 @@ class UserProfileEntity extends Profile
     }
 
     /**
+     * 获取用户账号基本信息
      * @return \yii\db\ActiveQuery
      */
     public function getUser()

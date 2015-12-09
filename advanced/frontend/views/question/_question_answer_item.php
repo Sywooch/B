@@ -18,30 +18,11 @@ use yii\widgets\LinkPager;
         <article class="clearfix widget-answers__item" id="answer-<?= $item['id'] ?>">
             <div class="post-col">
                 <div class="widget-vote">
-                    <button type="button"
-                            class="like"
-                            data-id="1020000003903993"
-                            data-type="answer"
-                            data-do="like"
-                            data-toggle="tooltip"
-                            data-placement="top"
-                            title=""
-                            data-original-title="答案对人有帮助，有参考价值">
-                        <span class="sr-only">答案对人有帮助，有参考价值</span>
-                    </button>
-                    <span class="count">0</span>
-                    <button type="button"
-                            class="hate"
-                            data-id="1020000003903993"
-                            data-type="answer"
-                            data-do="hate"
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            title=""
-                            data-original-title="答案没帮助，是错误的答案，答非所问">
-                        <span class="sr-only">答案没帮助，是错误的答案，答非所问</span>
-                    </button>
-
+                    <!--答案投票-->
+                    <?= $this->render(
+                            '_question_answer_vote',
+                            ['id' => $item['id'], 'count_useful' => $item['count_useful']]
+                    ) ?>
                 </div>
             </div>
 

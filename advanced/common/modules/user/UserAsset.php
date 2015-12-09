@@ -1,10 +1,11 @@
 <?php
-namespace common\components\atwho;
+namespace common\modules\user;
 
 use yii;
 use yii\web\AssetBundle;
 
-class AtWhoAsset extends AssetBundle {
+class UserAsset extends AssetBundle
+{
 
     /**
      * @var
@@ -15,27 +16,26 @@ class AtWhoAsset extends AssetBundle {
      * @var array
      */
     public $js = [
-        'jquery.caret-0.2.2.min.js',
-        'jquery.atwho-1.4.1.min.js',
-        //'xregexp-3.0.min.js',
     ];
 
     /**
      * @var array
      */
     public $css = [
-        'jquery.atwho-1.4.1.css'
+        'user_all.css',
     ];
 
 
     public $depends = [
-        'yii\web\JqueryAsset',
+        'frontend\assets\AppAsset',
     ];
 
-    public function init() {
+    public function init()
+    {
         parent::init();
-        if($this->sourcePath == null)
+        if ($this->sourcePath == null) {
             $this->sourcePath = __DIR__ . DIRECTORY_SEPARATOR . 'assets';
+        }
     }
 
 }

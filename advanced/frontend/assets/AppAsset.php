@@ -24,7 +24,7 @@ class AppAsset extends AssetBundle
         //'css/responsive.css',
     ];
     public $js = [
-        'js/ajax.js',
+        'js/app.js',
         'js/main.js',
         'js/bootstrap-notify.min.js',
     ];

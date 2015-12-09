@@ -8,16 +8,35 @@
 
 namespace common\modules\user\controllers;
 
+use common\helpers\ArrayHelper;
 use common\services\QuestionService;
 use dektrium\user\controllers\ProfileController as BaseProfileController;
+use Yii;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 
 class ProfileController extends BaseProfileController
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    ['allow' => true, 'actions' => ['index', 'show'], 'roles' => ['@']],
+                ],
+            ],
+        ];
+    }
+
     public function actionShow($id)
     {
-        $profile = $this->finder->findProfileById($id);
 
-        if ($profile === null) {
+        //todo 非好友，不允许查看
+
+        $user = ArrayHelper::merge(Yii::$app->user->identity,[]);
+
+        if (empty($user)) {
             throw new NotFoundHttpException();
         }
 
@@ -26,7 +45,7 @@ class ProfileController extends BaseProfileController
         return $this->render(
             'show',
             [
-                'profile'       => $profile,
+                'user'          => $user,
                 'question_list' => $question_list,
             ]
         );

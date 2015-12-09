@@ -9,7 +9,9 @@ use common\entities\AnswerEntity;
 use common\entities\FollowUserEntity;
 use common\entities\QuestionEntity;
 use common\entities\QuestionInviteEntity;
+use common\entities\UserEntity;
 use common\exceptions\ParamsInvalidException;
+use common\helpers\ArrayHelper;
 use common\helpers\ServerHelper;
 use common\services\AnswerService;
 use common\services\FollowService;
@@ -52,9 +54,17 @@ class QuestionController extends BaseController
         ];
     }
     
-    public function actionVote()
+    public function actionVote($id, $choose)
     {
-        
+
+
+        return $this->render(
+            '_question_vote',
+            [
+                'id'         => $id,
+                'count_like' => 100,
+            ]
+        );
     }
 
     public function actionLatest()
@@ -89,11 +99,11 @@ class QuestionController extends BaseController
         );
     }
     
-    public function actionHot()
+    public function actionHottest()
     {
         $pages = new Pagination(
             [
-                'totalCount' => QuestionService::fetchCount('hot', ServerHelper::checkIsSpider()),
+                'totalCount' => QuestionService::fetchCount('hottest', ServerHelper::checkIsSpider()),
                 'pageSize'   => 20,
                 'params'     => array_merge($_GET),
             ]
@@ -117,7 +127,7 @@ class QuestionController extends BaseController
             'index',
             [
                 'question_data' => $html,
-                'active'        => 'hot',
+                'active'        => 'hottest',
                 'pages'         => $pages,
             ]
         );
@@ -233,6 +243,8 @@ class QuestionController extends BaseController
         $model = new QuestionEntity();
         
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            //Yii::$app->user->trigger(UserEntity::EVENT_QUESTION_CREATE);
+
             return $this->redirect(['question/view', 'id' => $model->id]);
         } else {
             return $this->render(
@@ -271,19 +283,40 @@ class QuestionController extends BaseController
 
     public function actionGetAtWhoUserList($user_id, $question_id = null)
     {
-        $follow_user_ids = FollowService::getFollowQuestionUserIdsByQuestionId($user_id);
-        
-        $user_ids = $follow_user_ids;
+        $user_ids = [];
         if ($question_id) {
+            //关注此问题的好友
+            /*$follow_user_ids = FollowService::getFollowQuestionUserIdsByQuestionId($question_id);
+            if($follow_user_ids){
+                $user_ids = array_merge($user_ids, $follow_user_ids);
+            }*/
+
+            //回答此问题的好友
             $answer_user_ids = AnswerService::getAnswerUserIdsByQuestionId($question_id);
             if ($answer_user_ids) {
                 $user_ids = array_merge($user_ids, $answer_user_ids);
             }
         }
-        
-        $user = UserService::getUserListByIds($user_ids);
 
-        return $this->jsonOut($user);
+        /*if ($user_id) {
+            //用户好友
+            $user_friend_user_ids = FollowService::getUserFriendUserIds($user_id);
+            if ($user_friend_user_ids) {
+                $user_ids = array_merge($user_ids, $user_friend_user_ids);
+            }
+        }*/
+
+        $user = UserService::getUserListByIds($user_ids);
+        $at_user_data = [];
+
+        foreach ($user as $item) {
+            $at_user_data[] = [
+                'id'       => $item['id'],
+                'username' => $item['username'],
+            ];
+        }
+
+        $this->jsonOut($at_user_data);
     }
 
     public function actionInvite($method = 'username')
@@ -324,14 +357,14 @@ class QuestionController extends BaseController
                 throw new Exception(sprintf('暂未支持 %s 通知', $method));
         }
         
-        return $this->jsonOut(Error::get($result));
+        $this->jsonOut(Error::get($result));
     }
     
     public function getSimilarQuestionBySubject($subject)
     {
         $similar_question = QuestionService::searchQuestionBySubject($subject);
         
-        return $this->jsonOut(Error::get($similar_question));
+        $this->jsonOut(Error::get($similar_question));
     }
     
     public function actionExplore()

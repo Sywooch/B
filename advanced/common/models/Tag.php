@@ -10,9 +10,12 @@ use Yii;
  * @property string $id
  * @property string $name
  * @property string $alias
+ * @property string $icon
+ * @property string $description
  * @property string $content
  * @property integer $weight
  * @property string $count_follow
+ * @property string $count_use
  * @property string $type
  * @property string $create_at
  * @property string $create_by
@@ -25,6 +28,8 @@ use Yii;
  * @property User[] $users
  * @property FollowTagPassive[] $followTagPassives
  * @property User[] $users0
+ * @property QuestionTag[] $questionTags
+ * @property Question[] $questions
  * @property TagRelation[] $tagRelations
  * @property TagRelation[] $tagRelations0
  * @property TagVersion[] $tagVersions
@@ -47,8 +52,9 @@ class Tag extends \common\models\BaseActiveRecord
         return [
             [['name'], 'required'],
             [['content', 'status'], 'string'],
-            [['weight', 'count_follow', 'create_at', 'create_by', 'modify_at', 'modify_by', 'active_at'], 'integer'],
+            [['weight', 'count_follow', 'count_use', 'create_at', 'create_by', 'modify_at', 'modify_by', 'active_at'], 'integer'],
             [['name', 'alias'], 'string', 'max' => 45],
+            [['icon', 'description'], 'string', 'max' => 255],
             [['type'], 'string', 'max' => 3],
             [['name'], 'unique']
         ];
@@ -63,9 +69,12 @@ class Tag extends \common\models\BaseActiveRecord
             'id' => 'ID',
             'name' => '名称',
             'alias' => '别名',
+            'icon' => '图标',
+            'description' => '描述',
             'content' => '描述',
             'weight' => '权重',
             'count_follow' => '关注数',
+            'count_use' => '使用数',
             'type' => '词性，名词，地名等',
             'create_at' => '创建时间',
             'create_by' => '创建用户',
@@ -106,6 +115,22 @@ class Tag extends \common\models\BaseActiveRecord
     public function getUsers0()
     {
         return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('follow_tag_passive', ['follow_tag_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestionTags()
+    {
+        return $this->hasMany(QuestionTag::className(), ['tag_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestions()
+    {
+        return $this->hasMany(Question::className(), ['id' => 'question_id'])->viaTable('question_tag', ['tag_id' => 'id']);
     }
 
     /**

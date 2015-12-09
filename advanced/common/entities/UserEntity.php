@@ -8,6 +8,7 @@
 
 namespace common\entities;
 
+use common\behaviors\UserEventBehavior;
 use yii\helpers\ArrayHelper;
 use \dektrium\user\models\User;
 
@@ -41,7 +42,7 @@ class UserEntity extends User
             ]
         );
     }
-    
+
     /**
      * 场景约束
      * @return array
@@ -89,6 +90,7 @@ class UserEntity extends User
     {
         return $this->hasMany(QuestionEntity::className(), ['create_by' => 'id']);
     }
+
     public function getAnswers()
     {
         return $this->hasMany(AnswerEntity::className(), ['create_by' => 'id']);

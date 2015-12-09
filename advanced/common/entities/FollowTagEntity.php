@@ -10,12 +10,30 @@
 
 namespace common\entities;
 
-use common\components\Counter;
+use common\behaviors\OperatorBehavior;
+use common\behaviors\TimestampBehavior;
 use common\components\Error;
 use common\models\FollowTag;
 use Yii;
+use yii\db\ActiveRecord;
 
 class FollowTagEntity extends FollowTag
 {
-
+    public function behaviors()
+    {
+        return [
+            'operator'                 => [
+                'class'      => OperatorBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'user_id',
+                ],
+            ],
+            'timestamp'                => [
+                'class'      => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['create_at', 'modify_at'],
+                ],
+            ],
+        ];
+    }
 }

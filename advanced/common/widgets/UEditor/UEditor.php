@@ -13,10 +13,12 @@ use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
 
-
 class UEditor extends BaseUEditor
 {
-    public $style, $associate_id, $atwho_data_path;
+    public $style; //样式，question answer comment
+    public $associate_id; //关联ID,获取ATWHO时用到
+    public $atwho_data_path;//获取ATWHO数据地址
+    public $no;//编号，用于一个页面请求多个实例
 
     public function init()
     {
@@ -172,6 +174,12 @@ class UEditor extends BaseUEditor
     {
         $id = $this->hasModel() ? Html::getInputId($this->model, $this->attribute) : $this->id;
 
+        //此步骤用于一个页面请求多个实例
+        if ($this->no) {
+            $id = implode('-', [$id, $this->no]);
+            $this->name = implode('_', [$this->name, $this->no]);
+        }
+
         $config = Json::encode($this->config);
 
         //ready部分代码，是为了缩略图管理。UEditor本身就很大，在后台直接加载大文件图片会很卡。
@@ -179,7 +187,7 @@ class UEditor extends BaseUEditor
     var {$this->name} = UE.getEditor('{$id}',{$config});
     {$this->name}.ready(function(){
         this.addListener( "beforeInsertImage", function ( type, imgObjs ) {
-            for(var i=0;i < imgObjs.length;i++){
+            for(var i=0;i<imgObjs.length;i++){
                 imgObjs[i].src = imgObjs[i].src.replace(".thumbnail","");
             }
         });
@@ -196,39 +204,42 @@ UEDITOR;
                 'comment',
             ]
         )) {
-
             AtWhoAsset::register($this->getView());
 
-            //$template = '<li>123</li>';
-            $add_script = sprintf(
-                "
-                var at_config;
-                %s.addListener('focus', function(editor){
-                    if(typeof(at_config) == 'undefined'){
-                        at_config = {
-                                   at: '@',
-                                 data: '%s',
-                            displayTpl: '%s',
-                            insertTpl: '%s',
-                                limit: 6
-                        };
-                        $(this.document.body).atwho(at_config);
-                    }
-                });
-                ",
-                $this->name,
-                $this->atwho_data_path,
-                '<li>${username}</li>',
-                '<span>@${username}</span>'
-            );
+            $at_config = sprintf('at_config_%s', $this->name);
+            $display_tpl = '<li>${username}</li>';
+            $insert_tpl = '<span>@${username}</span>';
 
-            $script .= $add_script;
+            $at_script = <<<ATSCRIPT
+
+var {$at_config};
+{$this->name}.addListener('focus', function(editor){
+    if(typeof({$at_config}) == 'undefined'){
+        {$at_config} = {
+                   at: '@',
+                 data: '{$this->atwho_data_path}',
+           displayTpl: '{$display_tpl}',
+            insertTpl: '{$insert_tpl}',
+                limit: 20,
+               maxLen: 20,
+       highlightFirst: true,
+           search_key: 'username',
+     start_with_space: false,
+      highlight_first: true,
+
+       };
+        $(this.document.body).atwho({$at_config});
+    }
+});
+
+ATSCRIPT;
+            $script .= $at_script;
         }
 
         $this->getView()->registerJs($script);
 
         if ($this->hasModel()) {
-            return Html::activeTextarea($this->model, $this->attribute);
+            return Html::activeTextarea($this->model, $this->attribute, ['id' => $id]);
         } else {
             return Html::textarea($this->name, $this->value, ['id' => $id]);
         }

@@ -12,6 +12,7 @@ use yii\widgets\Breadcrumbs;
 use yii\widgets\DetailView;
 use yii\widgets\LinkPager;
 use yii\widgets\ListView;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 
@@ -24,15 +25,13 @@ $this->params['breadcrumbs'][] = ['label' => '问答'];
 <?php
 $this->beginBlock('meta-header');
 $meta = [];
+$this->endBlock();
 ?>
 
 <?php
-$this->endBlock();
-?>
-<?php
 $this->beginBlock('top-header');
 ?>
-<div class="post-topheader">
+<div class="post-topheader bg-gray pt20 pb20">
     <div class="container">
         <div class="row">
             <div class="col-md-9">
@@ -101,7 +100,6 @@ $this->beginBlock('top-header');
         </div>
     </div>
 </div>
-
 <?php
 $this->endBlock();
 ?>
@@ -113,28 +111,14 @@ $this->endBlock();
 
                 <div class="post-col">
                     <div class="widget-vote">
-                        <button type="button"
-                                class="like"
-                                data-id="1010000003931811"
-                                data-type="question"
-                                data-do="like"
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                title="问题对人有帮助，内容完整，我也想知道答案">
-                            <span class="sr-only">问题对人有帮助，内容完整，我也想知道答案</span>
-                        </button>
-                        <span class="count">1</span>
-                        <button
-                                type="button"
-                                class="hate"
-                                data-id="1010000003931811"
-                                data-type="question"
-                                data-do="hate"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
-                                title="问题没有实际价值，缺少关键内容，没有改进余地">
-                            <span class="sr-only">问题没有实际价值，缺少关键内容，没有改进余地</span>
-                        </button>
+                        <!--问题投票-->
+                        <?= $this->render(
+                                '_question_vote',
+                                [
+                                        'id'         => $question_data['id'],
+                                        'count_like' => $question_data['count_like'],
+                                ]
+                        ) ?>
                     </div>
                     <!-- end .widget-vote -->
                 </div>
@@ -242,9 +226,9 @@ $this->endBlock();
                 <h2 class="title h4 mt30 mb20 post-title" id="answers-title">
                     <?= $question_data['count_answer'] ?>个回答
                 </h2>
-                <?php \yii\widgets\Pjax::begin(
+                <?php Pjax::begin(
                         [
-                                'id'              => 'answer-pajax',
+                                'id'              => 'answer-pjax',
                                 'enablePushState' => false,
                                 'linkSelector'    => '#answer-page',
                                 'timeout'         => 10000,
@@ -267,11 +251,11 @@ $this->endBlock();
 
                                 ],
                                 'linkOptions' => [
-                                        //'rel' => 'nofollow',
+                                    //'rel' => 'nofollow',
                                 ],
                         ]
                 ) : ''; ?>
-                <?php \yii\widgets\Pjax::end(); ?>
+                <?php Pjax::end(); ?>
 
                 <div class="text-center"></div>
             </div>
@@ -289,14 +273,7 @@ $this->endBlock();
 
 
         <div class="col-xs-12 col-md-3 side">
-            <div class="sfad-sidebar">
-                <div class="sfad-item" data-adn="ad-981179" id="adid-981179">
-                    <button class="close" type="button" aria-hidden="true">×</button>
-                </div>
-
-            </div>
-
-
+            <!--<div class="sfad-sidebar"></div>-->
             <?php if ($similar_question): ?>
                 <div class="widget-box no-border">
                     <h2 class="h4 widget-box__title">相似问题</h2>
@@ -304,30 +281,21 @@ $this->endBlock();
                         <?php foreach ($similar_question as $question): ?>
                             <?php if ($question['id'] != $question_data['id']): ?>
                                 <li class="widget-links__item">
-                                    <?= Html::a(
-                                            $question['subject'],
-                                            ['question/view', 'id' => $question['id']]
-                                    ); ?>
+                                <?= Html::a(
+                                        $question['subject'],
+                                        ['question/view', 'id' => $question['id']]
+                                ); ?>
+                                <?php if ($question['count_answer']): ?>
                                     <small class="text-muted">
                                         <?= $question['count_answer']; ?> 回答
                                     </small>
-                                </li>
+                                <?php endif; ?>
+                            </li>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </ul>
                 </div>
             <?php endif; ?>
-            <div class="widget-share sharer-0" data-text="md5加密问题" style="display: block;">分享
-                <ul id="share" data-title="" class="sn-inline">
-                    <li data-network="weibo">
-                        <a href="javascript:void(0);"
-                           class="entypo-weibo icon-sn-weibo share-1"
-                           data-toggle="tooltip"
-                           data-placement="top"
-                           title=""
-                           data-original-title="分享至新浪微博">新浪微博</a></li>
-                </ul>
-            </div>
         </div>
         <!-- /.side -->
     </div>

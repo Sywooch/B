@@ -109,10 +109,15 @@ class TemplateHelper
         return implode(
             ' / ',
             [
-                Html::a('登录', ['/member'], ['class' => 'commentLogin']),
-                Html::a('注册', ['/member'], ['class' => 'commentLogin']),
+                Html::a('登录', ['user/security/login'], ['class' => 'commentLogin', 'data-need-login' => true]),
+                Html::a('注册', ['user/registration/register'], ['class' => 'commentLogin', 'target' => '_blank']),
             ]
         );
+    }
+
+    public static function showRegisterBtn()
+    {
+        return Html::a('没有账号？注册一个！', ['user/registration/register'], ['class' => 'ml5', 'target' => '_blank']);
     }
 
     public static function showHumanCurrency($currency)
@@ -130,6 +135,42 @@ class TemplateHelper
             $result = sprintf('%d两黄金', $currency / 10000);
         } elseif ($currency > 10000) {
             $result = sprintf('≈%d两黄金', round($currency / 10000));
+        }
+
+        return $result;
+    }
+
+    public static function showHumanCurrencyValue($currency)
+    {
+        $result = '';
+        if ($currency < 0) {
+            $result = $currency;
+        } elseif ($currency >= 0 && $currency < 1000) {
+            $result = $currency;
+        } elseif ($currency % 1000 == 0) {
+            $result = $currency / 1000;
+        } elseif ($currency > 1000 && $currency < 10000) {
+            $result = sprintf('≈%d', round($currency / 1000));
+        } elseif ($currency % 10000 == 0) {
+            $result = sprintf('%d', $currency / 10000);
+        } elseif ($currency > 10000) {
+            $result = sprintf('≈%d', round($currency / 10000));
+        }
+
+        return $result;
+    }
+
+    public static function showHumanCurrencyUnit($currency)
+    {
+        $result = '';
+        if ($currency < 0) {
+            $result = '负债中...';
+        } elseif ($currency >= 0 && $currency < 1000) {
+            $result = '文钱';
+        } elseif ($currency >= 1000 && $currency < 10000) {
+            $result = '两白银';
+        } elseif ($currency >= 10000) {
+            $result = '两黄金';
         }
 
         return $result;

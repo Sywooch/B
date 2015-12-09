@@ -8,8 +8,8 @@
 
 namespace common\services;
 
-
 use common\entities\TagEntity;
+use common\entities\TagRelationEntity;
 use yii\helpers\ArrayHelper;
 use common\helpers\TimeHelper;
 use common\models\CacheTagModel;
@@ -27,10 +27,11 @@ class TagService extends BaseService
     {
         $data = [];
         foreach ($tags as $tag_name) {
+            /* @var $model TagEntity */
             $model = TagEntity::findOne(['name' => $tag_name]);
 
             if (!$model) {
-                $model = new self;
+                $model = new TagEntity;
                 $model->name = $tag_name;
                 if (!$model->save()) {
                     Yii::error($model->getErrors(), __FUNCTION__);
@@ -204,6 +205,13 @@ class TagService extends BaseService
 
     public static function getTagListByTagIds(array $tag_ids)
     {
+        //去重
+        if (empty($tag_ids)) {
+            return [];
+        } else {
+            $tag_ids = array_unique($tag_ids);
+        }
+
         $result = $cache_miss_key = $cache_data = [];
         foreach ($tag_ids as $tag_id) {
             $cache_key = [REDIS_KEY_TAG, $tag_id];
@@ -237,9 +245,9 @@ class TagService extends BaseService
         return $result;
     }
 
-    public static function getHotTag()
+    public static function getHotTag($limit = 20, $period = 100)
     {
-        $tag_ids = self::getHotTagIds();
+        $tag_ids = self::getHotTagIds($limit, $period);
         if ($tag_ids) {
             $tags = self::getTagListByTagIds($tag_ids);
         } else {
@@ -249,30 +257,60 @@ class TagService extends BaseService
         return $tags;
     }
 
-    public static function getRelateTag($tag_id, $limit = 20)
+    /**
+     * @param     $tag_id
+     * @param int $limit
+     * @return array ['type' => ['tag_id' => ['name' => '','count_relation']]]
+     */
+    public static function getRelateTag($tag_id, $limit = 100)
     {
         $tag_relate_list = TagRelationEntity::find()->where(
-            '`tag_id_1`=:tag_id',
+            [
+                'or',
+                '`tag_id_1`=:tag_id',
+                '`tag_id_2`=:tag_id',
+            ],
             [':tag_id' => $tag_id]
+        )->andWhere(
+            [
+                'status' => TagRelationEntity::STATUS_ENABLE,
+            ]
         )->orderBy('count_relation DESC')->limit($limit)->asArray()->all();
 
-
-        $tag_ids = ArrayHelper::getColumn($tag_relate_list, 'tag_id_2');
-        $tags = self::getTagListByTagIds($tag_ids);
-
-        $result = [];
-        foreach ($tag_relate_list as $key => $tag) {
-            if (!empty($tags[$tag_relate_list[$key]['tag_id_2']]['name'])) {
-                $result[] = [
-                    'id'             => $tag['tag_id_2'],
-                    'name'           => $tags[$tag_relate_list[$key]['tag_id_2']]['name'],
-                    'type'           => $tag['type'],
-                    'count_relation' => $tag['count_relation'],
+        /*$relate_tag_ids = [
+            'brother' => [
+                'tag_id' => [
+                    'name' => '',
+                    'count_relation',
+                ],
+            ],
+        ];*/
+        $relate_tag = $relate_tag_ids = [];
+        foreach ($tag_relate_list as $item) {
+            if ($item['tag_id_1'] == $tag_id) {
+                $relate_tag[$item['type']][$item['tag_id_2']] = [
+                    'name'           => '',
+                    'count_relation' => $item['count_relation'],
                 ];
+                $relate_tag_ids[] = $item['tag_id_2'];
+            } else {
+                $relate_tag[$item['type']][$item['tag_id_1']] = [
+                    'name'           => '',
+                    'count_relation' => $item['count_relation'],
+                ];
+                $relate_tag_ids[] = $item['tag_id_1'];
             }
         }
 
-        return $result;
+        $tags = self::getTagListByTagIds($relate_tag_ids);
+
+        foreach ($relate_tag as $type => $item) {
+            foreach ($item as $tag_id => $tag) {
+                $relate_tag[$type][$tag_id]['name'] = $tags[$tag_id]['name'];
+            }
+        }
+
+        return $relate_tag;
     }
 
     private static function getHotTagIds($limit = 20, $period = 30)
@@ -288,7 +326,6 @@ class TagService extends BaseService
                     ':active_at'    => TimeHelper::getBeforeTime($period),
                 ]
             )->orderBy('count_follow DESC')->limit($limit)->asArray()->all();
-
 
             $params = [
                 $cache_key,

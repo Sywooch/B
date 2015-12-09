@@ -16,8 +16,8 @@ return [
 
             ],
             'controllerMap'            => [
-                'admin'    => 'common\modules\user\controllers\AdminController',
-                'settings' => 'common\modules\user\controllers\SettingsController',
+                'admin'        => 'common\modules\user\controllers\AdminController',
+                'settings'     => 'common\modules\user\controllers\SettingsController',
                 'registration' => 'common\modules\user\controllers\RegistrationController',
             ],
             'mailer'                   => [
@@ -113,6 +113,7 @@ return [
                     'levels'      => ['trace'],
                     'maxLogFiles' => 20,
                     'categories'  => [
+                        'service',
                         'behavior',
                         'event',
                         'notification',
@@ -123,6 +124,7 @@ return [
                         'redis',
                         'log',
                         'rbac',
+                        'user_event',
                     ],
                     'logFile'     => '@app/runtime/logs/trace_' . date('Y-m-d') . '.log',
                     'maxFileSize' => 1024 * 2,

@@ -149,6 +149,8 @@ class AnswerService extends BaseService
                   LEFT JOIN `answer_comment` ac
                     ON a.`id` = ac.`answer_id`
                 WHERE a.`question_id` =:question_id
+                AND a.is_anonymous=:not_anonymous
+                AND ac.is_anonymous=:not_anonymous
                 ORDER BY a.`create_at` DESC, ac.`create_at` DESC
                 LIMIT :limit ;
                 ";
@@ -156,8 +158,9 @@ class AnswerService extends BaseService
         $command = AnswerEntity::getDb()->createCommand(
             $sql,
             [
-                ':question_id' => $question_id,
-                ':limit'       => $limit,
+                ':not_anonymous' => AnswerEntity::STATUS_UNANONYMOUS,
+                ':question_id'   => $question_id,
+                ':limit'         => $limit,
             ]
         );
 
@@ -260,7 +263,13 @@ class AnswerService extends BaseService
 
     private static function setAnswerListByQuestionIdOrderToCache($question_id)
     {
-        $answer_data = AnswerEntity::find()->select(['id', 'count_useful', 'create_at'])->where(
+        $answer_data = AnswerEntity::find()->select(
+            [
+                'id',
+                'count_useful' => '`count_like`-`count_hate`',
+                'create_at',
+            ]
+        )->where(
             ['question_id' => $question_id]
         )->asArray()->all();
 

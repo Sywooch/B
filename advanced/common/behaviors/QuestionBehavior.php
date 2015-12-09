@@ -68,8 +68,8 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithUserAddQuestionCounter();
         $this->dealWithAddFollowQuestion();
         $this->dealWithAddAttachments();
-        $this->dealWithRedisCacheInsert();
-        $this->dealWithTagRelationCount();
+        $this->dealWithQuestionCacheInsert();
+        //$this->dealWithTagRelation();//由计划任务（tag-cron-job）每周执行
         $this->dealWithInsertXunSearch();
     }
     
@@ -151,7 +151,7 @@ class QuestionBehavior extends BaseBehavior
             $tag_relation = TagService::batchAddTags($add_tags);
             if ($tag_relation) {
                 $tag_ids = array_values($tag_relation);
-                $result = QuestionTagEntity::addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
+                $result = QuestionService::addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
 
                 Yii::trace(sprintf('Add Question Tag Result: %s', var_export($result, true)), 'behavior');
             }
@@ -338,10 +338,13 @@ class QuestionBehavior extends BaseBehavior
         try {
             $question = new QuestionSearch();
             $question->load($this->owner->getAttributes(), '');
-            $question->save();
+            $result = $question->save();
         } catch (Exception $e) {
+            $result = false;
             Yii::error(__METHOD__, 'xunsearch');
         }
+
+        Yii::trace('Result %s ' . var_export($result, true), 'behavior');
     }
 
     private function dealWithDeleteXunSearch()
@@ -357,7 +360,7 @@ class QuestionBehavior extends BaseBehavior
         }
     }
 
-    private function dealWithRedisCacheInsert()
+    private function dealWithQuestionCacheInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         QuestionService::ensureQuestionHasCache($this->owner->id);
@@ -379,7 +382,7 @@ class QuestionBehavior extends BaseBehavior
         }
     }
 
-    private function dealWithTagRelationCount()
+    private function dealWithTagRelation()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }

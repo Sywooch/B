@@ -33,13 +33,16 @@ class CacheUserModel extends BaseCacheModel
     public $count_home_views = 0;
     public $count_notification = 0;
 
-    public $score = 0;//积分
+    public $score = 0;//积分，关联用户角色等级
     public $currency = 0;//货币
-    public $grade_level = 0;//等级级数
-    public $grade_name = '';//等级名称
+    public $role_name = 0;//角色类型名称，刺客、武夫、
+    public $role_grade = '';//角色等级
 
-    public $role = '老百姓';//角色
-
+    /**
+     * 自定义属性，合并user user_profile数据
+     * @param $data
+     * @return array
+     */
     public function filterAttributes($data)
     {
         if (isset($data['profile'])) {
@@ -51,15 +54,3 @@ class CacheUserModel extends BaseCacheModel
         return parent::filterAttributes($data);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -16,8 +16,8 @@ use Yii;
  * @property string $count_answer
  * @property string $count_favorite
  * @property string $count_follow
- * @property string $count_like
- * @property string $count_hate
+ * @property integer $count_like
+ * @property integer $count_hate
  * @property string $create_at
  * @property integer $create_by
  * @property integer $active_at
@@ -32,6 +32,8 @@ use Yii;
  * @property QuestionEventHistory[] $questionEventHistories
  * @property QuestionInvite[] $questionInvites
  * @property QuestionReview[] $questionReviews
+ * @property QuestionTag[] $questionTags
+ * @property Tag[] $tags0
  */
 class Question extends \common\models\BaseActiveRecord
 {
@@ -137,6 +139,22 @@ class Question extends \common\models\BaseActiveRecord
     public function getQuestionReviews()
     {
         return $this->hasMany(QuestionReview::className(), ['question_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestionTags()
+    {
+        return $this->hasMany(QuestionTag::className(), ['question_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTags0()
+    {
+        return $this->hasMany(Tag::className(), ['id' => 'tag_id'])->viaTable('question_tag', ['question_id' => 'id']);
     }
 
     /**

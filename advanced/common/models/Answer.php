@@ -11,7 +11,8 @@ use Yii;
  * @property string $question_id
  * @property string $type
  * @property string $content
- * @property string $count_useful
+ * @property integer $count_hate
+ * @property integer $count_like
  * @property string $count_comment
  * @property string $create_at
  * @property integer $create_by
@@ -46,7 +47,7 @@ class Answer extends \common\models\BaseActiveRecord
     {
         return [
             [['question_id', 'content', 'create_by'], 'required'],
-            [['question_id', 'count_useful', 'count_comment', 'create_at', 'create_by', 'modify_at', 'modify_by'], 'integer'],
+            [['question_id', 'count_hate', 'count_like', 'count_comment', 'create_at', 'create_by', 'modify_at', 'modify_by'], 'integer'],
             [['type', 'content', 'is_anonymous', 'is_fold'], 'string'],
             [['reproduce_url'], 'string', 'max' => 45],
             [['reproduce_username'], 'string', 'max' => 255]
@@ -63,7 +64,8 @@ class Answer extends \common\models\BaseActiveRecord
             'question_id' => '相关问题ID',
             'type' => 'answer 常规回答,referenced 被引用',
             'content' => '内容',
-            'count_useful' => '点赞数',
+            'count_hate' => '讨厌数',
+            'count_like' => '喜欢数',
             'count_comment' => '评论数',
             'create_at' => '创建时间',
             'create_by' => '用户ID',

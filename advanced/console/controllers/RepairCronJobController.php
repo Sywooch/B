@@ -21,7 +21,7 @@ class RepairCronJobController extends Controller
 
     public function actionIndex()
     {
-        //$this->actionQuestionAnswerCount();
+        $this->actionQuestionAnswerCount();
         $this->actionAnswerCommentCount();
     }
 

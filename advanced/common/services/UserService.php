@@ -315,9 +315,9 @@ class UserService extends BaseService
         return $tag_list;
     }
 
-    public static function getUserFollowUserList($user_id, $limit = 20)
+    public static function getUserFriendList($user_id, $limit = 20)
     {
-        $user_ids = FollowService::getUserFollowUserIds($user_id, $limit);
+        $user_ids = FollowService::getUserFriendUserIds($user_id, 1, $limit);
         if ($user_ids) {
             $user_list = UserService::getUserListByIds($user_ids);
         } else {
@@ -345,9 +345,29 @@ class UserService extends BaseService
         return FollowService::getUserBeGoodAtTagsByUserId($user_id, $limit);
     }
 
+    /**
+     * 获取用户粉比列表
+     * @param     $user_id
+     * @param int $page_no
+     * @param int $page_size
+     * @return array|bool
+     */
     public static function getUserFansList($user_id, $page_no = 1, $page_size = 50)
     {
         $user_ids = FollowService::getUserFanUserIds($user_id, $page_no, $page_size);
+
+        if ($user_ids) {
+            $user_list = UserService::getUserListByIds($user_ids);
+        } else {
+            $user_list = false;
+        }
+
+        return $user_list;
+    }
+
+    public static function getUserFriendsList($user_id, $page_no = 1, $page_size = 50)
+    {
+        $user_ids = FollowService::getUserFriendUserIds($user_id, $page_no, $page_size);
 
         if ($user_ids) {
             $user_list = UserService::getUserListByIds($user_ids);

@@ -32,11 +32,11 @@ class AnswerController extends BaseController
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only'  => ['create', 'update', 'common-edit'],
+                'only'  => ['create', 'update', 'common-edit', 'vote'],
                 'rules' => [
                     [
                         'allow'   => true,
-                        'actions' => ['create', 'update', 'common-edit'],
+                        'actions' => ['create', 'update', 'common-edit', 'vote'],
                         'roles'   => ['@'],
                     ],
                 ],
@@ -199,7 +199,7 @@ class AnswerController extends BaseController
         $answer_data = AnswerService::getAnswerByAnswerId($id);
         $question_data = QuestionService::getQuestionByQuestionId($answer_data['question_id']);
 
-        $count =  CommentService::getCommentCountByAnswerId($id);
+        $count = CommentService::getCommentCountByAnswerId($id);
 
         if ($count == 0) {
             $pages = null;
@@ -252,5 +252,16 @@ class AnswerController extends BaseController
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function actionVote($id, $choose)
+    {
+        return $this->render(
+            '/question/_question_answer_vote',
+            [
+                'id'         => $id,
+                'count_useful' => 100,
+            ]
+        );
     }
 }

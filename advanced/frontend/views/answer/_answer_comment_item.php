@@ -38,21 +38,18 @@ use common\helpers\TemplateHelper;
 
 
                 <?php if ($item['create_by'] != Yii::$app->user->id) : ?>
-                    · <a href="#"
-                         class="commentReply"
-                         data-userid="1030000002644202"
-                         data-id="1050000003912333"
-                         data-username="<?= $item['create_by'] ?>">回复</a>
-                    <span class="pull-right commentTools hover-show-obj">                                                <a
-                            <a href="#911"
-                               class="ml10"
-                               data-toggle="modal"
-                               data-target="#911"
-                               data-type="comment"
-                               data-id="1050000003912333"
-                               data-typetext="评论"
-                               data-placement="top"
-                               title="举报">举报</a>
+                    <?php if ($item['is_anonymous'] != AnswerCommentEntity::STATUS_ANONYMOUS): ?>
+                        · <a href="#"
+                             data-answer-id="<?= $item['id'] ?>"
+                             data-comment-at-username="<?= TemplateHelper::showUsername(
+                                     $item['create_by'],
+                                     false
+                             ); ?>">
+                            回复
+                        </a>
+                    <?php endif; ?>
+                    <span class="pull-right commentTools hover-show-obj">
+                            <a href="#911" class="ml10" title="举报">举报</a>
                 </span>
                 <?php endif; ?>
             </p>

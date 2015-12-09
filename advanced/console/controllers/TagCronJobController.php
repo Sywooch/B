@@ -26,10 +26,13 @@ class TagCronJobController extends Controller
     }
 
 
+    /**
+     * 只处理brother类型的关系
+     */
     public function actionRebuildTagRelation()
     {
         #reset
-        TagRelationEntity::updateAll(['count_relation' => 0]);
+        TagRelationEntity::updateAll(['count_relation' => 0], ['type' => TagRelationEntity::TYPE_BROTHER]);
 
         #loop rebuild
         $page = 1;
@@ -61,7 +64,6 @@ class TagCronJobController extends Controller
 
 
         if ($questions) {
-
             $tag_data = $tag_relations = [];
             foreach ($questions as $item) {
                 $tags = explode(',', $item);
@@ -81,7 +83,6 @@ class TagCronJobController extends Controller
                 } else {
                     $current_item = array_shift($relation);
                     do {
-
                         foreach ($relation as $tag_name) {
                             $all_relations[$current_item][] = $tag_name;
                         }
@@ -94,7 +95,6 @@ class TagCronJobController extends Controller
 
             $data = [];
             foreach ($all_relations as $tag_name_1 => $item_relation) {
-
                 if (empty($all_tag_name_id[$tag_name_1])) {
                     echo sprintf('[F] Tag Name:[%s] is not exist.', $tag_name_1, PHP_EOL);
                     continue;
@@ -149,5 +149,4 @@ class TagCronJobController extends Controller
 
 
     }
-
 }

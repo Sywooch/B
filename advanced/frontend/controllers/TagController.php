@@ -5,10 +5,12 @@ namespace frontend\controllers;
 use common\controllers\BaseController;
 use common\entities\TagEntity;
 use common\entities\TagSearchEntity;
+use common\services\QuestionService;
 use common\services\TagService;
 use Yii;
 use common\models\Tag;
 use common\models\TagSearch;
+use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -95,10 +97,28 @@ class TagController extends BaseController
      */
     public function actionView($id)
     {
+        $pages = new Pagination(
+            [
+                'totalCount' => QuestionService::getQuestionCountByTagId($id),
+                'pageSize'   => 20,
+                'params'     => array_merge($_GET),
+            ]
+        );
+
+        //
+        $questions = QuestionService::getQuestionListByTagId($id, $pages->page, $pages->pageSize);
+
+        //
+        $tag_relation = TagService::getRelateTag($id);
+
+
         return $this->render(
             'view',
             [
-                'model' => $this->findModel($id),
+                'tag'          => $this->findModel($id),
+                'questions'    => $questions,
+                'pages'        => $pages,
+                'tag_relation' => $tag_relation,
             ]
         );
     }

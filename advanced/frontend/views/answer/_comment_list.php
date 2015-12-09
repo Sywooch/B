@@ -59,7 +59,7 @@ use yii\widgets\LinkPager;
     ); ?>
 
     <h4>评论</h4>
-    <?/*= $form->field(
+    <? /*= $form->field(
             $comment_form,
             'content'
     )->textarea(
@@ -67,7 +67,7 @@ use yii\widgets\LinkPager;
                     'id'    => 'comment-content-' . $answer_data['id'],
                     'class' => 'textarea-comment',
             ]
-    )->label(false); */?>
+    )->label(false); */ ?>
 
     <?= $form->field($comment_form, 'content')->textarea(
             [
@@ -76,7 +76,11 @@ use yii\widgets\LinkPager;
             ]
     )->label(false)->widget(
             UEditor::className(),
-            ['style' => 'comment']
+            [
+                    'no'           => $answer_data['id'],
+                    'style'        => 'comment',
+                    'associate_id' => $answer_data['question_id'],
+            ]
     ); ?>
 
     <div class="form-group">
