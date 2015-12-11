@@ -104,18 +104,20 @@ $this->title = $tag->name;
                 </li>
             </ul>
 
-            <div class="widget-box">
-                <?php if (isset($tag_relation['brother'])): ?>
-                    <h2 class="h4 widget-box__title">相关标签</h2>
-                    <ul class="taglist--inline multi">
-                        <?php foreach ($tag_relation['brother'] as $tag): ?>
-                            <li class="tagPopup">
-                                <?= Html::a($tag['name'], ['tag/view', 'id' => $tag['id']], ['class' => 'tag']) ?>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-            </div>
+            <?php if ($tag_relation): ?>
+                <div class="widget-box">
+                    <?php if (isset($tag_relation['relate'])): ?>
+                        <h2 class="h4 widget-box__title">相关标签</h2>
+                        <ul class="taglist--inline multi">
+                            <?php foreach ($tag_relation['relate'] as $tag): ?>
+                                <li class="tagPopup">
+                                    <?= Html::a($tag['name'], ['tag/view', 'id' => $tag['id']], ['class' => 'tag']) ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
 
             <div class="widget-box widget-taguser">
                 <h2 class="h4 widget-box__title">本月新人榜</h2>

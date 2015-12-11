@@ -20,6 +20,7 @@ class TagRelationEntity extends TagRelation
     const TYPE_BROTHER = 'brother';
     const TYPE_CHILD = 'child';
     const TYPE_ALIAS = 'alias';
+    const TYPE_RELATE = 'relate';
 
     /**
      * @return \yii\db\ActiveQuery

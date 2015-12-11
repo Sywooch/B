@@ -69,14 +69,31 @@ jQuery(function ($) {
     });
 
     //回复评论
-    $(document).on('click', '[data-comment-at-username]', function (e) {
+    $(document).on('click', '[data-do-comment]', function (e) {
         var that = $(this);
         //需要登陆
-        if (that.is('a') && app.user.login == false) {
+        if (that.is('a')) {
             e.preventDefault();
-            return app.comment.insertAT($(e.target).data('answer-id'),$(e.target).data('comment-at-username'))
+            if (app.user.login == false) {
+                return app.login.show();
+            } else {
+                return app.comment.insertAT($(e.target).data('answer-id'), $(e.target).data('username'));
+            }
+
+
         }
     });
+
+    //举报
+    $(document).on('click', '[data-do-report]', function (e) {
+        var that = $(this);
+        //需要登陆
+        if (that.is('a')) {
+            e.preventDefault();
+            return app.report.show($(e.target).data('object'), $(e.target).data('associate_id'));
+        }
+    });
+
     //赞, 踩, 收藏 等操作
     /*
      $(document).on('click', '[data-do]', function (e) {

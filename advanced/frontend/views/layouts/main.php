@@ -167,16 +167,17 @@ AppAsset::register($this);
     } ?>
 
 
-
-        <?php
-        if (!isset($this->blocks['top-header'])) {
-            echo Breadcrumbs::widget(
-                    [
-                            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-                    ]
-            );
-        } ?>
-        <?= $content ?>
+    <?php
+    if (!isset($this->blocks['top-header'])) {
+        echo '<div class="container">';
+        echo Breadcrumbs::widget(
+                [
+                        'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                ]
+        );
+        echo '</div>';
+    } ?>
+    <?= $content ?>
 </div>
 
 <footer id="footer">
@@ -193,7 +194,7 @@ AppAsset::register($this);
             [
                     'header'       => '<h4 class="modal-title">用户登录</h4>',
                     'toggleButton' => false,
-                    'size'         => Modal::SIZE_SMALL,
+                    'size'         => Modal::SIZE_DEFAULT,
                     'options'      => [
                             'id' => 'quick-login-modal',
                     ],

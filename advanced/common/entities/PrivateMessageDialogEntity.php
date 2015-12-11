@@ -18,7 +18,6 @@ use yii\db\ActiveRecord;
 
 class PrivateMessageDialogEntity extends PrivateMessageDialog
 {
-
     const STATUS_READ = 'read';
     const STATUS_UNREAD = 'unread';
 
@@ -44,28 +43,6 @@ class PrivateMessageDialogEntity extends PrivateMessageDialog
                 'class' => PrivateMessageDialogBehavior::className(),
             ],
         ];
-    }
-
-    public function sendMessage($from_user_id, $to_user_id, $message)
-    {
-        /* @var $private_message PrivateMessageEntity */
-        $private_message = Yii::createObject(PrivateMessageEntity::className());
-        $private_message_id = $private_message->getPrivateMessageId($from_user_id, $to_user_id);
-
-        $model = clone $this;
-        $data = [
-            'private_message_id' => $private_message_id,
-            'content'            => $message,
-            'status'             => self::STATUS_UNREAD,
-        ];
-
-        if ($model->load($data, '') && $model->save()) {
-            return $model->id;
-        } else {
-            Yii::error($this->getErrors(), __FUNCTION__);
-
-            return false;
-        }
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\entities\AnswerVersionEntity;
+use common\services\AnswerService;
 use yii\data\Pagination;
 
 class AnswerVersionController extends \yii\web\Controller
@@ -22,7 +23,7 @@ class AnswerVersionController extends \yii\web\Controller
             ]
         );
 
-        $answer_version_model = AnswerVersionEntity::getAnswerVersionList(
+        $answer_version_model = AnswerService::getAnswerVersionList(
             $answer_id,
             $pagination->limit,
             $pagination->offset

@@ -23,6 +23,7 @@ use common\helpers\TemplateHelper;
 use common\models\xunsearch\QuestionSearch;
 use common\services\AnswerService;
 use common\services\FollowService;
+use common\services\NotificationService;
 use common\services\QuestionService;
 use common\services\TagService;
 use common\services\UserService;
@@ -118,22 +119,22 @@ class TestController extends BaseController
     public function actionNotifier()
     {
 
-        /*$result = Notifier::build()->sync(true)->from(1)->to([1, 2])->notice(
-            NotificationEntity::TYPE_ANSWER_AT_ME,
+        $result = Notifier::build()->sync(true)->from(1)->to([1, 2])->notice(
+            NotificationService::TYPE_ANSWER_AT_ME,
             1
-        )->email('a', 'b');
+        );
 
         var_dump($result->result);
-        exit;*/
+        exit;
 
-        /*$result = Notifier::build()->sync(false)->from(1)->to([1, 2])->notice(
-            NotificationEntity::TYPE_ANSWER_AT_ME,
+       /* $result = Notifier::build()->sync(false)->from(1)->to([1, 2])->notice(
+            NotificationService::TYPE_ANSWER_AT_ME,
             1
         );
 
         var_dump($result);
 
-        $data = Yii::$app->redis->lRange([REDIS_KEY_NOTIFIER, NotificationEntity::TYPE_ANSWER_AT_ME], 0, 10);
+        $data = Yii::$app->redis->lRange([REDIS_KEY_NOTIFIER, NotificationService::TYPE_ANSWER_AT_ME], 0, 10);
 
         print_r($data);
 
@@ -442,21 +443,21 @@ class TestController extends BaseController
         //echo json_encode($arr);exit;
 
         Notifier::build()->sync(0)->from(1)->to(2)->notice(
-            NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
+            NotificationService::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
             [
                 'question_id' => 16,
             ]
         );
         Notifier::build()->sync(0)->from(2)->to(23)->notice(
-            NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
+            NotificationService::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
             [
                 'question_id' => 17,
             ]
         );
 
-        $data = NotificationEntity::find()->orderBy('created_at DESC')->asArray()->all();
+        $data = NotificationService::find()->orderBy('created_at DESC')->asArray()->all();
 
-        $result = NotificationEntity::makeUpNotification($data);
+        $result = NotificationService::makeUpNotification($data);
 
         print_r($result);
     }

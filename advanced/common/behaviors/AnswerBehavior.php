@@ -19,6 +19,7 @@ use common\helpers\TimeHelper;
 use common\models\CacheAnswerModel;
 use common\services\AnswerService;
 use common\services\FollowService;
+use common\services\NotificationService;
 use common\services\TagService;
 use Yii;
 use yii\base\ModelEvent;
@@ -66,7 +67,7 @@ class AnswerBehavior extends BaseBehavior
     public function afterAnswerInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $this->dealWithNotification(NotificationEntity::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER);
+        $this->dealWithNotification(NotificationService::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER);
         $this->dealWithAddQuestionFollow();
         $this->dealWithAddCounter();
         $this->dealWithUpdateQuestionActiveTime();
@@ -78,7 +79,7 @@ class AnswerBehavior extends BaseBehavior
     public function afterAnswerUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $this->dealWithNotification(NotificationEntity::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
+        $this->dealWithNotification(NotificationService::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
         #不是本人，或本人，但创建时间已超过 ? 天
         if (Yii::$app->user->id != $this->owner->created_by ||
             $this->owner->created_at <= TimeHelper::getBeforeTime(1)
@@ -171,7 +172,7 @@ class AnswerBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         #check whether has exist version
-        $result = AnswerVersionEntity::addNewVersion($this->owner->id, $this->owner->content, $this->owner->reason);
+        $result = AnswerService::addNewVersion($this->owner->id, $this->owner->content, $this->owner->reason);
         
         if ($result && $this->owner->created_by != Yii::$app->user->id) {
             #count_common_edit

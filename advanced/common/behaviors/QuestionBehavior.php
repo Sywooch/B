@@ -418,7 +418,7 @@ class QuestionBehavior extends BaseBehavior
                     $data[] = [
                         $tag_id_1,
                         $tag_id_2,
-                        TagRelationEntity::TYPE_BROTHER,
+                        TagRelationEntity::TYPE_RELATE,
                         1,
                         TagRelationEntity::STATUS_ENABLE,
                     ];

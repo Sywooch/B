@@ -169,10 +169,10 @@ class QuestionController extends BaseController
 
     public function actionView($id, $sort = 'default', $answer_id = null)
     {
-        
         $question_data = QuestionService::getQuestionByQuestionId($id);
         
-        if (ServerHelper::checkIsSpider() && !in_array(
+        if (ServerHelper::checkIsSpider() &&
+            !in_array(
                 $question_data['status'],
                 explode(',', QuestionEntity::STATUS_DISPLAY_FOR_SPIDER)
             )
@@ -195,7 +195,8 @@ class QuestionController extends BaseController
         
         #增加查看问题计数
         Counter::addQuestionView($id);
-        
+
+        #回答
         if ($answer_id) {
             $pages = null;
             $answer_data = AnswerService::getAnswerListByAnswerId([$answer_id]);

@@ -73,7 +73,7 @@ class AnswerEntity extends Answer
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreateBy()
+    public function getUser()
     {
         return $this->hasOne(UserEntity::className(), ['id' => 'created_by']);
     }

@@ -27,12 +27,12 @@ class TagCronJobController extends Controller
 
 
     /**
-     * 只处理brother类型的关系
+     * 只处理relate类型的关系
      */
     public function actionRebuildTagRelation()
     {
         #reset
-        TagRelationEntity::updateAll(['count_relation' => 0], ['type' => TagRelationEntity::TYPE_BROTHER]);
+        TagRelationEntity::updateAll(['count_relation' => 0], ['type' => TagRelationEntity::TYPE_RELATE]);
 
         #loop rebuild
         $page = 1;
@@ -107,7 +107,7 @@ class TagCronJobController extends Controller
                     $data[] = [
                         $tag_id_1,
                         $tag_id_2,
-                        TagRelationEntity::TYPE_BROTHER,
+                        TagRelationEntity::TYPE_RELATE,
                         1,
                         TagRelationEntity::STATUS_ENABLE,
                     ];

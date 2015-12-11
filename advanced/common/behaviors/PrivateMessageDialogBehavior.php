@@ -12,6 +12,8 @@ use common\components\Counter;
 use common\components\Notifier;
 use common\entities\NotificationEntity;
 use common\entities\PrivateMessageEntity;
+use common\services\NotificationService;
+use common\services\PrivateMessageService;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -53,7 +55,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
         $dialog_user_id = $private_message->getDialogUserId($this->owner->private_message_id, Yii::$app->user->id);
 
         $result = Notifier::build()->from(Yii::$app->user->id)->to($dialog_user_id)->notice(
-            NotificationEntity::TYPE_PRIVATE_MESSAGE_TO_ME
+            NotificationService::TYPE_PRIVATE_MESSAGE_TO_ME
         );
 
         return $result;
@@ -62,8 +64,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
     private function dealWithUpdatePrivateMessage()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-
-        $result = PrivateMessageEntity::updateLastActive(
+        $result = PrivateMessageService::updateLastActive(
             $this->owner->private_message_id,
             Yii::$app->user->id,
             $this->owner->content,

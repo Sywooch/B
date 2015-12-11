@@ -10,6 +10,7 @@ namespace common\behaviors;
 
 use common\components\Notifier;
 use common\entities\NotificationEntity;
+use common\services\NotificationService;
 use yii\db\ActiveRecord;
 use Yii;
 
@@ -48,7 +49,7 @@ class QuestionInviteBehavior extends BaseBehavior
         $result = Notifier::build()->from($this->owner->created_by)
                           ->to($this->owner->invited_user_id)
                           ->notice(
-                              NotificationEntity::TYPE_INVITE_ME_TO_ANSWER_QUESTION,
+                              NotificationService::TYPE_INVITE_ME_TO_ANSWER_QUESTION,
                               ['question_id' => $this->owner->question_id]
                           );
 

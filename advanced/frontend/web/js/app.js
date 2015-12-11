@@ -39,7 +39,7 @@ app.ajax = {
     handle: function (e) {
 
         if (app.user.login == false) {
-            return alert('请登陆');
+            return app.login.show();
         }
 
         e.preventDefault();
@@ -129,6 +129,12 @@ app.ajax = {
 app.comment = {
     //插入AT
     'insertAT': function (answer_id, username) {
-        UE.getEditor('answercommententity-content-' + answer_id).execCommand("inserthtml", 'at_html', true);
+        UE.getEditor('answercommententity-content-' + answer_id).execCommand("inserthtml", '@' + username + '&nbsp;', true);
+    }
+};
+
+app.report = {
+    'show': function (report_object, associate_id) {
+        console.log(report_object, associate_id)
     }
 }

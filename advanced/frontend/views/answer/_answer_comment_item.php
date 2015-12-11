@@ -7,6 +7,7 @@
  */
 use common\entities\AnswerCommentEntity;
 use common\helpers\TemplateHelper;
+use yii\helpers\Html;
 
 ?>
 <?php foreach ($data as $index => $item) : ?>
@@ -39,17 +40,31 @@ use common\helpers\TemplateHelper;
 
                 <?php if ($item['created_by'] != Yii::$app->user->id) : ?>
                     <?php if ($item['is_anonymous'] != AnswerCommentEntity::STATUS_ANONYMOUS): ?>
-                        · <a href="#"
-                             data-answer-id="<?= $item['id'] ?>"
-                             data-comment-at-username="<?= TemplateHelper::showUsername(
-                                     $item['created_by'],
-                                     false
-                             ); ?>">
-                            回复
-                        </a>
+                        · <?= Html::a(
+                                '回复',
+                                'javascritp:;',
+                                [
+                                        'title'           => '回复Ta',
+                                        'data-do-comment' => true,
+                                        'data-answer-id'       => $item['answer_id'],
+                                        'data-username'   => TemplateHelper::showUsername(
+                                                $item['created_by'],
+                                                false
+                                        ),
+                                ]
+                        ) ?>
                     <?php endif; ?>
                     <span class="pull-right commentTools hover-show-obj">
-                            <a href="#911" class="ml10" title="举报">举报</a>
+                        <?= Html::a(
+                                '举报',
+                                'javascritp:;',
+                                [
+                                        'title'             => '举报',
+                                        'data-do-report'    => true,
+                                        'data-object'       => 'comment',
+                                        'data-associate_id' => $item['id'],
+                                ]
+                        ) ?>
                 </span>
                 <?php endif; ?>
             </p>

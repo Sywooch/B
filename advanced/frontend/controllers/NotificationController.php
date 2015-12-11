@@ -7,6 +7,7 @@ use common\components\Updater;
 use common\controllers\BaseController;
 use common\entities\NotificationEntity;
 use common\helpers\TimeHelper;
+use common\services\NotificationService;
 use common\services\UserService;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
@@ -53,7 +54,7 @@ class NotificationController extends BaseController
             $data = [];
         }
 
-        $data = NotificationEntity::makeUpNotification($data);
+        $data = NotificationService::makeUpNotification($data);
         //print_r($data);
         //exit;
 

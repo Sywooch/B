@@ -13,6 +13,7 @@ use common\entities\UserEntity;
 use common\exceptions\ParamsInvalidException;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
+use common\services\NotificationService;
 use common\services\UserService;
 use Yii;
 use yii\base\Object;
@@ -105,7 +106,7 @@ class BaseNotifier extends Object
         if (!$type) {
             throw new ParamsInvalidException(['notify_type']);
         } else {
-            $this->notice_code = NotificationEntity::getNotificationCode($type);
+            $this->notice_code = NotificationService::getNotificationCode($type);
         }
 
         #filter to_user_id
@@ -166,7 +167,7 @@ class BaseNotifier extends Object
     
     public function noticeDatabase($sender, $receiver, $notice_code, $associate_data, $current_time = null)
     {
-        return NotificationEntity::addNotify(
+        return NotificationService::addNotify(
             $sender,
             $receiver,
             $notice_code,

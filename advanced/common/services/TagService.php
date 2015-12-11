@@ -285,6 +285,7 @@ class TagService extends BaseService
                 ],
             ],
         ];*/
+
         $relate_tag = $relate_tag_ids = [];
         foreach ($tag_relate_list as $item) {
             if ($item['tag_id_1'] == $tag_id) {
