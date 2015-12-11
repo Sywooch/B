@@ -38,7 +38,7 @@ class NotifierCronJobController extends Controller
                             $item['receiver'],
                             $item['notice_code'],
                             $item['associate_data'],
-                            $item['create_at']
+                            $item['created_at']
                         );
 
                         if (!$result) {
@@ -48,7 +48,7 @@ class NotifierCronJobController extends Controller
                                 $item['receiver'],
                                 $item['notice_code'],
                                 $item['associate_data'],
-                                $item['create_at']
+                                $item['created_at']
                             );
                             //echo sprintf('Notification Type:  %s, no affected!', $object), PHP_EOL;
                         } else {

@@ -9,6 +9,7 @@
 namespace common\entities;
 
 use common\behaviors\IpBehavior;
+use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\models\QuestionEventHistory;
 use Yii;
@@ -32,10 +33,16 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
     public function behaviors()
     {
         return [
+            'operator'          => [
+                'class'      => OperatorBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
+                ],
+            ],
             'timestamp' => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
             ],
             'ip'        => [
@@ -55,24 +62,28 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
     public function modifyQuestionSubject($event_content)
     {
         $allow_cancel = true;
+
         return $this->addEvent(self::QUESTION_MODIFY_SUBJECT, $event_content, $allow_cancel);
     }
 
     public function modifyQuestionContent($event_content)
     {
         $allow_cancel = true;
+
         return $this->addEvent(self::QUESTION_MODIFY_CONTENT, $event_content, $allow_cancel);
     }
 
     public function addQuestionRedirect($event_content)
     {
         $allow_cancel = true;
+
         return $this->addEvent(self::QUESTION_ADD_REDIRECT, $event_content, $allow_cancel);
     }
 
     public function modifyQuestionRedirect($event_content)
     {
         $allow_cancel = false;
+
         return $this->addEvent(self::QUESTION_MODIFY_REDIRECT, $event_content, $allow_cancel);
     }
 
@@ -82,6 +93,7 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
         foreach ($tags as $tag) {
             $this->addEvent(self::QUESTION_ADD_TAG, $tag, $allow_cancel);
         }
+
         return true;
     }
 
@@ -102,7 +114,7 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
             'question_id'   => intval($this->question_id),
             'event_type'    => $event_type,
             'event_content' => $event_content,
-            'create_by'     => $this->create_by,
+            'created_by'     => $this->created_by,
             'allow_cancel'  => $allow_cancel ? 'yes' : 'no',
             'reason'        => $reason,
         ];
@@ -138,5 +150,13 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
     public function getEvent($question_id)
     {
 
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestion()
+    {
+        return $this->hasOne(QuestionEntity::className(), ['id' => 'question_id']);
     }
 }

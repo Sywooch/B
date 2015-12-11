@@ -251,7 +251,7 @@ class QuestionService extends BaseService
                         ]
                     )->limit(
                         $limit
-                    )->orderBy('create_at DESC')->asArray()->all();
+                    )->orderBy('created_at DESC')->asArray()->all();
                     Yii::$app->redis->set($cache_key, $cache_data);
                 }
 
@@ -312,8 +312,8 @@ class QuestionService extends BaseService
                 'id',
             ]
         )->where(
-            ['create_by' => $user_id]
-        )->orderBy('active_at DESC, create_at DESC')->limit($limit)->offset($offset);
+            ['created_by' => $user_id]
+        )->orderBy('updated_at DESC, created_at DESC')->limit($limit)->offset($offset);
 
 
         //do not show anonymous answer
@@ -340,7 +340,7 @@ class QuestionService extends BaseService
             ]
         )->where(
             ['tag_id' => $tag_id]
-        )->orderBy('create_at DESC')->limiter($page_no, $page_size, 200);
+        )->orderBy('created_at DESC')->limiter($page_no, $page_size, 200);
 
         $question_ids = $query->column();
         if ($question_ids) {
@@ -371,16 +371,16 @@ class QuestionService extends BaseService
         }
 
         $data = [];
-        $create_at = time();
+        $created_at = time();
 
         foreach ($tag_ids as $tag_id) {
-            $data[] = [$question_id, $tag_id, $user_id, $create_at];
+            $data[] = [$question_id, $tag_id, $user_id, $created_at];
         }
 
         #batch add question tag
         $result = QuestionTagEntity::getDb()->createCommand()->batchInsert(
             QuestionTag::tableName(),
-            ['question_id', 'tag_id', 'create_by', 'create_at'],
+            ['question_id', 'tag_id', 'created_by', 'created_at'],
             $data
         )->execute();
 

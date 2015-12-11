@@ -9,14 +9,11 @@ use Yii;
  *
  * @property string $id
  * @property string $question_id
- * @property integer $create_by
- * @property string $create_at
- * @property string $modify_at
- * @property integer $modify_by
+ * @property integer $created_by
+ * @property string $created_at
+ * @property string $updated_at
+ * @property string $updated_by
  * @property string $status
- *
- * @property User $createBy
- * @property Question $question
  */
 class QuestionReview extends \common\models\BaseActiveRecord
 {
@@ -34,8 +31,8 @@ class QuestionReview extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['question_id', 'create_by'], 'required'],
-            [['question_id', 'create_by', 'create_at', 'modify_at', 'modify_by'], 'integer'],
+            [['question_id', 'created_by'], 'required'],
+            [['question_id', 'created_by', 'created_at', 'updated_at', 'updated_by'], 'integer'],
             [['status'], 'string']
         ];
     }
@@ -48,27 +45,11 @@ class QuestionReview extends \common\models\BaseActiveRecord
         return [
             'id' => 'ID',
             'question_id' => '问题ID',
-            'create_by' => '第一个修改用户',
-            'create_at' => '创建时间',
-            'modify_at' => '修改时间',
-            'modify_by' => '最后修改用户',
+            'created_by' => '第一个修改用户',
+            'created_at' => '创建时间',
+            'updated_at' => '修改时间',
+            'updated_by' => '最后修改用户',
             'status' => '状态 progress处理中 completep完成　overtime超时未完成',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreateBy()
-    {
-        return $this->hasOne(User::className(), ['id' => 'create_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getQuestion()
-    {
-        return $this->hasOne(Question::className(), ['id' => 'question_id']);
     }
 }

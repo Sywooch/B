@@ -8,13 +8,10 @@ use Yii;
  * This is the model class for table "follow_tag".
  *
  * @property integer $user_id
- * @property string $tag_id
+ * @property string $follow_tag_id
  * @property string $count_follow
- * @property string $create_at
- * @property string $modify_at
- *
- * @property User $user
- * @property Tag $tag
+ * @property string $created_at
+ * @property string $updated_at
  */
 class FollowTag extends \common\models\BaseActiveRecord
 {
@@ -32,8 +29,8 @@ class FollowTag extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'tag_id'], 'required'],
-            [['user_id', 'tag_id', 'count_follow', 'create_at', 'modify_at'], 'integer']
+            [['user_id', 'follow_tag_id'], 'required'],
+            [['user_id', 'follow_tag_id', 'count_follow', 'created_at', 'updated_at'], 'integer']
         ];
     }
 
@@ -43,27 +40,11 @@ class FollowTag extends \common\models\BaseActiveRecord
     public function attributeLabels()
     {
         return [
-            'user_id' => 'User ID',
-            'tag_id' => 'Tag ID',
+            'user_id' => '用户ID',
+            'follow_tag_id' => '关注的标签ID',
             'count_follow' => '关注次数',
-            'create_at' => '创建时间',
-            'modify_at' => '修改时间',
+            'created_at' => '第一次关注时间',
+            'updated_at' => '最近一次关注时间',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTag()
-    {
-        return $this->hasOne(Tag::className(), ['id' => 'tag_id']);
     }
 }

@@ -28,11 +28,11 @@ use yii\helpers\Html;
         <div class="summary">
             <ul class="author list-inline">
                 <li>
-                    <?= TemplateHelper::showUsername($item['create_by']) ?>
+                    <?= TemplateHelper::showUsername($item['created_by']) ?>
                     <span class="split"></span>
                     <?= Html::a(
                             TemplateHelper::showHumanTime(
-                                    $item['create_at']
+                                    $item['created_at']
                             ),
                             ['question/view', 'id' => $item['id']],
                             [

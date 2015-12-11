@@ -13,8 +13,8 @@ use Yii;
  * @property string $params
  * @property string $count_agree
  * @property string $count_disagree
- * @property integer $create_by
- * @property string $create_at
+ * @property integer $created_by
+ * @property string $created_at
  * @property string $status
  *
  * @property JudgeAction $judgeAction
@@ -36,8 +36,8 @@ class JudgeEvent extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['name', 'judge_action_id', 'create_by'], 'required'],
-            [['judge_action_id', 'count_agree', 'count_disagree', 'create_by', 'create_at'], 'integer'],
+            [['name', 'judge_action_id', 'created_by'], 'required'],
+            [['judge_action_id', 'count_agree', 'count_disagree', 'created_by', 'created_at'], 'integer'],
             [['status'], 'string'],
             [['name'], 'string', 'max' => 45],
             [['params'], 'string', 'max' => 255]
@@ -56,8 +56,8 @@ class JudgeEvent extends \common\models\BaseActiveRecord
             'params' => 'judge action中需要的参数',
             'count_agree' => '同意',
             'count_disagree' => '不同意',
-            'create_by' => '创建用户',
-            'create_at' => '创建时间',
+            'created_by' => '创建用户',
+            'created_at' => '创建时间',
             'status' => 'handled 已处理，unhandled 未处理',
         ];
     }
@@ -76,14 +76,5 @@ class JudgeEvent extends \common\models\BaseActiveRecord
     public function getJudgeLogs()
     {
         return $this->hasMany(JudgeLog::className(), ['judge_event_id' => 'id']);
-    }
-
-    /**
-     * @inheritdoc
-     * @return JudgeEventQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new JudgeEventQuery(get_called_class());
     }
 }

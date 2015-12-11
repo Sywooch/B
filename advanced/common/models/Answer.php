@@ -13,22 +13,15 @@ use Yii;
  * @property string $content
  * @property integer $count_hate
  * @property integer $count_like
- * @property string $count_comment
- * @property string $create_at
- * @property integer $create_by
- * @property string $modify_at
- * @property string $modify_by
+ * @property integer $count_comment
+ * @property string $created_at
+ * @property string $created_by
+ * @property string $updated_at
+ * @property string $updated_by
  * @property string $reproduce_url
  * @property string $reproduce_username
  * @property string $is_anonymous
  * @property string $is_fold
- *
- * @property Question $question
- * @property User $createBy
- * @property AnswerComment[] $answerComments
- * @property AnswerUsefullLog[] $answerUsefullLogs
- * @property User[] $users
- * @property AnswerVersion[] $answerVersions
  */
 class Answer extends \common\models\BaseActiveRecord
 {
@@ -46,8 +39,8 @@ class Answer extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['question_id', 'content', 'create_by'], 'required'],
-            [['question_id', 'count_hate', 'count_like', 'count_comment', 'create_at', 'create_by', 'modify_at', 'modify_by'], 'integer'],
+            [['question_id', 'content'], 'required'],
+            [['question_id', 'count_hate', 'count_like', 'count_comment', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['type', 'content', 'is_anonymous', 'is_fold'], 'string'],
             [['reproduce_url'], 'string', 'max' => 45],
             [['reproduce_username'], 'string', 'max' => 255]
@@ -67,62 +60,14 @@ class Answer extends \common\models\BaseActiveRecord
             'count_hate' => '讨厌数',
             'count_like' => '喜欢数',
             'count_comment' => '评论数',
-            'create_at' => '创建时间',
-            'create_by' => '用户ID',
-            'modify_at' => '修改时间',
-            'modify_by' => '修改用户',
+            'created_at' => '创建时间',
+            'created_by' => '用户ID',
+            'updated_at' => '修改时间',
+            'updated_by' => '修改用户',
             'reproduce_url' => '转载网址',
             'reproduce_username' => '转载谁的',
             'is_anonymous' => '匿名回答',
             'is_fold' => '是否被折叠',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getQuestion()
-    {
-        return $this->hasOne(Question::className(), ['id' => 'question_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreateBy()
-    {
-        return $this->hasOne(User::className(), ['id' => 'create_by']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAnswerComments()
-    {
-        return $this->hasMany(AnswerComment::className(), ['answer_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAnswerUsefullLogs()
-    {
-        return $this->hasMany(AnswerUsefullLog::className(), ['answer_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUsers()
-    {
-        return $this->hasMany(User::className(), ['id' => 'user_id'])->viaTable('answer_usefull_log', ['answer_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAnswerVersions()
-    {
-        return $this->hasMany(AnswerVersion::className(), ['answer_id' => 'id']);
     }
 }

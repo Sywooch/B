@@ -78,7 +78,7 @@ class FavoriteController extends BaseController
     public function actionCreateCategory()
     {
         $model = new FavoriteCategoryEntity();
-        $model->create_by = Yii::$app->user->id;
+        $model->created_by = Yii::$app->user->id;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -112,7 +112,7 @@ class FavoriteController extends BaseController
     {
         $model = $this->findCategoryModel($id);
 
-        if (UserService::checkUserSelf($model->create_by)) {
+        if (UserService::checkUserSelf($model->created_by)) {
             throw new PermissionDeniedException();
         }
 
@@ -132,7 +132,7 @@ class FavoriteController extends BaseController
     {
         $model = $this->findCategoryModel($id);
 
-        if (UserService::checkUserSelf($model->create_by)) {
+        if (UserService::checkUserSelf($model->created_by)) {
             throw new PermissionDeniedException();
         }
 
@@ -145,7 +145,7 @@ class FavoriteController extends BaseController
     {
         $model = $this->findFavoriteModel($id);
 
-        if (UserService::checkUserSelf($model->create_by)) {
+        if (UserService::checkUserSelf($model->created_by)) {
             throw new PermissionDeniedException();
         }
 

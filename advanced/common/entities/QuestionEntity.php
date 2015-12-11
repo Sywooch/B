@@ -42,6 +42,28 @@ class QuestionEntity extends Question
     const STATUS_DISPLAY = 'original,review,edited,lock'; //允许显示的状态
     const STATUS_DISPLAY_FOR_SPIDER = 'edited,recommend,lock'; //允许显示的状态，给搜索引擎
 
+    public function behaviors()
+    {
+        return [
+            'operator'          => [
+                'class'      => OperatorBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
+                    //ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_by',
+                ],
+            ],
+            'timestamp'         => [
+                'class'      => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_at',
+                ],
+            ],
+            'question_behavior' => [
+                'class' => QuestionBehavior::className(),
+            ],
+        ];
+    }
 
     //
     
@@ -135,35 +157,95 @@ class QuestionEntity extends Question
         return self::MIN_TAGS_NUMBERS;
     }
 
-    public function behaviors()
-    {
-        return [
-            'operator'          => [
-                'class'      => OperatorBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'create_by',
-                    //ActiveRecord::EVENT_BEFORE_UPDATE => 'modify_by',
-                ],
-            ],
-            'timestamp'         => [
-                'class'      => TimestampBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => ['create_at', 'active_at'],
-                    ActiveRecord::EVENT_BEFORE_UPDATE => 'active_at',
-                ],
-            ],
-            'question_behavior' => [
-                'class' => QuestionBehavior::className(),
-            ],
-        ];
-    }
-
-    public function init()
+    /*public function init()
     {
         parent::init();
 
         #注册事件，修改问题，当有回答用户，触发方法 $this->trigger(self::EVENT_QUESTION_MODIFY, new EventXXX($user))
         //Yii::trace('On Event ' . self::EVENT_QUESTION_MODIFY, 'event');
         //$this->on(self::EVENT_QUESTION_MODIFY, [NotificationService::className(), 'questionModify']);
+    }*/
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAnswers()
+    {
+        return $this->hasMany(AnswerEntity::className(), ['question_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFollowQuestions()
+    {
+        return $this->hasMany(FollowQuestionEntity::className(), ['follow_question_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUsers()
+    {
+        return $this->hasMany(
+            UserEntity::className(),
+            [
+                'id' => 'user_id',
+            ]
+        )->viaTable(
+            'follow_question',
+            ['follow_question_id' => 'id']
+        );
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreateBy()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'created_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestionEventHistories()
+    {
+        return $this->hasMany(QuestionEventHistoryEntity::className(), ['question_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestionInvites()
+    {
+        return $this->hasMany(QuestionInviteEntity::className(), ['question_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestionReviews()
+    {
+        return $this->hasMany(QuestionReviewEntity::className(), ['question_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestionTags()
+    {
+        return $this->hasMany(QuestionTagEntity::className(), ['question_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTags()
+    {
+        return $this->hasMany(TagEntity::className(), ['id' => 'tag_id'])->viaTable(
+            'question_tag',
+            ['question_id' => 'id']
+        );
     }
 }

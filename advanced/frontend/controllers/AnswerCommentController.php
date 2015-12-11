@@ -98,8 +98,8 @@ class AnswerCommentController extends BaseController
                 '/answer/_answer_comment_item',
                 [
                     'answer_id'               => $answer_id,
-                    'answer_create_user_id'   => $answer_data['create_by'],
-                    'question_create_user_id' => $question_data['create_by'],
+                    'answer_create_user_id'   => $answer_data['created_by'],
+                    'question_create_user_id' => $question_data['created_by'],
                     'data'                    => [$model->getAttributes()],
                 ]
             );

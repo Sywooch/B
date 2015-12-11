@@ -12,44 +12,27 @@
 namespace common\behaviors;
 
 use Yii;
-use yii\behaviors\AttributeBehavior;
-use yii\db\BaseActiveRecord;
+use yii\base\ErrorException;
+use yii\behaviors\BlameableBehavior;
 
-class OperatorBehavior extends AttributeBehavior
+class OperatorBehavior extends BlameableBehavior
 {
-    public $createdByAttribute = 'create_by';
-    public $updatedByAttribute = 'modify_by';
-    public $value;
-
-
-    /**
-     * @inheritdoc
-     */
-    public function init()
+    protected function getValue($event)
     {
-        Yii::trace('Begin ' . $this->className(), 'behavior');
+        if ($this->value === null) {
+            $user = Yii::$app->get('user', false);
 
-        parent::init();
-
-        if (empty($this->attributes)) {
-            $this->attributes = [
-                BaseActiveRecord::EVENT_BEFORE_VALIDATE => $this->createdByAttribute,
-                BaseActiveRecord::EVENT_BEFORE_UPDATE   => $this->updatedByAttribute,
-            ];
+            if ($user) {
+                return $user->id;
+            } else {
+                throw new ErrorException('当前动作需要登陆用户才可操作。');
+            }
+        } else {
+            return call_user_func($this->value, $event);
         }
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function getValue($event)
-    {
-        $this->value = Yii::$app->user->id;
-
-        return $this->value;
-    }
-
-    public function evaluateAttributes($event)
+    /*public function evaluateAttributes($event)
     {
         if (!empty($this->attributes[$event->name])) {
             $attributes = (array)$this->attributes[$event->name];
@@ -62,5 +45,5 @@ class OperatorBehavior extends AttributeBehavior
                 }
             }
         }
-    }
+    }*/
 }

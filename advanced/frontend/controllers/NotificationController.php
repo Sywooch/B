@@ -48,7 +48,7 @@ class NotificationController extends BaseController
                 $pages->limit
             )->offset(
                 $pages->offset
-            )->orderBy('create_at DESC')->asArray()->all();
+            )->orderBy('created_at DESC')->asArray()->all();
         } else {
             $data = [];
         }

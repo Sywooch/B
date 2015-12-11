@@ -105,59 +105,16 @@ $this->title = $tag->name;
             </ul>
 
             <div class="widget-box">
-                <h2 class="h4 widget-box__title">相关标签</h2>
-                <ul class="taglist--inline multi">
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/%E7%BC%96%E7%A8%8B"
-                                            data-toggle="popover"
-                                            data-id="1040000000089754"
-                                            data-original-title="编程">编程</a></li>
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/php"
-                                            data-toggle="popover"
-                                            data-id="1040000000089387"
-                                            data-original-title="php">php</a></li>
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/it"
-                                            data-toggle="popover"
-                                            data-id="1040000000090004"
-                                            data-original-title="it">it</a></li>
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92"
-                                            data-toggle="popover"
-                                            data-id="1040000000124938"
-                                            data-original-title="职业规划">职业规划</a></li>
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/%E5%AD%97%E4%BD%93"
-                                            data-toggle="popover"
-                                            data-id="1040000000090747"
-                                            data-original-title="字体">字体</a></li>
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/apache"
-                                            data-toggle="popover"
-                                            data-id="1040000000089761"
-                                            data-original-title="apache">apache</a></li>
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/%E5%89%8D%E7%AB%AF"
-                                            data-toggle="popover"
-                                            data-id="1040000000089899"
-                                            data-original-title="前端">前端</a></li>
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/javascript"
-                                            data-toggle="popover"
-                                            data-id="1040000000089436"
-                                            data-original-title="javascript">javascript</a></li>
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/c%2B%2B"
-                                            data-toggle="popover"
-                                            data-id="1040000000089741"
-                                            data-original-title="c++">c++</a></li>
-                    <li class="tagPopup"><a class="tag"
-                                            href="/t/%E7%A4%BE%E5%8C%BA"
-                                            data-toggle="popover"
-                                            data-id="1040000000090029"
-                                            data-original-title="社区">社区</a></li>
-                </ul>
+                <?php if (isset($tag_relation['brother'])): ?>
+                    <h2 class="h4 widget-box__title">相关标签</h2>
+                    <ul class="taglist--inline multi">
+                        <?php foreach ($tag_relation['brother'] as $tag): ?>
+                            <li class="tagPopup">
+                                <?= Html::a($tag['name'], ['tag/view', 'id' => $tag['id']], ['class' => 'tag']) ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
             </div>
 
             <div class="widget-box widget-taguser">

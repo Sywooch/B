@@ -96,7 +96,7 @@ class TestController extends BaseController
             [
                 'id',
                 'count_useful' => '`count_like`-`count_hate`',
-                'create_at',
+                'created_at',
             ]
         )->where(
             ['question_id' => $question_id]
@@ -258,7 +258,7 @@ class TestController extends BaseController
         exit;
 
 
-        $result = FollowService::getUserBeGoodAtTagsByUserId(1);
+        $result = FollowService::getTagIdsWhichUserIsGoodAt(1);
 
         //$data = TagService::getTagIdByName( ['中国人', '大家好']);
         /*$data = TagService::getTagNameById([1, 2]);
@@ -454,7 +454,7 @@ class TestController extends BaseController
             ]
         );
 
-        $data = NotificationEntity::find()->orderBy('create_at DESC')->asArray()->all();
+        $data = NotificationEntity::find()->orderBy('created_at DESC')->asArray()->all();
 
         $result = NotificationEntity::makeUpNotification($data);
 

@@ -26,8 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'favorite_category_id',
             'type',
             'associate_id',
-            'create_at',
-            // 'create_by',
+            'created_at',
+            // 'created_by',
             // 'note',
 
             ['class' => 'yii\grid\ActionColumn'],

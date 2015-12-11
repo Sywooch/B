@@ -8,6 +8,7 @@
 
 namespace common\services;
 
+use common\entities\AnswerVersionEntity;
 use common\entities\UserEntity;
 use common\helpers\ArrayHelper;
 use common\models\CacheAnswerModel;
@@ -139,9 +140,9 @@ class AnswerService extends BaseService
         $sql = "SELECT
                   GROUP_CONCAT(
                     CONCAT(
-                      a.`create_by`,
+                      a.`created_by`,
                       ',',
-                      ac.`create_by`
+                      ac.`created_by`
                     )
                   ) as user_ids
                 FROM
@@ -151,7 +152,7 @@ class AnswerService extends BaseService
                 WHERE a.`question_id` =:question_id
                 AND a.is_anonymous=:not_anonymous
                 AND ac.is_anonymous=:not_anonymous
-                ORDER BY a.`create_at` DESC, ac.`create_at` DESC
+                ORDER BY a.`created_at` DESC, ac.`created_at` DESC
                 LIMIT :limit ;
                 ";
 
@@ -184,7 +185,7 @@ class AnswerService extends BaseService
             $cache_data = AnswerEntity::find()->select('id')->where(
                 [
                     'question_id' => $question_id,
-                    'create_by'   => $user_id,
+                    'created_by'   => $user_id,
                 ]
             )->scalar();
 
@@ -267,7 +268,7 @@ class AnswerService extends BaseService
             [
                 'id',
                 'count_useful' => '`count_like`-`count_hate`',
-                'create_at',
+                'created_at',
             ]
         )->where(
             ['question_id' => $question_id]
@@ -291,7 +292,7 @@ class AnswerService extends BaseService
         ];
 
         foreach ($answer_data as $item) {
-            $time_params[] = $item['create_at'];
+            $time_params[] = $item['created_at'];
             $time_params[] = $item['id'];
         }
         call_user_func_array([Yii::$app->redis, 'zAdd'], $time_params);
@@ -388,9 +389,9 @@ class AnswerService extends BaseService
             ]
         )->where(
             [
-                'create_by' => $user_id,
+                'created_by' => $user_id,
             ]
-        )->orderBy('modify_at DESC, create_at DESC')->limit($limit)->offset(
+        )->orderBy('updated_at DESC, created_at DESC')->limit($limit)->offset(
             $offset
         );
 
@@ -409,5 +410,71 @@ class AnswerService extends BaseService
         }
 
         return $question_list;
+    }
+
+
+    // answer version
+
+
+    public static function addNewVersion($answer_id, $content, $reason)
+    {
+        if (self::ensureExistTheFirstEdition($answer_id) === false) {
+            return Error::set(Error::TYPE_ANSWER_ENSURE_EXIST_THE_FIRST_EDITION);
+        }
+
+        $model = new AnswerVersionEntity;
+        $data = [
+            'answer_id' => $answer_id,
+            'content'   => $content,
+            'reason'    => $reason,
+        ];
+
+        if ($model->load($data, '') && $model->save()) {
+            $result = true;
+        } else {
+            Yii::error(sprintf('%s insert error', __FUNCTION__));
+            Yii::error($model->getErrors());
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    private static function ensureExistTheFirstEdition($answer_id)
+    {
+        $result = false;
+        if (!AnswerVersionEntity::findOne(['answer_id' => $answer_id])) {
+            /* @var $answer AnswerEntity */
+            $answer = AnswerEntity::findOne(['id' => $answer_id]);
+            if ($answer) {
+                $model = new AnswerVersionEntity;
+                $data = [
+                    'answer_id' => $answer->id,
+                    'content'   => $answer->content,
+                    'reason'    => null,
+                    'created_by' => $answer->created_by,
+                    'created_at' => $answer->created_at,
+                ];
+                if ($model->load($data, '') && $model->save()) {
+                    $result = true;
+                } else {
+                    Yii::error(sprintf('%s insert error', __FUNCTION__));
+                    Yii::error($model->getErrors());
+                }
+            }
+        } else {
+            $result = true;
+        }
+
+        return $result;
+    }
+
+    public static function getAnswerVersionList($answer_id, $limit = 10, $offset = 0)
+    {
+        return AnswerVersionEntity::find()->where(
+            [
+                'answer_id' => $answer_id,
+            ]
+        )->limit($limit)->offset($offset)->orderBy('id DESC')->asArray()->all();
     }
 }

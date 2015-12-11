@@ -365,37 +365,19 @@
         },
         {
             "name": "bower-asset/blueimp-canvas-to-blob",
-            "version": "2.2.0",
+            "version": "v2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blueimp/JavaScript-Canvas-to-Blob.git",
-                "reference": "b107a012d06bc4cb1ae93f4e1e9c64653814d6c4"
+                "reference": "9ec7a82c0e41bee4295dfa7564637cfdde7adee4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blueimp/JavaScript-Canvas-to-Blob/zipball/b107a012d06bc4cb1ae93f4e1e9c64653814d6c4",
-                "reference": "b107a012d06bc4cb1ae93f4e1e9c64653814d6c4",
+                "url": "https://api.github.com/repos/blueimp/JavaScript-Canvas-to-Blob/zipball/9ec7a82c0e41bee4295dfa7564637cfdde7adee4",
+                "reference": "9ec7a82c0e41bee4295dfa7564637cfdde7adee4",
                 "shasum": ""
             },
-            "type": "bower-asset-library",
-            "extra": {
-                "bower-asset-main": "js/canvas-to-blob.js",
-                "bower-asset-ignore": [
-                    "/*.*",
-                    "test"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "JavaScript Canvas to Blob is a function to convert canvas elements into Blob objects.",
-            "keywords": [
-                "blob",
-                "canvas",
-                "conversion",
-                "convert",
-                "javascript"
-            ]
+            "type": "bower-asset-library"
         },
         {
             "name": "bower-asset/blueimp-file-upload",
@@ -728,23 +710,23 @@
         },
         {
             "name": "bower-asset/fontawesome",
-            "version": "v4.3.0",
+            "version": "v4.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "41b9ed01103e6820c3cb043ba7ddab30ecd3f4c0"
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/41b9ed01103e6820c3cb043ba7ddab30ecd3f4c0",
-                "reference": "41b9ed01103e6820c3cb043ba7ddab30ecd3f4c0",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/fddd2c240452e6c8990c4ef75e0265b455aa7968",
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968",
                 "shasum": ""
             },
             "type": "bower-asset-library",
             "extra": {
                 "bower-asset-main": [
-                    "./css/font-awesome.css",
-                    "./fonts/*"
+                    "less/font-awesome.less",
+                    "scss/font-awesome.scss"
                 ],
                 "bower-asset-ignore": [
                     "*/.*",
@@ -1762,12 +1744,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dektrium/yii2-rbac.git",
-                "reference": "ea902a10d71446d399c0d674465c482c2e6fde8c"
+                "reference": "c6d315a3c9652b3b1ced19fe105f65e6e09f375b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dektrium/yii2-rbac/zipball/ea902a10d71446d399c0d674465c482c2e6fde8c",
-                "reference": "ea902a10d71446d399c0d674465c482c2e6fde8c",
+                "url": "https://api.github.com/repos/dektrium/yii2-rbac/zipball/c6d315a3c9652b3b1ced19fe105f65e6e09f375b",
+                "reference": "c6d315a3c9652b3b1ced19fe105f65e6e09f375b",
                 "shasum": ""
             },
             "require": {
@@ -1804,7 +1786,7 @@
                 "yii2",
                 "yii2-rbac"
             ],
-            "time": "2015-11-22 19:33:43"
+            "time": "2015-12-04 21:55:40"
         },
         {
             "name": "dektrium/yii2-user",
@@ -2021,7 +2003,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/dbc8d1b9b67daaab357bcc41dbf549c3684cf5f1",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/fddd2c240452e6c8990c4ef75e0265b455aa7968",
                 "reference": "dbc8d1b9b67daaab357bcc41dbf549c3684cf5f1",
                 "shasum": ""
             },
@@ -2581,16 +2563,16 @@
         },
         {
             "name": "kartik-v/yii2-grid",
-            "version": "v3.0.7",
+            "version": "v3.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-grid.git",
-                "reference": "913fde8fbe41bf998d53a88d0443e25e1e696194"
+                "reference": "db02213255a0dfccd6b6746e795a177c526ba55f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/913fde8fbe41bf998d53a88d0443e25e1e696194",
-                "reference": "913fde8fbe41bf998d53a88d0443e25e1e696194",
+                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/db02213255a0dfccd6b6746e795a177c526ba55f",
+                "reference": "db02213255a0dfccd6b6746e795a177c526ba55f",
                 "shasum": ""
             },
             "require": {
@@ -2621,7 +2603,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-09-12 19:41:22"
+            "time": "2015-12-05 19:28:33"
         },
         {
             "name": "kartik-v/yii2-icons",
@@ -2819,12 +2801,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-activeform.git",
-                "reference": "0b799f94e30b5667bad2144c9099184410602140"
+                "reference": "59a224de3104552c55de3a6aa67138ee1b73fd70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-activeform/zipball/0b799f94e30b5667bad2144c9099184410602140",
-                "reference": "0b799f94e30b5667bad2144c9099184410602140",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-activeform/zipball/59a224de3104552c55de3a6aa67138ee1b73fd70",
+                "reference": "59a224de3104552c55de3a6aa67138ee1b73fd70",
                 "shasum": ""
             },
             "require": {
@@ -2858,7 +2840,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-11-30 11:43:59"
+            "time": "2015-12-05 11:11:22"
         },
         {
             "name": "kartik-v/yii2-widget-affix",
@@ -4112,18 +4094,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/prawee/yii2-adminlte-theme.git",
-                "reference": "c8b0f0a0342a20ce1dea1060ae814f920d24f89a"
+                "reference": "2020dc321e338da012cbfb546f0edca1ab6240c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/prawee/yii2-adminlte-theme/zipball/c8b0f0a0342a20ce1dea1060ae814f920d24f89a",
-                "reference": "c8b0f0a0342a20ce1dea1060ae814f920d24f89a",
+                "url": "https://api.github.com/repos/prawee/yii2-adminlte-theme/zipball/2020dc321e338da012cbfb546f0edca1ab6240c9",
+                "reference": "2020dc321e338da012cbfb546f0edca1ab6240c9",
                 "shasum": ""
             },
             "require": {
                 "almasaeed2010/adminlte": "~2.0",
                 "kartik-v/yii2-widget-alert": "*",
-                "rmrevin/yii2-fontawesome": "2.10.*",
+                "rmrevin/yii2-fontawesome": "~2.12",
                 "yiisoft/yii2": "*",
                 "yiisoft/yii2-bootstrap": "*"
             },
@@ -4133,7 +4115,7 @@
                     "prawee\\themes\\": ""
                 }
             },
-            "notification-url": "http://packagist.cn/downloads/",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -4150,7 +4132,7 @@
                 "theme",
                 "yii2"
             ],
-            "time": "2015-05-20 04:54:56"
+            "time": "2015-12-08 03:23:25"
         },
         {
             "name": "ramsey/uuid",
@@ -4224,20 +4206,20 @@
         },
         {
             "name": "rmrevin/yii2-fontawesome",
-            "version": "2.10.3",
+            "version": "2.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rmrevin/yii2-fontawesome.git",
-                "reference": "ce4dd62a048090f3d98822d4bc9401bfcdde1f98"
+                "reference": "2efbfacb22be59f373d11a7e3dfa9213e2ba18a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rmrevin/yii2-fontawesome/zipball/ce4dd62a048090f3d98822d4bc9401bfcdde1f98",
-                "reference": "ce4dd62a048090f3d98822d4bc9401bfcdde1f98",
+                "url": "https://api.github.com/repos/rmrevin/yii2-fontawesome/zipball/2efbfacb22be59f373d11a7e3dfa9213e2ba18a9",
+                "reference": "2efbfacb22be59f373d11a7e3dfa9213e2ba18a9",
                 "shasum": ""
             },
             "require": {
-                "bower-asset/fontawesome": "4.3.*",
+                "bower-asset/fontawesome": "4.5.*",
                 "php": ">=5.4.0",
                 "yiisoft/yii2": "2.0.*"
             },
@@ -4253,15 +4235,15 @@
                     "rmrevin\\yii\\fontawesome\\": ""
                 }
             },
-            "notification-url": "http://packagist.cn/downloads/",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Roman Revin",
-                    "email": "xgismox@gmail.com",
-                    "homepage": "http://rmrevin.ru/"
+                    "name": "Revin Roman",
+                    "email": "roman@rmrevin.com",
+                    "homepage": "https://rmrevin.com/"
                 }
             ],
             "description": "Asset Bundle for Yii2 with Font Awesome",
@@ -4272,7 +4254,7 @@
                 "font",
                 "yii"
             ],
-            "time": "2015-06-23 13:06:14"
+            "time": "2015-11-26 15:24:53"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -4668,16 +4650,16 @@
         },
         {
             "name": "yiier/yii2-backup",
-            "version": "1.1",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiier/yii2-backup.git",
-                "reference": "5163e768befa4e3a8776286f19b6bd0ef63af02b"
+                "reference": "338b7ed33b82b939ce63c1e3447c357e2450182d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiier/yii2-backup/zipball/5163e768befa4e3a8776286f19b6bd0ef63af02b",
-                "reference": "5163e768befa4e3a8776286f19b6bd0ef63af02b",
+                "url": "https://api.github.com/repos/yiier/yii2-backup/zipball/338b7ed33b82b939ce63c1e3447c357e2450182d",
+                "reference": "338b7ed33b82b939ce63c1e3447c357e2450182d",
                 "shasum": ""
             },
             "require": {
@@ -4706,7 +4688,7 @@
                 "yii2",
                 "yii2-backup"
             ],
-            "time": "2015-11-27 09:53:41"
+            "time": "2015-11-30 02:34:48"
         },
         {
             "name": "yiisoft/yii2",

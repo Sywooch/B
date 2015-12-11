@@ -12,8 +12,8 @@ use Yii;
  * @property integer $associate_id
  * @property string $file_location
  * @property integer $file_size
- * @property integer $create_by
- * @property string $create_at
+ * @property string $created_at
+ * @property string $created_by
  * @property string $status
  */
 class Attachment extends \common\models\BaseActiveRecord
@@ -33,8 +33,8 @@ class Attachment extends \common\models\BaseActiveRecord
     {
         return [
             [['associate_type', 'status'], 'string'],
-            [['associate_id', 'file_location', 'create_by'], 'required'],
-            [['associate_id', 'file_size', 'create_by', 'create_at'], 'integer'],
+            [['associate_id', 'file_location'], 'required'],
+            [['associate_id', 'file_size', 'created_at', 'created_by'], 'integer'],
             [['file_location'], 'string', 'max' => 255]
         ];
     }
@@ -50,8 +50,8 @@ class Attachment extends \common\models\BaseActiveRecord
             'associate_id' => '关联ID',
             'file_location' => '文件位置',
             'file_size' => 'File Size',
-            'create_by' => '创建用户',
-            'create_at' => '创建时间',
+            'created_at' => '创建时间',
+            'created_by' => '创建用户',
             'status' => '状态',
         ];
     }

@@ -15,6 +15,8 @@ use common\entities\FavoriteEntity;
 use common\entities\QuestionEntity;
 use common\entities\QuestionEventHistoryEntity;
 use common\entities\QuestionTagEntity;
+use common\entities\TagRelationEntity;
+use common\helpers\TimeHelper;
 use common\models\xunsearch\QuestionSearch;
 use common\services\FavoriteService;
 use common\services\FollowService;
@@ -69,7 +71,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithAddFollowQuestion();
         $this->dealWithAddAttachments();
         $this->dealWithQuestionCacheInsert();
-        //$this->dealWithTagRelation();//由计划任务（tag-cron-job）每周执行
+        $this->dealWithTagRelation();//由计划任务（tag-cron-job）每周执行
         $this->dealWithInsertXunSearch();
     }
     
@@ -106,7 +108,7 @@ class QuestionBehavior extends BaseBehavior
             [
                 'class'       => QuestionEventHistoryEntity::className(),
                 'question_id' => $this->owner->id,
-                'create_by'   => $this->owner->create_by,
+                'created_by'   => $this->owner->created_by,
             ]
         );
         
@@ -127,7 +129,7 @@ class QuestionBehavior extends BaseBehavior
     private function dealWithAddFollowQuestion()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = FollowService::addFollowQuestion($this->owner->id, $this->owner->create_by);
+        $result = FollowService::addFollowQuestion($this->owner->id, $this->owner->created_by);
         Yii::trace(sprintf('Add Question Follow: %s', var_export($result, true)), 'behavior');
 
         return $result;
@@ -151,7 +153,7 @@ class QuestionBehavior extends BaseBehavior
             $tag_relation = TagService::batchAddTags($add_tags);
             if ($tag_relation) {
                 $tag_ids = array_values($tag_relation);
-                $result = QuestionService::addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
+                $result = QuestionService::addQuestionTag($this->owner->created_by, $this->owner->id, $tag_ids);
 
                 Yii::trace(sprintf('Add Question Tag Result: %s', var_export($result, true)), 'behavior');
             }
@@ -168,7 +170,7 @@ class QuestionBehavior extends BaseBehavior
                 [
                     'class'       => QuestionEventHistoryEntity::className(),
                     'question_id' => $this->owner->id,
-                    'create_by'   => $this->owner->create_by,
+                    'created_by'   => $this->owner->created_by,
                 ]
             );
             
@@ -214,7 +216,7 @@ class QuestionBehavior extends BaseBehavior
             [
                 'class'       => QuestionEventHistoryEntity::className(),
                 'question_id' => $this->owner->id,
-                'create_by'   => $this->owner->create_by,
+                'created_by'   => $this->owner->created_by,
             ]
         );
         
@@ -223,7 +225,7 @@ class QuestionBehavior extends BaseBehavior
             $tag_relation = TagService::batchAddTags($add_tags);
             if ($tag_relation) {
                 $tag_ids = array_values($tag_relation);
-                QuestionTagEntity::addQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
+                QuestionTagEntity::addQuestionTag($this->owner->created_by, $this->owner->id, $tag_ids);
             }
             
             $questionEventHistoryEntity->addTag($add_tags);
@@ -234,7 +236,7 @@ class QuestionBehavior extends BaseBehavior
             
             $tag_ids = ArrayHelper::getColumn($tag_relation, 'id');
             if ($tag_ids) {
-                TagService::removeQuestionTag($this->owner->create_by, $this->owner->id, $tag_ids);
+                TagService::removeQuestionTag($this->owner->created_by, $this->owner->id, $tag_ids);
             }
             
             $questionEventHistoryEntity->removeTag($remove_tags);
@@ -245,7 +247,7 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         
-        $result = Counter::addQuestion($this->owner->create_by);
+        $result = Counter::addQuestion($this->owner->created_by);
 
         return $result;
     }
@@ -254,7 +256,7 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        $result = Counter::deleteQuestion($this->owner->create_by);
+        $result = Counter::deleteQuestion($this->owner->created_by);
 
         return $result;
     }
@@ -344,7 +346,7 @@ class QuestionBehavior extends BaseBehavior
             Yii::error(__METHOD__, 'xunsearch');
         }
 
-        Yii::trace('Result %s ' . var_export($result, true), 'behavior');
+        Yii::trace(sprintf('Result %s ', var_export($result, true)), 'behavior');
     }
 
     private function dealWithDeleteXunSearch()
@@ -385,5 +387,68 @@ class QuestionBehavior extends BaseBehavior
     private function dealWithTagRelation()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        $tag_names = explode(',', $this->owner->tags);
+
+        if (count($tag_names) > 1) {
+            $all_tag_name_id = TagService::getTagIdByName($tag_names);
+
+            $all_relations = [];
+
+            $current_item = array_shift($tag_names);
+            do {
+                foreach ($tag_names as $tag_name) {
+                    $all_relations[$current_item][] = $tag_name;
+                }
+
+                $current_item = array_shift($tag_names);
+            } while (count($tag_names) > 1);
+
+
+            $data = [];
+            foreach ($all_relations as $tag_name_1 => $item_relation) {
+                if (empty($all_tag_name_id[$tag_name_1])) {
+                    continue;
+                }
+
+                $item_relation = array_unique($item_relation);
+                $tag_id_1 = $all_tag_name_id[$tag_name_1];
+                foreach ($item_relation as $tag_name_2) {
+                    $tag_id_2 = $all_tag_name_id[$tag_name_2];
+                    $data[] = [
+                        $tag_id_1,
+                        $tag_id_2,
+                        TagRelationEntity::TYPE_BROTHER,
+                        1,
+                        TagRelationEntity::STATUS_ENABLE,
+                    ];
+                }
+            }
+
+            if ($data) {
+                #batch add
+                $insert_sql = TagRelationEntity::getDb()->createCommand()->batchInsert(
+                    TagRelationEntity::tableName(),
+                    ['tag_id_1', 'tag_id_2', 'type', 'count_relation', 'status'],
+                    $data
+                )->getRawSql();
+
+                //exit($insert_sql);
+
+                $command = TagRelationEntity::getDb()->createCommand(
+                    sprintf(
+                        '%s ON DUPLICATE KEY UPDATE `count_relation`=`count_relation`+1;',
+                        $insert_sql,
+                        TimeHelper::getCurrentTime()
+                    )
+                );
+
+                //$sql = $command->getRawSql();
+
+                $result = $command->execute();
+
+                Yii::trace(sprintf('%s Result %s ', __FUNCTION__, var_export($result, true)), 'behavior');
+            }
+        }
     }
 }

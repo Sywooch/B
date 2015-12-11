@@ -77,7 +77,7 @@ class TagService extends BaseService
         $result = TagEntity::getDb()->createCommand()->delete(
             QuestionTag::tableName(),
             [
-                'create_by'   => $user_id,
+                'created_by'  => $user_id,
                 'question_id' => $question_id,
                 'tag_id'      => $tag_ids,
             ]
@@ -289,12 +289,14 @@ class TagService extends BaseService
         foreach ($tag_relate_list as $item) {
             if ($item['tag_id_1'] == $tag_id) {
                 $relate_tag[$item['type']][$item['tag_id_2']] = [
+                    'id'             => $item['tag_id_2'],
                     'name'           => '',
                     'count_relation' => $item['count_relation'],
                 ];
                 $relate_tag_ids[] = $item['tag_id_2'];
             } else {
                 $relate_tag[$item['type']][$item['tag_id_1']] = [
+                    'id'             => $item['tag_id_1'],
                     'name'           => '',
                     'count_relation' => $item['count_relation'],
                 ];
@@ -319,11 +321,11 @@ class TagService extends BaseService
 
         if (0 === Yii::$app->redis->zCard($cache_key)) {
             $result = TagEntity::find()->where(
-                'count_use>=:count_use AND count_follow>=:count_follow AND active_at>=:active_at',
+                'count_use>=:count_use AND count_follow>=:count_follow AND updated_at>=:updated_at',
                 [
                     ':count_use'    => 1,
                     ':count_follow' => 1,
-                    ':active_at'    => TimeHelper::getBeforeTime($period),
+                    ':updated_at'   => TimeHelper::getBeforeTime($period),
                 ]
             )->orderBy('count_follow DESC')->limit($limit)->asArray()->all();
 

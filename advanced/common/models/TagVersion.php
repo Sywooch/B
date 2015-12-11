@@ -11,10 +11,8 @@ use Yii;
  * @property string $tag_id
  * @property string $content
  * @property string $reason
- * @property integer $create_by
- * @property string $create_at
- *
- * @property Tag $tag
+ * @property string $created_by
+ * @property string $created_at
  */
 class TagVersion extends \common\models\BaseActiveRecord
 {
@@ -32,8 +30,8 @@ class TagVersion extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['tag_id', 'content', 'create_by'], 'required'],
-            [['tag_id', 'create_by', 'create_at'], 'integer'],
+            [['tag_id', 'content'], 'required'],
+            [['tag_id', 'created_by', 'created_at'], 'integer'],
             [['content'], 'string'],
             [['reason'], 'string', 'max' => 255]
         ];
@@ -49,16 +47,8 @@ class TagVersion extends \common\models\BaseActiveRecord
             'tag_id' => 'Tag ID',
             'content' => 'Content',
             'reason' => 'Reason',
-            'create_by' => '创建用户',
-            'create_at' => '创建时间',
+            'created_by' => '创建用户',
+            'created_at' => '创建时间',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTag()
-    {
-        return $this->hasOne(Tag::className(), ['id' => 'tag_id']);
     }
 }

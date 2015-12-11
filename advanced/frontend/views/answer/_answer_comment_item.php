@@ -15,21 +15,21 @@ use common\helpers\TemplateHelper;
             <p class="comment-meta">
                 #&nbsp;
                 <?= TemplateHelper::showUsername(
-                        $item['create_by'],
+                        $item['created_by'],
                         true,
                         $item['is_anonymous'] == AnswerCommentEntity::STATUS_ANONYMOUS
                 ) ?>
                 <?php if ($item['is_anonymous'] != AnswerCommentEntity::STATUS_ANONYMOUS): ?>
-                    <?php if ($answer_create_user_id == $item['create_by']) : ?>
+                    <?php if ($answer_create_user_id == $item['created_by']) : ?>
                         [答主]
-                    <?php elseif ($question_create_user_id == $item['create_by']) : ?>
+                    <?php elseif ($question_create_user_id == $item['created_by']) : ?>
                         [题主]
-                    <?php elseif (!Yii::$app->user->isGuest && $item['create_by'] == Yii::$app->user->id) : ?>
+                    <?php elseif (!Yii::$app->user->isGuest && $item['created_by'] == Yii::$app->user->id) : ?>
                         [我]
                     <?php endif; ?>
                 <?php endif; ?>
                 · <span class="createdDate">
-                        <?= TemplateHelper::showHumanTime($item['create_at']); ?></span>
+                        <?= TemplateHelper::showHumanTime($item['created_at']); ?></span>
                 <?php if ($item['is_anonymous'] == AnswerCommentEntity::STATUS_ANONYMOUS): ?>
                     匿名评论
                 <?php else: ?>
@@ -37,12 +37,12 @@ use common\helpers\TemplateHelper;
                 <?php endif; ?>
 
 
-                <?php if ($item['create_by'] != Yii::$app->user->id) : ?>
+                <?php if ($item['created_by'] != Yii::$app->user->id) : ?>
                     <?php if ($item['is_anonymous'] != AnswerCommentEntity::STATUS_ANONYMOUS): ?>
                         · <a href="#"
                              data-answer-id="<?= $item['id'] ?>"
                              data-comment-at-username="<?= TemplateHelper::showUsername(
-                                     $item['create_by'],
+                                     $item['created_by'],
                                      false
                              ); ?>">
                             回复

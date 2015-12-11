@@ -31,13 +31,13 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'count_follow') ?>
 
-    <?php // echo $form->field($model, 'create_at') ?>
+    <?php // echo $form->field($model, 'created_at') ?>
 
-    <?php // echo $form->field($model, 'create_by') ?>
+    <?php // echo $form->field($model, 'created_by') ?>
 
-    <?php // echo $form->field($model, 'modify_at') ?>
+    <?php // echo $form->field($model, 'updated_at') ?>
 
-    <?php // echo $form->field($model, 'modify_by') ?>
+    <?php // echo $form->field($model, 'updated_by') ?>
 
     <?php // echo $form->field($model, 'tags') ?>
 

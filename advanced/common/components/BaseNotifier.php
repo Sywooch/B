@@ -185,7 +185,7 @@ class BaseNotifier extends Object
                 'notice_code'    => $notice_code,
                 'associate_data' => $associate_data,
                 'status'         => NotificationEntity::STATUS_UNREAD,
-                'create_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
+                'created_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
             ],
             'notifier'
         );
@@ -202,7 +202,7 @@ class BaseNotifier extends Object
                 'notice_code'    => $notice_code,
                 'associate_data' => $associate_data,
                 'status'         => NotificationEntity::STATUS_UNREAD,
-                'create_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
+                'created_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
             ]
         );
     }

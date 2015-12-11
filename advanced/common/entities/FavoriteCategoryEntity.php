@@ -22,14 +22,14 @@ class FavoriteCategoryEntity extends FavoriteCategory
             'operator'                   => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'create_by',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
                 ],
             ],
             'timestamp'                  => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_AFTER_INSERT => 'active_at',
-                    ActiveRecord::EVENT_AFTER_UPDATE => 'active_at',
+                    ActiveRecord::EVENT_AFTER_INSERT => ['updated_at', 'updated_at'],
+                    ActiveRecord::EVENT_AFTER_UPDATE => 'updated_at',
                 ],
             ],
             'favorite_category_behavior' => [

@@ -51,7 +51,7 @@ class FollowService extends BaseService
         )
         ) {
             $model = new FollowQuestionEntity;
-            $model->create_at = $user_id;
+            $model->created_at = $user_id;
             $model->follow_question_id = $question_id;
             if ($model->save()) {
                 $result = true;
@@ -118,7 +118,7 @@ class FollowService extends BaseService
             [
                 'follow_question_id' => $question_id,
             ]
-        )->limit($limit)->orderBy('create_at DESC')->column();
+        )->limit($limit)->orderBy('created_at DESC')->column();
 
         return $user_ids;
     }
@@ -142,22 +142,22 @@ class FollowService extends BaseService
         }
 
         $data = [];
-        $create_at = TimeHelper::getCurrentTime();
+        $created_at = TimeHelper::getCurrentTime();
 
         foreach ($tag_ids as $tag_id) {
-            $data[] = [$user_id, $tag_id, $create_at, $create_at];
+            $data[] = [$user_id, $tag_id, $created_at, $created_at];
         }
 
         #batch add
         $sql = FollowTagEntity::getDb()->createCommand()->batchInsert(
             FollowTagEntity::tableName(),
-            ['user_id', 'follow_tag_id', 'create_at', 'modify_at'],
+            ['user_id', 'follow_tag_id', 'created_at', 'updated_at'],
             $data
         )->getSql();
 
         $result = FollowTagEntity::getDb()->createCommand(
             sprintf(
-                '%s ON DUPLICATE KEY UPDATE modify_at="%d", count_follow=count_follow+1',
+                '%s ON DUPLICATE KEY UPDATE updated_at="%d", count_follow=count_follow+1',
                 $sql,
                 time()
             )
@@ -173,7 +173,7 @@ class FollowService extends BaseService
             ];
 
             foreach ($tag_ids as $tag_id) {
-                $params[] = $create_at;
+                $params[] = $created_at;
                 $params[] = $tag_id;
             }
             call_user_func_array([Yii::$app->redis, 'zAdd'], $params);
@@ -214,18 +214,18 @@ class FollowService extends BaseService
         $cache_key = [REDIS_KEY_USER_TAG_RELATION, $user_id];
 
         if (0 == Yii::$app->redis->zCard($cache_key)) {
-            $follow_tag_ids = FollowTagEntity::find()->select(['follow_tag_id', 'create_at'])->where(
+            $follow_tag_ids = FollowTagEntity::find()->select(['follow_tag_id', 'created_at'])->where(
                 [
                     'user_id' => $user_id,
                 ]
-            )->orderBy('modify_at DESC')->limiter($page_no, $page_size)->asArray()->all();
+            )->orderBy('updated_at DESC')->limiter($page_no, $page_size)->asArray()->all();
 
             $params = [
                 $cache_key,
             ];
 
             foreach ($follow_tag_ids as $tag) {
-                $params[] = $tag['create_at'];
+                $params[] = $tag['created_at'];
                 $params[] = $tag['follow_tag_id'];
                 $tag_ids[] = $tag['follow_tag_id'];
             }
@@ -268,21 +268,21 @@ class FollowService extends BaseService
         }
 
         $data = [];
-        $create_at = TimeHelper::getCurrentTime();
+        $created_at = TimeHelper::getCurrentTime();
         foreach ($follow_user_ids as $follow_user_id) {
-            $data[] = [$user_id, $follow_user_id, $create_at];
+            $data[] = [$user_id, $follow_user_id, $created_at];
         }
 
         #batch add
         $sql = FollowUserEntity::getDb()->createCommand()->batchInsert(
             FollowUserEntity::tableName(),
-            ['user_id', 'follow_user_id', 'create_at'],
+            ['user_id', 'follow_user_id', 'created_at'],
             $data
         )->getSql();
 
         $result = FollowUserEntity::getDb()->createCommand(
             sprintf(
-                '%s ON DUPLICATE KEY UPDATE create_at="%d"',
+                '%s ON DUPLICATE KEY UPDATE created_at="%d"',
                 $sql,
                 time()
             )
@@ -426,22 +426,22 @@ class FollowService extends BaseService
         }
 
         $data = [];
-        $create_at = time();
+        $created_at = time();
 
         foreach ($tag_ids as $tag_id) {
-            $data[] = [$user_id, $tag_id, $create_at];
+            $data[] = [$user_id, $tag_id, $created_at];
         }
 
         #batch add
         $sql = FollowTagPassiveEntity::getDb()->createCommand()->batchInsert(
             FollowTagPassiveEntity::tableName(),
-            ['user_id', 'follow_tag_id', 'create_at'],
+            ['user_id', 'follow_tag_id', 'created_at'],
             $data
         )->getSql();
 
         $result = FollowTagPassiveEntity::getDb()->createCommand(
             sprintf(
-                '%s ON DUPLICATE KEY UPDATE modify_at="%d", count_follow=count_follow+1',
+                '%s ON DUPLICATE KEY UPDATE updated_at="%d", count_follow=count_follow+1',
                 $sql,
                 time()
             )
@@ -455,7 +455,7 @@ class FollowService extends BaseService
             ];
 
             foreach ($tag_ids as $tag_id) {
-                $params[] = $create_at;
+                $params[] = $created_at;
                 $params[] = $tag_id;
             }
             call_user_func_array([Yii::$app->redis, 'zAdd'], $params);*/
@@ -528,8 +528,8 @@ class FollowService extends BaseService
                     'follow_tag_id' => $tag_id,
                 ]
             )->andWhere(
-                'modify_at>=:modify_at',
-                [':modify_at' => TimeHelper::getBeforeTime(FollowTagPassiveEntity::RECENT_PERIOD_OF_TIME)]
+                'updated_at>=:updated_at',
+                [':updated_at' => TimeHelper::getBeforeTime(FollowTagPassiveEntity::RECENT_PERIOD_OF_TIME)]
             )->limit($limit)->groupBy('user_id')->orderBy(
                 '`score` DESC'
             )->asArray()->all();
@@ -567,11 +567,12 @@ class FollowService extends BaseService
      * 获取一年内用户擅长的标签
      * @param     $user_id
      * @param int $limit
+     * @param int $period
      * @return array|bool|string ['tag_id'=>'count_follow',]
      */
-    public static function getUserBeGoodAtTagsByUserId($user_id, $limit = 20)
+    public static function getTagIdsWhichUserIsGoodAt($user_id, $limit = 20, $period = 30)
     {
-        $cache_key = [REDIS_KEY_USER_BE_GOOD_AT_TAG_IDS, $user_id];
+        $cache_key = [REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS, implode(':', [$user_id, $period])];
         $cache_data = Yii::$app->redis->get($cache_key);
         if ($cache_data === false) {
             $data = FollowTagPassiveEntity::find()->select(
@@ -580,8 +581,8 @@ class FollowService extends BaseService
                     'count_follow',
                 ]
             )->where(['user_id' => $user_id])->andWhere(
-                'modify_at>=:modify_at',
-                [':modify_at' => TimeHelper::getBeforeTime(365)]
+                'updated_at>=:updated_at',
+                [':updated_at' => TimeHelper::getBeforeTime($period)]
             )->limit($limit)->orderBy(
                 'count_follow DESC'
             )->asArray()->all();
@@ -599,10 +600,43 @@ class FollowService extends BaseService
         return $cache_data;
     }
 
-    public static function cleanTagAndUserRelation($tag_id)
+    /**
+     * 获取擅长此标签的用户列表
+     * @param     $tag_id
+     * @param int $limit
+     * @param int $period
+     * @return array|bool|string
+     */
+    public static function getUserWhichIsGoodAtThisTag($tag_id, $limit = 20, $period = 30)
     {
+        $cache_key = [REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT, implode(':', [$tag_id, $period])];
+        $cache_data = Yii::$app->redis->get($cache_key);
+        if ($cache_data === false) {
+            $data = FollowTagPassiveEntity::find()->select(
+                [
+                    'user_id',
+                    'count_follow',
+                ]
+            )->where(['follow_tag_id' => $tag_id])->andWhere(
+                'updated_at>=:updated_at',
+                [':updated_at' => TimeHelper::getBeforeTime($period)]
+            )->limit($limit)->orderBy(
+                'count_follow DESC'
+            )->asArray()->all();
 
+            $rank = [];
+            foreach ($data as $item) {
+                $rank[$item['user_id']] = $item['count_follow'];
+            }
+
+            $cache_data = $rank;
+
+            Yii::$app->redis->set($cache_key, $cache_data);
+        }
+
+        return $cache_data;
     }
+
 
     /**
      * 获取用户粉丝
@@ -619,7 +653,7 @@ class FollowService extends BaseService
         if (!$cache_data) {
             $query = FollowUserEntity::find()->select(['user_id'])->where(
                 ['follow_user_id' => $user_id]
-            )->orderBy('create_at DESC')->limiter($page_no, $page_size);
+            )->orderBy('created_at DESC')->limiter($page_no, $page_size);
 
             $follow_user_id = $query->column();
 
@@ -648,7 +682,7 @@ class FollowService extends BaseService
                 [
                     'user_id' => $user_id,
                 ]
-            )->orderBy('create_at DESC')->limiter($page_no, $page_size)->column();
+            )->orderBy('created_at DESC')->limiter($page_no, $page_size)->column();
 
             if (self::addUserFriendsToCache($user_id, $follow_user_id)) {
                 $cache_data = $follow_user_id;

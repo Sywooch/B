@@ -17,21 +17,38 @@ class FollowQuestionEntity extends FollowQuestion
     public function behaviors()
     {
         return [
-            'operator'  => [
+            'operator'                 => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'user_id',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'user_id',
                 ],
             ],
-            'timestamp' => [
+            'timestamp'                => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
             ],
             'follow_question_behavior' => [
-                'class'      => FollowQuestionBehavior::className(),
+                'class' => FollowQuestionBehavior::className(),
             ],
         ];
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestion()
+    {
+        return $this->hasOne(QuestionEntity::className(), ['id' => 'follow_question_id']);
+    }
+
 }

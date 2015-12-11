@@ -47,11 +47,11 @@ $this->beginBlock('top-header');
 
                 <div class="author">
                     <a href="/u/smallkiss" class="mr5">
-                        <?= TemplateHelper::showUserAvatar($question_data['create_by'], 24, false) ?>
-                        <strong><?= TemplateHelper::showUsername($question_data['create_by'], false) ?></strong>
+                        <?= TemplateHelper::showUserAvatar($question_data['created_by'], 24, false) ?>
+                        <strong><?= TemplateHelper::showUsername($question_data['created_by'], false) ?></strong>
                     </a>
-                    <?= TemplateHelper::showHumanTime($question_data['create_at']) ?>
-                    <?php if ($question_data['active_at'] > 0): ?>
+                    <?= TemplateHelper::showHumanTime($question_data['created_at']) ?>
+                    <?php if ($question_data['updated_at'] > 0): ?>
                         <?= Html::a(
                                 '更新问题',
                                 [
@@ -135,7 +135,7 @@ $this->endBlock();
                     <div class="post-opt">
                         <ul class="list-inline mb0">
                             <li><?= Html::a('链接', ['question/view', 'id' => $question_data['id']]); ?></li>
-                            <? if ($question_data['create_by'] == Yii::$app->user->id): ?>
+                            <? if ($question_data['created_by'] == Yii::$app->user->id): ?>
                                 <li><?= Html::a(
                                             '编辑',
                                             ['question/update', 'id' => $question_data['id']]
@@ -151,12 +151,14 @@ $this->endBlock();
                                                         [
                                                                 'label'   => $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
                                                                 'url'     => '/',
-                                                                'visible' => $question_data['create_by'] == Yii::$app->user->id,
+                                                                'visible' => $question_data['created_by'] ==
+                                                                        Yii::$app->user->id,
                                                         ],
                                                         [
                                                                 'label'   => '删除',
                                                                 'url'     => '/',
-                                                                'visible' => $question_data['create_by'] == Yii::$app->user->id,
+                                                                'visible' => $question_data['created_by'] ==
+                                                                        Yii::$app->user->id,
                                                         ],
                                                         [
                                                                 'label'   => '公众编辑',
@@ -164,12 +166,14 @@ $this->endBlock();
                                                                         'question/common-edit',
                                                                         'id' => $question_data['id'],
                                                                 ],
-                                                                'visible' => $question_data['create_by'] != Yii::$app->user->id,
+                                                                'visible' => $question_data['created_by'] !=
+                                                                        Yii::$app->user->id,
                                                         ],
                                                         [
                                                                 'label'   => '举报',
                                                                 'url'     => '#',
-                                                                'visible' => $question_data['create_by'] != Yii::$app->user->id,
+                                                                'visible' => $question_data['created_by'] !=
+                                                                        Yii::$app->user->id,
                                                         ],
                                                 ],
                                         ]
@@ -281,16 +285,16 @@ $this->endBlock();
                         <?php foreach ($similar_question as $question): ?>
                             <?php if ($question['id'] != $question_data['id']): ?>
                                 <li class="widget-links__item">
-                                <?= Html::a(
-                                        $question['subject'],
-                                        ['question/view', 'id' => $question['id']]
-                                ); ?>
-                                <?php if ($question['count_answer']): ?>
-                                    <small class="text-muted">
-                                        <?= $question['count_answer']; ?> 回答
-                                    </small>
-                                <?php endif; ?>
-                            </li>
+                                    <?= Html::a(
+                                            $question['subject'],
+                                            ['question/view', 'id' => $question['id']]
+                                    ); ?>
+                                    <?php if ($question['count_answer']): ?>
+                                        <small class="text-muted">
+                                            <?= $question['count_answer']; ?> 回答
+                                        </small>
+                                    <?php endif; ?>
+                                </li>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </ul>

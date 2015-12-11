@@ -2,47 +2,34 @@
 /**
  * Created by PhpStorm.
  * User: yuyj
- * Date: 10/26
- * Time: 16:33
+ * Date: 12/11
+ * Time: 11:50
  */
 
 namespace common\entities;
 
-use common\behaviors\FavoriteBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
-use common\models\Favorite;
-use Yii;
+use common\models\TagVersion;
 use yii\db\ActiveRecord;
 
-/**
- * Class FavoriteEntity
- * @package common\entities
- * @property \common\entities\FavoriteEntity owner
- */
-class FavoriteEntity extends Favorite
+class TagVersionEntity extends TagVersion
 {
-    const TYPE_ARTICLE = 'article';
-    const TYPE_QUESTION = 'question';
-    const TYPE_ANSWER = 'answer';
 
     public function behaviors()
     {
         return [
-            'operator'          => [
+            'operator'  => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
                 ],
             ],
-            'timestamp'         => [
+            'timestamp' => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
-            ],
-            'favorite_behavior' => [
-                'class' => FavoriteBehavior::className(),
             ],
         ];
     }
@@ -50,8 +37,8 @@ class FavoriteEntity extends Favorite
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
+    public function getTag()
     {
-        return $this->hasOne(UserEntity::className(), ['id' => 'created_by']);
+        return $this->hasOne(TagEntity::className(), ['id' => 'tag_id']);
     }
 }

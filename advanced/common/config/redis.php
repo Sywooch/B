@@ -31,16 +31,17 @@ const REDIS_KEY_USER_USERNAME_USERID = 'username_userid:string';
 const REDIS_KEY_USER_FRIENDS = 'user_friends:set';
 const REDIS_KEY_USER_FANS = 'user_fans:set';
 
-const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation:sset';
+const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation:sset';#用户关注的标签
 const REDIS_KEY_USER_TAG_PASSIVE_RELATION = 'user_tag_passive_relation:sset';
 
-const REDIS_KEY_USER_BE_GOOD_AT_TAG_IDS = 'user_be_good_at_tag_ids:string';
+const REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS = 'user_is_good_at_tag_ids:string';#用户擅长的标签
 
 #TAG
 const REDIS_KEY_TAG = 'tag:hash';
 const REDIS_KEY_TAG_LIST = 'tag_list:sset';
-const REDIS_KEY_TAG_NAME_ID = 'tag_name_id:string';
-const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:sset';
+const REDIS_KEY_TAG_NAME_ID = 'tag_name_id:string';#标签名称与ID
+const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:sset';#关注此标签的用户
+const REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT = 'tag_user_relation:sset';#擅长此标签的用户
 
 #FOLLOW TAG
 
@@ -187,8 +188,8 @@ return [
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
-    #用户擅长的标签
-    REDIS_KEY_USER_BE_GOOD_AT_TAG_IDS     => [
+    #用户擅长的标签ID
+    REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS     => [
         'server'     => $servers['master'],
         'expire'     => 86400,
         'serializer' => Redis::SERIALIZER_IGBINARY,

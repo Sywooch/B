@@ -45,25 +45,25 @@ class Updater extends BaseUpdater
         return $result;
     }
 
-    public static function updateQuestionActiveAt($id, $active_at)
+    public static function updateQuestionActiveAt($id, $updated_at)
     {
         $result = self::build()->sync(true)->table(QuestionEntity::tableName())->set(
-            ['active_at' => $active_at]
+            ['updated_at' => $updated_at]
         )->where(
             ['id' => $id]
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($id)) {
-            QuestionService::updateQuestionCache($id, ['active_at' => $active_at]);
+            QuestionService::updateQuestionCache($id, ['updated_at' => $updated_at]);
         }
 
         return $result;
     }
 
-    public static function updateFavoriteCategoryActiveAt($id, $active_at)
+    public static function updateFavoriteCategoryActiveAt($id, $updated_at)
     {
         $result = self::build()->sync(true)->table(FavoriteCategoryEntity::tableName())->set(
-            ['active_at' => $active_at]
+            ['updated_at' => $updated_at]
         )->where(
             ['id' => $id]
         )->execute();

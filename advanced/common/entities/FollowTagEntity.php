@@ -22,18 +22,35 @@ class FollowTagEntity extends FollowTag
     public function behaviors()
     {
         return [
-            'operator'                 => [
+            'operator'  => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'user_id',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'user_id',
                 ],
             ],
-            'timestamp'                => [
+            'timestamp' => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => ['create_at', 'modify_at'],
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_at',
                 ],
             ],
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTag()
+    {
+        return $this->hasOne(TagEntity::className(), ['id' => 'tag_id']);
     }
 }

@@ -95,7 +95,7 @@ class FavoriteService extends BaseService
     {
         return FavoriteCategoryEntity::find()->where(
             [
-                'create_by' => $user_id,
+                'created_by' => $user_id,
             ]
         )->limiter($page_no, $page_size)->asArray()->all();
     }
@@ -104,7 +104,7 @@ class FavoriteService extends BaseService
     {
         return FavoriteEntity::find()->where(
             [
-                'create_by' => $user_id,
+                'created_by' => $user_id,
             ]
         )->limiter($page_no, $page_size)->asArray()->all();
     }

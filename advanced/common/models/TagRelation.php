@@ -13,9 +13,6 @@ use Yii;
  * @property integer $order
  * @property integer $count_relation
  * @property string $status
- *
- * @property Tag $tagId1
- * @property Tag $tagId2
  */
 class TagRelation extends \common\models\BaseActiveRecord
 {
@@ -52,21 +49,5 @@ class TagRelation extends \common\models\BaseActiveRecord
             'count_relation' => '关联次数，判断关联度',
             'status' => '状态',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTagId1()
-    {
-        return $this->hasOne(Tag::className(), ['id' => 'tag_id_1']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTagId2()
-    {
-        return $this->hasOne(Tag::className(), ['id' => 'tag_id_2']);
     }
 }

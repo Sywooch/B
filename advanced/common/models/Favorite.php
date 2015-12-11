@@ -10,12 +10,10 @@ use Yii;
  * @property string $id
  * @property string $favorite_category_id
  * @property string $type
- * @property string $associate_id
- * @property string $create_at
- * @property integer $create_by
+ * @property integer $associate_id
+ * @property string $created_at
+ * @property string $created_by
  * @property string $note
- *
- * @property User $createBy
  */
 class Favorite extends \common\models\BaseActiveRecord
 {
@@ -33,10 +31,10 @@ class Favorite extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['favorite_category_id', 'create_at', 'create_by'], 'integer'],
+            [['favorite_category_id', 'associate_id', 'created_at', 'created_by'], 'integer'],
             [['type'], 'string'],
-            [['create_by'], 'required'],
-            [['associate_id', 'note'], 'string', 'max' => 45]
+            [['associate_id'], 'required'],
+            [['note'], 'string', 'max' => 45]
         ];
     }
 
@@ -50,17 +48,9 @@ class Favorite extends \common\models\BaseActiveRecord
             'favorite_category_id' => '收藏夹分类ID',
             'type' => '类型',
             'associate_id' => '关联的对象ID',
-            'create_at' => '创建时间',
-            'create_by' => 'Create By',
+            'created_at' => '创建时间',
+            'created_by' => 'Created By',
             'note' => '注解',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreateBy()
-    {
-        return $this->hasOne(User::className(), ['id' => 'create_by']);
     }
 }

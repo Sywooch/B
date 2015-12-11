@@ -342,7 +342,7 @@ class UserService extends BaseService
 
     public static function getUserBeGoodAtTags($user_id, $limit = 20)
     {
-        return FollowService::getUserBeGoodAtTagsByUserId($user_id, $limit);
+        return FollowService::getTagIdsWhichUserIsGoodAt($user_id, $limit, 90);
     }
 
     /**

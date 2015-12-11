@@ -8,6 +8,7 @@
 
 namespace common\entities;
 
+use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\exceptions\NotFoundModelException;
 use common\models\PrivateMessage;
@@ -26,10 +27,16 @@ class PrivateMessageEntity extends PrivateMessage
     public function behaviors()
     {
         return [
+            'operator'                        => [
+                'class'      => OperatorBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'sender',
+                ],
+            ],
             'timestamp' => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
             ],
         ];
@@ -88,14 +95,14 @@ class PrivateMessageEntity extends PrivateMessage
         }
     }
 
-    public static function updateLastActive($id, $active_by, $last_message, $active_at)
+    public static function updateLastActive($id, $active_by, $last_message, $updated_at)
     {
         $model = self::findOne($id);
 
         if ($model) {
             $model->last_message = $last_message;
-            $model->active_by = $active_by;
-            $model->active_at = $active_at;
+            $model->updated_by = $active_by;
+            $model->updated_at = $updated_at;
 
             #update read status
             $currentUserRole = self::checkUserRole($model, $active_by);
@@ -151,5 +158,30 @@ class PrivateMessageEntity extends PrivateMessage
         }
 
         return $role;
+    }
+
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSender()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'sender']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getReceiver()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'receiver']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrivateMessageDialogs()
+    {
+        return $this->hasMany(PrivateMessageDialogEntity::className(), ['private_message_id' => 'id']);
     }
 }

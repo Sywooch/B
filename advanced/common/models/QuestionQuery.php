@@ -47,7 +47,7 @@ class QuestionQuery extends \yii\db\ActiveQuery
 
     public function orderByTime($order = 'DESC')
     {
-        return $this->addOrderBy(sprintf('create_at %s', $order));
+        return $this->addOrderBy(sprintf('created_at %s', $order));
     }
 
     public function allowShowStatus($is_spider = false)
@@ -69,9 +69,9 @@ class QuestionQuery extends \yii\db\ActiveQuery
     public function recent($period = 7)
     {
         return $this->andWhere(
-            'create_at>=:create_at',
+            'created_at>=:created_at',
             [
-                ':create_at' => time() - $period * 86400,
+                ':created_at' => time() - $period * 86400,
             ]
         );
     }

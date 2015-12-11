@@ -23,9 +23,9 @@ class CacheQuestionModel extends BaseCacheModel
     public $count_follow = 0;
     public $count_like = 0;
     public $count_hate = 0;
-    public $create_at;
-    public $create_by;
-    public $active_at;
+    public $created_at;
+    public $created_by;
+    public $updated_at;
     public $is_anonymous = 'no';
     public $is_lock = 'no';
     public $status;

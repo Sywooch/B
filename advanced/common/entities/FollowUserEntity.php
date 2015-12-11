@@ -24,7 +24,7 @@ class FollowUserEntity extends FollowUser
             'timestamp' => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
             ],
         ];

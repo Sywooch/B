@@ -29,13 +29,13 @@ class QuestionInviteEntity extends QuestionInvite
             'operator'                 => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'create_by',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
                 ],
             ],
             'timestamp'                => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
             ],
             'question_invite_behavior' => [
@@ -63,16 +63,16 @@ class QuestionInviteEntity extends QuestionInvite
 
     private function checkBeforeHasInvited($user_id, $invited_user_id, $question_id)
     {
+        /* @var $model QuestionInviteEntity*/
         $model = self::find()->where(
             [
-                'create_by'       => $user_id,
+                'created_by'       => $user_id,
                 'invited_user_id' => $invited_user_id,
                 'question_id'     => $question_id,
             ]
         )->one();
 
         if ($model) {
-
             if ($model->status == self::STATUS_OVERTIME) {
                 $model->status = self::STATUS_PROGRESS;
                 $model->save();
@@ -111,4 +111,42 @@ class QuestionInviteEntity extends QuestionInvite
             }
         }
     }*/
+
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestion()
+    {
+        return $this->hasOne(QuestionEntity::className(), ['id' => 'question_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'created_by']);
+    }
+
+
+    public static function inviteToAnswerByNotice($invite_user_id, $be_invited_user_id, $question_id)
+    {
+        return Notifier::build()->from($invite_user_id)->to($be_invited_user_id)->notice(
+            NotificationEntity::TYPE_INVITE_ME_TO_ANSWER_QUESTION,
+            [
+                'question_id' => $question_id,
+            ]
+        );
+    }
+
+    public static function inviteToAnswerByEmail($question_id, $email)
+    {
+        $question_data = QuestionService::getQuestionByQuestionId($question_id);
+
+        if ($question_data) {
+            #todo 需要模板支持
+            return Notifier::build()->to($email)->email($question_data['subject'], '内容');
+        }
+    }
 }

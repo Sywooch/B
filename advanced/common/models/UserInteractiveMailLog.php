@@ -5,14 +5,12 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "user_has_qq_mail".
+ * This is the model class for table "user_interactive_mail_log".
  *
  * @property string $id
  * @property integer $user_id
  * @property string $email
- * @property string $create_at
- *
- * @property User $user
+ * @property string $created_at
  */
 class UserInteractiveMailLog extends \common\models\BaseActiveRecord
 {
@@ -31,7 +29,7 @@ class UserInteractiveMailLog extends \common\models\BaseActiveRecord
     {
         return [
             [['user_id', 'email'], 'required'],
-            [['user_id', 'create_at'], 'integer'],
+            [['user_id', 'created_at'], 'integer'],
             [['email'], 'string', 'max' => 128]
         ];
     }
@@ -45,15 +43,7 @@ class UserInteractiveMailLog extends \common\models\BaseActiveRecord
             'id' => 'ID',
             'user_id' => '用户ID',
             'email' => '邮件地址',
-            'create_at' => '创建时间',
+            'created_at' => '创建时间',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 }

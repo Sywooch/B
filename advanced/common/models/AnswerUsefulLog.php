@@ -5,20 +5,20 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "follow_user".
+ * This is the model class for table "answer_useful_log".
  *
  * @property integer $user_id
- * @property integer $follow_user_id
+ * @property string $answer_id
  * @property string $created_at
  */
-class FollowUser extends \common\models\BaseActiveRecord
+class AnswerUsefulLog extends \common\models\BaseActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'follow_user';
+        return 'answer_useful_log';
     }
 
     /**
@@ -27,8 +27,8 @@ class FollowUser extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'follow_user_id'], 'required'],
-            [['user_id', 'follow_user_id', 'created_at'], 'integer']
+            [['user_id', 'answer_id'], 'required'],
+            [['user_id', 'answer_id', 'created_at'], 'integer']
         ];
     }
 
@@ -39,7 +39,7 @@ class FollowUser extends \common\models\BaseActiveRecord
     {
         return [
             'user_id' => 'User ID',
-            'follow_user_id' => 'Follow User ID',
+            'answer_id' => 'Answer ID',
             'created_at' => '创建时间',
         ];
     }

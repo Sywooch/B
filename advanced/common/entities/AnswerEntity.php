@@ -16,7 +16,6 @@ use common\models\Answer;
 use Yii;
 use yii\db\ActiveRecord;
 
-
 class AnswerEntity extends Answer
 {
     const STATUS_FOLD = 'yes';
@@ -36,15 +35,15 @@ class AnswerEntity extends Answer
             'operator'        => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'create_by',
-                    ActiveRecord::EVENT_BEFORE_UPDATE   => 'modify_by',
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_by', 'updated_by'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_by',
                 ],
             ],
             'timestamp'       => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
-                    ActiveRecord::EVENT_BEFORE_UPDATE => 'modify_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_at',
                 ],
             ],
             'answer_behavior' => [
@@ -61,5 +60,58 @@ class AnswerEntity extends Answer
         } else {
             return false;
         }
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getQuestion()
+    {
+        return $this->hasOne(QuestionEntity::className(), ['id' => 'question_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreateBy()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'created_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAnswerComments()
+    {
+        return $this->hasMany(AnswerCommentEntity::className(), ['answer_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAnswerUsefulLogs()
+    {
+        return $this->hasMany(AnswerUsefulLogEntity::className(), ['answer_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUsers()
+    {
+        return $this->hasMany(UserEntity::className(), ['id' => 'user_id'])->viaTable(
+            'answer_useful_log',
+            [
+                'answer_id' => 'id',
+            ]
+        );
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAnswerVersions()
+    {
+        return $this->hasMany(AnswerVersionEntity::className(), ['answer_id' => 'id']);
     }
 }

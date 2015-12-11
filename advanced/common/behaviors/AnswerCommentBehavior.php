@@ -47,8 +47,8 @@ class AnswerCommentBehavior extends BaseBehavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
         $answer_data = AnswerService::getAnswerByAnswerId($this->owner->answer_id);
-        if ($answer_data && isset($answer_data['create_by'])) {
-            Notifier::build()->from($this->owner->create_by)->to($answer_data['create_by'])->notice(
+        if ($answer_data && isset($answer_data['created_by'])) {
+            Notifier::build()->from($this->owner->created_by)->to($answer_data['created_by'])->notice(
                 NotificationEntity::TYPE_MY_ANSWER_HAS_NEW_COMMENT,
                 [
                     'question_id' => $this->owner->answer_id,

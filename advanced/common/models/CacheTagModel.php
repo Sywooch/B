@@ -15,6 +15,6 @@ class CacheTagModel extends BaseCacheModel
     public $id;
     public $name;
     public $alias;
-    public $modify_at;
+    public $updated_at;
     public $count_follow = 0;
 }

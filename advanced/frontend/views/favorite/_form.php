@@ -18,9 +18,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'associate_id')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'create_at')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'created_at')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'create_by')->textInput() ?>
+    <?= $form->field($model, 'created_by')->textInput() ?>
 
     <?= $form->field($model, 'note')->textInput(['maxlength' => true]) ?>
 

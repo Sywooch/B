@@ -10,13 +10,11 @@ use Yii;
  * @property string $id
  * @property integer $sender
  * @property integer $receiver
- * @property integer $type_code
+ * @property string $notice_code
  * @property string $associative_data
+ * @property string $created_at
+ * @property string $updated_at
  * @property string $status
- * @property string $create_at
- * @property string $read_at
- *
- * @property User $receiver0
  */
 class Notification extends \common\models\BaseActiveRecord
 {
@@ -34,8 +32,8 @@ class Notification extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['sender', 'receiver', 'type_code', 'create_at', 'read_at'], 'integer'],
-            [['receiver', 'type_code'], 'required'],
+            [['sender', 'receiver', 'notice_code', 'created_at', 'updated_at'], 'integer'],
+            [['receiver', 'notice_code'], 'required'],
             [['status'], 'string'],
             [['associative_data'], 'string', 'max' => 255]
         ];
@@ -50,19 +48,11 @@ class Notification extends \common\models\BaseActiveRecord
             'id' => 'ID',
             'sender' => '发送方，为空则为系统通知',
             'receiver' => '接收通知的用户ID',
-            'type_code' => '通知类型代码',
+            'notice_code' => '通知类型代码',
             'associative_data' => '关联数据',
+            'created_at' => '创建时间',
+            'updated_at' => '查看时间',
             'status' => 'unread未读,  read已读',
-            'create_at' => '创建时间',
-            'read_at' => '查看时间',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getReceiver0()
-    {
-        return $this->hasOne(User::className(), ['id' => 'receiver']);
     }
 }

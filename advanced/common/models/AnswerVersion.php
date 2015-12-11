@@ -11,10 +11,8 @@ use Yii;
  * @property string $answer_id
  * @property string $content
  * @property string $reason
- * @property integer $create_by
- * @property string $create_at
- *
- * @property Answer $answer
+ * @property string $created_by
+ * @property string $created_at
  */
 class AnswerVersion extends \common\models\BaseActiveRecord
 {
@@ -32,8 +30,8 @@ class AnswerVersion extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['answer_id', 'content', 'create_by'], 'required'],
-            [['answer_id', 'create_by', 'create_at'], 'integer'],
+            [['answer_id', 'content'], 'required'],
+            [['answer_id', 'created_by', 'created_at'], 'integer'],
             [['content'], 'string'],
             [['reason'], 'string', 'max' => 255]
         ];
@@ -49,16 +47,8 @@ class AnswerVersion extends \common\models\BaseActiveRecord
             'answer_id' => 'Answer ID',
             'content' => 'Content',
             'reason' => 'Reason',
-            'create_by' => '创建用户',
-            'create_at' => '创建时间',
+            'created_by' => '创建用户',
+            'created_at' => '创建时间',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAnswer()
-    {
-        return $this->hasOne(Answer::className(), ['id' => 'answer_id']);
     }
 }

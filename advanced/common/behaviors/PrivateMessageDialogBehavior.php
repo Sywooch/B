@@ -67,7 +67,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
             $this->owner->private_message_id,
             Yii::$app->user->id,
             $this->owner->content,
-            $this->owner->create_at
+            $this->owner->created_at
         );
 
         Yii::trace(sprintf('updateLastActive: %s', $result), 'behavior');

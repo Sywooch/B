@@ -231,8 +231,8 @@ class AnswerController extends BaseController
                     '_answer_comment_item',
                     [
                         'answer_id'               => $id,
-                        'answer_create_user_id'   => $answer_data['create_by'],
-                        'question_create_user_id' => $question_data['create_by'],
+                        'answer_create_user_id'   => $answer_data['created_by'],
+                        'question_create_user_id' => $question_data['created_by'],
                         'data'                    => $comments_data,
                     ]
                 ),

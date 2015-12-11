@@ -15,14 +15,10 @@ use Yii;
  * @property string $sender_read_at
  * @property string $receiver_read_at
  * @property string $last_message
- * @property integer $active_at
- * @property integer $active_by
+ * @property integer $updated_at
+ * @property integer $updated_by
  * @property string $count_message
- * @property integer $create_at
- *
- * @property User $sender0
- * @property User $receiver0
- * @property PrivateMessageDialog[] $privateMessageDialogs
+ * @property integer $created_at
  */
 class PrivateMessage extends \common\models\BaseActiveRecord
 {
@@ -41,7 +37,7 @@ class PrivateMessage extends \common\models\BaseActiveRecord
     {
         return [
             [['sender', 'receiver'], 'required'],
-            [['sender', 'receiver', 'sender_read_at', 'receiver_read_at', 'active_at', 'active_by', 'count_message', 'create_at'], 'integer'],
+            [['sender', 'receiver', 'sender_read_at', 'receiver_read_at', 'updated_at', 'updated_by', 'count_message', 'created_at'], 'integer'],
             [['sender_remove', 'receiver_remove'], 'string'],
             [['last_message'], 'string', 'max' => 255]
         ];
@@ -61,34 +57,10 @@ class PrivateMessage extends \common\models\BaseActiveRecord
             'sender_read_at' => '发送方阅读时间',
             'receiver_read_at' => '接收方阅读时间',
             'last_message' => 'Last Message',
-            'active_at' => '最后活动时间',
-            'active_by' => '最后活动的用户ID',
+            'updated_at' => '最后活动时间',
+            'updated_by' => '最后活动的用户ID',
             'count_message' => '消息数',
-            'create_at' => '创建时间',
+            'created_at' => '创建时间',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSender0()
-    {
-        return $this->hasOne(User::className(), ['id' => 'sender']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getReceiver0()
-    {
-        return $this->hasOne(User::className(), ['id' => 'receiver']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPrivateMessageDialogs()
-    {
-        return $this->hasMany(PrivateMessageDialog::className(), ['private_message_id' => 'id']);
     }
 }

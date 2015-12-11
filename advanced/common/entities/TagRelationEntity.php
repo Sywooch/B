@@ -20,4 +20,20 @@ class TagRelationEntity extends TagRelation
     const TYPE_BROTHER = 'brother';
     const TYPE_CHILD = 'child';
     const TYPE_ALIAS = 'alias';
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTagId1()
+    {
+        return $this->hasOne(TagEntity::className(), ['id' => 'tag_id_1']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTagId2()
+    {
+        return $this->hasOne(TagEntity::className(), ['id' => 'tag_id_2']);
+    }
 }

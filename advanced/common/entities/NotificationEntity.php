@@ -99,7 +99,7 @@ class NotificationEntity extends Notification
         ];
     }*/
     
-    public static function addNotify($sender, array $receivers, $notice_code, $associative_data, $create_at)
+    public static function addNotify($sender, array $receivers, $notice_code, $associative_data, $created_at)
     {
         $data = [];
         
@@ -110,7 +110,7 @@ class NotificationEntity extends Notification
                 'notice_code'      => $notice_code,
                 'associative_data' => Json::encode($associative_data),
                 'status'           => self::STATUS_UNREAD,
-                'create_at'        => $create_at,
+                'created_at'        => $created_at,
             ];
         }
         
@@ -122,7 +122,7 @@ class NotificationEntity extends Notification
                 'notice_code',
                 'associative_data',
                 'status',
-                'create_at',
+                'created_at',
             ],
             $data
         );
@@ -175,7 +175,7 @@ class NotificationEntity extends Notification
         $user_id = $question_id = $tag_id = [];
 
         foreach ($notification as $index => $notice) {
-            $date_index = date('Y-m-d', $notice['create_at']);
+            $date_index = date('Y-m-d', $notice['created_at']);
             $mix_index = md5(
                 $notice['notice_code'] . $notice['associative_data']
             );
@@ -188,7 +188,7 @@ class NotificationEntity extends Notification
                     'template'  => self::getNoticeTemplateByCode($notice['notice_code']),
                     'data'      => $associative_data,
                     'status'    => self::STATUS_READ,
-                    'create_at' => $notice['create_at'],
+                    'created_at' => $notice['created_at'],
                 ];
             }
 
@@ -242,7 +242,7 @@ class NotificationEntity extends Notification
 
         foreach ($notices as $date_index => &$item) {
             foreach ($item as $mix_index => &$notice) {
-                //$new_index = date('Y-m-d', $notice['create_at']);
+                //$new_index = date('Y-m-d', $notice['created_at']);
                 if (preg_match_all('/\[(.+?)\]/i', $notice['template'], $symbols)) {
                     $finder = $symbols[0];
                     unset($symbols[0]);
@@ -310,5 +310,13 @@ class NotificationEntity extends Notification
         }
 
         return $result;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getReceiver()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'receiver']);
     }
 }

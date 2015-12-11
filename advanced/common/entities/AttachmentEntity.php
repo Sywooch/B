@@ -8,6 +8,7 @@
 
 namespace common\entities;
 
+use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\models\Attachment;
 use Yii;
@@ -24,10 +25,16 @@ class AttachmentEntity extends Attachment
     public function behaviors()
     {
         return [
+            'operator'  => [
+                'class'      => OperatorBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
+                ],
+            ],
             'timestamp' => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
             ],
         ];
@@ -49,7 +56,7 @@ class AttachmentEntity extends Attachment
                     'associate_id'   => $question_id,
                     'file_location'  => $file_path,
                     'file_size'      => $file_size,
-                    'create_by'      => $user_id,
+                    'created_by'     => $user_id,
                 ],
                 ''
             ) && $model->save()

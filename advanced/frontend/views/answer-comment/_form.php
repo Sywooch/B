@@ -16,13 +16,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'create_at')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'created_at')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'create_by')->textInput() ?>
+    <?= $form->field($model, 'created_by')->textInput() ?>
 
-    <?= $form->field($model, 'modify_at')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'updated_at')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'modify_by')->textInput() ?>
+    <?= $form->field($model, 'updated_by')->textInput() ?>
 
     <?= $form->field($model, 'is_anonymous')->dropDownList([ 'yes' => 'Yes', 'no' => 'No', ], ['prompt' => '']) ?>
 

@@ -8,7 +8,6 @@
 
 namespace common\entities;
 
-
 use common\behaviors\AnswerCommentBehavior;
 use common\behaviors\IpBehavior;
 use common\behaviors\OperatorBehavior;
@@ -30,15 +29,15 @@ class AnswerCommentEntity extends AnswerComment
             'operator'  => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'create_by',
-                    ActiveRecord::EVENT_BEFORE_UPDATE   => 'modify_by',
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_by', 'updated_by'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_by',
                 ],
             ],
             'timestamp' => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
-                    ActiveRecord::EVENT_BEFORE_UPDATE => 'active_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_at',
                 ],
             ],
             'ip'        => [
@@ -48,5 +47,21 @@ class AnswerCommentEntity extends AnswerComment
                 'class' => AnswerCommentBehavior::className(),
             ],
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAnswer()
+    {
+        return $this->hasOne(AnswerEntity::className(), ['id' => 'answer_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'created_by']);
     }
 }

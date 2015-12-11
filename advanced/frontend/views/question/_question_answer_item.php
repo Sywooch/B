@@ -28,22 +28,22 @@ use yii\widgets\LinkPager;
 
             <div class="post-offset">
                 <?= TemplateHelper::showUserAvatar(
-                        $item['create_by'],
+                        $item['created_by'],
                         24,
                         true,
                         $item['is_anonymous']
                 ) ?>
                 <strong><?= TemplateHelper::showUsername(
-                            $item['create_by'],
+                            $item['created_by'],
                             true,
                             $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS
                     ) ?></strong>
 
         <span class="ml10 text-muted">
             <?= TemplateHelper::showHumanTime(
-                    $item['modify_at'] ? $item['modify_at'] : $item['create_at']
+                    $item['updated_at'] ? $item['updated_at'] : $item['created_at']
             ) ?>
-            <?php if ($item['modify_at'] > 0): ?>
+            <?php if ($item['updated_at'] > 0): ?>
                 <?= Html::a(
                         '更新回答',
                         [
@@ -76,7 +76,7 @@ use yii\widgets\LinkPager;
                                 ]
                         ) ?>
                     </li>
-                    <? if ($item['create_by'] == Yii::$app->user->id): ?>
+                    <? if ($item['created_by'] == Yii::$app->user->id): ?>
                         <li><?= Html::a(
                                     '编辑',
                                     [
@@ -116,17 +116,17 @@ use yii\widgets\LinkPager;
                                                 [
                                                         'label'   => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '置为匿名',
                                                         'url'     => '/',
-                                                        'visible' => $item['create_by'] == Yii::$app->user->id,
+                                                        'visible' => $item['created_by'] == Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => '删除',
                                                         'url'     => '/',
-                                                        'visible' => $item['create_by'] == Yii::$app->user->id,
+                                                        'visible' => $item['created_by'] == Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => $item['is_fold'] == AnswerEntity::STATUS_FOLD ? '取消折叠' : '折叠',
                                                         'url'     => '/',
-                                                        'visible' => $item['create_by'] != Yii::$app->user->id,
+                                                        'visible' => $item['created_by'] != Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => '公众编辑',
@@ -135,12 +135,12 @@ use yii\widgets\LinkPager;
                                                                 'id'          => $item['id'],
                                                                 'question_id' => $question_id,
                                                         ],
-                                                        'visible' => $item['create_by'] != Yii::$app->user->id,
+                                                        'visible' => $item['created_by'] != Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => '举报',
                                                         'url'     => '#',
-                                                        'visible' => $item['create_by'] != Yii::$app->user->id,
+                                                        'visible' => $item['created_by'] != Yii::$app->user->id,
                                                 ],
                                         ],
                                 ]

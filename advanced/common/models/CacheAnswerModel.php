@@ -18,10 +18,10 @@ class CacheAnswerModel extends BaseCacheModel
     public $type;
     public $count_useful = 0;
     public $count_comment = 0;
-    public $create_at;
-    public $create_by;
-    public $modify_at;
-    public $modify_by;
+    public $created_at;
+    public $created_by;
+    public $updated_at;
+    public $updated_by;
     public $is_anonymous = 'no';
     public $is_fold = 'no';
 }

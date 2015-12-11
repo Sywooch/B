@@ -88,11 +88,11 @@ class UserEntity extends User
     
     public function getQuestions()
     {
-        return $this->hasMany(QuestionEntity::className(), ['create_by' => 'id']);
+        return $this->hasMany(QuestionEntity::className(), ['created_by' => 'id']);
     }
 
     public function getAnswers()
     {
-        return $this->hasMany(AnswerEntity::className(), ['create_by' => 'id']);
+        return $this->hasMany(AnswerEntity::className(), ['created_by' => 'id']);
     }
 }

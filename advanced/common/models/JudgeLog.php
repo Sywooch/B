@@ -11,8 +11,8 @@ use Yii;
  * @property string $judge_event_id
  * @property string $result
  * @property string $reason
- * @property string $create_at
- * @property integer $create_by
+ * @property string $created_at
+ * @property integer $created_by
  *
  * @property JudgeEvent $judgeEvent
  */
@@ -32,8 +32,8 @@ class JudgeLog extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['judge_event_id', 'create_by'], 'required'],
-            [['judge_event_id', 'create_at', 'create_by'], 'integer'],
+            [['judge_event_id', 'created_by'], 'required'],
+            [['judge_event_id', 'created_at', 'created_by'], 'integer'],
             [['result'], 'string'],
             [['reason'], 'string', 'max' => 255]
         ];
@@ -49,8 +49,8 @@ class JudgeLog extends \common\models\BaseActiveRecord
             'judge_event_id' => 'Judge Event ID',
             'result' => '结果',
             'reason' => '原因',
-            'create_at' => '创建时间',
-            'create_by' => '创建用户',
+            'created_at' => '创建时间',
+            'created_by' => '创建用户',
         ];
     }
 
@@ -60,14 +60,5 @@ class JudgeLog extends \common\models\BaseActiveRecord
     public function getJudgeEvent()
     {
         return $this->hasOne(JudgeEvent::className(), ['id' => 'judge_event_id']);
-    }
-
-    /**
-     * @inheritdoc
-     * @return JudgeLogQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new JudgeLogQuery(get_called_class());
     }
 }

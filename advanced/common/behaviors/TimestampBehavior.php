@@ -15,8 +15,8 @@ use yii\db\BaseActiveRecord;
 
 class TimestampBehavior extends AttributeBehavior
 {
-    public $createdAtAttribute = 'create_at';
-    public $updatedAtAttribute = 'modify_at';
+    public $createdAtAttribute = 'created_at';
+    public $updatedAtAttribute = 'updated_at';
     public $value;
 
 

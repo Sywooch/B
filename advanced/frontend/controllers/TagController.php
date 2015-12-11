@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\controllers\BaseController;
 use common\entities\TagEntity;
 use common\entities\TagSearchEntity;
+use common\services\FollowService;
 use common\services\QuestionService;
 use common\services\TagService;
 use Yii;
@@ -111,6 +112,9 @@ class TagController extends BaseController
         //
         $tag_relation = TagService::getRelateTag($id);
 
+        //print_r($tag_relation);exit;
+        $tag_who_good_at_in_30_days = FollowService::getUserWhichIsGoodAtThisTag($id, 10, 30);
+        $tag_who_good_at_in_365_days = FollowService::getUserWhichIsGoodAtThisTag($id, 10, 365);
 
         return $this->render(
             'view',
@@ -119,6 +123,8 @@ class TagController extends BaseController
                 'questions'    => $questions,
                 'pages'        => $pages,
                 'tag_relation' => $tag_relation,
+                'tag_who_good_at_in_30_days' => $tag_who_good_at_in_30_days,
+                'tag_who_good_at_in_365_days' => $tag_who_good_at_in_365_days,
             ]
         );
     }

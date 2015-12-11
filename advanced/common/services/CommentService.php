@@ -69,17 +69,9 @@ class CommentService extends BaseService
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['content']);
         }
 
-        $model = AnswerCommentEntity::findOne(['id' => $comment_id, 'create_at' => $user_id]);
+        $model = AnswerCommentEntity::findOne(['id' => $comment_id, 'created_at' => $user_id]);
 
-        if ($model->load(
-                [
-                    'content'      => $content,
-                    'is_anonymous' => $is_anonymous,
-                ],
-                ''
-            ) && $model->save()
-        ) {
-
+        if ($model->load(['content' => $content, 'is_anonymous' => $is_anonymous,], '') && $model->save()) {
             return true;
         } else {
             return false;

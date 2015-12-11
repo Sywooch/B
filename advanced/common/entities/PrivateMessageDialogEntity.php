@@ -28,13 +28,13 @@ class PrivateMessageDialogEntity extends PrivateMessageDialog
             'operator'                        => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'create_by',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
                 ],
             ],
             'timestamp'                       => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
             ],
             'ip_behavior'                     => [
@@ -66,5 +66,21 @@ class PrivateMessageDialogEntity extends PrivateMessageDialog
 
             return false;
         }
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrivateMessage()
+    {
+        return $this->hasOne(PrivateMessageEntity::className(), ['id' => 'private_message_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(UserEntity::className(), ['id' => 'created_by']);
     }
 }
