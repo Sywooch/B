@@ -134,7 +134,44 @@ app.comment = {
 };
 
 app.report = {
-    'show': function (report_object, associate_id) {
-        console.log(report_object, associate_id)
+    'show': function (report_url) {
+        bootbox.dialog({
+            title: "我要举报该问题，理由是：",
+            message: '\
+                <div data-role="base" id="report_form">\
+                       <ul class="list-unstyled" data-model="list">\
+                        <li class="radio"><label><input name="reason" type="radio" value="垃圾信息">垃圾信息：<span class="text-muted">广告、招聘、SEO 等推广方面的内容</span></label></li>\
+                        <li class="radio"><label><input name="reason" type="radio" value="违规内容">违规内容：<span class="text-muted">违反国家法律条款、涉及敏感信息泄露</span></label></li>\
+                        <li class="radio"><label><input name="reason" type="radio" value="不友善内容">不友善内容：<span class="text-muted">人身攻击、挑衅、辱骂等</span></label></li>\
+                        <li class="radio"><label><input name="reason" type="radio" value="内容质量差">内容质量差：<span class="text-muted">排版差，可读性差，需要编辑改进</span></label></li>\
+                        <li class="radio">\
+                        <label><input name="reason" type="radio" value="" data-do-supplement="supplement">以上选项都不是：<span class="text-muted">需要管理员介入，请补充说明</span></label>\
+                               <textarea id="supplement" autocomplete="false" class="form-control mt10 hide" rows="3" data-role="custom" name="custom" placeholder="请提供详尽的理由说明"></textarea>\
+                        </li>\
+                    </ul>\
+                </div>\
+        ',
+            onEscape: true,
+            backdrop: true,
+            buttons: {
+                success: {
+                    label: "提交举报",
+                    className: "btn-success",
+                    callback: function () {
+                        var option = $('#report_form input[name="reason"]:checked').val();
+                        var reason = $('#report_form textarea').val();
+                        //console.log(option, reason);
+                        $.post(report_url, {"option": option, "reason": reason}, function (response) {
+                            console.log(response);
+                            app.ajax.validate(response);
+                        });
+                    }
+                },
+            }
+        });
+
+        $(document).on('click', '[data-do-supplement]', function (e) {
+            $('#supplement').removeClass('hide')
+        });
     }
 }

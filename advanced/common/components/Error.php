@@ -18,6 +18,7 @@ class Error extends Object
 
     const TYPE_SYSTEM_NORMAL = 'system:normal';
     const TYPE_SYSTEM_PARAMS_IS_EMPTY = 'system:params_is_empty';
+    const TYPE_SYSTEM_PARAMS_IS_ERROR = 'system:params_is_error';
 
     /* user */
     const TYPE_USER_IS_NOT_EXIST = 'user:user_is_not_exist';
@@ -49,6 +50,7 @@ class Error extends Object
         'system'          => [
             'normal'          => [1000, true],
             'params_is_empty' => [1001, '参数：%s 不得为空!'],
+            'params_is_error' => [1002, '参数：%s 不正确!'],
         ],
         #2000
         'user'            => [
@@ -83,8 +85,8 @@ class Error extends Object
             'follow_too_much_question' => [10000, '你当前的关注问题数量已超过限制，最多%d个，请先清理一下。'],
         ],
         #11000
-        'favorite' => [
-            'category_delete_fail' => [11001, '当前收藏夹下还有 %d 个收藏项，请先删除这些收藏项。']
-        ]
+        'favorite'        => [
+            'category_delete_fail' => [11001, '当前收藏夹下还有 %d 个收藏项，请先删除这些收藏项。'],
+        ],
     ];
 }

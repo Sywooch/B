@@ -88,14 +88,15 @@ use yii\widgets\LinkPager;
             <?= Html::submitButton(
                     '评论',
                     [
-                            'class'        => 'btn btn-primary',
-                            'id'           => 'btn_ajax_answer',
-                            'data-href'    => Url::to(
+                            'class'               => 'btn btn-primary',
+                            'id'                  => 'btn_ajax_answer',
+                            'data-do-ajax-submit' => true,
+                            'data-href'           => Url::to(
                                     ['answer-comment/create', 'answer_id' => $answer_data['id']]
                             ),
-                            'data-on-done' => 'afterCommentCreateSuccess',
-                            'data-form-id' => 'comment-form-' . $answer_data['id'],
-                            'data-id'      => $answer_data['id'],
+                            'data-on-done'        => 'afterCommentCreateSuccess',
+                            'data-form-id'        => 'comment-form-' . $answer_data['id'],
+                            'data-id'             => $answer_data['id'],
                     ]
             ) ?><br>
         </div>

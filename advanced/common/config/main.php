@@ -98,7 +98,7 @@ return [
                     'maxLogFiles' => 20,
                     'logVars'     => [],
                 ],
-                'email'       => [
+                /*'email'       => [
                     'class'   => 'common\components\EmailTarget',
                     'levels'  => ['error'],
                     'mailer'  => 'mailer',
@@ -107,7 +107,7 @@ return [
                         'to'      => ['6202551@qq.com'],
                         'subject' => 'Log message',
                     ],
-                ],
+                ],*/
                 'trace'       => [
                     'class'       => 'yii\log\FileTarget',
                     'levels'      => ['trace'],
@@ -130,12 +130,11 @@ return [
                     'maxFileSize' => 1024 * 2,
                     'logVars'     => [],
                 ],
-                'domain'      => [
+                'error'      => [
                     'class'       => 'yii\log\FileTarget',
-                    'levels'      => ['trace'],
+                    'levels'      => ['error'],
                     'maxLogFiles' => 20,
-                    'categories'  => ['domain'],
-                    'logFile'     => '@app/runtime/logs/domain_' . date('Y-m-d') . '.log',
+                    'logFile'     => '@app/runtime/logs/error_' . date('Y-m-d') . '.log',
                     'maxFileSize' => 1024 * 2,
                     'logVars'     => [],
                 ],
@@ -148,42 +147,6 @@ return [
                     'maxFileSize' => 1024 * 2,
                     'logVars'     => [],
                 ],
-                /*[
-                    'class'       => 'yii\log\FileTarget',
-                    'levels'      => ['trace'],
-                    'maxLogFiles' => 20,
-                    'categories'  => ['behavior'],
-                    'logFile'     => '@app/runtime/logs/behavior/' . date('Y-m-d') . '.log',
-                    'maxFileSize' => 1024 * 2,
-                    'logVars'     => [],
-                ],
-                [
-                    'class'       => 'yii\log\FileTarget',
-                    'levels'      => ['trace'],
-                    'maxLogFiles' => 20,
-                    'categories'  => ['event'],
-                    'logFile'     => '@app/runtime/logs/event/' . date('Y-m-d') . '.log',
-                    'maxFileSize' => 1024 * 2,
-                    'logVars'     => [],
-                ],
-                [
-                    'class'       => 'yii\log\FileTarget',
-                    'levels'      => ['trace'],
-                    'maxLogFiles' => 20,
-                    'categories'  => ['notification'],
-                    'logFile'     => '@app/runtime/logs/notification/' . date('Y-m-d') . '.log',
-                    'maxFileSize' => 1024 * 2,
-                    'logVars'     => [],
-                ],
-                [
-                    'class'       => 'yii\log\FileTarget',
-                    'levels'      => ['trace'],
-                    'maxLogFiles' => 20,
-                    'categories'  => ['attachment'],
-                    'logFile'     => '@app/runtime/logs/attachment/' . date('Y-m-d') . '.log',
-                    'maxFileSize' => 1024 * 2,
-                    'logVars'     => [],
-                ],*/
             ],
         ],
         #邮件发送配置

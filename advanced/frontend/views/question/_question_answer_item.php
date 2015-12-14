@@ -21,7 +21,7 @@ use yii\widgets\LinkPager;
                     <!--答案投票-->
                     <?= $this->render(
                             '_question_answer_vote',
-                            ['id' => $item['id'], 'count_useful' => $item['count_useful']]
+                            ['id' => $item['id'], 'count_useful' => $item['count_like']-$item['count_hate']]
                     ) ?>
                 </div>
             </div>
@@ -92,12 +92,13 @@ use yii\widgets\LinkPager;
                                 '评论',
                                 'javascript:void(0);',
                                 [
-                                        'data-href'    => Url::to(
+                                        'data-do-ajax-submit' => true,
+                                        'data-href'           => Url::to(
                                                 ['answer/get-comment-list', 'id' => $item['id']]
                                         ),
-                                        'data-on-done' => 'afterShowCommentList',
-                                        'data-id'      => $item['id'],
-                                        'data-do'      => 'comment',
+                                        'data-on-done'        => 'afterShowCommentList',
+                                        'data-id'             => $item['id'],
+                                        'data-do'             => 'comment',
                                 ]
                         ) ?>
                         <?= ($item['count_comment'] > 0) ? sprintf(
@@ -116,17 +117,17 @@ use yii\widgets\LinkPager;
                                                 [
                                                         'label'   => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '置为匿名',
                                                         'url'     => '/',
-                                                        'visible' => $item['created_by'] == Yii::$app->user->id,
+                                                        'visible' => !Yii::$app->user->isGuest && $item['created_by'] == Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => '删除',
                                                         'url'     => '/',
-                                                        'visible' => $item['created_by'] == Yii::$app->user->id,
+                                                        'visible' => !Yii::$app->user->isGuest && $item['created_by'] == Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => $item['is_fold'] == AnswerEntity::STATUS_FOLD ? '取消折叠' : '折叠',
                                                         'url'     => '/',
-                                                        'visible' => $item['created_by'] != Yii::$app->user->id,
+                                                        'visible' => !Yii::$app->user->isGuest && $item['created_by'] != Yii::$app->user->id,
                                                 ],
                                                 [
                                                         'label'   => '公众编辑',
@@ -135,12 +136,18 @@ use yii\widgets\LinkPager;
                                                                 'id'          => $item['id'],
                                                                 'question_id' => $question_id,
                                                         ],
-                                                        'visible' => $item['created_by'] != Yii::$app->user->id,
+                                                        'visible' => !Yii::$app->user->isGuest && $item['created_by'] != Yii::$app->user->id,
                                                 ],
                                                 [
-                                                        'label'   => '举报',
-                                                        'url'     => '#',
-                                                        'visible' => $item['created_by'] != Yii::$app->user->id,
+                                                        'label'       => '举报',
+                                                        'url'         => 'javascritp:;',
+                                                        'visible'     => $item['created_by'] != Yii::$app->user->id,
+                                                        'linkOptions' => [
+                                                                'title'             => '举报回答',
+                                                                'data-do-report'    => true,
+                                                                'data-object'       => 'answer',
+                                                                'data-associate_id' => $item['id'],
+                                                        ],
                                                 ],
                                         ],
                                 ]

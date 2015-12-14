@@ -408,7 +408,7 @@ p {
     margin-top: 0
 }
 
-.widget-action--ver button {
+.widget-action--ver button,.widget-action--ver a {
     margin-right: 8px;
     min-width: 58px
 }

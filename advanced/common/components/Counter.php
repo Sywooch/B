@@ -135,7 +135,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function followQuestion($user_id)
+    public static function addUserFollowQuestion($user_id)
     {
         Yii::trace('增加用户问题关注数量', 'counter');
 
@@ -151,7 +151,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelFollowQuestion($user_id)
+    public static function cancelUserFollowQuestion($user_id)
     {
         Yii::trace('减少用户问题关注数量', 'counter');
 
@@ -376,6 +376,70 @@ class Counter extends BaseCounter
         return $result;
     }
 
+    public static function addQuestionLike($question_id)
+    {
+        Yii::trace('增加问题喜欢数量', 'counter');
+
+        $result = self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_like',
+            1
+        )->execute();
+
+        if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_like', 1);
+        }
+
+        return $result;
+    }
+
+    public static function cancelQuestionLike($question_id)
+    {
+        Yii::trace('减少问题喜欢数量', 'counter');
+
+        $result = self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_like',
+            -1
+        )->execute();
+
+        if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_like', -1);
+        }
+
+        return $result;
+    }
+
+    public static function addQuestionHate($question_id)
+    {
+        Yii::trace('增加问题讨厌数量', 'counter');
+
+        $result = self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_hate',
+            1
+        )->execute();
+
+        if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_hate', 1);
+        }
+
+        return $result;
+    }
+
+    public static function cancelQuestionHate($question_id)
+    {
+        Yii::trace('减少问题喜欢数量', 'counter');
+
+        $result = self::build()->set(QuestionEntity::tableName(), $question_id)->value(
+            'count_hate',
+            -1
+        )->execute();
+
+        if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_hate', -1);
+        }
+
+        return $result;
+    }
+
     //******************************************ANSWER***************************************************/
 
     public static function addAnswerComment($answer_id)
@@ -411,6 +475,74 @@ class Counter extends BaseCounter
         return $result;
     }
 
+    public static function addAnswerLike($answer_id)
+    {
+        Yii::trace('增加回答喜欢数量', 'counter');
+
+        $result = self::build()->set(AnswerEntity::tableName(), $answer_id)->value(
+            'count_like',
+            1
+        )->execute();
+
+        if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
+            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            Yii::$app->redis->hIncrBy($cache_key, 'count_like', 1);
+        }
+
+        return $result;
+    }
+
+    public static function cancelAnswerLike($answer_id)
+    {
+        Yii::trace('减少回答喜欢数量', 'counter');
+
+        $result = self::build()->set(AnswerEntity::tableName(), $answer_id)->value(
+            'count_like',
+            -1
+        )->execute();
+
+        if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
+            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            Yii::$app->redis->hIncrBy($cache_key, 'count_like', -1);
+        }
+
+        return $result;
+    }
+
+    public static function addAnswerHate($answer_id)
+    {
+        Yii::trace('增加回答讨厌数量', 'counter');
+
+        $result = self::build()->set(AnswerEntity::tableName(), $answer_id)->value(
+            'count_hate',
+            1
+        )->execute();
+
+        if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
+            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            Yii::$app->redis->hIncrBy($cache_key, 'count_hate', 1);
+        }
+
+        return $result;
+    }
+
+    public static function cancelAnswerHate($answer_id)
+    {
+        Yii::trace('减少回答讨厌数量', 'counter');
+
+        $result = self::build()->set(AnswerEntity::tableName(), $answer_id)->value(
+            'count_hate',
+            -1
+        )->execute();
+
+        if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
+            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            Yii::$app->redis->hIncrBy($cache_key, 'count_hate', -1);
+        }
+
+        return $result;
+    }
+
     //******************************************MESSAGE***************************************************/
 
 
@@ -440,19 +572,23 @@ class Counter extends BaseCounter
     {
         Yii::trace('增加收藏夹分类的收藏数量', 'counter');
 
-        return self::build()->set(
-            FavoriteCategoryEntity::tableName(),
-            $favorite_category_id
-        )->value('count_favorite', 1)->execute();
+        if ($favorite_category_id) {
+            return self::build()->set(
+                FavoriteCategoryEntity::tableName(),
+                $favorite_category_id
+            )->value('count_favorite', 1)->execute();
+        }
     }
 
     public static function removeFavorite($favorite_category_id)
     {
         Yii::trace('减少收藏夹分类的收藏数量', 'counter');
 
-        return self::build()->set(
-            FavoriteCategoryEntity::tableName(),
-            $favorite_category_id
-        )->value('count_favorite', -1)->execute();
+        if ($favorite_category_id) {
+            return self::build()->set(
+                FavoriteCategoryEntity::tableName(),
+                $favorite_category_id
+            )->value('count_favorite', -1)->execute();
+        }
     }
 }

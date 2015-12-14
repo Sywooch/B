@@ -207,9 +207,13 @@ class TestController extends BaseController
         var_dump(empty($result));*/
 
 
-        $result = QuestionService::getQuestionListByQuestionIds([2, 3, 4, 5]);
+        //$result = QuestionService::getQuestionListByQuestionIds([2, 3, 4, 5]);
+        $associate_id = 198;
+        $user_id = 61;
+        $cache_key = [REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
+        $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
 
-        //var_dump($result);
+        var_dump($cache_data);
     }
 
     public function actionUser()

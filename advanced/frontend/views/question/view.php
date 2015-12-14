@@ -36,9 +36,9 @@ $this->beginBlock('top-header');
         <div class="row">
             <div class="col-md-9">
                 <?= Breadcrumbs::widget(
-                        [
-                                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-                        ]
+                    [
+                        'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                    ]
                 ) ?>
 
                 <h1 class="title">
@@ -53,14 +53,14 @@ $this->beginBlock('top-header');
                     <?= TemplateHelper::showHumanTime($question_data['created_at']) ?>
                     <?php if ($question_data['updated_at'] > 0): ?>
                         <?= Html::a(
-                                '更新问题',
-                                [
-                                        'question-version/index',
-                                        'question_id' => $question_data['id'],
-                                ],
-                                [
-                                        'rel' => 'nofollow',
-                                ]
+                            '更新问题',
+                            [
+                                'question-version/index',
+                                'question_id' => $question_data['id'],
+                            ],
+                            [
+                                'rel' => 'nofollow',
+                            ]
                         ); ?>
                     <?php elseif ($question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS): ?>
                         匿名提问
@@ -72,28 +72,27 @@ $this->beginBlock('top-header');
             <div class="col-md-3">
                 <ul class="widget-action--ver list-unstyled">
                     <li>
-                        <button type="button"
-                                id="sideFollow"
-                                class="btn btn-success btn-sm"
-                                data-id="1010000003903942"
-                                data-do="follow"
-                                data-type="question"
-                                data-toggle="tooltip"
-                                data-placement="right"
-                                title=""
-                                data-original-title="关注后将获得更新提醒">关注
-                        </button>
-                        <strong><?= $question_data['count_follow'] ?></strong> 关注
+                        <!--问题关注-->
+                        <?= $this->render(
+                            '_question_follow',
+                            [
+                                'id'           => $question_data['id'],
+                                'count_follow' => $question_data['count_follow'],
+                                'is_followed'  => $is_followed,
+                            ]
+                        ) ?>
                     </li>
                     <li>
-                        <button type="button"
-                                id="sideBookmark"
-                                class="btn btn-default btn-sm"
-                                data-id="1010000003903942"
-                                data-type="question">收藏
-                        </button>
-                        <strong id="sideBookmarked"><?= $question_data['count_favorite'] ?></strong> 收藏，
-                        <strong class="no-stress"><?= $question_data['count_views'] ?></strong> 浏览
+                        <!--问题收藏-->
+                        <?= $this->render(
+                            '_question_favorite',
+                            [
+                                'id'             => $question_data['id'],
+                                'count_favorite' => $question_data['count_favorite'],
+                                'count_views'    => $question_data['count_views'],
+                                'is_favorite'    => $is_favorite,
+                            ]
+                        ) ?>
                     </li>
                 </ul>
             </div>
@@ -113,11 +112,12 @@ $this->endBlock();
                     <div class="widget-vote">
                         <!--问题投票-->
                         <?= $this->render(
-                                '_question_vote',
-                                [
-                                        'id'         => $question_data['id'],
-                                        'count_like' => $question_data['count_like'],
-                                ]
+                            '_question_vote',
+                            [
+                                'id'         => $question_data['id'],
+                                'count_vote' => $question_data['count_like'] - $question_data['count_hate'],
+                                'is_voted'   => $is_voted,
+                            ]
                         ) ?>
                     </div>
                     <!-- end .widget-vote -->
@@ -137,8 +137,8 @@ $this->endBlock();
                             <li><?= Html::a('链接', ['question/view', 'id' => $question_data['id']]); ?></li>
                             <? if ($question_data['created_by'] == Yii::$app->user->id): ?>
                                 <li><?= Html::a(
-                                            '编辑',
-                                            ['question/update', 'id' => $question_data['id']]
+                                        '编辑',
+                                        ['question/update', 'id' => $question_data['id']]
                                     ) ?></li>
                             <? endif; ?>
                             <li class="dropdown">
@@ -146,37 +146,44 @@ $this->endBlock();
                                    class="dropdown-toggle"
                                    data-toggle="dropdown">更多<b class="caret"></b></a>
                                 <?= Dropdown::widget(
-                                        [
-                                                'items' => [
-                                                        [
-                                                                'label'   => $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
-                                                                'url'     => '/',
-                                                                'visible' => $question_data['created_by'] ==
-                                                                        Yii::$app->user->id,
-                                                        ],
-                                                        [
-                                                                'label'   => '删除',
-                                                                'url'     => '/',
-                                                                'visible' => $question_data['created_by'] ==
-                                                                        Yii::$app->user->id,
-                                                        ],
-                                                        [
-                                                                'label'   => '公众编辑',
-                                                                'url'     => [
-                                                                        'question/common-edit',
-                                                                        'id' => $question_data['id'],
-                                                                ],
-                                                                'visible' => $question_data['created_by'] !=
-                                                                        Yii::$app->user->id,
-                                                        ],
-                                                        [
-                                                                'label'   => '举报',
-                                                                'url'     => '#',
-                                                                'visible' => $question_data['created_by'] !=
-                                                                        Yii::$app->user->id,
-                                                        ],
+                                    [
+                                        'items' => [
+                                            [
+                                                'label'   => $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
+                                                'url'     => '/',
+                                                'visible' => !Yii::$app->user->isGuest && $question_data['created_by'] == Yii::$app->user->id,
+                                            ],
+                                            [
+                                                'label'   => '删除',
+                                                'url'     => '/',
+                                                'visible' => !Yii::$app->user->isGuest && $question_data['created_by'] == Yii::$app->user->id,
+                                            ],
+                                            [
+                                                'label'   => '公众编辑',
+                                                'url'     => [
+                                                    'question/common-edit',
+                                                    'id' => $question_data['id'],
                                                 ],
-                                        ]
+                                                'visible' => !Yii::$app->user->isGuest && $question_data['created_by'] != Yii::$app->user->id,
+                                            ],
+                                            [
+                                                'label'       => '举报',
+                                                'url'         => 'javascritp:;',
+                                                'visible'     => $question_data['created_by'] != Yii::$app->user->id,
+                                                'linkOptions' => [
+                                                    'title'           => '举报问题',
+                                                    'data-do-report'  => true,
+                                                    'data-report_url' => Url::to(
+                                                        [
+                                                            'report/create',
+                                                            'object'       => 'question',
+                                                            'associate_id' => $question_data['id'],
+                                                        ]
+                                                    ),
+                                                ],
+                                            ],
+                                        ],
+                                    ]
                                 ); ?>
                             </li>
                         </ul>
@@ -200,29 +207,29 @@ $this->endBlock();
             <div class="widget-answers" id="answer-list">
                 <div class="btn-group pull-right" role="group">
                     <?= Html::a(
-                            '默认排序',
-                            [
-                                    'question/view',
-                                    'id'   => $question_data['id'],
-                                    'sort' => 'default',
-                            ],
-                            [
-                                    'id'    => 'sortby-rank',
-                                    'class' => 'btn btn-default btn-xs' . ($sort == 'default' ? ' active' : ''),
-                                    'rel'   => 'nofollow',
-                            ]
+                        '默认排序',
+                        [
+                            'question/view',
+                            'id'   => $question_data['id'],
+                            'sort' => 'default',
+                        ],
+                        [
+                            'id'    => 'sortby-rank',
+                            'class' => 'btn btn-default btn-xs' . ($sort == 'default' ? ' active' : ''),
+                            'rel'   => 'nofollow',
+                        ]
                     ); ?><?= Html::a(
-                            '时间排序',
-                            [
-                                    'question/view',
-                                    'id'   => $question_data['id'],
-                                    'sort' => 'created',
-                            ],
-                            [
-                                    'id'    => 'sortby-created',
-                                    'class' => 'btn btn-default btn-xs' . ($sort != 'default' ? ' active' : ''),
-                                    'rel'   => 'nofollow',
-                            ]
+                        '时间排序',
+                        [
+                            'question/view',
+                            'id'   => $question_data['id'],
+                            'sort' => 'created',
+                        ],
+                        [
+                            'id'    => 'sortby-created',
+                            'class' => 'btn btn-default btn-xs' . ($sort != 'default' ? ' active' : ''),
+                            'rel'   => 'nofollow',
+                        ]
                     ); ?>
 
                 </div>
@@ -231,33 +238,33 @@ $this->endBlock();
                     <?= $question_data['count_answer'] ?>个回答
                 </h2>
                 <?php Pjax::begin(
-                        [
-                                'id'              => 'answer-pjax',
-                                'enablePushState' => false,
-                                'linkSelector'    => '#answer-page',
-                                'timeout'         => 10000,
-                                'clientOptions'   => [
-                                        'container' => 'pjax-container-answer',
-                                ],
-                                'options'         => [
-                                        'id' => 'answer_item_area',
-                                ],
-                        ]
+                    [
+                        'id'              => 'answer-pjax',
+                        'enablePushState' => false,
+                        'linkSelector'    => '#answer-page',
+                        'timeout'         => 10000,
+                        'clientOptions'   => [
+                            'container' => 'pjax-container-answer',
+                        ],
+                        'options'         => [
+                            'id' => 'answer_item_area',
+                        ],
+                    ]
                 ); ?>
                 <?= $answer_item_html ?>
 
                 <?= $pages ? LinkPager::widget(
-                        [
-                                'pagination'  => $pages,
-                                'options'     => [
-                                        'id'    => 'answer-page',
-                                        'class' => 'pagination',
+                    [
+                        'pagination'  => $pages,
+                        'options'     => [
+                            'id'    => 'answer-page',
+                            'class' => 'pagination',
 
-                                ],
-                                'linkOptions' => [
-                                    //'rel' => 'nofollow',
-                                ],
-                        ]
+                        ],
+                        'linkOptions' => [
+                            //'rel' => 'nofollow',
+                        ],
+                    ]
                 ) : ''; ?>
                 <?php Pjax::end(); ?>
 
@@ -266,11 +273,11 @@ $this->endBlock();
             <!-- /.widget-answers -->
 
             <?= $this->render(
-                    '_question_answer_form',
-                    [
-                            'question_data' => $question_data,
-                            'answer_model'  => $answer_model,
-                    ]
+                '_question_answer_form',
+                [
+                    'question_data' => $question_data,
+                    'answer_model'  => $answer_model,
+                ]
             ); ?>
         </div>
         <!-- /.main -->
@@ -286,8 +293,8 @@ $this->endBlock();
                             <?php if ($question['id'] != $question_data['id']): ?>
                                 <li class="widget-links__item">
                                     <?= Html::a(
-                                            $question['subject'],
-                                            ['question/view', 'id' => $question['id']]
+                                        $question['subject'],
+                                        ['question/view', 'id' => $question['id']]
                                     ); ?>
                                     <?php if ($question['count_answer']): ?>
                                         <small class="text-muted">

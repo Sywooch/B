@@ -75,13 +75,14 @@ use common\entities\AnswerEntity;
                 <?= Html::submitButton(
                         '提交答案',
                         [
-                                'class'        => 'btn btn-primary',
-                                'id'           => 'btn_ajax_answer',
-                                'data-href'    => Url::to(
+                                'class'               => 'btn btn-primary',
+                                'id'                  => 'btn_ajax_answer',
+                                'data-do-ajax-submit' => true,
+                                'data-href'           => Url::to(
                                         ['answer/create', 'question_id' => $question_data['id']]
                                 ),
-                                'data-on-done' => 'afterAnswerCreateSuccess',
-                                'data-form-id' => 'answer_form',
+                                'data-on-done'        => 'afterAnswerCreateSuccess',
+                                'data-form-id'        => 'answer_form',
                         ]
                 ) ?>
                 <br>

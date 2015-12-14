@@ -54,7 +54,7 @@ jQuery(function ($) {
     });
 
     //ajax操作
-    $(document).on('click', '[data-href]', function (e) {
+    $(document).on('click', '[data-do-ajax-submit]', function (e) {
         var that = $(e.target);
         //评论
         if (that.data('do') == 'comment') {
@@ -90,7 +90,7 @@ jQuery(function ($) {
         //需要登陆
         if (that.is('a')) {
             e.preventDefault();
-            return app.report.show($(e.target).data('object'), $(e.target).data('associate_id'));
+            return app.report.show($(e.target).data('report_url'));
         }
     });
 

@@ -14,11 +14,14 @@ use common\entities\FollowQuestionEntity;
 use common\entities\FollowTagEntity;
 use common\entities\FollowTagPassiveEntity;
 use common\entities\FollowUserEntity;
+use common\exceptions\NotFoundModelException;
 use common\helpers\TimeHelper;
 use Yii;
 
 class FollowService extends BaseService
 {
+    const MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE = 1000;//当超过这个数时，关注此问题的人，不使用缓存
+
     ###################### FOLLOW QUESTION ######################
     /**
      * 添加关注
@@ -51,7 +54,7 @@ class FollowService extends BaseService
         )
         ) {
             $model = new FollowQuestionEntity;
-            $model->created_at = $user_id;
+            $model->user_id = $user_id;
             $model->follow_question_id = $question_id;
             if ($model->save()) {
                 $result = true;
@@ -69,13 +72,136 @@ class FollowService extends BaseService
     }
 
     /**
-     * 添加关注此问题的人
+     * 添加关注此问题的人的缓存
+     * 如果此问题关注人数已超过1000，则不使用缓存
      * @param $question_id
      * @param $user_id
+     * @return mixed
+     * @throws NotFoundModelException
      */
-    public static function addUserWhoFollowQuestion($question_id, $user_id)
+    public static function addUserOfFollowQuestionCache($question_id, $user_id)
     {
-        //todo
+        $question = QuestionService::getQuestionByQuestionId($question_id);
+
+        if (!$question) {
+            throw new NotFoundModelException('question', $question_id);
+        }
+
+        $insert_cache_data = [];
+        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $question_id];
+
+        if ($question['count_follow'] == 0) {
+            $insert_cache_data[] = $user_id;
+        } elseif ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
+            //小于1000，则使用缓存，大于，则不处理。
+
+
+            if (Yii::$app->redis->sCard($cache_key) == 0) {
+                //判断是否已存在集合缓存，不存在
+                $insert_cache_data = FollowQuestionEntity::find()->select(['user_id'])->where(
+                    [
+                        'follow_question_id' => $question_id,
+                    ]
+                )->column();
+
+            } else {
+                //存在则判断是否已存在集合中
+                $cache_data = Yii::$app->redis->sIsMember($cache_key, $user_id);
+                if (!$cache_data) {
+                    $insert_cache_data[] = $user_id;
+                }
+            }
+        }
+
+        if ($insert_cache_data) {
+            //添加到缓存中
+            $params = array_merge(
+                [$cache_key],
+                array_values($insert_cache_data)
+            );
+
+            return call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 移除关注此问题的用户
+     * @param $question_id
+     * @param $user_id
+     * @return bool|int
+     * @throws NotFoundModelException
+     */
+    public static function removeUserOfFollowQuestionCache($question_id, $user_id)
+    {
+        $question = QuestionService::getQuestionByQuestionId($question_id);
+
+        if (!$question) {
+            throw new NotFoundModelException('question', $question_id);
+        }
+
+        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $question_id];
+        if (Yii::$app->redis->sIsMember($cache_key, $user_id)) {
+            //存在则移除
+            return Yii::$app->redis->sRem($cache_key, $user_id);
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 判断用户是否已关注本问题
+     * @param $question_id
+     * @param $user_id
+     * @return bool
+     * @throws NotFoundModelException
+     */
+    public static function checkUseIsFollowedQuestion($question_id, $user_id)
+    {
+        $question = QuestionService::getQuestionByQuestionId($question_id);
+
+        if (!$question) {
+            throw new NotFoundModelException('question', $question_id);
+        }
+
+        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $question_id];
+
+        if ($question['count_follow']) {
+            $result = false;
+        } elseif ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
+            if (Yii::$app->redis->sCard($cache_key) == 0) {
+                //判断是否已存在集合缓存，不存在
+                $insert_cache_data = FollowQuestionEntity::find()->select(['user_id'])->where(
+                    [
+                        'follow_question_id' => $question_id,
+                    ]
+                )->column();
+
+                if ($insert_cache_data) {
+                    //添加到缓存中
+                    $params = array_merge(
+                        [$cache_key],
+                        array_values($insert_cache_data)
+                    );
+
+                    call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
+                }
+            }
+
+            //小于1000，则使用缓存
+            $result = Yii::$app->redis->sIsMember($cache_key, $user_id);
+        } else {
+            //大于则查询数据库
+            $result = FollowQuestionEntity::find()->where(
+                [
+                    'user_id'     => $user_id,
+                    'question_id' => $question_id,
+                ]
+            )->count(1);
+        }
+
+        return $result;
     }
 
     /**
@@ -91,6 +217,7 @@ class FollowService extends BaseService
         }
 
         #delete
+        /* @var $model FollowQuestionEntity */
         $model = FollowQuestionEntity::find()->where(
             [
                 'follow_question_id' => $question_id,
@@ -98,9 +225,8 @@ class FollowService extends BaseService
         )->filterWhere(['user_id' => $user_id])->all();
 
         foreach ($model as $follow_question) {
-            if ($follow_question->delete()) {
-                Counter::cancelFollowQuestion($follow_question->user_id);
-            }
+            //移除数据库数据
+            $follow_question->delete();
         }
 
         return true;
@@ -321,6 +447,7 @@ class FollowService extends BaseService
         }
 
         #delete
+        /* @var $model FollowUserEntity */
         $model = FollowUserEntity::find()->where(
             [
                 'follow_user_id' => $follow_user_ids,

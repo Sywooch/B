@@ -44,7 +44,7 @@ class PrivateMessageService extends BaseService
         /* @var $model PrivateMessageEntity */
         $model = PrivateMessageEntity::findOne(['id' => $id]);
         if (!$model) {
-            throw new NotFoundModelException('Private Message');
+            throw new NotFoundModelException('Private Message', $id);
         }
 
         if ($user_id == $model->sender) {
@@ -111,7 +111,7 @@ class PrivateMessageService extends BaseService
     {
         $model = PrivateMessageEntity::findOne(['id' => $id]);
         if (!$model) {
-            throw new NotFoundModelException('Private Message');
+            throw new NotFoundModelException('Private Message', $id);
         }
 
         if ($user_id == $model->sender) {

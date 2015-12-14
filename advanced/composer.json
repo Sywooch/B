@@ -71,7 +71,9 @@
     "vova07/yii2-imperavi-widget": "*",
     "yiidoc/yii2-redactor": "*",
     "yiier/yii2-backup": "*",
-    "yzalis/identicon": "*"
+    "yzalis/identicon": "*",
+    "chrisboulton/php-resque": "1.2.x",
+    "fabpot/goutte": "^3.1"
   },
   "require-dev": {
     "yiisoft/yii2-codeception": "*",

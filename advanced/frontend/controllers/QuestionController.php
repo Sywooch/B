@@ -6,17 +6,21 @@ use common\components\Counter;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerEntity;
+use common\entities\FavoriteEntity;
 use common\entities\FollowUserEntity;
 use common\entities\QuestionEntity;
 use common\entities\QuestionInviteEntity;
 use common\entities\UserEntity;
+use common\exceptions\NotFoundModelException;
 use common\exceptions\ParamsInvalidException;
 use common\helpers\ArrayHelper;
 use common\helpers\ServerHelper;
 use common\services\AnswerService;
+use common\services\FavoriteService;
 use common\services\FollowService;
 use common\services\QuestionService;
 use common\services\UserService;
+use common\services\VoteService;
 use Yii;
 use common\models\Question;
 use common\models\QuestionSearch;
@@ -42,11 +46,11 @@ class QuestionController extends BaseController
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only'  => ['create', 'update', 'Invite', 'vote'],
+                'only'  => ['create', 'update', 'Invite', 'vote', 'follow', 'favorite'],
                 'rules' => [
                     [
                         'allow'   => true,
-                        'actions' => ['create', 'update', 'Invite', 'vote'],
+                        'actions' => ['create', 'update', 'Invite', 'vote', 'follow', 'favorite'],
                         'roles'   => ['@'],
                     ],
                 ],
@@ -54,15 +58,90 @@ class QuestionController extends BaseController
         ];
     }
     
-    public function actionVote($id, $choose)
+    public function actionFollow($question_id)
+    {
+        $is_followed = FollowService::checkUseIsFollowedQuestion($question_id, Yii::$app->user->id);
+        if ($is_followed) {
+            FollowService::removeFollowQuestion($question_id, Yii::$app->user->id);
+        } else {
+            FollowService::addFollowQuestion($question_id, Yii::$app->user->id);
+        }
+
+        $question = QuestionService::getQuestionByQuestionId($question_id);
+
+        if (!$question) {
+            throw new NotFoundModelException('question', $question_id);
+        }
+
+        return $this->renderPartial(
+            '_question_follow',
+            [
+                'id'           => $question_id,
+                'count_follow' => $question['count_follow'],
+                'is_followed'  => !$is_followed,
+            ]
+        );
+    }
+
+    public function actionFavorite($question_id)
+    {
+        $is_favorite = FavoriteService::checkUseIsFavoriteQuestion($question_id, Yii::$app->user->id);
+
+        if ($is_favorite) {
+            FavoriteService::removeQuestionFavorite(
+                $question_id,
+                Yii::$app->user->id
+            );
+        } else {
+            FavoriteService::addFavoriteQuestion($question_id, Yii::$app->user->id);
+        }
+
+        $question = QuestionService::getQuestionByQuestionId($question_id);
+
+        if (!$question) {
+            throw new NotFoundModelException('question', $question_id);
+        }
+
+        return $this->renderPartial(
+            '_question_favorite',
+            [
+                'id'             => $question_id,
+                'count_favorite' => $question['count_favorite'],
+                'count_views'    => $question['count_views'],
+                'is_favorite'    => !$is_favorite,
+            ]
+        );
+    }
+
+    public function actionVote($id, $vote)
     {
 
+        $is_voted = VoteService::checkUseIsVoteQuestion($id, Yii::$app->user->id);
 
-        return $this->render(
+        if ($is_voted !== false) {
+            VoteService::updateQuestionVote(
+                $id,
+                Yii::$app->user->id,
+                $vote
+            );
+        } else {
+            VoteService::addQuestionVote($id, Yii::$app->user->id, $vote);
+        }
+
+
+        $question = QuestionService::getQuestionByQuestionId($id);
+
+        if ($question === false) {
+            throw new NotFoundModelException('question', $id);
+        }
+
+
+        return $this->renderPartial(
             '_question_vote',
             [
                 'id'         => $id,
-                'count_like' => 100,
+                'count_vote' => $question['count_like'] - $question['count_hate'],
+                'is_voted'   => $is_voted,
             ]
         );
     }
@@ -171,8 +250,7 @@ class QuestionController extends BaseController
     {
         $question_data = QuestionService::getQuestionByQuestionId($id);
         
-        if (ServerHelper::checkIsSpider() &&
-            !in_array(
+        if (ServerHelper::checkIsSpider() && !in_array(
                 $question_data['status'],
                 explode(',', QuestionEntity::STATUS_DISPLAY_FOR_SPIDER)
             )
@@ -219,7 +297,16 @@ class QuestionController extends BaseController
                 $sort
             );
         }
-        
+
+        //是否已关注此问题
+        $is_followed = FollowService::checkUseIsFollowedQuestion($id, Yii::$app->user->id);
+
+        //是否已收藏此问题
+        $is_favorite = FavoriteService::checkUseIsFavoriteQuestion($id, Yii::$app->user->id);
+
+        //是否已对问题投票
+        $is_voted = VoteService::checkUseIsVoteQuestion($id, Yii::$app->user->id);
+
         return $this->render(
             'view',
             [
@@ -235,6 +322,9 @@ class QuestionController extends BaseController
                 'sort'             => $sort,
                 'pages'            => $pages,
                 'similar_question' => $similar_question,
+                'is_followed'      => $is_followed,
+                'is_favorite'      => $is_favorite,
+                'is_voted'         => $is_voted,
             ]
         );
     }

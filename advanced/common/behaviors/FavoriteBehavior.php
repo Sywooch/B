@@ -8,16 +8,12 @@
 
 namespace common\behaviors;
 
-
 use common\components\Counter;
 use common\components\Updater;
-use common\entities\FavoriteCategoryEntity;
 use common\entities\FavoriteEntity;
 use common\helpers\TimeHelper;
 use common\services\FavoriteService;
-use yii\base\Behavior;
 use Yii;
-use yii\base\ModelEvent;
 use yii\db\ActiveRecord;
 
 /**
@@ -41,59 +37,66 @@ class FavoriteBehavior extends BaseBehavior
     public function afterFavoriteInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        //增加收藏缓存
+        if ($this->owner->type == FavoriteEntity::TYPE_QUESTION) {
+            //文章收藏
+            $result = FavoriteService::addUserOfFavoriteQuestionCache(
+                $this->owner->associate_id,
+                $this->owner->created_by
+            );
+            if ($result) {
+                //更新文章被收藏数
+                Counter::addQuestionFavorite($this->owner->associate_id);
+            }
 
-        $this->dealWithActiveFavorite();
-        $this->dealWithAddCounter();
+        }
+        //todo 其他类型的收藏
+
+        //更新收藏夹最后更新时间
+        Updater::updateFavoriteCategoryActiveAt(
+            $this->owner->favorite_category_id,
+            TimeHelper::getCurrentTime()
+        );
+
+        //更新收藏夹下的收藏数量
+        Counter::addFavorite($this->owner->favorite_category_id);
     }
 
     public function afterFavoriteDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $this->dealWithRemoveCounter();
+        //移除收藏缓存
+        if ($this->owner->type == FavoriteEntity::TYPE_QUESTION) {
+            //文章收藏
+            $result = FavoriteService::removeUserOfFavoriteQuestionCache(
+                $this->owner->associate_id,
+                $this->owner->created_by
+            );
+
+
+            if ($result) {
+                //更新文章被收藏数
+                Counter::cancelQuestionFavorite($this->owner->associate_id);
+            }
+
+        }
+
+        //todo 其他类型的收藏
+
+        //减少收藏夹下的收藏数量
+        Counter::removeFavorite($this->owner->favorite_category_id);
     }
 
-    public function afterFavoriteUpdate(ModelEvent $event)
+    public function afterFavoriteUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $old_favorite_category_id = $this->owner->getOldAttribute('favorite_category_id');
 
+        //如果是移动了收藏夹，需要调整收藏夹的收藏数量
         if ($old_favorite_category_id && $this->owner->favorite_category_id != $old_favorite_category_id) {
             $this->dealWithMoveCategory($old_favorite_category_id, $this->owner->favorite_category_id);
         }
     }
-
-    /**
-     * 设置收藏夹最后活动时间及最后一次收藏的内容
-     * @throws \common\exceptions\NotFoundModelException
-     * @throws \yii\base\Exception
-     */
-    private function dealWithActiveFavorite()
-    {
-        Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = Updater::updateFavoriteCategoryActiveAt(
-            $this->owner->favorite_category_id,
-            TimeHelper::getCurrentTime()
-        );
-
-        Yii::trace(sprintf('Update Favorite Result: %s', $result), 'behavior');
-    }
-
-    private function dealWithAddCounter()
-    {
-        Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = Counter::addFavorite($this->owner->favorite_category_id);
-
-        return $result;
-    }
-
-    private function dealWithRemoveCounter()
-    {
-        Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = Counter::removeFavorite($this->owner->favorite_category_id);
-
-        return $result;
-    }
-
 
     private function dealWithMoveCategory($from_favorite_category_id, $to_favorite_category_id)
     {

@@ -107,11 +107,11 @@ class Connection extends Component
 
     private function getKeyConfig()
     {
-        if (!isset($this->config[$this->cache_category]['server'])) {
+        if (!isset($this->config[$this->cache_category]) || !isset($this->config[$this->cache_category]['server'])) {
             throw new Exception("当前key：{$this->cache_category} 的server项未配置。");
         }
 
-        if (!isset($this->config[$this->cache_category]['expire'])) {
+        if (!isset($this->config[$this->cache_category]) || !isset($this->config[$this->cache_category]['expire'])) {
             throw new Exception("当前key：{$this->cache_category} 的expire项未配置。");
         }
 

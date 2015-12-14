@@ -67,12 +67,23 @@ class AnswerBehavior extends BaseBehavior
     public function afterAnswerInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        //通知
         $this->dealWithNotification(NotificationService::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER);
+
+        //关注问题，此方法必须在 dealWithAddCounter 前
         $this->dealWithAddQuestionFollow();
-        $this->dealWithAddCounter();
+
+        //更新问题的活跃时间
         $this->dealWithUpdateQuestionActiveTime();
+
+        //更新被动TAG
         $this->dealWithAddPassiveFollowTag();
+
+        //处理回答缓存
         $this->dealWithAnswerInsertCache();
+
+        //计数
+        $this->dealWithAddCounter();
     }
 
     
@@ -81,8 +92,9 @@ class AnswerBehavior extends BaseBehavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotification(NotificationService::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
         #不是本人，或本人，但创建时间已超过 ? 天
-        if (Yii::$app->user->id != $this->owner->created_by ||
-            $this->owner->created_at <= TimeHelper::getBeforeTime(1)
+        if (Yii::$app->user->id != $this->owner->created_by || $this->owner->created_at <= TimeHelper::getBeforeTime(
+                1
+            )
         ) {
             $this->dealWithNewAnswerVersion();
         }
@@ -203,7 +215,7 @@ class AnswerBehavior extends BaseBehavior
         AnswerService::updateAnswerCache(
             $this->owner->id,
             [
-                'content'   => $this->owner->content,
+                'content'    => $this->owner->content,
                 'updated_at' => TimeHelper::getCurrentTime(),
                 'updated_by' => Yii::$app->user->id,
             ]

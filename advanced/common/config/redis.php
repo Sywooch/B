@@ -31,8 +31,8 @@ const REDIS_KEY_USER_USERNAME_USERID = 'username_userid:string';
 const REDIS_KEY_USER_FRIENDS = 'user_friends:set';
 const REDIS_KEY_USER_FANS = 'user_fans:set';
 
-const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation:sset';#用户关注的标签
-const REDIS_KEY_USER_TAG_PASSIVE_RELATION = 'user_tag_passive_relation:sset';
+const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation:sset';#用户主动关注的标签
+const REDIS_KEY_USER_TAG_PASSIVE_RELATION = 'user_tag_passive_relation:sset';#用户被动关注的标签
 
 const REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS = 'user_is_good_at_tag_ids:string';#用户擅长的标签
 
@@ -50,16 +50,21 @@ const REDIS_KEY_QUESTION = 'question:hash';
 const REDIS_KEY_QUESTION_BLOCK = 'question_block:string';
 const REDIS_KEY_QUESTION_HAS_ANSWERED = 'question_has_answered:string';
 
-const REDIS_KEY_QUESTION_LIKE_USER_LIST = 'question_like_user_list:set';
-const REDIS_KEY_QUESTION_HATE_USER_LIST = 'question_hate_user_list:set';
-const REDIS_KEY_QUESTION_FOLLOW_USER_LIST = 'question_follow_user_list:set';
-const REDIS_KEY_QUESTION_FAVORITE_USER_LIST = 'question_favorite_user_list:set';
+const REDIS_KEY_QUESTION_LIKE_USER_LIST = 'question_like_user_list:set';//喜欢此问题的人
+const REDIS_KEY_QUESTION_HATE_USER_LIST = 'question_hate_user_list:set';//不喜欢此问题的人
+const REDIS_KEY_QUESTION_FOLLOW_USER_LIST = 'question_follow_user_list:set';//关注此问题的人
+const REDIS_KEY_QUESTION_FAVORITE_USER_LIST = 'question_favorite_user_list:set';//收藏此问题的人
 
 #ANSWER
 const REDIS_KEY_ANSWER = 'answer:hash';
 const REDIS_KEY_ANSWER_LIST = 'answer_list:string';
 const REDIS_KEY_ANSWER_LIST_TIME = 'answer_list_time:sset';
 const REDIS_KEY_ANSWER_LIST_SCORE = 'answer_list_score:sset';
+
+#VOTE
+const REDIS_KEY_QUESTION_VOTE_USER_LIST = 'vote_question_user_list:sset';//投票此问题的人
+const REDIS_KEY_ANSWER_VOTE_USER_LIST = 'vote_answer_user_list:sset';//投票此答案的人
+const REDIS_KEY_ARTICLE_VOTE_USER_LIST = 'vote_article_user_list:sset';//投票此文章的人
 
 /*系统级缓存*/
 const REDIS_KEY_SESSION = 'session:string';
@@ -239,25 +244,25 @@ return [
     REDIS_KEY_QUESTION_LIKE_USER_LIST     => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
-        'serializer' => Redis::SERIALIZER_IGBINARY,
+        'serializer' => Redis::SERIALIZER_NONE,
     ],
     #不喜欢该问题的人
     REDIS_KEY_QUESTION_HATE_USER_LIST     => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
-        'serializer' => Redis::SERIALIZER_IGBINARY,
+        'serializer' => Redis::SERIALIZER_NONE,
     ],
     #关注此问题的人
     REDIS_KEY_QUESTION_FOLLOW_USER_LIST   => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
-        'serializer' => Redis::SERIALIZER_IGBINARY,
+        'serializer' => Redis::SERIALIZER_NONE,
     ],
     #收藏此问题的人
     REDIS_KEY_QUESTION_FAVORITE_USER_LIST => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
-        'serializer' => Redis::SERIALIZER_IGBINARY,
+        'serializer' => Redis::SERIALIZER_NONE,
     ],
     /*------------- answer ---------------*/
     REDIS_KEY_ANSWER                      => [
@@ -279,5 +284,21 @@ return [
         'server'     => $servers['master'],
         'expire'     => 86400,
         'serializer' => Redis::SERIALIZER_IGBINARY,
+    ],
+    /*------------- vote ---------------*/
+    REDIS_KEY_QUESTION_VOTE_USER_LIST     => [
+        'server'     => $servers['master'],
+        'expire'     => 86400,
+        'serializer' => Redis::SERIALIZER_NONE,
+    ],
+    REDIS_KEY_ANSWER_VOTE_USER_LIST       => [
+        'server'     => $servers['master'],
+        'expire'     => 86400,
+        'serializer' => Redis::SERIALIZER_NONE,
+    ],
+    REDIS_KEY_ARTICLE_VOTE_USER_LIST      => [
+        'server'     => $servers['master'],
+        'expire'     => 86400,
+        'serializer' => Redis::SERIALIZER_NONE,
     ],
 ];
