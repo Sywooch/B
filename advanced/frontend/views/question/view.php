@@ -114,9 +114,9 @@ $this->endBlock();
                         <?= $this->render(
                             '_question_vote',
                             [
-                                'id'         => $question_data['id'],
-                                'count_vote' => $question_data['count_like'] - $question_data['count_hate'],
-                                'is_voted'   => $is_voted,
+                                'id'          => $question_data['id'],
+                                'count_vote'  => $question_data['count_like'] - $question_data['count_hate'],
+                                'vote_status' => $vote_status,
                             ]
                         ) ?>
                     </div>

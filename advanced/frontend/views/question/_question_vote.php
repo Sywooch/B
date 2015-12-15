@@ -11,6 +11,7 @@ use yii\widgets\Pjax;
 
 /** @var $count_vote */
 /** @var $id */
+/** @var $vote_status */
 ?>
 
 <?php Pjax::begin(
@@ -23,7 +24,7 @@ use yii\widgets\Pjax;
     '<span class="sr-only">问题对人有帮助，内容完整，我也想知道答案</span>',
     ['question/vote', 'id' => $id, 'vote' => VoteEntity::VOTE_YES],
     [
-        'class'           => 'like' . ($is_voted === 0 ? ' active' : ''),
+        'class'           => 'like' . ($vote_status == VoteEntity::VOTE_YES ? ' active' : ''),
         'title'           => '问题对人有帮助，内容完整，我也想知道答案',
         'data-need-login' => true,
     ]
@@ -33,7 +34,7 @@ use yii\widgets\Pjax;
     '<span class="sr-only">问题没有实际价值，缺少关键内容，没有改进余地</span>',
     ['question/vote', 'id' => $id, 'vote' => VoteEntity::VOTE_NO],
     [
-        'class'           => 'hate' . ($is_voted === 1 ? ' active' : ''),
+        'class'           => 'hate' . ($vote_status == VoteEntity::VOTE_NO ? ' active' : ''),
         'title'           => '问题没有实际价值，缺少关键内容，没有改进余地',
         'data-need-login' => true,
     ]

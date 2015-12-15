@@ -185,7 +185,7 @@ class AnswerService extends BaseService
             $cache_data = AnswerEntity::find()->select('id')->where(
                 [
                     'question_id' => $question_id,
-                    'created_by'   => $user_id,
+                    'created_by'  => $user_id,
                 ]
             )->scalar();
 
@@ -449,9 +449,9 @@ class AnswerService extends BaseService
             if ($answer) {
                 $model = new AnswerVersionEntity;
                 $data = [
-                    'answer_id' => $answer->id,
-                    'content'   => $answer->content,
-                    'reason'    => null,
+                    'answer_id'  => $answer->id,
+                    'content'    => $answer->content,
+                    'reason'     => null,
                     'created_by' => $answer->created_by,
                     'created_at' => $answer->created_at,
                 ];

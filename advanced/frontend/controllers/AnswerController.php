@@ -5,9 +5,11 @@ namespace frontend\controllers;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerCommentEntity;
+use common\exceptions\NotFoundModelException;
 use common\services\AnswerService;
 use common\services\CommentService;
 use common\services\QuestionService;
+use common\services\VoteService;
 use Yii;
 use common\entities\AnswerEntity;
 use yii\data\ActiveDataProvider;
@@ -254,14 +256,34 @@ class AnswerController extends BaseController
         }
     }
 
-    public function actionVote($id, $choose)
+    public function actionVote($id, $vote)
     {
-        return $this->render(
+        $vote_status = VoteService::getUseAnswerVoteStatus($id, Yii::$app->user->id);
+
+        if ($vote_status !== false) {
+            VoteService::updateAnswerVote(
+                $id,
+                Yii::$app->user->id,
+                $vote
+            );
+        } else {
+            VoteService::addAnswerVote($id, Yii::$app->user->id, $vote);
+        }
+
+        $answer = AnswerService::getAnswerByAnswerId($id);
+
+        if ($answer === false) {
+            throw new NotFoundModelException('answer', $id);
+        }
+
+        return $this->renderPartial(
             '/question/_question_answer_vote',
             [
-                'id'         => $id,
-                'count_useful' => 100,
+                'id'          => $id,
+                'count_vote'  => $answer['count_like'] - $answer['count_hate'],
+                'vote_status' => $vote,
             ]
         );
+
     }
 }

@@ -18,6 +18,7 @@ use common\entities\AnswerEntity;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserEntity;
+use common\entities\VoteEntity;
 use common\helpers\AtHelper;
 use common\helpers\TemplateHelper;
 use common\models\xunsearch\QuestionSearch;
@@ -27,6 +28,7 @@ use common\services\NotificationService;
 use common\services\QuestionService;
 use common\services\TagService;
 use common\services\UserService;
+use common\services\VoteService;
 use console\modules\crawler\controllers\crawlers\CrawlerBase;
 use Yii;
 use common\controllers\BaseController;
@@ -127,18 +129,18 @@ class TestController extends BaseController
         var_dump($result->result);
         exit;
 
-       /* $result = Notifier::build()->sync(false)->from(1)->to([1, 2])->notice(
-            NotificationService::TYPE_ANSWER_AT_ME,
-            1
-        );
+        /* $result = Notifier::build()->sync(false)->from(1)->to([1, 2])->notice(
+             NotificationService::TYPE_ANSWER_AT_ME,
+             1
+         );
 
-        var_dump($result);
+         var_dump($result);
 
-        $data = Yii::$app->redis->lRange([REDIS_KEY_NOTIFIER, NotificationService::TYPE_ANSWER_AT_ME], 0, 10);
+         $data = Yii::$app->redis->lRange([REDIS_KEY_NOTIFIER, NotificationService::TYPE_ANSWER_AT_ME], 0, 10);
 
-        print_r($data);
+         print_r($data);
 
-        exit;*/
+         exit;*/
 
         //$notifier = Notifier::build()->sync(false)->to(1)->email('a', 'b');
     }
@@ -480,7 +482,13 @@ class TestController extends BaseController
 
     public function actionAutoLogin()
     {
-        $this->autoLoginById(rand(1, UserService::MAX_OFFICIAL_ACCOUNT_ID));
+        $user_id = rand(1, UserService::MAX_OFFICIAL_ACCOUNT_ID);
+        $result = $this->autoLoginById($user_id);
+
+        if ($result) {
+            $user = UserService::getUsernameByUserId($user_id);
+            echo sprintf('当前登陆用户[id=>%s, username=>%s]', $user_id, $user);
+        }
     }
 
     public function actionTransaction()
@@ -517,6 +525,24 @@ class TestController extends BaseController
         var_dump($question->subject);
 
 
+    }
+
+    public function actionVote()
+    {
+        /*$vote = VoteEntity::find()->select(['vote'])->where(
+            [
+                'type'         => 'question',
+                'associate_id' => 198,
+                'created_by'   => 2282,
+            ]
+        )->scalar();
+
+        var_dump($vote);*/
+        $type = 'question';
+        $associate_id = 198;
+        $user_id = 347;
+        $vote = VoteService::getUseVoteStatus($type, $associate_id, $user_id);
+        var_dump($vote);
     }
 }
 

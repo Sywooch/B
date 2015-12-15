@@ -9,12 +9,9 @@
 namespace common\services;
 
 use common\components\Error;
-use common\entities\FavoriteEntity;
-use common\entities\PrivateMessageEntity;
 use common\entities\VoteEntity;
 use common\exceptions\NotFoundModelException;
 use Yii;
-use yii\helpers\Json;
 
 class VoteService extends BaseService
 {
@@ -22,12 +19,28 @@ class VoteService extends BaseService
     
     public static function addQuestionVote($question_id, $user_id, $vote)
     {
-        if (!$question_id || !$user_id || !$vote) {
-            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_ERROR, ['question_id, user_id, vote']);
+        return self::addVote(VoteEntity::TYPE_QUESTION, $question_id, $user_id, $vote);
+    }
+
+    public static function addAnswerVote($answer_id, $user_id, $vote)
+    {
+        return self::addVote(VoteEntity::TYPE_ANSWER, $answer_id, $user_id, $vote);
+    }
+
+    public static function addArticleVote($question_id, $user_id, $vote)
+    {
+        return self::addVote(VoteEntity::TYPE_ARTICLE, $question_id, $user_id, $vote);
+    }
+
+    public static function addVote($type, $associate_id, $user_id, $vote)
+    {
+        if (!$associate_id || !$user_id || !$vote) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_ERROR, ['associate_id, user_id, vote']);
         }
+
         $model = new VoteEntity();
-        $model->type = VoteEntity::TYPE_QUESTION;
-        $model->associate_id = $question_id;
+        $model->type = $type;
+        $model->associate_id = $associate_id;
         $model->created_by = $user_id;
         $model->vote = $vote;
 
@@ -42,20 +55,35 @@ class VoteService extends BaseService
 
     public static function updateQuestionVote($question_id, $user_id, $vote)
     {
-        if (!$question_id || !$user_id) {
-            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_ERROR, ['question_id, user_id']);
+        return self::updateVote(VoteEntity::TYPE_QUESTION, $question_id, $user_id, $vote);
+    }
+
+    public static function updateAnswerVote($answer_id, $user_id, $vote)
+    {
+        return self::updateVote(VoteEntity::TYPE_ANSWER, $answer_id, $user_id, $vote);
+    }
+
+    public static function updateArticleVote($question_id, $user_id, $vote)
+    {
+        return self::updateVote(VoteEntity::TYPE_ARTICLE, $question_id, $user_id, $vote);
+    }
+
+    public static function updateVote($type, $associate_id, $user_id, $vote)
+    {
+        if (!$associate_id || !$user_id) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_ERROR, ['associate_id, user_id']);
         }
         /* @var $model VoteEntity */
         $model = VoteEntity::find()->where(
             [
-                'type'         => VoteEntity::TYPE_QUESTION,
-                'associate_id' => $question_id,
+                'type'         => $type,
+                'associate_id' => $associate_id,
                 'created_by'   => $user_id,
             ]
         )->one();
 
         if (!$model) {
-            throw new NotFoundModelException('vote', implode(':', [$question_id, $user_id, VoteEntity::TYPE_QUESTION]));
+            throw new NotFoundModelException('vote', implode(':', [$associate_id, $user_id, $type]));
         }
 
         //var_dump($model->vote , $vote);exit;
@@ -71,6 +99,7 @@ class VoteService extends BaseService
 
         return true;
     }
+
 
     public static function addUserOfVoteQuestionCache($associate_id, $user_id, $vote)
     {
@@ -197,26 +226,25 @@ class VoteService extends BaseService
         return Yii::$app->redis->zRem($cache_key, $user_id);
     }
 
-    public static function checkUseIsVoteQuestion($associate_id, $user_id)
+    public static function getUseQuestionVoteStatus($associate_id, $user_id)
     {
-        return self::checkUseIsVote(VoteEntity::TYPE_QUESTION, $associate_id, $user_id);
+        return self::getUseVoteStatus(VoteEntity::TYPE_QUESTION, $associate_id, $user_id);
     }
 
-    public static function checkUseIsVoteAnswer($associate_id, $user_id)
+    public static function getUseAnswerVoteStatus($associate_id, $user_id)
     {
-        return self::checkUseIsVote(VoteEntity::TYPE_ANSWER, $associate_id, $user_id);
+        return self::getUseVoteStatus(VoteEntity::TYPE_ANSWER, $associate_id, $user_id);
     }
 
     /**
-     * todo 此方法返回有值导致是否已投票出错
      * @param $type
      * @param $associate_id
      * @param $user_id
-     * @return bool|int false 没有投票，1:反对票 0:赞成票
+     * @return bool|int false:没有投票; 1:反对票; 0:赞成票
      * @throws NotFoundModelException
      * @throws \Exception
      */
-    public static function checkUseIsVote($type, $associate_id, $user_id)
+    public static function getUseVoteStatus($type, $associate_id, $user_id)
     {
         switch ($type) {
             case VoteEntity::TYPE_QUESTION:
@@ -238,60 +266,64 @@ class VoteService extends BaseService
         if ($model['count_like'] == 0 && $model['count_hate'] == 0) {
             $result = false;
         } elseif ($model['count_like'] + $model['count_hate'] < self::MAX_VOTE_COUNT_BY_USING_CACHE) {
+            //小于1000，则使用缓存。
             if (Yii::$app->redis->zCard($cache_key) == 0) {
-                //判断是否已存在集合缓存，不存在
+                //判断集合缓存是否已存在，不存在，创建缓存
                 $data = VoteEntity::find()->select(['created_by', 'vote'])->where(
                     [
                         'type'         => $type,
                         'associate_id' => $associate_id,
                     ]
                 )->asArray()->all();
+
                 $insert_cache_data = [];
                 foreach ($data as $item) {
                     $insert_cache_data[$item['created_by']] = $item['vote'];
                 }
 
+                //先添加到缓存
                 if ($insert_cache_data) {
-                    //先添加到缓存
-                    $score_params = [
+                    $sset_params = [
                         $cache_key,
                     ];
 
-                    foreach ($insert_cache_data as $user_id => $vote) {
+                    foreach ($insert_cache_data as $created_by => $vote) {
                         if ($vote == VoteEntity::VOTE_YES) {
                             $vote = 0;
                         } else {
                             $vote = 1;
                         }
-                        $score_params[] = $vote;
-                        $score_params[] = $user_id;
+                        $sset_params[] = $vote;
+                        $sset_params[] = $created_by;
                     }
 
-                    call_user_func_array([Yii::$app->redis, 'zAdd'], $score_params);
+                    call_user_func_array([Yii::$app->redis, 'zAdd'], $sset_params);
                 }
             }
 
-            //小于1000，则使用缓存。zScore 结果为false则为不存在此缓存
-            $result = Yii::$app->redis->zScore($cache_key, $user_id);
+            //zScore 结果为false则为不存在此缓存
+            $vote = Yii::$app->redis->zScore($cache_key, $user_id);
+
+            if ($vote === false) {
+                $result = false;
+            } else {
+                $result = ($vote == 0) ? VoteEntity::VOTE_YES : VoteEntity::VOTE_NO;
+            }
         } else {
             //大于则查询数据库
-            $vote = VoteEntity::find()->select(['vote'])->where(
+            $vote = VoteEntity::find()->select('vote')->where(
                 [
                     'type'         => $type,
                     'associate_id' => $associate_id,
                     'created_by'   => $user_id,
                 ]
-            )->column(1);
+            )->scalar();
 
             if ($vote) {
-                $result = ($vote == VoteEntity::VOTE_YES) ? 0 : 1;
+                $result = $vote;
             } else {
                 $result = false;
             }
-        }
-
-        if ($result !== false) {
-            $result = (int)$result;
         }
 
         return $result;

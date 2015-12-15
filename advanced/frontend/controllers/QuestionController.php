@@ -115,10 +115,9 @@ class QuestionController extends BaseController
 
     public function actionVote($id, $vote)
     {
+        $vote_status = VoteService::getUseQuestionVoteStatus($id, Yii::$app->user->id);
 
-        $is_voted = VoteService::checkUseIsVoteQuestion($id, Yii::$app->user->id);
-
-        if ($is_voted !== false) {
+        if ($vote_status !== false) {
             VoteService::updateQuestionVote(
                 $id,
                 Yii::$app->user->id,
@@ -139,9 +138,9 @@ class QuestionController extends BaseController
         return $this->renderPartial(
             '_question_vote',
             [
-                'id'         => $id,
-                'count_vote' => $question['count_like'] - $question['count_hate'],
-                'is_voted'   => $is_voted,
+                'id'          => $id,
+                'count_vote'  => $question['count_like'] - $question['count_hate'],
+                'vote_status' => $vote,
             ]
         );
     }
@@ -298,6 +297,19 @@ class QuestionController extends BaseController
             );
         }
 
+        foreach ($answer_data as &$answer) {
+            if (!Yii::$app->user->isGuest) {
+                $answer['vote_status'] = VoteService::getUseAnswerVoteStatus($answer['id'], Yii::$app->user->id);
+            } else {
+                $answer['vote_status'] = false;
+            }
+
+            $answer['count_vote'] = $answer['count_like'] - $answer['count_hate'];
+        }
+
+        /*print_r($answer_data);
+        exit;*/
+
         //是否已关注此问题
         $is_followed = FollowService::checkUseIsFollowedQuestion($id, Yii::$app->user->id);
 
@@ -305,7 +317,8 @@ class QuestionController extends BaseController
         $is_favorite = FavoriteService::checkUseIsFavoriteQuestion($id, Yii::$app->user->id);
 
         //是否已对问题投票
-        $is_voted = VoteService::checkUseIsVoteQuestion($id, Yii::$app->user->id);
+        $vote_status = VoteService::getUseQuestionVoteStatus($id, Yii::$app->user->id);
+
 
         return $this->render(
             'view',
@@ -324,7 +337,7 @@ class QuestionController extends BaseController
                 'similar_question' => $similar_question,
                 'is_followed'      => $is_followed,
                 'is_favorite'      => $is_favorite,
-                'is_voted'         => $is_voted,
+                'vote_status'      => $vote_status,
             ]
         );
     }
