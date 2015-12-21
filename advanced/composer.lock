@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "52859dce1d018071cda62ec9e140de65",
-    "content-hash": "5858c558cff73e1d6feb840520ab4df4",
+    "hash": "a0c8321ce6fda3be6d1d9960ae303e1e",
+    "content-hash": "52b674fe65ff3054af32446b86877f18",
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
@@ -260,6 +260,71 @@
                 "yii2"
             ],
             "time": "2015-03-20 18:56:41"
+        },
+        {
+            "name": "2amigos/yii2-taggable-behavior",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/2amigos/yii2-taggable-behavior.git",
+                "reference": "15480c08e24858a6abea0739bf0fb9867038b294"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/2amigos/yii2-taggable-behavior/zipball/15480c08e24858a6abea0739bf0fb9867038b294",
+                "reference": "15480c08e24858a6abea0739bf0fb9867038b294",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "~2.0.0"
+            },
+            "require-dev": {
+                "phpunit/dbunit": "~1.0",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "asset-installer-paths": {
+                    "npm-asset-library": "vendor/npm",
+                    "bower-asset-library": "vendor/bower"
+                },
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "dosamigos\\taggable\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "2amigOS! Consulting Group",
+                    "email": "hola@2amigos.us",
+                    "homepage": "http://2amigos.us",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Alexander Kochetov",
+                    "email": "creocoder@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "The taggable behavior for the Yii framework",
+            "homepage": "https://github.com/2amigos/yii2-taggable-behavior",
+            "keywords": [
+                "2amigos",
+                "Behavior",
+                "tags",
+                "yii",
+                "yii 2",
+                "yii2"
+            ],
+            "time": "2015-04-30 22:16:31"
         },
         {
             "name": "almasaeed2010/adminlte",
@@ -4942,28 +5007,31 @@
         },
         {
             "name": "trntv/yii2-file-kit",
-            "version": "1.1.6",
+            "version": "1.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/trntv/yii2-file-kit.git",
-                "reference": "727538b791fd7bf3b3e7b9cccb48150582b58670"
+                "reference": "e452844861b0092ad7e10c5dd968abe3d5e1aad8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/trntv/yii2-file-kit/zipball/727538b791fd7bf3b3e7b9cccb48150582b58670",
-                "reference": "727538b791fd7bf3b3e7b9cccb48150582b58670",
+                "url": "https://api.github.com/repos/trntv/yii2-file-kit/zipball/e452844861b0092ad7e10c5dd968abe3d5e1aad8",
+                "reference": "e452844861b0092ad7e10c5dd968abe3d5e1aad8",
                 "shasum": ""
             },
             "require": {
                 "bower-asset/blueimp-file-upload": "^9.7.0",
-                "league/flysystem": "~1.0",
-                "league/url": "~3.0",
-                "yiisoft/yii2": "~2.0.0",
-                "yiisoft/yii2-jui": "~2.0.0"
+                "league/flysystem": "^1.0",
+                "league/url": "^3.0",
+                "yiisoft/yii2": "^2.0.0",
+                "yiisoft/yii2-jui": "^2.0.0"
             },
             "require-dev": {
                 "creocoder/yii2-flysystem": "~0.8",
                 "phpunit/phpunit": "~4.5.0"
+            },
+            "suggest": {
+                "intervention/image": "Allows image manipulation"
             },
             "type": "yii2-extension",
             "extra": {
@@ -4988,7 +5056,7 @@
                 }
             ],
             "description": "Yii2 file upload and storage kit",
-            "time": "2015-11-20 09:44:56"
+            "time": "2015-12-14 12:25:48"
         },
         {
             "name": "true/punycode",

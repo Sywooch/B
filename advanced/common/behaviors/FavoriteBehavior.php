@@ -38,7 +38,7 @@ class FavoriteBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //增加收藏缓存
-        if ($this->owner->type == FavoriteEntity::TYPE_QUESTION) {
+        if ($this->owner->associate_type == FavoriteEntity::TYPE_QUESTION) {
             //文章收藏
             $result = FavoriteService::addUserOfFavoriteQuestionCache(
                 $this->owner->associate_id,
@@ -66,19 +66,17 @@ class FavoriteBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //移除收藏缓存
-        if ($this->owner->type == FavoriteEntity::TYPE_QUESTION) {
+        if ($this->owner->associate_type == FavoriteEntity::TYPE_QUESTION) {
             //文章收藏
             $result = FavoriteService::removeUserOfFavoriteQuestionCache(
                 $this->owner->associate_id,
                 $this->owner->created_by
             );
 
-
             if ($result) {
                 //更新文章被收藏数
                 Counter::cancelQuestionFavorite($this->owner->associate_id);
             }
-
         }
 
         //todo 其他类型的收藏

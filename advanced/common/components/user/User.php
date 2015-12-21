@@ -13,8 +13,8 @@ use common\helpers\ArrayHelper;
 
 class User extends \yii\web\User
 {
-    const EVENT_USER_CREATE_QUESTION = 'event_user_create_question';
-    const EVENT_USER_COMMON_EDIT_QUESTION = 'event_user_common_edit_question';
+    const EVENT_AFTER_CREATE_QUESTION = 'event_after_create_question';
+    const EVENT_AFTER_COMMON_EDIT_QUESTION = 'event_after_common_edit_question';
 
     public function behaviors()
     {

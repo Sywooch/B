@@ -544,5 +544,24 @@ class TestController extends BaseController
         $vote = VoteService::getUseVoteStatus($type, $associate_id, $user_id);
         var_dump($vote);
     }
-}
 
+    public function actionTypeahead()
+    {
+        return $this->render(
+            'typeahead'
+        );
+    }
+
+    public function actionData($search = null)
+    {
+        $data = [
+            ['value' => 'a','name'=>'a','description' => 'description'],
+            ['value' => 'admin','name'=>'a','description' => 'description'],
+            ['value' => 'b','name'=>'a','description' => 'description'],
+            ['value' => 'big','name'=>'a','description' => 'description'],
+            ['value' => 'bean','name'=>'a','description' => 'description'],
+        ];
+
+        $this->jsonOut($data);
+    }
+}

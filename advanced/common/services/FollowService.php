@@ -90,12 +90,8 @@ class FollowService extends BaseService
         $insert_cache_data = [];
         $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $question_id];
 
-        if ($question['count_follow'] == 0) {
-            $insert_cache_data[] = $user_id;
-        } elseif ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
+        if ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
             //小于1000，则使用缓存，大于，则不处理。
-
-
             if (Yii::$app->redis->sCard($cache_key) == 0) {
                 //判断是否已存在集合缓存，不存在
                 $insert_cache_data = FollowQuestionEntity::find()->select(['user_id'])->where(
@@ -167,9 +163,7 @@ class FollowService extends BaseService
 
         $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $question_id];
 
-        if ($question['count_follow']) {
-            $result = false;
-        } elseif ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
+        if ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
             if (Yii::$app->redis->sCard($cache_key) == 0) {
                 //判断是否已存在集合缓存，不存在
                 $insert_cache_data = FollowQuestionEntity::find()->select(['user_id'])->where(
@@ -417,7 +411,6 @@ class FollowService extends BaseService
         if ($result) {
             #myself
             Counter::followUser($user_id, count($follow_user_ids));
-
 
             self::addUserFriendsToCache($user_id, $follow_user_ids);
 

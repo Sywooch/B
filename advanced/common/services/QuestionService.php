@@ -207,13 +207,10 @@ class QuestionService extends BaseService
                                    ->recent($period)
                                    ->unAnswered()
                                    ->orderByTime()
-                                   ->limit(
-                                       $limit
-                                   )
+                                   ->limit($limit)
                                    ->offset($offset)
                                    ->asArray()
                                    ->all();
-
             $cache_data = $model;
             Yii::$app->redis->set($cache_key, $cache_data);
         }
@@ -223,18 +220,15 @@ class QuestionService extends BaseService
 
     public static function getSubjectTags($subject, $limit = 5)
     {
-        try {
             $question = new QuestionSearch();
             $tags = $question->fenci($subject, $limit);
-        } catch (XSException $e) {
-            return Error::set(Error::TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION, [$e->getCode(), $e->getMessage()]);
-        }
 
         return $tags;
     }
 
     public static function searchQuestionByTag(array $tags, $limit = 10)
     {
+        $cache_data = [];
         if ($tags) {
             $params = array_merge(['or'], array_unique($tags));
             try {
@@ -242,7 +236,6 @@ class QuestionService extends BaseService
                 $cache_data = Yii::$app->redis->get($cache_key);
 
                 if ($cache_data === false) {
-
                     $cache_data = QuestionSearch::find()->where($params)->andWhere(
                         [
                             'NOT IN',
@@ -282,7 +275,7 @@ class QuestionService extends BaseService
     public static function getInterestedQuestionByUserId($user_id, $limit = 50)
     {
         $tag_ids = FollowService::getUserFollowTagIds($user_id);
-
+        $result = [];
         if ($tag_ids) {
             $tag_names = TagService::getTagNameById($tag_ids);
             $result = self::searchQuestionByTag($tag_names, $limit);
@@ -343,6 +336,7 @@ class QuestionService extends BaseService
         )->orderBy('created_at DESC')->limiter($page_no, $page_size, 200);
 
         $question_ids = $query->column();
+
         if ($question_ids) {
             $question_list = QuestionService::getQuestionListByQuestionIds($question_ids);
         } else {

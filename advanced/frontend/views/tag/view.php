@@ -14,9 +14,12 @@ $this->title = $tag->name;
         <div class="col-xs-12 col-md-9 main">
 
             <section class="tag-info mt30">
-                <img class="pull-left avatar-32 mr10"
-                     src="http://sfault-avatar.b0.upaiyun.com/323/737/3237371165-1040000000089556_small">
-
+                <?= $tag->icon ? Html::img(
+                        $tag->icon,
+                        [
+                                'class' => 'pull-left avatar-32 mr10',
+                        ]
+                ) : ''; ?>
                 <h1 class="h3"><?= $tag->name ?></h1>
                 <ul class="list-inline">
                 </ul>

@@ -68,7 +68,8 @@ $this->beginBlock('top-header');
                        data-toggle="tooltip"
                        data-placement="bottom"
                        title=""
-                       data-original-title="liu_jing"><img class="avatar-24"
+                       data-original-title="liu_jing">
+                        <img class="avatar-24"
                                                            src="http://sfault-avatar.b0.upaiyun.com/362/203/3622039558-1030000000616304_small"></a>
                 </p>
             </div>
@@ -86,10 +87,9 @@ $this->endBlock();
             <div class="col-md-4 profile">
                 <ul class="list-unstyled profile-ranks">
                     <li title="声望">
-                        <a href="/u/xiamao/rank">
-                            <strong><?= $user['score'] ?></strong>
-                            <span class="text-muted">声望值</span>
-                        </a>
+                        <strong><?= $user['score'] ?></strong>
+                        <span class="text-muted">声望值</span>
+
                     </li>
                     <li title="财富">
                         <strong style=""><?= TemplateHelper::showHumanCurrencyValue($user['currency']) ?></strong>
@@ -274,7 +274,7 @@ $this->endBlock();
                     <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-12-06"></li>
                 </ul>
                 <div class="profile-bio mono">
-                    <?php if ($user['description']) : ?>
+                    <?php if (isset($user['description'])) : ?>
                         <?= $user['description'] ?>
                     <?php else: ?>
                         <p>个人简介都不给 &lt;(￣ ﹌ ￣)&gt;</p>

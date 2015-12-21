@@ -13,7 +13,13 @@ use yii\widgets\Pjax;
 /** @var $is_favorite */
 /** @var $id */
 ?>
-<?php Pjax::begin(['enablePushState' => false, 'id' => 'question-favorite-pjax']); ?>
+<?php Pjax::begin(
+    [
+        'id'              => 'question-favorite-pjax',
+        'enablePushState' => false,
+        'timeout'         => 10000,
+    ]
+); ?>
 
 <?= Html::a(
     $is_favorite ? '取消收藏' : '收藏',
@@ -22,8 +28,9 @@ use yii\widgets\Pjax;
         'id'              => 'sideBookmark',
         'class'           => 'btn btn-default btn-sm',
         'data-need-login' => true,
+        'data-do'         => 'pjax',
     ]
 ) ?>
-<strong><?= $count_favorite ?></strong> 收藏，
+    <strong><?= $count_favorite ?></strong> 收藏，
 <strong class="no-stress"><?= $count_views ?></strong> 浏览
 <?php Pjax::end(); ?>

@@ -46,10 +46,10 @@ $this->beginBlock('top-header');
                 </h1>
 
                 <div class="author">
-                    <a href="/u/smallkiss" class="mr5">
-                        <?= TemplateHelper::showUserAvatar($question_data['created_by'], 24, false) ?>
-                        <strong><?= TemplateHelper::showUsername($question_data['created_by'], false) ?></strong>
-                    </a>
+
+                        <?= TemplateHelper::showUserAvatar($question_data['created_by'], 24, true) ?>
+                        <strong><?= TemplateHelper::showUsername($question_data['created_by'], true) ?></strong>
+
                     <?= TemplateHelper::showHumanTime($question_data['created_at']) ?>
                     <?php if ($question_data['updated_at'] > 0): ?>
                         <?= Html::a(

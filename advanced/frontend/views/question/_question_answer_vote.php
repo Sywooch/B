@@ -15,8 +15,10 @@ use yii\widgets\Pjax;
 
 <?php Pjax::begin(
     [
-        'enablePushState' => false,
+
         'id'              => 'question-answer-vote-' . $id,
+        'enablePushState' => false,
+        'timeout'         => 10000,
     ]
 ); ?>
 <?= Html::a(
@@ -26,6 +28,7 @@ use yii\widgets\Pjax;
         'class'           => 'like' . ($vote_status == VoteEntity::VOTE_YES ? ' active' : ''),
         'title'           => '答案对我有帮助，有参考价值',
         'data-need-login' => true,
+        'data-do'         => 'pjax',
     ]
 ) ?>
 <span class="count"><?= $count_vote; ?></span>
@@ -36,6 +39,7 @@ use yii\widgets\Pjax;
         'class'           => 'hate' . ($vote_status == VoteEntity::VOTE_NO ? ' active' : ''),
         'title'           => '答案没帮助\是错误的答案\答非所问\故意捣乱',
         'data-need-login' => true,
+        'data-do'         => 'pjax',
     ]
 ) ?>
 <?php Pjax::end(); ?>

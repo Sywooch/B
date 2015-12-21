@@ -21,8 +21,21 @@ class RepairCronJobController extends Controller
 
     public function actionIndex()
     {
+        //问题的回答数
         $this->actionQuestionAnswerCount();
+        //回答的评论数
         $this->actionAnswerCommentCount();
+
+        //todo
+
+        //问题的关注数
+        //问题的收藏数
+
+        //问题的喜欢
+        //问题的讨厌
+
+        //回答的喜欢
+        //回答的讨厌
     }
 
     public function actionQuestionAnswerCount()

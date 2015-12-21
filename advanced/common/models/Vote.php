@@ -7,8 +7,7 @@ use Yii;
 /**
  * This is the model class for table "vote".
  *
- * @property string $id
- * @property string $type
+ * @property string $associate_type
  * @property integer $associate_id
  * @property string $vote
  * @property string $created_at
@@ -30,8 +29,8 @@ class Vote extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['type', 'associate_id'], 'required'],
-            [['type', 'vote'], 'string'],
+            [['associate_type', 'associate_id', 'created_by'], 'required'],
+            [['associate_type', 'vote'], 'string'],
             [['associate_id', 'created_at', 'created_by'], 'integer']
         ];
     }
@@ -42,8 +41,7 @@ class Vote extends \common\models\BaseActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'type' => '类型',
+            'associate_type' => '关联类型',
             'associate_id' => '关联的对象ID',
             'vote' => '赞成or反对',
             'created_at' => '创建时间',

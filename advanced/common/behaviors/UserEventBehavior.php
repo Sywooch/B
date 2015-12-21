@@ -47,7 +47,7 @@ class UserEventBehavior extends BaseBehavior
         return $events;
     }
 
-    public function eventUserCreateQuestion()
+    public function eventAfterCreateQuestion()
     {
         Yii::trace('Process ' . __FUNCTION__, 'user_event');
         //todo

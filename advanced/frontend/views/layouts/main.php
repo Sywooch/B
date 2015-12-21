@@ -5,10 +5,13 @@
 
 use common\modules\user\models\LoginForm;
 use kartik\icons\Icon;
+use kartik\widgets\Typeahead;
 use yii\bootstrap\Modal;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
+use yii\helpers\Url;
+use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 use yii\widgets\Block;
 use yii\widgets\Breadcrumbs;
@@ -58,15 +61,47 @@ AppAsset::register($this);
             ]
     );
 
-    echo '<form class="navbar-form navbar-left" role="search" action="/search" method="get">
-                <div class="form-group">
-                    <input type="text" value="" name="keyword" class="form-control search_input" id="navbar-search" placeholder="搜索..." data-placement="bottom" data-content="请输入要搜索的关键词！">
-                </div>
-            </form>';
+
+    $template = '<div class="search-hint">' . '<p class="search-hint-subject"><a href="{{url}}">{{subject}}</a></p>' . '<p class="search-hint-tags">{{tags}}</p>' . '</div>';
+
+    $typeahead = Typeahead::widget(
+            [
+                    'name'          => 'keyword',
+                    'options'       => [
+                            'id'          => 'searchBox',
+                            'class'       => 'search_input',
+                            'placeholder' => '请输入要搜索的关键字...',
+                    ],
+                    'pluginOptions' => ['highlight' => true],
+                    'dataset'       => [
+                            [
+                                    'datumTokenizer' => "Bloodhound.tokenizers.obj.whitespace('value')",
+                                    'display'        => 'value',
+                                //'prefetch'       => Url::to(['test/data']),
+                                    'remote'         => [
+                                            'url'      => Url::to(['search/quick-search']) . '&keyword=%QUERY',
+                                            'wildcard' => '%QUERY',
+                                    ],
+                                    'display'        => 'subject',
+                                    'templates'      => [
+                                            'notFound'   => '',
+                                            'suggestion' => new JsExpression("Handlebars.compile('{$template}')"),
+                                    ],
+                            ],
+                    ],
+
+            ]
+    );
+    //<input type="text" value="" name="keyword" class="form-control search_input" id="navbar-search" placeholder="搜索..." data-placement="bottom" data-content="请输入要搜索的关键词！">
+    echo sprintf(
+            '<form id="quick-search" class="navbar-form navbar-left" action="%s" method="get">%s</form>',
+            urldecode(Url::to(['search/query'])),
+            $typeahead
+    );
 
     echo Nav::widget(
             [
-                    'options'      => ['class' => 'nav navbar-nav '],
+                    'options'      => ['class' => 'global-nav nav navbar-nav'],
                     'items'        => [
                         //        ['label' =>  Icon::show('th-large')  . '首页', 'url' => ['/site/index'] ],
                             ['label' => '社区', 'url' => ['/topic'], 'active' => true],

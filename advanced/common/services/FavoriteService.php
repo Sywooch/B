@@ -25,7 +25,7 @@ class FavoriteService extends BaseService
     {
         $model = new  FavoriteEntity;
         $model->created_by = $user_id;
-        $model->type = FavoriteEntity::TYPE_QUESTION;
+        $model->associate_type = FavoriteEntity::TYPE_QUESTION;
         $model->associate_id = $question_id;
 
         if ($model->save()) {
@@ -43,7 +43,7 @@ class FavoriteService extends BaseService
             throw new NotFoundModelException(FavoriteEntity::className(), $id);
         }
         $result = null;
-        switch ($model->type) {
+        switch ($model->associate_type) {
             case FavoriteEntity::TYPE_QUESTION:
                 /* @var $question QuestionEntity */
                 $question = QuestionEntity::findOne($model->associate_id);
@@ -77,18 +77,18 @@ class FavoriteService extends BaseService
 
     /**
      * 移除收藏项
-     * @param      $type
+     * @param      $associate_type
      * @param      $associate_id
      * @param null $user_id
      * @return bool
      * @throws \Exception
      */
-    public static function removeFavoriteByAssociateId($type, $associate_id, $user_id = null)
+    public static function removeFavoriteByAssociateId($associate_type, $associate_id, $user_id = null)
     {
         $model = FavoriteEntity::find()->where(
             [
-                'type'         => $type,
-                'associate_id' => $associate_id,
+                'associate_type' => $associate_type,
+                'associate_id'   => $associate_id,
             ]
         )->filterWhere(['created_by' => $user_id])->all();
 
@@ -161,17 +161,15 @@ class FavoriteService extends BaseService
         $insert_cache_data = [];
         $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
 
-        if ($question['count_favorite'] == 0) {
-            $insert_cache_data[] = $user_id;
-        } elseif ($question['count_favorite'] < self::MAX_FAVORITE_QUESTION_COUNT_BY_USING_CACHE) {
+        if ($question['count_favorite'] < self::MAX_FAVORITE_QUESTION_COUNT_BY_USING_CACHE) {
             //小于1000，则使用缓存，大于，则不处理。
 
             if (Yii::$app->redis->sCard($cache_key) == 0) {
                 //判断是否已存在集合缓存，不存在
                 $insert_cache_data = FavoriteEntity::find()->select(['created_by'])->where(
                     [
-                        'type'         => FavoriteEntity::TYPE_QUESTION,
-                        'associate_id' => $question_id,
+                        'associate_type' => FavoriteEntity::TYPE_QUESTION,
+                        'associate_id'   => $question_id,
                     ]
                 )->column();
             } else {
@@ -233,15 +231,13 @@ class FavoriteService extends BaseService
 
         $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
 
-        if ($question['count_follow'] == 0) {
-            $result = false;
-        } elseif ($question['count_follow'] < self::MAX_FAVORITE_QUESTION_COUNT_BY_USING_CACHE) {
+        if ($question['count_favorite'] < self::MAX_FAVORITE_QUESTION_COUNT_BY_USING_CACHE) {
             if (Yii::$app->redis->sCard($cache_key) == 0) {
                 //判断是否已存在集合缓存，不存在
                 $insert_cache_data = FavoriteEntity::find()->select(['created_by'])->where(
                     [
-                        'type'         => FavoriteEntity::TYPE_QUESTION,
-                        'associate_id' => $question_id,
+                        'associate_type' => FavoriteEntity::TYPE_QUESTION,
+                        'associate_id'   => $question_id,
                     ]
                 )->column();
                 if ($insert_cache_data) {
@@ -261,9 +257,9 @@ class FavoriteService extends BaseService
             //大于则查询数据库
             $result = FavoriteEntity::find()->where(
                 [
-                    'type'         => FavoriteEntity::TYPE_QUESTION,
-                    'associate_id' => $question_id,
-                    'created_by'   => $user_id,
+                    'associate_type' => FavoriteEntity::TYPE_QUESTION,
+                    'associate_id'   => $question_id,
+                    'created_by'     => $user_id,
                 ]
             )->count(1);
         }

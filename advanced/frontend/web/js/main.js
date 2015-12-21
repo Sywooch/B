@@ -19,13 +19,22 @@ $(document).ready(function () {
 
     $("#searchBox").focus(function () {
         var t;
-        t = $(".global-nav .menu").width() + 180 + "px", $(".global-nav .menu").hide(), $(this).animate({width: t}, 200)
+        t = $(".global-nav").width() + 300 + "px", $(".global-nav").hide(), $(this).animate({width: t}, 200), $('.twitter-typeahead .tt-hint').animate({width: t}, 200);
     });
 
     $("#searchBox").blur(function () {
-        $(this).animate({width: "180px"}, 200, "swing", function () {
-            $(".global-nav .menu").show()
-        })
+        $(this).animate({width: "300px"}, 200, "swing", function () {
+            $(".global-nav").show()
+        });
+
+        $('.twitter-typeahead .tt-hint').animate({width: "300px"}, 200)
+    });
+
+    $('#searchBox').keydown(function (event) {
+        if (event.keyCode == 13 && $(this).val()) {
+            //console.log($('#quick-search').attr('action'));
+            $('#quick-search').submit();
+        }
     });
 
     $("#backtop").click(function () {
@@ -67,6 +76,14 @@ jQuery(function ($) {
 
         app.ajax.handle(e);
     });
+
+    //pjax操作
+    //$(document).on('click', '[data-do]', function (e) {
+    //    if ($(this).is('a')&& $(e.target).data('do') == 'pjax') {
+    //        //e.preventDefault();
+    //    }
+    //});
+
 
     //回复评论
     $(document).on('click', '[data-do-comment]', function (e) {

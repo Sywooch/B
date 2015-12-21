@@ -15,8 +15,10 @@ use yii\widgets\Pjax;
     [
         'enablePushState' => false,
         'id'              => 'question-follow-pjax',
+        'timeout'         => 10000,
     ]
 ); ?>
+
 <?= Html::a(
     $is_followed ? '取消关注' : '关注',
     ['question/follow', 'question_id' => $id],
@@ -25,7 +27,8 @@ use yii\widgets\Pjax;
         'class'           => 'btn btn-success btn-sm',
         'title'           => '关注后将获得更新提醒',
         'data-need-login' => true,
+        'data-do'         => 'pjax',
     ]
 ) ?>
-<strong><?= $count_follow ?></strong> 关注
+    <strong><?= $count_follow ?></strong> 关注
 <?php Pjax::end(); ?>

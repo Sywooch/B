@@ -17,12 +17,16 @@ class BaseXunSearch extends ActiveRecord
 
     public function fenci($word, $limit = 5)
     {
-        $result = parent::getDb()->getScws()->getTops($word, $limit, self::WORD_CLASS);
+        try {
+            $result = parent::getDb()->getScws()->getTops($word, $limit, self::WORD_CLASS);
+            
+            if ($result) {
+                $result = ArrayHelper::getColumn($result, 'word');
+            }
 
-        if ($result) {
-            $result = ArrayHelper::getColumn($result, 'word');
+            return $result;
+        } catch (XSException $e) {
+            return Error::set(Error::TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION, [$e->getCode(), $e->getMessage()]);
         }
-
-        return $result;
     }
 }

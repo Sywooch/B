@@ -14,8 +14,6 @@ use Yii;
 
 class SecurityController extends BaseSecurityController
 {
-    
-
     public function actionLogin()
     {
         if (strpos(Yii::$app->request->getReferrer(), 'login') === false) {
@@ -28,8 +26,9 @@ class SecurityController extends BaseSecurityController
     public function actionLogout()
     {
         Yii::$app->getUser()->logout();
-
-        Url::remember(Yii::$app->request->getReferrer());
+        if (strpos(Yii::$app->request->getReferrer(), 'logout') === false) {
+            Url::remember(Yii::$app->request->getReferrer());
+        }
 
         return $this->goBack();
     }

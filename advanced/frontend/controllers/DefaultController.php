@@ -36,6 +36,12 @@ class DefaultController extends BaseController
 
     public function actionIndex()
     {
+        //如果是快速搜索
+        $keyword = Yii::$app->request->get('keyword');
+        if ($keyword) {
+            $this->redirect(['search/query', 'keyword' => $keyword]);
+        }
+
         $data = QuestionService::fetchLatest(30, 0, ServerHelper::checkIsSpider());
 
         if ($data) {

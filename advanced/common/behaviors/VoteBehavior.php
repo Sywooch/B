@@ -26,7 +26,7 @@ class VoteBehavior extends BaseBehavior
         Yii::trace('Begin ' . $this->className(), 'behavior');
 
         return [
-            ActiveRecord::EVENT_AFTER_INSERT => 'afterVoteInsert',
+            ActiveRecord::EVENT_AFTER_INSERT  => 'afterVoteInsert',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'afterVoteUpdate',
             //ActiveRecord::EVENT_AFTER_DELETE => 'afterVoteDelete',
         ];
@@ -38,7 +38,7 @@ class VoteBehavior extends BaseBehavior
 
         //
         $result = VoteService::addUserOfVoteCache(
-            $this->owner->type,
+            $this->owner->associate_type,
             $this->owner->associate_id,
             $this->owner->created_by,
             $this->owner->vote
@@ -46,7 +46,7 @@ class VoteBehavior extends BaseBehavior
 
         if ($result) {
             //todo 增加其他类型
-            switch ($this->owner->type) {
+            switch ($this->owner->associate_type) {
                 case VoteEntity::TYPE_QUESTION:
                     //更新问题投票数
                     if ($this->owner->vote == VoteEntity::VOTE_YES) {
@@ -74,7 +74,7 @@ class VoteBehavior extends BaseBehavior
         if ($this->owner->vote != $this->owner->getOldAttribute('vote')) {
             //增加新缓存
             $result = VoteService::addUserOfVoteCache(
-                $this->owner->type,
+                $this->owner->associate_type,
                 $this->owner->associate_id,
                 $this->owner->created_by,
                 $this->owner->vote
@@ -82,7 +82,7 @@ class VoteBehavior extends BaseBehavior
 
             if ($result) {
                 //todo 增加其他类型
-                switch ($this->owner->type) {
+                switch ($this->owner->associate_type) {
                     case VoteEntity::TYPE_QUESTION:
                         //更新问题投票数
                         if ($this->owner->vote == VoteEntity::VOTE_YES) {
@@ -112,14 +112,14 @@ class VoteBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $result = VoteService::removeUserOfVoteCache(
-            $this->owner->type,
+            $this->owner->associate_type,
             $this->owner->associate_id,
             $this->owner->created_by
         );
 
         if ($result) {
             //todo 增加其他类型
-            switch ($this->owner->type) {
+            switch ($this->owner->associate_type) {
                 case VoteEntity::TYPE_QUESTION:
                     //更新问题投票数
                     if ($this->owner->vote == VoteEntity::VOTE_YES) {

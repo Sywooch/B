@@ -10,6 +10,7 @@ namespace common\modules\user\controllers;
 
 use common\helpers\ArrayHelper;
 use common\services\QuestionService;
+use common\services\UserService;
 use dektrium\user\controllers\ProfileController as BaseProfileController;
 use Yii;
 use yii\filters\AccessControl;
@@ -34,7 +35,7 @@ class ProfileController extends BaseProfileController
 
         //todo 非好友，不允许查看
 
-        $user = ArrayHelper::merge(Yii::$app->user->identity,[]);
+        $user = UserService::getUserById($id);
 
         if (empty($user)) {
             throw new NotFoundHttpException();

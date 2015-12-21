@@ -27,7 +27,7 @@ class TemplateHelper
         if ($user_id == Yii::$app->user->id || !$anonymity) {
             $user_name = UserService::getUsernameByUserId($user_id);
             if ($link) {
-                $result = Html::a($user_name, ['/member/' . $user_id]);
+                $result = Html::a($user_name, ['user/profile/show', 'id' => $user_id]);
             } else {
                 $result = $user_name;
             }
@@ -57,7 +57,7 @@ class TemplateHelper
                 ]
             );
             if ($avatar && $link) {
-                $avatar = Html::a($avatar, ['/membet/', 'id' => $user_id]);
+                $avatar = Html::a($avatar, ['user/profile/show', 'id' => $user_id]);
             }
         } else {
             $avatar = '';

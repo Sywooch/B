@@ -61,6 +61,7 @@ class QuestionController extends BaseController
     public function actionFollow($question_id)
     {
         $is_followed = FollowService::checkUseIsFollowedQuestion($question_id, Yii::$app->user->id);
+
         if ($is_followed) {
             FollowService::removeFollowQuestion($question_id, Yii::$app->user->id);
         } else {
@@ -310,15 +311,19 @@ class QuestionController extends BaseController
         /*print_r($answer_data);
         exit;*/
 
-        //是否已关注此问题
-        $is_followed = FollowService::checkUseIsFollowedQuestion($id, Yii::$app->user->id);
 
-        //是否已收藏此问题
-        $is_favorite = FavoriteService::checkUseIsFavoriteQuestion($id, Yii::$app->user->id);
+        if (Yii::$app->user->isGuest) {
+            $is_followed = $is_favorite = $vote_status = false;
+        } else {
+            //是否已关注此问题
+            $is_followed = FollowService::checkUseIsFollowedQuestion($id, Yii::$app->user->id);
 
-        //是否已对问题投票
-        $vote_status = VoteService::getUseQuestionVoteStatus($id, Yii::$app->user->id);
+            //是否已收藏此问题
+            $is_favorite = FavoriteService::checkUseIsFavoriteQuestion($id, Yii::$app->user->id);
 
+            //是否已对问题投票
+            $vote_status = VoteService::getUseQuestionVoteStatus($id, Yii::$app->user->id);
+        }
 
         return $this->render(
             'view',

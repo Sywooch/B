@@ -58,6 +58,9 @@ use kartik\tabs\TabsX;
                             'items'        => $items,
                             'position'     => TabsX::POS_ABOVE,
                             'encodeLabels' => false,
+                            'options' => [
+
+                            ]
                     ]
             );
             ?>

@@ -39,7 +39,7 @@ class VoteService extends BaseService
         }
 
         $model = new VoteEntity();
-        $model->type = $type;
+        $model->associate_type = $type;
         $model->associate_id = $associate_id;
         $model->created_by = $user_id;
         $model->vote = $vote;
@@ -76,9 +76,9 @@ class VoteService extends BaseService
         /* @var $model VoteEntity */
         $model = VoteEntity::find()->where(
             [
-                'type'         => $type,
-                'associate_id' => $associate_id,
-                'created_by'   => $user_id,
+                'associate_type' => $type,
+                'associate_id'   => $associate_id,
+                'created_by'     => $user_id,
             ]
         )->one();
 
@@ -112,17 +112,17 @@ class VoteService extends BaseService
     }
 
     /**
-     * @param $type
+     * @param $associate_type
      * @param $associate_id
      * @param $user_id
-     * @param $vote 在缓存中,YES=0,NO=1
+     * @param $vote //在缓存中,YES=0,NO=1
      * @return mixed
      * @throws NotFoundModelException
      * @throws \Exception
      */
-    public static function addUserOfVoteCache($type, $associate_id, $user_id, $vote)
+    public static function addUserOfVoteCache($associate_type, $associate_id, $user_id, $vote)
     {
-        switch ($type) {
+        switch ($associate_type) {
             case VoteEntity::TYPE_QUESTION:
                 $model = QuestionService::getQuestionByQuestionId($associate_id);
                 $cache_key = [REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
@@ -132,12 +132,12 @@ class VoteService extends BaseService
                 $cache_key = [REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
             default:
-                throw new \Exception(sprintf('%s todo!', $type));
+                throw new \Exception(sprintf('%s todo!', $associate_type));
         }
 
 
         if (!$model) {
-            throw new NotFoundModelException($type, $associate_id);
+            throw new NotFoundModelException($associate_type, $associate_id);
         }
 
         $insert_cache_data = [];
@@ -152,8 +152,8 @@ class VoteService extends BaseService
                 //判断是否已存在集合缓存，不存在
                 $data = VoteEntity::find()->select(['created_by', 'vote'])->where(
                     [
-                        'type'         => $type,
-                        'associate_id' => $associate_id,
+                        'associate_type' => $associate_type,
+                        'associate_id'   => $associate_id,
                     ]
                 )->asArray()->all();
                 foreach ($data as $item) {
@@ -204,9 +204,9 @@ class VoteService extends BaseService
         return self::removeUserOfVoteCache(VoteEntity::TYPE_ANSWER, $associate_id, $user_id);
     }
 
-    public static function removeUserOfVoteCache($type, $associate_id, $user_id)
+    public static function removeUserOfVoteCache($associate_type, $associate_id, $user_id)
     {
-        switch ($type) {
+        switch ($associate_type) {
             case VoteEntity::TYPE_QUESTION:
                 $model = QuestionService::getQuestionByQuestionId($associate_id);
                 $cache_key = [REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
@@ -216,11 +216,11 @@ class VoteService extends BaseService
                 $cache_key = [REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
             default:
-                throw new \Exception(sprintf('%s todo!', $type));
+                throw new \Exception(sprintf('%s todo!', $associate_type));
         }
 
         if (!$model) {
-            throw new NotFoundModelException($type, $associate_id);
+            throw new NotFoundModelException($associate_type, $associate_id);
         }
 
         return Yii::$app->redis->zRem($cache_key, $user_id);
@@ -237,16 +237,16 @@ class VoteService extends BaseService
     }
 
     /**
-     * @param $type
+     * @param $associate_type
      * @param $associate_id
      * @param $user_id
      * @return bool|int false:没有投票; 1:反对票; 0:赞成票
      * @throws NotFoundModelException
      * @throws \Exception
      */
-    public static function getUseVoteStatus($type, $associate_id, $user_id)
+    public static function getUseVoteStatus($associate_type, $associate_id, $user_id)
     {
-        switch ($type) {
+        switch ($associate_type) {
             case VoteEntity::TYPE_QUESTION:
                 $model = QuestionService::getQuestionByQuestionId($associate_id);
                 $cache_key = [REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
@@ -256,11 +256,11 @@ class VoteService extends BaseService
                 $cache_key = [REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
             default:
-                throw new \Exception(sprintf('%s todo!', $type));
+                throw new \Exception(sprintf('%s todo!', $associate_type));
         }
 
         if (!$model) {
-            throw new NotFoundModelException($type, $associate_id);
+            throw new NotFoundModelException($associate_type, $associate_id);
         }
 
         if ($model['count_like'] == 0 && $model['count_hate'] == 0) {
@@ -271,8 +271,8 @@ class VoteService extends BaseService
                 //判断集合缓存是否已存在，不存在，创建缓存
                 $data = VoteEntity::find()->select(['created_by', 'vote'])->where(
                     [
-                        'type'         => $type,
-                        'associate_id' => $associate_id,
+                        'associate_type' => $associate_type,
+                        'associate_id'   => $associate_id,
                     ]
                 )->asArray()->all();
 
@@ -313,9 +313,9 @@ class VoteService extends BaseService
             //大于则查询数据库
             $vote = VoteEntity::find()->select('vote')->where(
                 [
-                    'type'         => $type,
-                    'associate_id' => $associate_id,
-                    'created_by'   => $user_id,
+                    'associate_type' => $associate_type,
+                    'associate_id'   => $associate_id,
+                    'created_by'     => $user_id,
                 ]
             )->scalar();
 
