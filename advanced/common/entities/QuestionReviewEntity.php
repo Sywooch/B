@@ -113,7 +113,7 @@ class QuestionReviewEntity extends QuestionReview
         if ($model) {
             $model->status = self::STATUS_COMPLETE;
             if ($model->save()) {
-                Counter::addCommonEdit($user_id);
+                Counter::userAddCommonEdit($user_id);
             }
 
             return true;

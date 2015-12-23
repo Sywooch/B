@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\controllers\BaseController;
 use common\entities\TagEntity;
 use common\entities\TagSearchEntity;
+use common\exceptions\NotFoundModelException;
 use common\services\FollowService;
 use common\services\QuestionService;
 use common\services\TagService;
@@ -33,16 +34,46 @@ class TagController extends BaseController
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only'  => ['create', 'update'],
+                'only'  => ['create', 'follow'],
                 'rules' => [
                     [
                         'allow'   => true,
-                        'actions' => ['create', 'update'],
+                        'actions' => ['create', 'follow'],
                         'roles'   => ['@'],
                     ],
                 ],
             ],
         ];
+    }
+
+    public function actionFollow($id)
+    {
+        $is_followed = FollowService::checkUseIsFollowedTag($id, Yii::$app->user->id);
+
+        if ($is_followed) {
+            $result = FollowService::removeFollowTag([$id], Yii::$app->user->id);
+        } else {
+            $result = FollowService::addFollowTag($id, Yii::$app->user->id);
+        }
+
+        if ($result) {
+            $is_followed = !$is_followed;
+        }
+
+        $tag = TagService::getTagByTagId($id);
+
+        if (!$tag) {
+            throw new NotFoundModelException('question', $id);
+        }
+
+        return $this->renderPartial(
+            '_tag_follow',
+            [
+                'id'           => $id,
+                'count_follow' => $tag['count_follow'],
+                'is_followed'  => $is_followed,
+            ]
+        );
     }
 
     /**
@@ -106,6 +137,12 @@ class TagController extends BaseController
             ]
         );
 
+        $tag = TagService::getTagByTagId($id);
+
+        if (!$tag) {
+            throw new NotFoundModelException('tag', $id);
+        }
+
         //
         $questions = QuestionService::getQuestionListByTagId($id, $pages->page, $pages->pageSize);
 
@@ -116,15 +153,24 @@ class TagController extends BaseController
         $tag_who_good_at_in_30_days = FollowService::getUserWhichIsGoodAtThisTag($id, 10, 30);
         $tag_who_good_at_in_365_days = FollowService::getUserWhichIsGoodAtThisTag($id, 10, 365);
 
+        //是否已关注
+        if (Yii::$app->user->isGuest) {
+            $is_followed = false;
+        } else {
+            $is_followed = FollowService::checkUseIsFollowedTag($id, Yii::$app->user->id);
+        }
+
+
         return $this->render(
             'view',
             [
-                'tag'          => $this->findModel($id),
-                'questions'    => $questions,
-                'pages'        => $pages,
-                'tag_relation' => $tag_relation,
-                'tag_who_good_at_in_30_days' => $tag_who_good_at_in_30_days,
+                'tag'                         => $tag,
+                'questions'                   => $questions,
+                'pages'                       => $pages,
+                'tag_relation'                => $tag_relation,
+                'tag_who_good_at_in_30_days'  => $tag_who_good_at_in_30_days,
                 'tag_who_good_at_in_365_days' => $tag_who_good_at_in_365_days,
+                'is_followed'                 => $is_followed,
             ]
         );
     }

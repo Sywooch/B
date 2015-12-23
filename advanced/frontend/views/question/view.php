@@ -47,8 +47,8 @@ $this->beginBlock('top-header');
 
                 <div class="author">
 
-                        <?= TemplateHelper::showUserAvatar($question_data['created_by'], 24, true) ?>
-                        <strong><?= TemplateHelper::showUsername($question_data['created_by'], true) ?></strong>
+                    <?= TemplateHelper::showUserAvatar($question_data['created_by'], 24, true) ?>
+                    <strong><?= TemplateHelper::showUsername($question_data['created_by'], true) ?></strong>
 
                     <?= TemplateHelper::showHumanTime($question_data['created_at']) ?>
                     <?php if ($question_data['updated_at'] > 0): ?>

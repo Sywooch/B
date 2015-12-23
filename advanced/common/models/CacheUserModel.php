@@ -24,8 +24,8 @@ class CacheUserModel extends BaseCacheModel
     public $count_favorite = 0;
     public $count_question = 0;
     public $count_answer = 0;
-    public $count_follow = 0;
-    public $count_be_follow = 0;
+    public $count_follow_user = 0;
+    public $count_fans = 0;
     public $count_useful = 0;
     public $count_common_edit = 0;
     public $count_follow_question = 0;

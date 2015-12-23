@@ -20,7 +20,7 @@ class CacheQuestionModel extends BaseCacheModel
     public $count_views = 0;
     public $count_answer = 0;
     public $count_favorite = 0;
-    public $count_follow = 0;
+    public $count_follow_user = 0;
     public $count_like = 0;
     public $count_hate = 0;
     public $created_at;

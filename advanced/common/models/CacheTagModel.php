@@ -13,8 +13,10 @@ use Yii;
 class CacheTagModel extends BaseCacheModel
 {
     public $id;
-    public $name;
-    public $alias;
+    public $name = '';
+    public $alias = '';
+    public $icon = '';
+    public $description = '';
     public $updated_at;
     public $count_follow = 0;
 }

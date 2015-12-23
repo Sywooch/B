@@ -10,6 +10,7 @@
 
 namespace common\entities;
 
+use common\behaviors\FollowTagBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
@@ -19,6 +20,8 @@ use yii\db\ActiveRecord;
 
 class FollowTagEntity extends FollowTag
 {
+    const MAX_FOLLOW_NUMBER = 1000;
+
     public function behaviors()
     {
         return [
@@ -34,6 +37,9 @@ class FollowTagEntity extends FollowTag
                     ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
                     ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_at',
                 ],
+            ],
+            'follow_tag_behavior' => [
+                'class' => FollowTagBehavior::className(),
             ],
         ];
     }

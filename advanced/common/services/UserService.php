@@ -8,6 +8,7 @@
 
 namespace common\services;
 
+use common\components\Error;
 use common\components\user\UserGrade;
 use common\helpers\AvatarHelper;
 use common\models\CacheUserModel;
@@ -381,5 +382,49 @@ class UserService extends BaseService
     public static function getUserDynamicEventList($user_id, $page_no = 1, $page_size = 50)
     {
         //todo
+    }
+
+    /**
+     * 更新用户缓存
+     * @param $user_id
+     * @param $data
+     * @return bool
+     */
+    public static function updateUserCache($user_id, $data)
+    {
+        $cache_key = [REDIS_KEY_USER, $user_id];
+        if ($user_id && $data && Yii::$app->redis->hLen($cache_key)) {
+            return Yii::$app->redis->hMset($cache_key, $data);
+        }
+
+        return true;
+    }
+
+    /**
+     * 重置用户统计数据
+     * @param string $field
+     * @return bool|int
+     */
+    public static function resetUserCount($field)
+    {
+        $allow_reset_fields = [
+            'count_favorite',
+            'count_question',
+            'count_answer',
+            'count_follow_user',
+            'count_fans',
+            'count_useful',
+            'count_common_edit',
+            'count_follow_question',
+            'count_follow_tag',
+        ];
+
+        if (in_array($field, $allow_reset_fields)) {
+            return UserProfileEntity::updateAll(
+                [$field => 0]
+            );
+        } else {
+            return Error::set(Error::TYPE_USER_NOT_ALLOW_TO_RESET_COUNT);
+        }
     }
 }

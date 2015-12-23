@@ -272,7 +272,7 @@ class QuestionController extends BaseController
         $similar_question = QuestionService::searchQuestionByTag($tags);
         
         #增加查看问题计数
-        Counter::addQuestionView($id);
+        Counter::questionAddView($id);
 
         #回答
         if ($answer_id) {

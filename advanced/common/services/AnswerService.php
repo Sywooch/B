@@ -367,16 +367,22 @@ class AnswerService extends BaseService
         return true;
     }
 
+    /**
+     * 更新回答缓存
+     * @param $answer_id
+     * @param $data
+     * @return bool
+     */
     public static function updateAnswerCache($answer_id, $data)
     {
-        if ($answer_id && $data) {
-            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
-
+        $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+        if ($answer_id && $data && Yii::$app->redis->hLen($cache_key)) {
             return Yii::$app->redis->hMset($cache_key, $data);
         }
 
         return true;
     }
+
 
     public static function getAnswerListByUserId($user_id, $page_no, $page_size)
     {

@@ -54,7 +54,7 @@ $this->beginBlock('top-header');
                 <p class="mt30">
                     <strong>
                         <?= Html::a(
-                                $user['count_be_follow'],
+                                $user['count_fans'],
                                 [''],
                                 [
                                         'class' => 'funsCount',

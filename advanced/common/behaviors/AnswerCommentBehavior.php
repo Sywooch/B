@@ -85,6 +85,6 @@ class AnswerCommentBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        Counter::addAnswerComment($this->owner->answer_id);
+        Counter::answerAddComment($this->owner->answer_id);
     }
 }

@@ -117,7 +117,7 @@ class FavoriteService extends BaseService
         }
         
         foreach ($favorite_category_ids as $favorite_category_id) {
-            Counter::removeFavorite($favorite_category_id);
+            Counter::favoriteCagetoryRemoveFavorite($favorite_category_id);
         }
         
         return true;

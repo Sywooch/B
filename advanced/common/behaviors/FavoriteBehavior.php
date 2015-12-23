@@ -46,7 +46,7 @@ class FavoriteBehavior extends BaseBehavior
             );
             if ($result) {
                 //更新文章被收藏数
-                Counter::addQuestionFavorite($this->owner->associate_id);
+                Counter::questionAddFavorite($this->owner->associate_id);
             }
 
         }
@@ -59,7 +59,7 @@ class FavoriteBehavior extends BaseBehavior
         );
 
         //更新收藏夹下的收藏数量
-        Counter::addFavorite($this->owner->favorite_category_id);
+        Counter::favoriteCagetoryAddFavorite($this->owner->favorite_category_id);
     }
 
     public function afterFavoriteDelete()
@@ -75,14 +75,14 @@ class FavoriteBehavior extends BaseBehavior
 
             if ($result) {
                 //更新文章被收藏数
-                Counter::cancelQuestionFavorite($this->owner->associate_id);
+                Counter::questionCancelFavorite($this->owner->associate_id);
             }
         }
 
         //todo 其他类型的收藏
 
         //减少收藏夹下的收藏数量
-        Counter::removeFavorite($this->owner->favorite_category_id);
+        Counter::favoriteCagetoryRemoveFavorite($this->owner->favorite_category_id);
     }
 
     public function afterFavoriteUpdate()
@@ -99,7 +99,7 @@ class FavoriteBehavior extends BaseBehavior
     private function dealWithMoveCategory($from_favorite_category_id, $to_favorite_category_id)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        Counter::removeFavorite($from_favorite_category_id);
-        Counter::addFavorite($to_favorite_category_id);
+        Counter::favoriteCagetoryRemoveFavorite($from_favorite_category_id);
+        Counter::favoriteCagetoryAddFavorite($to_favorite_category_id);
     }
 }

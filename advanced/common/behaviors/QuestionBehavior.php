@@ -247,7 +247,7 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         
-        $result = Counter::addQuestion($this->owner->created_by);
+        $result = Counter::userAddQuestion($this->owner->created_by);
 
         return $result;
     }
@@ -256,7 +256,7 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        $result = Counter::deleteQuestion($this->owner->created_by);
+        $result = Counter::userDeleteQuestion($this->owner->created_by);
 
         return $result;
     }

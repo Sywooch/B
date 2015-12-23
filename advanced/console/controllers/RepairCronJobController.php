@@ -8,10 +8,23 @@
 
 namespace console\controllers;
 
-
 use common\entities\AnswerCommentEntity;
 use common\entities\AnswerEntity;
+use common\entities\FavoriteEntity;
+use common\entities\FollowQuestionEntity;
+use common\entities\FollowTagEntity;
+use common\entities\FollowUserEntity;
 use common\entities\QuestionEntity;
+use common\entities\QuestionTagEntity;
+use common\entities\TagEntity;
+use common\entities\UserEntity;
+use common\entities\UserProfileEntity;
+use common\entities\VoteEntity;
+use common\models\QuestionTag;
+use common\services\AnswerService;
+use common\services\QuestionService;
+use common\services\TagService;
+use common\services\UserService;
 use Yii;
 use yii\console\Controller;
 
@@ -21,56 +34,207 @@ class RepairCronJobController extends Controller
 
     public function actionIndex()
     {
+        $start_time = microtime(true);
+
+        $this->actionQuestion();
+        $this->actionAnswer();
+        $this->actionUser();
+        $this->actionTag();
+
+        $end_time = microtime(true);
+
+        echo sprintf('本次更新耗时:%ss', round($end_time - $start_time, 2));
+    }
+
+    public function actionQuestion()
+    {
         //问题的回答数
-        $this->actionQuestionAnswerCount();
-        //回答的评论数
-        $this->actionAnswerCommentCount();
-
-        //todo
-
+        $this->actuator('QuestionAnswerCount');
         //问题的关注数
+        $this->actuator('QuestionFollowCount');
         //问题的收藏数
-
+        $this->actuator('QuestionFavoriteCount');
         //问题的喜欢
+        $this->actuator('QuestionLikeCount');
         //问题的讨厌
+        $this->actuator('QuestionHateCount');
 
+    }
+
+    public function actionAnswer()
+    {
+        //回答的评论数
+        $this->actuator('AnswerCommentCount');
         //回答的喜欢
+        $this->actuator('AnswerLikeCount');
         //回答的讨厌
+        $this->actuator('AnswerHateCount');
     }
 
-    public function actionQuestionAnswerCount()
+    public function actionUser()
+    {
+        //提问数
+        $this->actuator('UserQuestionCount');
+
+        //回答数
+        $this->actuator('UserAnswerCount');
+
+        //关注好友数
+        $this->actuator('UserFollowUserCount');
+
+        //粉丝数
+        $this->actuator('UserFansCount');
+
+        //关注问题数
+        $this->actuator('UserFollowQuestionCount');
+
+        //关注TAG
+        $this->actuator('UserFollowTagCount');
+    }
+
+    public function actionTag()
+    {
+        //提问数
+        $this->actuator('TagFollowCount');
+        $this->actuator('TagUseCount');
+    }
+
+
+    /**
+     * 执行器
+     * @param $method
+     */
+    private function actuator($method)
     {
         $page_no = 1;
         $page_size = self::PAGE_SIZE;
+        $method = sprintf('dealWith%s', $method);
+
         do {
             $limit = $page_size;
             $offset = max($page_no - 1, 0) * $page_size;
-
-            $result = $this->dealWithQuestionCountAnswer($limit, $offset);
-
+            $result = $this->$method($limit, $offset);
             $page_no++;
-            sleep(1);
+            usleep(10);
         } while ($result);
     }
 
-    public function actionAnswerCommentCount()
+    private function executeQuestionUpdate($update_field, $data)
     {
-        $page_no = 1;
-        $page_size = self::PAGE_SIZE;
-        do {
-            $limit = $page_size;
-            $offset = max($page_no - 1, 0) * $page_size;
+        $sql = [];
+        foreach ($data as $item) {
+            $sql[] = sprintf(
+                "UPDATE `%s` SET `%s`='%d' WHERE id='%d';",
+                QuestionEntity::tableName(),
+                $update_field,
+                $item['total'],
+                $item['question_id']
+            );
+        }
 
-            $result = $this->dealWithAnswerCommentCount($limit, $offset);
+        $command = QuestionEntity::getDb()->createCommand(implode(PHP_EOL, $sql));
 
-            $page_no++;
-            sleep(1);
-        } while ($result);
+        if ($command->execute() !== false) {
+            echo sprintf('%s SUCCESS SQL:%s%s%s', __FUNCTION__, PHP_EOL, $command->getRawSql(), PHP_EOL);
+            //更新redis cache
+            foreach ($data as $item) {
+                QuestionService::updateQuestionCache($item['question_id'], [$update_field => intval($item['total'])]);
+            }
+        } else {
+            echo sprintf('FAIL [%s]%s', $command->getRawSql(), PHP_EOL);
+        }
+    }
+
+    private function executeAnswerUpdate($update_field, $data)
+    {
+        $sql = [];
+        foreach ($data as $item) {
+            $sql[] = sprintf(
+                "UPDATE `%s` SET `%s`='%d' WHERE id='%d';",
+                AnswerEntity::tableName(),
+                $update_field,
+                $item['total'],
+                $item['answer_id']
+            );
+        }
+
+        $command = AnswerEntity::getDb()->createCommand(implode(PHP_EOL, $sql));
+        //echo $command->getRawSql();
+        //exit;
+
+        if ($command->execute() !== false) {
+            echo sprintf('%s SUCCESS SQL:%s%s%s', __FUNCTION__, PHP_EOL, $command->getRawSql(), PHP_EOL);
+            //更新redis cache
+            foreach ($data as $item) {
+                AnswerService::updateAnswerCache($item['answer_id'], [$update_field => intval($item['total'])]);
+            }
+        } else {
+            echo sprintf('FAIL [%s]%s', $command->getRawSql(), PHP_EOL);
+        }
+    }
+
+    private function executeUserUpdate($update_field, $data)
+    {
+        $sql = [];
+        foreach ($data as $item) {
+            $sql[] = sprintf(
+                "UPDATE `%s` SET `%s`='%d' WHERE `user_id`='%d';",
+                UserProfileEntity::tableName(),
+                $update_field,
+                $item['total'],
+                $item['user_id']
+            );
+        }
+
+        $command = UserProfileEntity::getDb()->createCommand(implode(PHP_EOL, $sql));
+        //echo $command->getRawSql();
+        //exit;
+
+        if ($command->execute() !== false) {
+            echo sprintf('%s SUCCESS SQL:%s%s%s', __FUNCTION__, PHP_EOL, $command->getRawSql(), PHP_EOL);
+            //更新redis cache
+            foreach ($data as $item) {
+                UserService::updateUserCache($item['user_id'], [$update_field => intval($item['total'])]);
+            }
+        } else {
+            echo sprintf('FAIL [%s]%s', $command->getRawSql(), PHP_EOL);
+        }
     }
 
 
-    private function dealWithQuestionCountAnswer($limit, $offset)
+    private function executeTagUpdate($update_field, $data)
     {
+        $sql = [];
+        foreach ($data as $item) {
+            $sql[] = sprintf(
+                "UPDATE `%s` SET `%s`='%d' WHERE `id`='%d';",
+                TagEntity::tableName(),
+                $update_field,
+                $item['total'],
+                $item['tag_id']
+            );
+        }
+
+        $command = TagEntity::getDb()->createCommand(implode(PHP_EOL, $sql));
+        //echo $command->getRawSql();
+        //exit;
+
+        if ($command->execute() !== false) {
+            echo sprintf('%s SUCCESS SQL:%s%s%s', __FUNCTION__, PHP_EOL, $command->getRawSql(), PHP_EOL);
+            //更新redis cache
+            foreach ($data as $item) {
+                TagService::updateTagCache($item['tag_id'], [$update_field => intval($item['total'])]);
+            }
+        } else {
+            echo sprintf('FAIL [%s]%s', $command->getRawSql(), PHP_EOL);
+        }
+    }
+
+    /////////////////////////////// question /////////////////////////////////////////////
+
+    private function dealWithQuestionAnswerCount($limit, $offset)
+    {
+        $update_field = 'count_answer';
         $data = AnswerEntity::find()->select(
             [
                 'total' => 'count(1)',
@@ -82,39 +246,112 @@ class RepairCronJobController extends Controller
             return false;
         }
 
-        $sql = [];
-        foreach ($data as $item) {
-            $sql[] = sprintf(
-                "UPDATE `%s` SET `count_answer`='%d' WHERE id='%d';",
-                QuestionEntity::tableName(),
-                $item['total'],
-                $item['question_id']
-            );
-        }
-
-        $command = Yii::$app->db->createCommand(implode(PHP_EOL, $sql));
-
-        if ($command->execute() !== false) {
-            echo sprintf('update db SUCCESS [%s]', $command->getRawSql()), PHP_EOL;
-            foreach ($data as $item) {
-                $cache_key = [REDIS_KEY_QUESTION, $item['question_id']];
-                if (Yii::$app->redis->hLen($cache_key) && Yii::$app->redis->hLen(
-                        $cache_key
-                    )
-                ) {
-                    echo sprintf('update redis KEY[%s] VALUE[%s]', implode(':', $cache_key), $item['total']), PHP_EOL;
-                    Yii::$app->redis->hSet($cache_key, 'count_answer',intval($item['total']) );
-                }
-            }
-        } else {
-            echo sprintf('update db FAIL [%s]', $command->getRawSql()), PHP_EOL;
-        }
+        $this->executeQuestionUpdate($update_field, $data);
 
         return true;
     }
 
+    private function dealWithQuestionFollowCount($limit, $offset)
+    {
+        $update_field = 'count_follow';
+
+        $data = FollowQuestionEntity::find()->select(
+            [
+                'total'       => 'count(1)',
+                'question_id' => 'follow_question_id',
+            ]
+        )->limit($limit)->offset($offset)->groupBy('follow_question_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeQuestionUpdate($update_field, $data);
+
+        return true;
+    }
+
+    private function dealWithQuestionFavoriteCount($limit, $offset)
+    {
+        $update_field = 'count_favorite';
+
+        $data = FavoriteEntity::find()->select(
+            [
+                'total'       => 'count(1)',
+                'question_id' => 'associate_id',
+            ]
+        )->where(
+            [
+                'associate_type' => FavoriteEntity::TYPE_QUESTION,
+            ]
+        )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeQuestionUpdate($update_field, $data);
+
+        return true;
+    }
+
+    private function dealWithQuestionLikeCount($limit, $offset)
+    {
+        $update_field = 'count_like';
+
+        $data = VoteEntity::find()->select(
+            [
+                'total'       => 'count(1)',
+                'question_id' => 'associate_id',
+            ]
+        )->where(
+            [
+                'associate_type' => VoteEntity::TYPE_QUESTION,
+                'vote'           => VoteEntity::VOTE_YES,
+            ]
+        )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeQuestionUpdate($update_field, $data);
+
+        return true;
+    }
+
+    private function dealWithQuestionHateCount($limit, $offset)
+    {
+        $update_field = 'count_hate';
+
+        $data = VoteEntity::find()->select(
+            [
+                'total'       => 'count(1)',
+                'question_id' => 'associate_id',
+            ]
+        )->where(
+            [
+                'associate_type' => VoteEntity::TYPE_QUESTION,
+                'vote'           => VoteEntity::VOTE_NO,
+            ]
+        )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeQuestionUpdate($update_field, $data);
+
+        return true;
+    }
+
+    /////////////////////////////// answer /////////////////////////////////////////////
+
+
     private function dealWithAnswerCommentCount($limit, $offset)
     {
+        $update_field = 'count_comment';
+
         $data = AnswerCommentEntity::find()->select(
             [
                 'total' => 'count(1)',
@@ -126,36 +363,223 @@ class RepairCronJobController extends Controller
             return false;
         }
 
-        $sql = [];
-        foreach ($data as $item) {
-            $sql[] = sprintf(
-                "UPDATE `%s` SET `count_comment`='%d' WHERE id='%d';",
-                AnswerEntity::tableName(),
-                $item['total'],
-                $item['answer_id']
-            );
+        $this->executeAnswerUpdate($update_field, $data);
+
+        return true;
+    }
+
+
+    private function dealWithAnswerLikeCount($limit, $offset)
+    {
+        $update_field = 'count_like';
+
+        $data = VoteEntity::find()->select(
+            [
+                'total'     => 'count(1)',
+                'answer_id' => 'associate_id',
+            ]
+        )->where(
+            [
+                'associate_type' => VoteEntity::TYPE_ANSWER,
+                'vote'           => VoteEntity::VOTE_YES,
+            ]
+        )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
         }
 
-        $command = Yii::$app->db->createCommand(implode(PHP_EOL, $sql));
-        //echo $command->getRawSql();
-        //exit;
+        $this->executeAnswerUpdate($update_field, $data);
 
-        if ($command->execute() !== false) {
-            echo sprintf('update db SUCCESS :' . PHP_EOL . '%s', $command->getRawSql()), PHP_EOL;
-            foreach ($data as $item) {
-                $cache_key = [REDIS_KEY_ANSWER, $item['answer_id']];
+        return true;
+    }
 
-                if (Yii::$app->redis->hLen($cache_key) && Yii::$app->redis->hLen(
-                        $cache_key
-                    )
-                ) {
-                    echo sprintf('update redis KEY[%s] VALUE[%s]', implode(':', $cache_key), $item['total']), PHP_EOL;
-                    Yii::$app->redis->hSet($cache_key, 'count_comment', intval($item['total']));
-                }
-            }
-        } else {
-            echo sprintf('update db FAIL [%s]', $command->getRawSql()), PHP_EOL;
+    private function dealWithAnswerHateCount($limit, $offset)
+    {
+        $update_field = 'count_hate';
+
+        $data = VoteEntity::find()->select(
+            [
+                'total'     => 'count(1)',
+                'answer_id' => 'associate_id',
+            ]
+        )->where(
+            [
+                'associate_type' => VoteEntity::TYPE_ANSWER,
+                'vote'           => VoteEntity::VOTE_NO,
+            ]
+        )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
         }
+
+        $this->executeAnswerUpdate($update_field, $data);
+
+        return true;
+    }
+
+
+    /////////////////////////////// user /////////////////////////////////////////////
+
+    private function dealWithUserQuestionCount($limit, $offset)
+    {
+        $update_field = 'count_question';
+
+        $data = QuestionEntity::find()->select(
+            [
+                'total'   => 'count(1)',
+                'user_id' => 'created_by',
+            ]
+        )->limit($limit)->offset($offset)->groupBy('created_by')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeUserUpdate($update_field, $data);
+
+        return true;
+    }
+
+    private function dealWithUserAnswerCount($limit, $offset)
+    {
+        $update_field = 'count_answer';
+
+        $data = AnswerEntity::find()->select(
+            [
+                'total'   => 'count(1)',
+                'user_id' => 'created_by',
+            ]
+        )->limit($limit)->offset($offset)->groupBy('created_by')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeUserUpdate($update_field, $data);
+
+        return true;
+    }
+
+    private function dealWithUserFollowUserCount($limit, $offset)
+    {
+        $update_field = 'count_follow_user';
+
+        $data = FollowUserEntity::find()->select(
+            [
+                'total' => 'count(1)',
+                'user_id',
+            ]
+        )->limit($limit)->offset($offset)->groupBy('user_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeUserUpdate($update_field, $data);
+
+        return true;
+    }
+
+    private function dealWithUserFollowQuestionCount($limit, $offset)
+    {
+        $update_field = 'count_follow_question';
+
+        $data = FollowQuestionEntity::find()->select(
+            [
+                'total' => 'count(1)',
+                'user_id',
+            ]
+        )->limit($limit)->offset($offset)->groupBy('user_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeUserUpdate($update_field, $data);
+
+        return true;
+    }
+
+    private function dealWithUserFollowTagCount($limit, $offset)
+    {
+        $update_field = 'count_follow_tag';
+
+        $data = FollowTagEntity::find()->select(
+            [
+                'total'   => 'count(1)',
+                'user_id' => 'user_id',
+            ]
+        )->limit($limit)->offset($offset)->groupBy('user_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeUserUpdate($update_field, $data);
+
+        return true;
+    }
+
+    private function dealWithUserFansCount($limit, $offset)
+    {
+        $update_field = 'count_fans';
+
+        $data = FollowUserEntity::find()->select(
+            [
+                'total'   => 'count(1)',
+                'user_id' => 'follow_user_id',
+            ]
+        )->limit($limit)->offset($offset)->groupBy('follow_user_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeUserUpdate($update_field, $data);
+
+        return true;
+    }
+
+    /////////////////////////////// tag /////////////////////////////////////////////
+
+    private function dealWithTagFollowCount($limit, $offset)
+    {
+        $update_field = 'count_follow';
+
+        $data = FollowTagEntity::find()->select(
+            [
+                'total'  => 'count(1)',
+                'tag_id' => 'follow_tag_id',
+            ]
+        )->limit($limit)->offset($offset)->groupBy('follow_tag_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeTagUpdate($update_field, $data);
+
+        return true;
+    }
+
+    private function dealWithTagUseCount($limit, $offset)
+    {
+        $update_field = 'count_use';
+
+        $data = QuestionTagEntity::find()->select(
+            [
+                'total'  => 'count(1)',
+                'tag_id' => 'tag_id',
+            ]
+        )->limit($limit)->offset($offset)->groupBy('tag_id')->asArray()->all();
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $this->executeTagUpdate($update_field, $data);
 
         return true;
     }

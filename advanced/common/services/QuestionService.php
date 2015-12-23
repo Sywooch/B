@@ -76,11 +76,16 @@ class QuestionService extends BaseService
         return QuestionEntity::getDb()->createCommand($sql, [':question_id' => $question_id])->queryAll();
     }
 
+    /**
+     * 更新问题缓存
+     * @param $question_id
+     * @param $data
+     * @return bool
+     */
     public static function updateQuestionCache($question_id, $data)
     {
-        if ($question_id && $data) {
-            $cache_key = [REDIS_KEY_QUESTION, $question_id];
-
+        $cache_key = [REDIS_KEY_QUESTION, $question_id];
+        if ($question_id && $data && Yii::$app->redis->hLen($cache_key)) {
             return Yii::$app->redis->hMset($cache_key, $data);
         }
 
@@ -220,8 +225,8 @@ class QuestionService extends BaseService
 
     public static function getSubjectTags($subject, $limit = 5)
     {
-            $question = new QuestionSearch();
-            $tags = $question->fenci($subject, $limit);
+        $question = new QuestionSearch();
+        $tags = $question->fenci($subject, $limit);
 
         return $tags;
     }
@@ -381,11 +386,12 @@ class QuestionService extends BaseService
         #add follow tag
         if ($result) {
             #add user follow tag
-            FollowService::addFollowTag($user_id, $tag_ids);
-            #tag use count
+            FollowService::batchAddFollowTag($tag_ids, $user_id);
+            #tag use count //todo 放到QuestionTagbehavior中处事
             TagService::updateTagCountUse($tag_ids);
         }
 
         return $result;
     }
+
 }

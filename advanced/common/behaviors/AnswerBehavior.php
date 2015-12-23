@@ -159,8 +159,8 @@ class AnswerBehavior extends BaseBehavior
     private function dealWithAddCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        Counter::addAnswer($this->owner->created_by);
-        Counter::addQuestionAnswer($this->owner->question_id);
+        Counter::userAddAnswer($this->owner->created_by);
+        Counter::questionAddAnswer($this->owner->question_id);
     }
     
     private function dealWithNotification($type)
@@ -188,7 +188,7 @@ class AnswerBehavior extends BaseBehavior
         
         if ($result && $this->owner->created_by != Yii::$app->user->id) {
             #count_common_edit
-            Counter::addCommonEdit(Yii::$app->user->id);
+            Counter::userAddCommonEdit(Yii::$app->user->id);
         }
         Yii::trace(sprintf('add New Version: %s', var_export($result, true)), 'behavior');
     }

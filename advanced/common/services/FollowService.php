@@ -16,11 +16,13 @@ use common\entities\FollowTagPassiveEntity;
 use common\entities\FollowUserEntity;
 use common\exceptions\NotFoundModelException;
 use common\helpers\TimeHelper;
+use common\models\FollowTag;
 use Yii;
 
 class FollowService extends BaseService
 {
     const MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE = 1000;//当超过这个数时，关注此问题的人，不使用缓存
+    const MAX_FOLLOW_TAG_COUNT_BY_USING_CACHE = 1000;
 
     ###################### FOLLOW QUESTION ######################
     /**
@@ -189,8 +191,8 @@ class FollowService extends BaseService
             //大于则查询数据库
             $result = FollowQuestionEntity::find()->where(
                 [
-                    'user_id'     => $user_id,
-                    'question_id' => $question_id,
+                    'user_id'            => $user_id,
+                    'follow_question_id' => $question_id,
                 ]
             )->count(1);
         }
@@ -255,7 +257,61 @@ class FollowService extends BaseService
     }
 
     ###################### FOLLOW TAG ######################
-    public static function addFollowTag($user_id, array $tag_ids)
+
+    public static function addFollowTag($tag_id, $user_id)
+    {
+        Yii::trace(sprintf('用户%d关注标签%d', $user_id, $tag_id), 'service');
+
+        if (empty($user_id) || empty($tag_id)) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,tag_id']);
+        }
+
+        $user = UserService::getUserById($user_id);
+
+        if ($user['count_follow_tag'] > FollowTagEntity::MAX_FOLLOW_NUMBER) {
+            return Error::set(
+                Error::TYPE_FOLLOW_TAG_FOLLOW_TOO_MUCH_TAG,
+                FollowTagEntity::MAX_FOLLOW_NUMBER
+            );
+        }
+
+        if (!FollowTagEntity::findOne(
+            [
+                'follow_tag_id' => $tag_id,
+                'user_id'       => $user_id,
+            ]
+        )
+        ) {
+            $model = new FollowTagEntity();
+            $model->user_id = $user_id;
+            $model->follow_tag_id = $tag_id;
+            if ($model->save()) {
+                $result = true;
+            } else {
+                Yii::error($model->getErrors(), __FUNCTION__);
+
+                $result = false;
+            }
+        } else {
+            $result = true;
+        }
+
+        Yii::trace(sprintf('用户 %d 关注标签 %d ，结果 %s', $user_id, $tag_id, var_export($result, true)), 'service');
+
+        return $result;
+    }
+
+
+    public static function batchAddFollowTag(array $tag_ids, $user_id)
+    {
+        foreach ($tag_ids as $tag_id) {
+            self::addFollowTag($tag_id, $user_id);
+        }
+
+        return true;
+    }
+
+    /*public static function batchAddFollowTag(array $tag_ids, $user_id)
     {
         if (empty($user_id) || empty($tag_ids)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,tag_ids']);
@@ -285,8 +341,10 @@ class FollowService extends BaseService
 
         if ($result) {
             #user follow tag count
-            Counter::followTag($user_id, count($tag_ids));
-
+            Counter::userAddFollowTag($user_id, count($tag_ids));
+            foreach ($tag_ids as $tag_id) {
+                Counter::tagAddFollow($tag_id);
+            }
 
             $params = [
                 [REDIS_KEY_USER_TAG_RELATION, $user_id],
@@ -303,7 +361,7 @@ class FollowService extends BaseService
         }
 
         return $result;
-    }
+    }*/
 
     public static function removeFollowTag(array $tag_ids, $user_id = null)
     {
@@ -320,9 +378,7 @@ class FollowService extends BaseService
         )->filterWhere(['user_id' => $user_id])->all();
 
         foreach ($model as $follow_tag) {
-            if ($follow_tag->delete()) {
-                Counter::cancelFollowTag($follow_tag->user_id);
-            }
+            $follow_tag->delete();
         }
 
         return true;
@@ -361,6 +417,125 @@ class FollowService extends BaseService
         return $tag_ids;
     }
 
+    /**
+     * 添加此标签的用户缓存
+     * @param $tag_id
+     * @param $user_id
+     * @return bool|mixed
+     * @throws NotFoundModelException
+     */
+    public static function addUserOfFollowTagCache($tag_id, $user_id)
+    {
+        $tag = TagService::getTagByTagId($tag_id);
+
+        if (!$tag) {
+            throw new NotFoundModelException('tag', $tag_id);
+        }
+
+        $insert_cache_data = [];
+        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $tag_id];
+
+        if ($tag['count_follow'] < self::MAX_FOLLOW_TAG_COUNT_BY_USING_CACHE) {
+            //小于1000，则使用缓存，大于，则不处理。
+            if (Yii::$app->redis->sCard($cache_key) == 0) {
+                //判断是否已存在集合缓存，不存在
+                $insert_cache_data = FollowTagEntity::find()->select(['user_id'])->where(
+                    [
+                        'follow_tag_id' => $tag_id,
+                    ]
+                )->column();
+
+            } else {
+                //存在则判断是否已存在集合中
+                $cache_data = Yii::$app->redis->sIsMember($cache_key, $user_id);
+                if (!$cache_data) {
+                    $insert_cache_data[] = $user_id;
+                }
+            }
+        }
+
+        if ($insert_cache_data) {
+            //添加到缓存中
+            $params = array_merge(
+                [$cache_key],
+                array_values($insert_cache_data)
+            );
+
+            return call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 移除关注此标签的用户
+     * @param $tag_id
+     * @param $user_id
+     * @return bool|int
+     * @throws NotFoundModelException
+     */
+    public static function removeUserOfFollowTagCache($tag_id, $user_id)
+    {
+        $tag = TagService::getTagByTagId($tag_id);
+
+        if (!$tag) {
+            throw new NotFoundModelException('tag', $tag_id);
+        }
+
+        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $tag_id];
+        if (Yii::$app->redis->sIsMember($cache_key, $user_id)) {
+            //存在则移除
+            return Yii::$app->redis->sRem($cache_key, $user_id);
+        } else {
+            return true;
+        }
+    }
+
+    public static function checkUseIsFollowedTag($tag_id, $user_id)
+    {
+        $tag = TagService::getTagByTagId($tag_id);
+
+        if (!$tag) {
+            throw new NotFoundModelException('tag', $tag_id);
+        }
+
+        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $tag_id];
+
+        if ($tag['count_follow'] < self::MAX_FOLLOW_TAG_COUNT_BY_USING_CACHE) {
+            if (Yii::$app->redis->sCard($cache_key) == 0) {
+                //判断是否已存在集合缓存，不存在
+                $insert_cache_data = FollowTagEntity::find()->select(['user_id'])->where(
+                    [
+                        'follow_tag_id' => $tag_id,
+                    ]
+                )->column();
+
+                if ($insert_cache_data) {
+                    //添加到缓存中
+                    $params = array_merge(
+                        [$cache_key],
+                        array_values($insert_cache_data)
+                    );
+
+                    call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
+                }
+            }
+
+            //小于1000，则使用缓存
+            $result = Yii::$app->redis->sIsMember($cache_key, $user_id);
+        } else {
+            //大于则查询数据库
+            $result = FollowTagEntity::find()->where(
+                [
+                    'user_id'       => $user_id,
+                    'follow_tag_id' => $tag_id,
+                ]
+            )->count(1);
+        }
+
+        return $result;
+    }
+
 
     ###################### FOLLOW USER ######################
 
@@ -374,7 +549,7 @@ class FollowService extends BaseService
             return Error::set(Error::TYPE_FOLLOW_DO_NOT_ALLOW_TO_FOLLOW);
         }
 
-        $follow_user_count = Yii::$app->user->profile->count_follow;
+        $follow_user_count = Yii::$app->user->profile->count_follow_user;
 
         //检查好友数量
         if ($follow_user_count + count($follow_user_ids) > FollowUserEntity::MAX_FOLLOW_USER_NUMBER) {
@@ -409,14 +584,15 @@ class FollowService extends BaseService
         )->execute();
 
         if ($result) {
+            //todo 需要放到behavior中
             #myself
-            Counter::followUser($user_id, count($follow_user_ids));
+            Counter::userAddFollowUser($user_id, count($follow_user_ids));
 
             self::addUserFriendsToCache($user_id, $follow_user_ids);
 
             #be followed user
             foreach ($follow_user_ids as $follow_user_id) {
-                Counter::beFollowUser($follow_user_id);
+                Counter::userAddFans($follow_user_id);
                 self::addUserFansToCache($follow_user_id, [$user_id]);
             }
 
@@ -451,9 +627,9 @@ class FollowService extends BaseService
         foreach ($model as $follow_user) {
             if ($follow_user->delete()) {
                 if ($user_id) {
-                    Counter::cancelFollowUser($user_id);
+                    Counter::userCancelFollowUser($user_id);
                 }
-                Counter::cancelBeFollowUser($follow_user->user_id);
+                Counter::userCancelFans($follow_user->user_id);
             }
         }
 

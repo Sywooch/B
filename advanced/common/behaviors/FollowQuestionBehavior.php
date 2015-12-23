@@ -39,8 +39,8 @@ class FollowQuestionBehavior extends BaseBehavior
         Yii::trace('增加关注此问题的用户缓存:' . var_export($result, true), 'behavior');
         if ($result) {
             //关注问题后，更新问题被关注的数量
-            Counter::addUserFollowQuestion($this->owner->user_id);
-            Counter::addQuestionFollow($this->owner->follow_question_id);
+            Counter::userAddFollowQuestion($this->owner->user_id);
+            Counter::questionAddFollow($this->owner->follow_question_id);
         }
     }
 
@@ -55,8 +55,8 @@ class FollowQuestionBehavior extends BaseBehavior
         Yii::trace('移除关注此问题的用户缓存:' . var_export($result, true), 'behavior');
         if ($result) {
             //关注问题后，更新问题被关注的数量
-            Counter::cancelUserFollowQuestion($this->owner->user_id);
-            Counter::cancelQuestionFollow($this->owner->follow_question_id);
+            Counter::userCancelFollowQuestion($this->owner->user_id);
+            Counter::questionCancelFollow($this->owner->follow_question_id);
         }
     }
 }

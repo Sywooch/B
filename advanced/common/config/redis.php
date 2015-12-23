@@ -40,8 +40,10 @@ const REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS = 'user_is_good_at_tag_ids:string';#用�
 const REDIS_KEY_TAG = 'tag:hash';
 const REDIS_KEY_TAG_LIST = 'tag_list:sset';
 const REDIS_KEY_TAG_NAME_ID = 'tag_name_id:string';#标签名称与ID
-const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:sset';#关注此标签的用户
 const REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT = 'tag_user_relation:sset';#擅长此标签的用户
+
+const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:sset';#标签与用户的关注
+const REDIS_KEY_TAG_FOLLOW_USER_LIST = 'question_follow_user_list:set';//关注此标签的人
 
 #FOLLOW TAG
 
@@ -92,7 +94,7 @@ const REDIS_KEY_XUNSEARCH_TAG = 'xunsearch_tag:string';
  * 除了string\list类型的，serializer需要设置为 Redis::SERIALIZER_IGBINARY,其他都是SERIALIZER_NONE,避免出错
  */
 return [
-    /************************************************/
+    /*------------- system ---------------*/
     #SESSION设置
     REDIS_KEY_SESSION                     => [
         'server'     => $servers['master'],
@@ -156,7 +158,7 @@ return [
         'expire'     => 3600,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
-    /***************************************************/
+    /*------------- user ---------------*/
     #用户数据
     REDIS_KEY_USER                        => [
         'server'     => $servers['master'],
@@ -199,7 +201,7 @@ return [
         'expire'     => 86400,
         'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
-    /*************************************************/
+    /*------------- tag ---------------*/
     #tag
     REDIS_KEY_TAG                         => [
         'server'     => $servers['master'],
@@ -223,6 +225,19 @@ return [
         'expire'     => 3600 * 8,
         'serializer' => Redis::SERIALIZER_NONE,
     ],
+    #关注此标签的人
+    REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT   => [
+        'server'     => $servers['master'],
+        'expire'     => 86400 * 7,
+        'serializer' => Redis::SERIALIZER_NONE,
+    ],
+    #关注此标签的人
+    REDIS_KEY_TAG_FOLLOW_USER_LIST        => [
+        'server'     => $servers['master'],
+        'expire'     => 86400 * 7,
+        'serializer' => Redis::SERIALIZER_NONE,
+    ],
+    /*------------- question ---------------*/
     #question
     REDIS_KEY_QUESTION                    => [
         'server'     => $servers['master'],

@@ -19,9 +19,11 @@ class Error extends Object
     const TYPE_SYSTEM_NORMAL = 'system:normal';
     const TYPE_SYSTEM_PARAMS_IS_EMPTY = 'system:params_is_empty';
     const TYPE_SYSTEM_PARAMS_IS_ERROR = 'system:params_is_error';
+    const TYPE_SYSTEM_AR_SAVE_ERROR = 'system:ar_save_error';
 
     /* user */
     const TYPE_USER_IS_NOT_EXIST = 'user:user_is_not_exist';
+    const TYPE_USER_NOT_ALLOW_TO_RESET_COUNT = 'user:not_allow_to_reset_count';
 
     /* question */
     const TYPE_QUESTION_XUNSEARCH_GET_EXCEPTION = 'question:xunsearch_get_exception';
@@ -41,6 +43,8 @@ class Error extends Object
     const TYPE_FOLLOW_DO_NOT_ALLOW_TO_FOLLOW = 'follow_user:do_not_allow_to_follow';
     /* follow question */
     const TYPE_FOLLOW_QUESTION_FOLLOW_TOO_MUCH_QUESTION = 'follow_question:follow_too_much_question';
+    /* follow tag */
+    const TYPE_FOLLOW_TAG_FOLLOW_TOO_MUCH_TAG = 'follow_tag:follow_too_much_tag';
 
     /* favorite */
     const TYPE_FAVORITE_CATEGORY_DELETE_FAIL = 'favorite:category_delete_fail';
@@ -51,10 +55,12 @@ class Error extends Object
             'normal'          => [1000, true],
             'params_is_empty' => [1001, '参数：%s 不得为空!'],
             'params_is_error' => [1002, '参数：%s 不正确!'],
+            'ar_save_error'   => [1003, '模型：%s 保存出错，信息：%s'],
         ],
         #2000
         'user'            => [
-            'user_is_not_exist' => [2000, '当前用户不存在或已被删除！'],
+            'user_is_not_exist'        => [2000, '当前用户不存在或已被删除！'],
+            'not_allow_to_reset_count' => [2001, '不允许重置此字段！'],
         ],
         #3000
         'question'        => [
@@ -79,7 +85,9 @@ class Error extends Object
             'do_not_allow_to_follow' => [8001, '当前用户不允许关注Ta。'],
         ],
         #9000
-        'follow_tag'      => [],
+        'follow_tag'      => [
+            'follow_too_much_tag' => [9000, '你当前的关注标签的数量%d个，已超过限制，最多%d个标签，请先清理一下。'],
+        ],
         #10000
         'follow_question' => [
             'follow_too_much_question' => [10000, '你当前的关注问题数量已超过限制，最多%d个，请先清理一下。'],

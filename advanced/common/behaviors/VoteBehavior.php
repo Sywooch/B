@@ -50,17 +50,17 @@ class VoteBehavior extends BaseBehavior
                 case VoteEntity::TYPE_QUESTION:
                     //更新问题投票数
                     if ($this->owner->vote == VoteEntity::VOTE_YES) {
-                        Counter::addQuestionLike($this->owner->associate_id);
+                        Counter::questionAddLike($this->owner->associate_id);
                     } else {
-                        Counter::addQuestionHate($this->owner->associate_id);
+                        Counter::questionAddHate($this->owner->associate_id);
                     }
                     break;
                 case VoteEntity::TYPE_ANSWER:
                     //更新回答投票数
                     if ($this->owner->vote == VoteEntity::VOTE_YES) {
-                        Counter::addAnswerLike($this->owner->associate_id);
+                        Counter::answerAddLike($this->owner->associate_id);
                     } else {
-                        Counter::addAnswerHate($this->owner->associate_id);
+                        Counter::answerAddHate($this->owner->associate_id);
                     }
                     break;
             }
@@ -86,21 +86,21 @@ class VoteBehavior extends BaseBehavior
                     case VoteEntity::TYPE_QUESTION:
                         //更新问题投票数
                         if ($this->owner->vote == VoteEntity::VOTE_YES) {
-                            Counter::addQuestionLike($this->owner->associate_id);
-                            Counter::cancelQuestionHate($this->owner->associate_id);
+                            Counter::questionAddLike($this->owner->associate_id);
+                            Counter::questionCancelHate($this->owner->associate_id);
                         } else {
-                            Counter::addQuestionHate($this->owner->associate_id);
-                            Counter::cancelQuestionLike($this->owner->associate_id);
+                            Counter::questionAddHate($this->owner->associate_id);
+                            Counter::questionCancelLike($this->owner->associate_id);
                         }
                         break;
                     case VoteEntity::TYPE_ANSWER:
                         //更新回答投票数
                         if ($this->owner->vote == VoteEntity::VOTE_YES) {
-                            Counter::addAnswerLike($this->owner->associate_id);
-                            Counter::cancelAnswerHate($this->owner->associate_id);
+                            Counter::answerAddLike($this->owner->associate_id);
+                            Counter::answerCancelHate($this->owner->associate_id);
                         } else {
-                            Counter::addAnswerHate($this->owner->associate_id);
-                            Counter::cancelAnswerLike($this->owner->associate_id);
+                            Counter::answerAddHate($this->owner->associate_id);
+                            Counter::answerCancelLike($this->owner->associate_id);
                         }
                         break;
                 }
@@ -123,17 +123,17 @@ class VoteBehavior extends BaseBehavior
                 case VoteEntity::TYPE_QUESTION:
                     //更新问题投票数
                     if ($this->owner->vote == VoteEntity::VOTE_YES) {
-                        Counter::cancelQuestionLike($this->owner->associate_id);
+                        Counter::questionCancelLike($this->owner->associate_id);
                     } else {
-                        Counter::cancelQuestionHate($this->owner->associate_id);
+                        Counter::questionCancelHate($this->owner->associate_id);
                     }
                     break;
                 case VoteEntity::TYPE_ANSWER:
                     //更新回答投票数
                     if ($this->owner->vote == VoteEntity::VOTE_YES) {
-                        Counter::cancelAnswerLike($this->owner->associate_id);
+                        Counter::answerCancelLike($this->owner->associate_id);
                     } else {
-                        Counter::cancelAnswerHate($this->owner->associate_id);
+                        Counter::answerCancelHate($this->owner->associate_id);
                     }
                     break;
             }

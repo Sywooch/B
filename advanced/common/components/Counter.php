@@ -12,10 +12,12 @@ use common\entities\AnswerEntity;
 use common\entities\FavoriteCategoryEntity;
 use common\entities\PrivateMessageEntity;
 use common\entities\QuestionEntity;
+use common\entities\TagEntity;
 use common\entities\UserEntity;
 use common\entities\UserProfileEntity;
 use common\services\AnswerService;
 use common\services\QuestionService;
+use common\services\TagService;
 use common\services\UserService;
 use Yii;
 
@@ -38,39 +40,39 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function beFollowUser($user_id, $multiple = 1)
+    public static function userAddFans($user_id, $multiple = 1)
     {
-        Yii::trace('增加被关注用户数', 'counter');
+        Yii::trace('增加用户粉丝数', 'counter');
 
         $result = self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
-            'count_be_follow',
+            'count_fans',
             1
         )->multiple($multiple)->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_be_follow', 1);
+            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_fans', 1);
         }
 
         return $result;
     }
 
-    public static function cancelBeFollowUser($user_id, $multiple = 1)
+    public static function userCancelFans($user_id, $multiple = 1)
     {
-        Yii::trace('减少被关注用户数', 'counter');
+        Yii::trace('减少用户粉丝数', 'counter');
 
         $result = self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
-            'count_be_follow',
+            'count_fans',
             -1
         )->multiple($multiple)->execute();
 
         if ($result) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_be_follow', -1);
+            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_fans', -1);
         }
 
         return $result;
     }
 
-    public static function followUser($user_id, $multiple = 1)
+    public static function userAddFollowUser($user_id, $multiple = 1)
     {
         Yii::trace('增加关注用户数', 'counter');
 
@@ -86,7 +88,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelFollowUser($user_id)
+    public static function userCancelFollowUser($user_id)
     {
         Yii::trace('减少关注用户数', 'counter');
 
@@ -103,39 +105,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function followTag($user_id, $multiple = 1)
-    {
-        Yii::trace('增加用户关注标签数', 'counter');
-
-        $result = self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
-            'count_follow_tag',
-            1
-        )->multiple($multiple)->execute();
-
-        if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_tag', 1);
-        }
-
-        return $result;
-    }
-
-    public static function cancelFollowTag($user_id)
-    {
-        Yii::trace('减少用户关注标签数', 'counter');
-
-        $result = self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
-            'count_follow_tag',
-            -1
-        )->execute();
-
-        if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_tag', -1);
-        }
-
-        return $result;
-    }
-
-    public static function addUserFollowQuestion($user_id)
+    public static function userAddFollowQuestion($user_id)
     {
         Yii::trace('增加用户问题关注数量', 'counter');
 
@@ -151,7 +121,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelUserFollowQuestion($user_id)
+    public static function userCancelFollowQuestion($user_id)
     {
         Yii::trace('减少用户问题关注数量', 'counter');
 
@@ -167,7 +137,39 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addQuestion($user_id)
+    public static function userAddFollowTag($user_id, $multiple = 1)
+    {
+        Yii::trace('增加用户关注标签数', 'counter');
+
+        $result = self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
+            'count_follow_tag',
+            1
+        )->multiple($multiple)->execute();
+
+        if ($result && UserService::ensureUserHasCached($user_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_tag', 1);
+        }
+
+        return $result;
+    }
+
+    public static function userCancelFollowTag($user_id, $multiple = 1)
+    {
+        Yii::trace('减少用户标签关注数量', 'counter');
+
+        $result = self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
+            'count_follow_tag',
+            -1
+        )->multiple($multiple)->execute();
+
+        if ($result && UserService::ensureUserHasCached($user_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_tag', -1);
+        }
+
+        return $result;
+    }
+
+        public static function userAddQuestion($user_id)
     {
         Yii::trace('增加用户问题提问数量', 'counter');
 
@@ -183,7 +185,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function deleteQuestion($user_id)
+    public static function userDeleteQuestion($user_id)
     {
         Yii::trace('减少用户问题提问数量', 'counter');
 
@@ -199,7 +201,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addAnswer($user_id)
+    public static function userAddAnswer($user_id)
     {
         Yii::trace('增加用户的问题回答数量', 'counter');
 
@@ -215,7 +217,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function deleteAnswer($user_id)
+    public static function userDeleteAnswer($user_id)
     {
         Yii::trace('减少用户的问题回答数量', 'counter');
 
@@ -231,7 +233,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addCommonEdit($user_id)
+    public static function userAddCommonEdit($user_id)
     {
         Yii::trace('增加用户的公共编辑次数', 'counter');
 
@@ -247,7 +249,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelCommonEdit($user_id)
+    public static function userCancelCommonEdit($user_id)
     {
         Yii::trace('减少用户的公共编辑次数', 'counter');
 
@@ -264,7 +266,7 @@ class Counter extends BaseCounter
     }
 
     //******************************************QUESTION***************************************************/
-    public static function addQuestionView($question_id)
+    public static function questionAddView($question_id)
     {
         Yii::trace('增加问题查看数量', 'counter');
 
@@ -280,7 +282,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addQuestionAnswer($question_id)
+    public static function questionAddAnswer($question_id)
     {
         Yii::trace('增加问题回答数量', 'counter');
 
@@ -296,7 +298,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function deleteQuestionAnswer($question_id)
+    public static function questionDeleteAnswer($question_id)
     {
         Yii::trace('减少问题回答数量', 'counter');
 
@@ -312,7 +314,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addQuestionFavorite($question_id)
+    public static function questionAddFavorite($question_id)
     {
         Yii::trace('增加问题收藏数量', 'counter');
 
@@ -328,7 +330,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelQuestionFavorite($question_id)
+    public static function questionCancelFavorite($question_id)
     {
         Yii::trace('减少问题收藏数量', 'counter');
 
@@ -344,7 +346,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addQuestionFollow($question_id)
+    public static function questionAddFollow($question_id)
     {
         Yii::trace('增加问题关注数量', 'counter');
 
@@ -360,7 +362,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelQuestionFollow($question_id)
+    public static function questionCancelFollow($question_id)
     {
         Yii::trace('减少问题关注数量', 'counter');
 
@@ -376,7 +378,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addQuestionLike($question_id)
+    public static function questionAddLike($question_id)
     {
         Yii::trace('增加问题喜欢数量', 'counter');
 
@@ -392,7 +394,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelQuestionLike($question_id)
+    public static function questionCancelLike($question_id)
     {
         Yii::trace('减少问题喜欢数量', 'counter');
 
@@ -408,7 +410,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addQuestionHate($question_id)
+    public static function questionAddHate($question_id)
     {
         Yii::trace('增加问题讨厌数量', 'counter');
 
@@ -424,7 +426,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelQuestionHate($question_id)
+    public static function questionCancelHate($question_id)
     {
         Yii::trace('减少问题喜欢数量', 'counter');
 
@@ -442,7 +444,7 @@ class Counter extends BaseCounter
 
     //******************************************ANSWER***************************************************/
 
-    public static function addAnswerComment($answer_id)
+    public static function answerAddComment($answer_id)
     {
         Yii::trace('增加回答评论数量', 'counter');
 
@@ -459,7 +461,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function deleteAnswerComment($answer_id)
+    public static function answerDeleteComment($answer_id)
     {
         Yii::trace('减少回答评论数量', 'counter');
 
@@ -475,7 +477,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addAnswerLike($answer_id)
+    public static function answerAddLike($answer_id)
     {
         Yii::trace('增加回答喜欢数量', 'counter');
 
@@ -492,7 +494,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelAnswerLike($answer_id)
+    public static function answerCancelLike($answer_id)
     {
         Yii::trace('减少回答喜欢数量', 'counter');
 
@@ -509,7 +511,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function addAnswerHate($answer_id)
+    public static function answerAddHate($answer_id)
     {
         Yii::trace('增加回答讨厌数量', 'counter');
 
@@ -526,7 +528,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function cancelAnswerHate($answer_id)
+    public static function answerCancelHate($answer_id)
     {
         Yii::trace('减少回答讨厌数量', 'counter');
 
@@ -546,7 +548,7 @@ class Counter extends BaseCounter
     //******************************************MESSAGE***************************************************/
 
 
-    public static function addPrivateMessage($private_message_id)
+    public static function privateMessageAddMessage($private_message_id)
     {
         Yii::trace('增加私信的通知数量', 'counter');
 
@@ -556,7 +558,7 @@ class Counter extends BaseCounter
         )->execute();
     }
 
-    public static function deletePrivateMessage($private_message_id)
+    public static function privateMessageDeleteMessage($private_message_id)
     {
         Yii::trace('减少私信的通知数量', 'counter');
 
@@ -568,7 +570,7 @@ class Counter extends BaseCounter
 
     //******************************************FAVORITE***************************************************/
 
-    public static function addFavorite($favorite_category_id)
+    public static function favoriteCagetoryAddFavorite($favorite_category_id)
     {
         Yii::trace('增加收藏夹分类的收藏数量', 'counter');
 
@@ -580,7 +582,7 @@ class Counter extends BaseCounter
         }
     }
 
-    public static function removeFavorite($favorite_category_id)
+    public static function favoriteCagetoryRemoveFavorite($favorite_category_id)
     {
         Yii::trace('减少收藏夹分类的收藏数量', 'counter');
 
@@ -590,5 +592,39 @@ class Counter extends BaseCounter
                 $favorite_category_id
             )->value('count_favorite', -1)->execute();
         }
+    }
+
+    //******************************************TAG***************************************************/
+
+    public static function tagAddFollow($tag_id)
+    {
+        Yii::trace('增加标签关注数量', 'counter');
+
+        $result = self::build()->set(TagEntity::tableName(), $tag_id, 'id')->value(
+            'count_follow',
+            1
+        )->execute();
+
+        if ($result && TagService::ensureTagHasCached($tag_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_TAG, $tag_id], 'count_follow', 1);
+        }
+
+        return $result;
+    }
+
+    public static function tagCancelFollow($tag_id)
+    {
+        Yii::trace('减少标签关注数量', 'counter');
+
+        $result = self::build()->set(TagEntity::tableName(), $tag_id, 'id')->value(
+            'count_follow',
+            -1
+        )->execute();
+
+        if ($result && TagService::ensureTagHasCached($tag_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_TAG, $tag_id], 'count_follow', -1);
+        }
+
+        return $result;
     }
 }

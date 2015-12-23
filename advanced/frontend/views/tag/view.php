@@ -7,25 +7,25 @@ use yii\widgets\LinkPager;
 /* @var $this yii\web\View */
 /* @var $tag \common\entities\TagEntity */
 
-$this->title = $tag->name;
+$this->title = $tag['name'];
 ?>
 <div class="container">
     <div class="row">
         <div class="col-xs-12 col-md-9 main">
 
             <section class="tag-info mt30">
-                <?= $tag->icon ? Html::img(
-                        $tag->icon,
-                        [
-                                'class' => 'pull-left avatar-32 mr10',
-                        ]
+                <?= $tag['icon'] ? Html::img(
+                    $tag['icon'],
+                    [
+                        'class' => 'pull-left avatar-32 mr10',
+                    ]
                 ) : ''; ?>
-                <h1 class="h3"><?= $tag->name ?></h1>
+                <h1 class="h3"><?= $tag['name'] ?></h1>
                 <ul class="list-inline">
                 </ul>
 
                 <div class="mb20">
-                    <p><?= $tag->description ?></p>
+                    <p><?= $tag['description'] ?></p>
                     <ul class="list-inline">
                         <li><?= Html::a('修改', ['tag/edit']) ?></li>
                         <li><?= Html::a('记录', ['tag/version']) ?></li>
@@ -78,17 +78,17 @@ $this->title = $tag->name;
 
                 <div class="text-center">
                     <?= $pages ? LinkPager::widget(
-                            [
-                                    'pagination'  => $pages,
-                                    'options'     => [
-                                            'id'    => 'tag-question-page',
-                                            'class' => 'pagination',
+                        [
+                            'pagination'  => $pages,
+                            'options'     => [
+                                'id'    => 'tag-question-page',
+                                'class' => 'pagination',
 
-                                    ],
-                                    'linkOptions' => [
-                                        //'rel' => 'nofollow',
-                                    ],
-                            ]
+                            ],
+                            'linkOptions' => [
+                                //'rel' => 'nofollow',
+                            ],
+                        ]
                     ) : ''; ?>
                 </div>
             </div>
@@ -100,10 +100,15 @@ $this->title = $tag->name;
 
             <ul class="widget-action--ver list-unstyled mt30">
                 <li>
-                    <button type="button" class="btn btn-success btn-sm tagfollow active" data-id="1040000000089556">
-                        已关注
-                    </button>
-                    <strong class="follows">761</strong> 人关注
+                    <!--问题关注-->
+                    <?= $this->render(
+                        '_tag_follow',
+                        [
+                            'id'           => $tag['id'],
+                            'count_follow' => $tag['count_follow'],
+                            'is_followed'  => $is_followed,
+                        ]
+                    ) ?>
                 </li>
             </ul>
 

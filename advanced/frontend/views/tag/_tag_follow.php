@@ -15,14 +15,14 @@ use yii\widgets\Pjax;
 <?php Pjax::begin(
     [
         'enablePushState' => false,
-        'id'              => 'question-follow-pjax',
+        'id'              => 'tag-follow-pjax',
         'timeout'         => 10000,
     ]
 ); ?>
 
 <?= Html::a(
     $is_followed ? '取消关注' : '关注',
-    ['question/follow', 'question_id' => $id],
+    ['tag/follow', 'id' => $id],
     [
         'id'              => 'sideFollow',
         'class'           => 'btn btn-success btn-sm',

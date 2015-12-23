@@ -78,7 +78,7 @@ class PrivateMessageDialogBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        $result = Counter::addPrivateMessage($this->owner->private_message_id);
+        $result = Counter::privateMessageAddMessage($this->owner->private_message_id);
 
         return $result;
     }

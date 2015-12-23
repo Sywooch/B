@@ -8,6 +8,7 @@
 
 namespace common\services;
 
+use common\entities\FollowTagEntity;
 use common\entities\TagEntity;
 use common\entities\TagRelationEntity;
 use yii\helpers\ArrayHelper;
@@ -237,7 +238,7 @@ class TagService extends BaseService
                 $item = $cache_question_model->filterAttributes($item);
                 $tag_id = $item['id'];
                 $result[$tag_id] = $item;
-                $cache_key = [REDIS_KEY_QUESTION, $tag_id];
+                $cache_key = [REDIS_KEY_TAG, $tag_id];
                 Yii::$app->redis->hMset($cache_key, $item);
             }
         }
@@ -355,5 +356,21 @@ class TagService extends BaseService
     public static function updateTagCountUse(array $tag_ids)
     {
         return TagEntity::updateAllCounters(['count_use' => 1], ['id' => $tag_ids]);
+    }
+
+    /**
+     * 更新问题缓存
+     * @param $tag_id
+     * @param $data
+     * @return bool
+     */
+    public static function updateTagCache($tag_id, $data)
+    {
+        $cache_key = [REDIS_KEY_TAG, $tag_id];
+        if ($tag_id && $data && Yii::$app->redis->hLen($cache_key)) {
+            return Yii::$app->redis->hMset($cache_key, $data);
+        }
+
+        return false;
     }
 }
