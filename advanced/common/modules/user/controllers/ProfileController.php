@@ -37,10 +37,6 @@ class ProfileController extends BaseProfileController
 
         $user = UserService::getUserById($id);
 
-        if (empty($user)) {
-            throw new NotFoundHttpException();
-        }
-
         $question_list = QuestionService::getQuestionListByUserId($id);
 
         return $this->render(

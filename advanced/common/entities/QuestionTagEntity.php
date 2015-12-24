@@ -8,12 +8,26 @@
 
 namespace common\entities;
 
+use common\behaviors\QuestionTagBehavior;
+use common\behaviors\TimestampBehavior;
 use common\components\Error;
 use common\models\QuestionTag;
-use common\services\FollowService;
-use common\services\TagService;
+use yii\db\ActiveRecord;
 
 class QuestionTagEntity extends QuestionTag
 {
-
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class'      => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
+                ],
+            ],
+            'follow_user_behavior' => [
+                'class' => QuestionTagBehavior::className(),
+            ],
+        ];
+    }
 }

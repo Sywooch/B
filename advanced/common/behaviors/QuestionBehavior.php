@@ -395,13 +395,12 @@ class QuestionBehavior extends BaseBehavior
 
             $all_relations = [];
 
-            $current_item = array_shift($tag_names);
             do {
+                $current_item = array_shift($tag_names);
                 foreach ($tag_names as $tag_name) {
                     $all_relations[$current_item][] = $tag_name;
                 }
 
-                $current_item = array_shift($tag_names);
             } while (count($tag_names) > 1);
 
 

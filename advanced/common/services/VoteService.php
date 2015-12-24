@@ -150,7 +150,7 @@ class VoteService extends BaseService
 
             if (Yii::$app->redis->zCard($cache_key) == 0) {
                 //判断是否已存在集合缓存，不存在
-                $data = VoteEntity::find()->select(['created_by', 'vote'])->where(
+                $data = VoteEntity::find()->select(['vote', 'created_by'])->where(
                     [
                         'associate_type' => $associate_type,
                         'associate_id'   => $associate_id,
@@ -172,7 +172,6 @@ class VoteService extends BaseService
 
         if ($insert_cache_data) {
             //添加到缓存中.
-
             $score_params = [
                 $cache_key,
             ];

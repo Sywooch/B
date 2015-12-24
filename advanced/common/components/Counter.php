@@ -627,4 +627,36 @@ class Counter extends BaseCounter
 
         return $result;
     }
+
+    public static function tagAddUse($tag_id)
+    {
+        Yii::trace('增加标签使用数量', 'counter');
+
+        $result = self::build()->set(TagEntity::tableName(), $tag_id, 'id')->value(
+            'count_use',
+            1
+        )->execute();
+
+        if ($result && TagService::ensureTagHasCached($tag_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_TAG, $tag_id], 'count_use', 1);
+        }
+
+        return $result;
+    }
+
+    public static function tagCancelUse($tag_id)
+    {
+        Yii::trace('减少标签使用数量', 'counter');
+
+        $result = self::build()->set(TagEntity::tableName(), $tag_id, 'id')->value(
+            'count_use',
+            -1
+        )->execute();
+
+        if ($result && TagService::ensureTagHasCached($tag_id)) {
+            Yii::$app->redis->hIncrBy([REDIS_KEY_TAG, $tag_id], 'count_use', -1);
+        }
+
+        return $result;
+    }
 }

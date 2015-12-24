@@ -29,21 +29,24 @@ const REDIS_KEY_USER = 'user:hash';
 const REDIS_KEY_USER_USERNAME_USERID = 'username_userid:string';
 
 const REDIS_KEY_USER_FRIENDS = 'user_friends:set';
-const REDIS_KEY_USER_FANS = 'user_fans:set';
+const REDIS_KEY_USER_FANS_LIST = 'user_fans_list:sset';//关注此用户的人
+const REDIS_KEY_USER_FRIEND_LIST = 'user_friend_list:sset';//用户关注的人，即用户好友
 
 const REDIS_KEY_USER_TAG_RELATION = 'user_tag_relation:sset';#用户主动关注的标签
 const REDIS_KEY_USER_TAG_PASSIVE_RELATION = 'user_tag_passive_relation:sset';#用户被动关注的标签
 
 const REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS = 'user_is_good_at_tag_ids:string';#用户擅长的标签
 
+
 #TAG
 const REDIS_KEY_TAG = 'tag:hash';
 const REDIS_KEY_TAG_LIST = 'tag_list:sset';
 const REDIS_KEY_TAG_NAME_ID = 'tag_name_id:string';#标签名称与ID
-const REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT = 'tag_user_relation:sset';#擅长此标签的用户
+const REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT = 'tag_which_user_is_good_at:string';#擅长此标签的用户
+const REDIS_KEY_RELATE_TAG = 'relate_tag:string';#关联标签
 
 const REDIS_KEY_TAG_USER_RELATION = 'tag_user_relation:sset';#标签与用户的关注
-const REDIS_KEY_TAG_FOLLOW_USER_LIST = 'question_follow_user_list:set';//关注此标签的人
+const REDIS_KEY_TAG_FOLLOW_USER_LIST = 'tag_follow_user_list:sset';//关注此标签的人
 
 #FOLLOW TAG
 
@@ -54,8 +57,8 @@ const REDIS_KEY_QUESTION_HAS_ANSWERED = 'question_has_answered:string';
 
 const REDIS_KEY_QUESTION_LIKE_USER_LIST = 'question_like_user_list:set';//喜欢此问题的人
 const REDIS_KEY_QUESTION_HATE_USER_LIST = 'question_hate_user_list:set';//不喜欢此问题的人
-const REDIS_KEY_QUESTION_FOLLOW_USER_LIST = 'question_follow_user_list:set';//关注此问题的人
-const REDIS_KEY_QUESTION_FAVORITE_USER_LIST = 'question_favorite_user_list:set';//收藏此问题的人
+const REDIS_KEY_QUESTION_FOLLOW_USER_LIST = 'question_follow_user_list:sset';//关注此问题的人
+const REDIS_KEY_QUESTION_FAVORITE_USER_LIST = 'question_favorite_user_list:sset';//收藏此问题的人
 
 #ANSWER
 const REDIS_KEY_ANSWER = 'answer:hash';
@@ -91,7 +94,7 @@ const REDIS_KEY_XUNSEARCH_TAG = 'xunsearch_tag:string';
  * key 不得为数字，必须为字符串,
  * expire = 0 表示永久存在
  * serializer Redis::SERIALIZER_NONE Redis::SERIALIZER_NONE Redis::SERIALIZER_PHP
- * 除了string\list类型的，serializer需要设置为 Redis::SERIALIZER_IGBINARY,其他都是SERIALIZER_NONE,避免出错
+ * 除了string\list类型的，serializer需要设置为 Redis::SERIALIZER_IGBINARY,可以直接保存数组格式。其他均是SERIALIZER_NONE,避免出错
  */
 return [
     /*------------- system ---------------*/
@@ -177,8 +180,14 @@ return [
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_NONE,
     ],
-    #用户粉丝
-    REDIS_KEY_USER_FANS                   => [
+    #关注此用户的人，即此用户的粉丝
+    REDIS_KEY_USER_FANS_LIST              => [
+        'server'     => $servers['master'],
+        'expire'     => 86400 * 7,
+        'serializer' => Redis::SERIALIZER_NONE,
+    ],
+    #用户关注的人，即此用户的好友
+    REDIS_KEY_USER_FRIEND_LIST            => [
         'server'     => $servers['master'],
         'expire'     => 86400 * 7,
         'serializer' => Redis::SERIALIZER_NONE,
@@ -225,11 +234,17 @@ return [
         'expire'     => 3600 * 8,
         'serializer' => Redis::SERIALIZER_NONE,
     ],
-    #关注此标签的人
+    #擅长此标签的人
     REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT   => [
         'server'     => $servers['master'],
-        'expire'     => 86400 * 7,
-        'serializer' => Redis::SERIALIZER_NONE,
+        'expire'     => 86400,
+        'serializer' => Redis::SERIALIZER_IGBINARY,
+    ],
+    #关联标签
+    REDIS_KEY_RELATE_TAG                  => [
+        'server'     => $servers['master'],
+        'expire'     => 86400,
+        'serializer' => Redis::SERIALIZER_IGBINARY,
     ],
     #关注此标签的人
     REDIS_KEY_TAG_FOLLOW_USER_LIST        => [

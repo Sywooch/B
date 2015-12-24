@@ -82,7 +82,7 @@ class Error extends Object
         #8000
         'follow_user'     => [
             'follow_too_much_user'   => [8000, '你当前的关注用户的数量%d个，已超过限制，最多%d个用户，请先清理一下。'],
-            'do_not_allow_to_follow' => [8001, '当前用户不允许关注Ta。'],
+            'do_not_allow_to_follow' => [8001, '当前用户不允许你关注Ta。'],
         ],
         #9000
         'follow_tag'      => [

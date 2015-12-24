@@ -353,7 +353,15 @@ class QuestionService extends BaseService
 
     public static function getQuestionCountByTagId($tag_id)
     {
-        return QuestionTagEntity::find()->where(['tag_id' => $tag_id])->count(1);
+        $tag = TagService::getTagByTagId($tag_id);
+        if ($tag) {
+            $count = $tag['count_use'];
+        } else {
+            $count = 0;
+        }
+
+        // QuestionTagEntity::find()->where(['tag_id' => $tag_id])->count(1);
+        return $count;
     }
 
     /**
@@ -373,6 +381,15 @@ class QuestionService extends BaseService
         $created_at = time();
 
         foreach ($tag_ids as $tag_id) {
+            $model = new QuestionTagEntity();
+            $model->question_id = $question_id;
+            $model->tag_id = $tag_id;
+            $model->created_by = $user_id;
+            $model->save();
+        }
+
+        return true;
+        /*foreach ($tag_ids as $tag_id) {
             $data[] = [$question_id, $tag_id, $user_id, $created_at];
         }
 
@@ -387,11 +404,11 @@ class QuestionService extends BaseService
         if ($result) {
             #add user follow tag
             FollowService::batchAddFollowTag($tag_ids, $user_id);
-            #tag use count //todo 放到QuestionTagbehavior中处事
+            #tag use count
             TagService::updateTagCountUse($tag_ids);
-        }
+        }*/
 
-        return $result;
+
     }
 
 }

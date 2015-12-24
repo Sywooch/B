@@ -564,4 +564,14 @@ class TestController extends BaseController
 
         $this->jsonOut($data);
     }
+
+    public function actionTemp()
+    {
+        $question_id = 198;
+        $user_id = 732;
+        $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
+        $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
+
+        var_dump($cache_data);
+    }
 }

@@ -16,48 +16,48 @@ use common\entities\FollowTagPassiveEntity;
 use common\entities\FollowUserEntity;
 use common\exceptions\NotFoundModelException;
 use common\helpers\TimeHelper;
-use common\models\FollowTag;
 use Yii;
 
 class FollowService extends BaseService
 {
-    const MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE = 1000;//当超过这个数时，关注此问题的人，不使用缓存
-    const MAX_FOLLOW_TAG_COUNT_BY_USING_CACHE = 1000;
+    const MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE = 5000;//当超过这个数时，关注此问题的人，不使用缓存
+    const MAX_FOLLOW_TAG_COUNT_BY_USING_CACHE = 5000;//当超过这个数时，关注此标签的人，不使用缓存
+    const MAX_FOLLOW_USER_COUNT_BY_USING_CACHE = 5000;//当超过这个数时，关注此用户的人，不使用缓存
 
     ###################### FOLLOW QUESTION ######################
     /**
      * 添加关注
-     * @param $question_id
+     * @param $follow_question_id
      * @param $user_id
      * @return bool
      */
-    public static function addFollowQuestion($question_id, $user_id)
+    public static function addFollowQuestion($follow_question_id, $user_id)
     {
-        Yii::trace(sprintf('用户%d关注问题%d', $user_id, $question_id), 'service');
+        Yii::trace(sprintf('用户%d关注问题%d', $user_id, $follow_question_id), 'service');
 
-        if (empty($user_id) || empty($question_id)) {
-            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
+        if (empty($user_id) || empty($follow_question_id)) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,follow_question_id']);
         }
 
         $user = UserService::getUserById($user_id);
 
-        if ($user['count_follow_question'] > FollowQuestionEntity::MAX_FOLLOW_NUMBER) {
+        if ($user['count_follow_question'] > FollowQuestionEntity::MAX_FOLLOW_QUESTION_NUMBER) {
             return Error::set(
                 Error::TYPE_FOLLOW_QUESTION_FOLLOW_TOO_MUCH_QUESTION,
-                FollowQuestionEntity::MAX_FOLLOW_NUMBER
+                FollowQuestionEntity::MAX_FOLLOW_QUESTION_NUMBER
             );
         }
 
         if (!FollowQuestionEntity::findOne(
             [
                 'user_id'            => $user_id,
-                'follow_question_id' => $question_id,
+                'follow_question_id' => $follow_question_id,
             ]
         )
         ) {
             $model = new FollowQuestionEntity;
             $model->user_id = $user_id;
-            $model->follow_question_id = $question_id;
+            $model->follow_question_id = $follow_question_id;
             if ($model->save()) {
                 $result = true;
             } else {
@@ -68,7 +68,8 @@ class FollowService extends BaseService
         } else {
             $result = true;
         }
-        Yii::trace(sprintf('用户 %d 关注问题 %d ，结果 %s', $user_id, $question_id, var_export($result, true)), 'service');
+
+        Yii::trace(sprintf('关注结果 %s', var_export($result, true)), 'service');
 
         return $result;
     }
@@ -76,73 +77,60 @@ class FollowService extends BaseService
     /**
      * 添加关注此问题的人的缓存
      * 如果此问题关注人数已超过1000，则不使用缓存
-     * @param $question_id
+     * @param $follow_question_id
      * @param $user_id
      * @return mixed
      * @throws NotFoundModelException
      */
-    public static function addUserOfFollowQuestionCache($question_id, $user_id)
+    public static function addUserOfFollowQuestionCache($follow_question_id, $user_id)
     {
-        $question = QuestionService::getQuestionByQuestionId($question_id);
+        $question = QuestionService::getQuestionByQuestionId($follow_question_id);
 
         if (!$question) {
-            throw new NotFoundModelException('question', $question_id);
+            throw new NotFoundModelException('question', $follow_question_id);
         }
 
-        $insert_cache_data = [];
-        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $question_id];
+        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $follow_question_id];
 
         if ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
-            //小于1000，则使用缓存，大于，则不处理。
-            if (Yii::$app->redis->sCard($cache_key) == 0) {
-                //判断是否已存在集合缓存，不存在
-                $insert_cache_data = FollowQuestionEntity::find()->select(['user_id'])->where(
-                    [
-                        'follow_question_id' => $question_id,
-                    ]
-                )->column();
+            self::ensureUserOfFollowQuestionHasCached($cache_key, $follow_question_id);
 
-            } else {
-                //存在则判断是否已存在集合中
-                $cache_data = Yii::$app->redis->sIsMember($cache_key, $user_id);
-                if (!$cache_data) {
-                    $insert_cache_data[] = $user_id;
-                }
+            $insert_cache_data = [];
+            //存在则判断是否已存在集合中
+            $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
+
+            if ($cache_data === false) {
+                $insert_cache_data[] = ['create_at' => TimeHelper::getCurrentTime(), 'user_id' => $user_id];
+            }
+
+            if ($insert_cache_data) {
+                //添加到缓存中
+                return Yii::$app->redis->batchZAdd($cache_key, $insert_cache_data);
             }
         }
 
-        if ($insert_cache_data) {
-            //添加到缓存中
-            $params = array_merge(
-                [$cache_key],
-                array_values($insert_cache_data)
-            );
-
-            return call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
-        } else {
-            return false;
-        }
+        return true;
     }
 
     /**
      * 移除关注此问题的用户
-     * @param $question_id
+     * @param $follow_question_id
      * @param $user_id
      * @return bool|int
      * @throws NotFoundModelException
      */
-    public static function removeUserOfFollowQuestionCache($question_id, $user_id)
+    public static function removeUserOfFollowQuestionCache($follow_question_id, $user_id)
     {
-        $question = QuestionService::getQuestionByQuestionId($question_id);
+        $question = QuestionService::getQuestionByQuestionId($follow_question_id);
 
         if (!$question) {
-            throw new NotFoundModelException('question', $question_id);
+            throw new NotFoundModelException('question', $follow_question_id);
         }
 
-        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $question_id];
-        if (Yii::$app->redis->sIsMember($cache_key, $user_id)) {
+        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $follow_question_id];
+        if (Yii::$app->redis->zScore($cache_key, $user_id) !== false) {
             //存在则移除
-            return Yii::$app->redis->sRem($cache_key, $user_id);
+            return Yii::$app->redis->zRem($cache_key, $user_id);
         } else {
             return true;
         }
@@ -150,73 +138,56 @@ class FollowService extends BaseService
 
     /**
      * 判断用户是否已关注本问题
-     * @param $question_id
+     * @param $follow_question_id
      * @param $user_id
      * @return bool
      * @throws NotFoundModelException
      */
-    public static function checkUseIsFollowedQuestion($question_id, $user_id)
+    public static function checkUseIsFollowedQuestion($follow_question_id, $user_id)
     {
-        $question = QuestionService::getQuestionByQuestionId($question_id);
+        $question = QuestionService::getQuestionByQuestionId($follow_question_id);
 
         if (!$question) {
-            throw new NotFoundModelException('question', $question_id);
+            throw new NotFoundModelException('question', $follow_question_id);
         }
 
-        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $question_id];
+        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $follow_question_id];
 
         if ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
-            if (Yii::$app->redis->sCard($cache_key) == 0) {
-                //判断是否已存在集合缓存，不存在
-                $insert_cache_data = FollowQuestionEntity::find()->select(['user_id'])->where(
-                    [
-                        'follow_question_id' => $question_id,
-                    ]
-                )->column();
-
-                if ($insert_cache_data) {
-                    //添加到缓存中
-                    $params = array_merge(
-                        [$cache_key],
-                        array_values($insert_cache_data)
-                    );
-
-                    call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
-                }
-            }
+            self::ensureUserOfFollowQuestionHasCached($cache_key, $follow_question_id);
 
             //小于1000，则使用缓存
-            $result = Yii::$app->redis->sIsMember($cache_key, $user_id);
+            $result = Yii::$app->redis->zScore($cache_key, $user_id);
         } else {
             //大于则查询数据库
             $result = FollowQuestionEntity::find()->where(
                 [
                     'user_id'            => $user_id,
-                    'follow_question_id' => $question_id,
+                    'follow_question_id' => $follow_question_id,
                 ]
             )->count(1);
         }
 
-        return $result;
+        return (bool)$result;
     }
 
     /**
-     * @param      $question_id
+     * @param      $follow_question_id
      * @param null $user_id is null, delete all follow
      * @return bool
      * @throws \Exception
      */
-    public static function removeFollowQuestion($question_id, $user_id = null)
+    public static function removeFollowQuestion($follow_question_id, $user_id = null)
     {
-        if (empty($question_id)) {
-            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id']);
+        if (empty($follow_question_id)) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,follow_question_id']);
         }
 
         #delete
         /* @var $model FollowQuestionEntity */
         $model = FollowQuestionEntity::find()->where(
             [
-                'follow_question_id' => $question_id,
+                'follow_question_id' => $follow_question_id,
             ]
         )->filterWhere(['user_id' => $user_id])->all();
 
@@ -230,15 +201,15 @@ class FollowService extends BaseService
 
     /**
      * 获取当前问题下关注的用户
-     * @param     $question_id
+     * @param     $follow_question_id
      * @param int $limit
      * @return array|bool|\common\models\FollowQuestion[]
      */
-    public static function getFollowQuestionUserIdsByQuestionId($question_id, $limit = 100)
+    public static function getFollowQuestionUserIdsByQuestionId($follow_question_id, $limit = 100)
     {
         $user_ids = FollowQuestionEntity::find()->select('user_id')->where(
             [
-                'follow_question_id' => $question_id,
+                'follow_question_id' => $follow_question_id,
             ]
         )->limit($limit)->orderBy('created_at DESC')->column();
 
@@ -258,33 +229,33 @@ class FollowService extends BaseService
 
     ###################### FOLLOW TAG ######################
 
-    public static function addFollowTag($tag_id, $user_id)
+    public static function addFollowTag($follow_tag_id, $user_id)
     {
-        Yii::trace(sprintf('用户%d关注标签%d', $user_id, $tag_id), 'service');
+        Yii::trace(sprintf('用户%d关注标签%d', $user_id, $follow_tag_id), 'service');
 
-        if (empty($user_id) || empty($tag_id)) {
-            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,tag_id']);
+        if (empty($user_id) || empty($follow_tag_id)) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,follow_tag_id']);
         }
 
         $user = UserService::getUserById($user_id);
 
-        if ($user['count_follow_tag'] > FollowTagEntity::MAX_FOLLOW_NUMBER) {
+        if ($user['count_follow_tag'] > FollowTagEntity::MAX_FOLLOW_TAG_NUMBER) {
             return Error::set(
                 Error::TYPE_FOLLOW_TAG_FOLLOW_TOO_MUCH_TAG,
-                FollowTagEntity::MAX_FOLLOW_NUMBER
+                FollowTagEntity::MAX_FOLLOW_TAG_NUMBER
             );
         }
 
         if (!FollowTagEntity::findOne(
             [
-                'follow_tag_id' => $tag_id,
+                'follow_tag_id' => $follow_tag_id,
                 'user_id'       => $user_id,
             ]
         )
         ) {
             $model = new FollowTagEntity();
             $model->user_id = $user_id;
-            $model->follow_tag_id = $tag_id;
+            $model->follow_tag_id = $follow_tag_id;
             if ($model->save()) {
                 $result = true;
             } else {
@@ -296,15 +267,15 @@ class FollowService extends BaseService
             $result = true;
         }
 
-        Yii::trace(sprintf('用户 %d 关注标签 %d ，结果 %s', $user_id, $tag_id, var_export($result, true)), 'service');
+        Yii::trace(sprintf('关注结果 %s', var_export($result, true)), 'service');
 
         return $result;
     }
 
 
-    public static function batchAddFollowTag(array $tag_ids, $user_id)
+    public static function batchAddFollowTag(array $follow_tag_ids, $user_id)
     {
-        foreach ($tag_ids as $tag_id) {
+        foreach ($follow_tag_ids as $tag_id) {
             self::addFollowTag($tag_id, $user_id);
         }
 
@@ -363,17 +334,17 @@ class FollowService extends BaseService
         return $result;
     }*/
 
-    public static function removeFollowTag(array $tag_ids, $user_id = null)
+    public static function removeFollowTag($follow_tag_ids, $user_id = null)
     {
-        if (empty($user_id) || empty($tag_ids)) {
-            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,tag_ids']);
+        if (empty($user_id) || empty($follow_tag_ids)) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,follow_tag_ids']);
         }
 
         #delete
         /* @var $model FollowTagEntity */
         $model = FollowTagEntity::find()->where(
             [
-                'follow_tag_id' => $tag_ids,
+                'follow_tag_id' => $follow_tag_ids,
             ]
         )->filterWhere(['user_id' => $user_id])->all();
 
@@ -419,116 +390,86 @@ class FollowService extends BaseService
 
     /**
      * 添加此标签的用户缓存
-     * @param $tag_id
+     * @param $follow_tag_id
      * @param $user_id
      * @return bool|mixed
      * @throws NotFoundModelException
      */
-    public static function addUserOfFollowTagCache($tag_id, $user_id)
+    public static function addUserOfFollowTagCache($follow_tag_id, $user_id)
     {
-        $tag = TagService::getTagByTagId($tag_id);
+        $tag = TagService::getTagByTagId($follow_tag_id);
 
         if (!$tag) {
-            throw new NotFoundModelException('tag', $tag_id);
+            throw new NotFoundModelException('tag', $follow_tag_id);
         }
 
-        $insert_cache_data = [];
-        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $tag_id];
+        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $follow_tag_id];
 
         if ($tag['count_follow'] < self::MAX_FOLLOW_TAG_COUNT_BY_USING_CACHE) {
-            //小于1000，则使用缓存，大于，则不处理。
-            if (Yii::$app->redis->sCard($cache_key) == 0) {
-                //判断是否已存在集合缓存，不存在
-                $insert_cache_data = FollowTagEntity::find()->select(['user_id'])->where(
-                    [
-                        'follow_tag_id' => $tag_id,
-                    ]
-                )->column();
+            self::ensureUserOfFollowTagHasCached($cache_key, $follow_tag_id);
 
-            } else {
-                //存在则判断是否已存在集合中
-                $cache_data = Yii::$app->redis->sIsMember($cache_key, $user_id);
-                if (!$cache_data) {
-                    $insert_cache_data[] = $user_id;
-                }
+            $insert_cache_data = [];
+            //存在则判断是否已存在集合中
+            $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
+
+            if ($cache_data === false) {
+                $insert_cache_data[] = ['create_at' => TimeHelper::getCurrentTime(), 'user_id' => $user_id];
+            }
+
+            if ($insert_cache_data) {
+                //添加到缓存中
+                return Yii::$app->redis->batchZAdd($cache_key, $insert_cache_data);
             }
         }
 
-        if ($insert_cache_data) {
-            //添加到缓存中
-            $params = array_merge(
-                [$cache_key],
-                array_values($insert_cache_data)
-            );
-
-            return call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
-        } else {
-            return false;
-        }
+        return true;
     }
 
     /**
      * 移除关注此标签的用户
-     * @param $tag_id
+     * @param $follow_tag_id
      * @param $user_id
      * @return bool|int
      * @throws NotFoundModelException
      */
-    public static function removeUserOfFollowTagCache($tag_id, $user_id)
+    public static function removeUserOfFollowTagCache($follow_tag_id, $user_id)
     {
-        $tag = TagService::getTagByTagId($tag_id);
+        $tag = TagService::getTagByTagId($follow_tag_id);
 
         if (!$tag) {
-            throw new NotFoundModelException('tag', $tag_id);
+            throw new NotFoundModelException('tag', $follow_tag_id);
         }
 
-        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $tag_id];
-        if (Yii::$app->redis->sIsMember($cache_key, $user_id)) {
+        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $follow_tag_id];
+        if (Yii::$app->redis->zScore($cache_key, $user_id) !== false) {
             //存在则移除
-            return Yii::$app->redis->sRem($cache_key, $user_id);
+            return Yii::$app->redis->zRem($cache_key, $user_id);
         } else {
             return true;
         }
     }
 
-    public static function checkUseIsFollowedTag($tag_id, $user_id)
+    public static function checkUseIsFollowedTag($follow_tag_id, $user_id)
     {
-        $tag = TagService::getTagByTagId($tag_id);
+        $tag = TagService::getTagByTagId($follow_tag_id);
 
         if (!$tag) {
-            throw new NotFoundModelException('tag', $tag_id);
+            throw new NotFoundModelException('tag', $follow_tag_id);
         }
 
-        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $tag_id];
+        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $follow_tag_id];
 
         if ($tag['count_follow'] < self::MAX_FOLLOW_TAG_COUNT_BY_USING_CACHE) {
-            if (Yii::$app->redis->sCard($cache_key) == 0) {
-                //判断是否已存在集合缓存，不存在
-                $insert_cache_data = FollowTagEntity::find()->select(['user_id'])->where(
-                    [
-                        'follow_tag_id' => $tag_id,
-                    ]
-                )->column();
-
-                if ($insert_cache_data) {
-                    //添加到缓存中
-                    $params = array_merge(
-                        [$cache_key],
-                        array_values($insert_cache_data)
-                    );
-
-                    call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
-                }
-            }
+            self::ensureUserOfFollowTagHasCached($cache_key, $follow_tag_id);
 
             //小于1000，则使用缓存
-            $result = Yii::$app->redis->sIsMember($cache_key, $user_id);
+            $result = Yii::$app->redis->zScore($cache_key, $user_id);
         } else {
             //大于则查询数据库
             $result = FollowTagEntity::find()->where(
                 [
                     'user_id'       => $user_id,
-                    'follow_tag_id' => $tag_id,
+                    'follow_tag_id' => $follow_tag_id,
                 ]
             )->count(1);
         }
@@ -538,72 +479,65 @@ class FollowService extends BaseService
 
 
     ###################### FOLLOW USER ######################
-
-    public static function addFollowUser(array $follow_user_ids, $user_id)
+    public static function addFollowUser($follow_user_id, $user_id)
     {
-        if (empty($user_id) || empty($follow_user_ids)) {
-            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, 'user_id,follow_user_ids');
+        Yii::trace(sprintf('用户%d关注用户%d', $user_id, $follow_user_id), 'service');
+
+        if (empty($user_id) || empty($follow_user_id)) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,follow_user_id']);
         }
 
+        //官方账号禁止关注
         if (UserService::checkWhetherIsOfficialAccount($user_id)) {
             return Error::set(Error::TYPE_FOLLOW_DO_NOT_ALLOW_TO_FOLLOW);
         }
 
-        $follow_user_count = Yii::$app->user->profile->count_follow_user;
+        $user = UserService::getUserById($user_id);
 
-        //检查好友数量
-        if ($follow_user_count + count($follow_user_ids) > FollowUserEntity::MAX_FOLLOW_USER_NUMBER) {
+        if ($user['count_follow_user'] > FollowUserEntity::MAX_FOLLOW_USER_NUMBER) {
             return Error::set(
                 Error::TYPE_FOLLOW_USER_FOLLOW_TOO_MUCH_USER,
-                [
-                    $follow_user_count,
-                    FollowUserEntity::MAX_FOLLOW_USER_NUMBER,
-                ]
+                FollowUserEntity::MAX_FOLLOW_USER_NUMBER
             );
         }
 
-        $data = [];
-        $created_at = TimeHelper::getCurrentTime();
-        foreach ($follow_user_ids as $follow_user_id) {
-            $data[] = [$user_id, $follow_user_id, $created_at];
-        }
+        if (!FollowUserEntity::findOne(
+            [
+                'follow_user_id' => $follow_user_id,
+                'user_id'        => $user_id,
+            ]
+        )
+        ) {
+            $model = new FollowUserEntity();
+            $model->user_id = $user_id;
+            $model->follow_user_id = $follow_user_id;
+            if ($model->save()) {
+                $result = true;
+            } else {
+                Yii::error($model->getErrors(), __FUNCTION__);
 
-        #batch add
-        $sql = FollowUserEntity::getDb()->createCommand()->batchInsert(
-            FollowUserEntity::tableName(),
-            ['user_id', 'follow_user_id', 'created_at'],
-            $data
-        )->getSql();
-
-        $result = FollowUserEntity::getDb()->createCommand(
-            sprintf(
-                '%s ON DUPLICATE KEY UPDATE created_at="%d"',
-                $sql,
-                time()
-            )
-        )->execute();
-
-        if ($result) {
-            //todo 需要放到behavior中
-            #myself
-            Counter::userAddFollowUser($user_id, count($follow_user_ids));
-
-            self::addUserFriendsToCache($user_id, $follow_user_ids);
-
-            #be followed user
-            foreach ($follow_user_ids as $follow_user_id) {
-                Counter::userAddFans($follow_user_id);
-                self::addUserFansToCache($follow_user_id, [$user_id]);
+                $result = false;
             }
-
         } else {
-            Yii::error(sprintf('Batch Add Follow Tag %s', $result), __FUNCTION__);
+            $result = true;
         }
+
+        Yii::trace(sprintf('关注结果 %s', var_export($result, true)), 'service');
 
         return $result;
     }
 
+    public static function batchAddFollowUser(array $follow_user_ids, $user_id)
+    {
+        foreach ($follow_user_ids as $follow_user_id) {
+            self::addFollowUser($follow_user_id, $user_id);
+        }
+
+        return true;
+    }
+
     /**
+     * todo 需要用到behavior
      * @param array $follow_user_ids
      * @param null  $user_id when user_id is null, means delete user_id
      * @return bool
@@ -623,94 +557,148 @@ class FollowService extends BaseService
             ]
         )->filterWhere(['user_id' => $user_id])->all();
 
-        #更新计数
         foreach ($model as $follow_user) {
-            if ($follow_user->delete()) {
-                if ($user_id) {
-                    Counter::userCancelFollowUser($user_id);
-                }
-                Counter::userCancelFans($follow_user->user_id);
-            }
+            $follow_user->delete();
         }
 
-        #更新好友、粉丝缓存
-        if ($user_id) {
-            self::removeUserFriendsToCache($user_id, $follow_user_ids);
+        return true;
+    }
 
-            foreach ($follow_user_ids as $follow_user_id) {
-                self::removeUserFansToCache($follow_user_id, [$user_id]);
+
+    public static function addUserFansCache($follow_user_id, $user_id)
+    {
+        $user = UserService::getUserById($follow_user_id);
+
+        $cache_key = [REDIS_KEY_USER_FANS_LIST, $follow_user_id];
+
+        if ($user['count_follow'] < self::MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
+            self::ensureUserFansHasCached($cache_key, $follow_user_id);
+
+            $insert_cache_data = [];
+            //存在则判断是否已存在集合中
+            $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
+
+            if ($cache_data === false) {
+                $insert_cache_data[] = ['create_at' => TimeHelper::getCurrentTime(), 'user_id' => $user_id];
+            }
+
+            if ($insert_cache_data) {
+                //添加到缓存中
+                return Yii::$app->redis->batchZAdd($cache_key, $insert_cache_data);
             }
         }
 
         return true;
     }
 
-    private static function addUserFriendsToCache($user_id, array $follow_user_id)
+    public static function removeUserFansCache($follow_user_id, $user_id)
     {
-        if ($follow_user_id) {
-            $params = array_merge(
-                [
-                    [REDIS_KEY_USER_FRIENDS, $user_id],
-
-                ],
-                array_values($follow_user_id)
-            );
-
-            return call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
+        $cache_key = [REDIS_KEY_USER_FANS_LIST, $follow_user_id];
+        if (Yii::$app->redis->zScore($cache_key, $user_id) !== false) {
+            //存在则移除
+            return Yii::$app->redis->zRem($cache_key, $user_id);
+        } else {
+            return true;
         }
-
-        return false;
     }
 
-    private static function addUserFansToCache($user_id, array $follow_user_id)
+    public static function removeUserFriendsCache($user_id, $follow_user_id)
     {
-        if ($follow_user_id) {
-            $params = array_merge(
-                [
-                    [REDIS_KEY_USER_FANS, $user_id],
-
-                ],
-                array_values($follow_user_id)
-            );
-
-            return call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
+        $cache_key = [REDIS_KEY_USER_FRIEND_LIST, $user_id];
+        if (Yii::$app->redis->zScore($cache_key, $follow_user_id) !== false) {
+            //存在则移除
+            return Yii::$app->redis->zRem($cache_key, $follow_user_id);
+        } else {
+            return true;
         }
-
-        return false;
     }
 
-    private static function removeUserFriendsToCache($user_id, array $follow_user_id)
+    public static function ensureUserFansHasCached($cache_key, $user_id)
     {
-        if ($follow_user_id) {
-            $params = array_merge(
+        if (Yii::$app->redis->zCard($cache_key) == 0) {
+            $insert_cache_data = FollowUserEntity::find()->select(['created_at', 'user_id'])->where(
                 [
-                    [REDIS_KEY_USER_FRIENDS, $user_id],
+                    'follow_user_id' => $user_id,
+                ]
+            )->asArray()->all();
 
-                ],
-                array_values($follow_user_id)
-            );
-
-            return call_user_func_array([Yii::$app->redis, 'sRem'], $params);
+            if ($insert_cache_data) {
+                return Yii::$app->redis->batchZAdd($cache_key, $insert_cache_data);
+            }
         }
-
-        return false;
     }
 
-    private static function removeUserFansToCache($user_id, array $follow_user_id)
+    public static function ensureUserFriendsHasCached($cache_key, $user_id)
     {
-        if ($follow_user_id) {
-            $params = array_merge(
+        if (Yii::$app->redis->zCard($cache_key) == 0) {
+            $insert_cache_data = FollowUserEntity::find()->select(['created_at', 'follow_user_id'])->where(
                 [
-                    [REDIS_KEY_USER_FRIENDS, $user_id],
+                    'user_id' => $user_id,
+                ]
+            )->asArray()->all();
 
-                ],
-                array_values($follow_user_id)
-            );
+            if ($insert_cache_data) {
+                return Yii::$app->redis->batchZAdd($cache_key, $insert_cache_data);
+            }
+        }
+    }
 
-            return call_user_func_array([Yii::$app->redis, 'sRem'], $params);
+    public static function ensureUserOfFollowQuestionHasCached($cache_key, $follow_question_id)
+    {
+        if (Yii::$app->redis->zCard($cache_key) == 0) {
+            $insert_cache_data = FollowQuestionEntity::find()->select(['created_at', 'user_id'])->where(
+                [
+                    'follow_question_id' => $follow_question_id,
+                ]
+            )->asArray()->all();
+
+            if ($insert_cache_data) {
+                return Yii::$app->redis->batchZAdd($cache_key, $insert_cache_data);
+            }
+        }
+    }
+
+    public static function ensureUserOfFollowTagHasCached($cache_key, $follow_tag_id)
+    {
+        if (Yii::$app->redis->zCard($cache_key) == 0) {
+            $insert_cache_data = FollowTagEntity::find()->select(['created_at', 'user_id'])->where(
+                [
+                    'follow_tag_id' => $follow_tag_id,
+                ]
+            )->asArray()->all();
+
+            if ($insert_cache_data) {
+                Yii::$app->redis->batchZAdd($cache_key, $insert_cache_data);
+            }
+        }
+    }
+
+    public static function checkUseIsFollowedUser($follow_user_id, $user_id)
+    {
+        $user = TagService::getTagByTagId($follow_user_id);
+
+        if (!$user) {
+            throw new NotFoundModelException('user', $follow_user_id);
         }
 
-        return false;
+        $cache_key = [REDIS_KEY_USER_FANS_LIST, $follow_user_id];
+
+        if ($user['count_follow'] < self::MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
+            self::ensureUserFansHasCached($cache_key, $follow_user_id);
+
+            //小于1000，则使用缓存
+            $result = Yii::$app->redis->zScore($cache_key, $user_id);
+        } else {
+            //大于则查询数据库
+            $result = FollowUserEntity::find()->where(
+                [
+                    'user_id'       => $user_id,
+                    'follow_use_id' => $follow_user_id,
+                ]
+            )->count(1);
+        }
+
+        return $result;
     }
 
     ###################### FOLLOW TAG PASSIVE ######################
@@ -898,15 +886,17 @@ class FollowService extends BaseService
 
     /**
      * 获取擅长此标签的用户列表
+     * 使用缓存，一天更新一次
      * @param     $tag_id
      * @param int $limit
      * @param int $period
-     * @return array|bool|string
+     * @return array ['user_id' => 'count_follow', 'user_id' => 'count_follow]
      */
     public static function getUserWhichIsGoodAtThisTag($tag_id, $limit = 20, $period = 30)
     {
         $cache_key = [REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT, implode(':', [$tag_id, $period])];
         $cache_data = Yii::$app->redis->get($cache_key);
+
         if ($cache_data === false) {
             $data = FollowTagPassiveEntity::find()->select(
                 [
@@ -919,14 +909,12 @@ class FollowService extends BaseService
             )->limit($limit)->orderBy(
                 'count_follow DESC'
             )->asArray()->all();
-
             $rank = [];
             foreach ($data as $item) {
                 $rank[$item['user_id']] = $item['count_follow'];
             }
 
             $cache_data = $rank;
-
             Yii::$app->redis->set($cache_key, $cache_data);
         }
 
@@ -936,55 +924,52 @@ class FollowService extends BaseService
 
     /**
      * 获取用户粉丝
+     * 需要判断，如果用户的粉丝太多，不使用缓存，每次分页查数据库
      * @param     $user_id
      * @param int $page_no
      * @param int $page_size
      * @return array
      * @throws \yii\base\Exception
      */
-    public static function getUserFanUserIds($user_id, $page_no = 1, $page_size = 20)
+    public static function getUserFansUserId($user_id, $page_no = 1, $page_size = 20)
     {
-        $cache_data = Yii::$app->redis->sMembers([REDIS_KEY_USER_FRIENDS, $user_id]);
+        $user = UserService::getUserById($user_id);
 
-        if (!$cache_data) {
-            $query = FollowUserEntity::find()->select(['user_id'])->where(
-                ['follow_user_id' => $user_id]
-            )->orderBy('created_at DESC')->limiter($page_no, $page_size);
+        if ($user['count_fans'] <= MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
+            //使用缓存
+            $cache_key = [REDIS_KEY_USER_FANS_LIST, $user_id];
 
-            $follow_user_id = $query->column();
+            self::ensureUserFansHasCached();
 
-            if (self::addUserFansToCache($user_id, $follow_user_id)) {
-                $cache_data = $follow_user_id;
-            }
+            $user_ids = Yii::$app->redis->batchZRevGet($cache_key, $page_no, $page_size);
+        } else {
+            //直接查询数据库
+            $user_ids = FollowUserEntity::find()->select(['user_id'])->where(
+                [
+                    'follow_user_id' => $user_id,
+                ]
+            )->orderBy('created_at DESC')->limiter($page_no, $page_size)->column();
         }
 
-        return $cache_data;
+        return $user_ids;
     }
 
     /**
-     * 获取用户好友
+     * 获取用户关注的好友
      * @param     $user_id
      * @param int $page_no
      * @param int $page_size
      * @return array
      * @throws \yii\base\Exception
      */
-    public static function getUserFriendUserIds($user_id, $page_no = 1, $page_size = 20)
+    public static function getUserFriendsUserId($user_id, $page_no = 1, $page_size = 20)
     {
-        $cache_data = Yii::$app->redis->sMembers([REDIS_KEY_USER_FRIENDS, $user_id]);
+        $cache_key = [REDIS_KEY_USER_FRIEND_LIST, $user_id];
 
-        if (!$cache_data) {
-            $follow_user_id = FollowUserEntity::find()->select(['follow_user_id'])->where(
-                [
-                    'user_id' => $user_id,
-                ]
-            )->orderBy('created_at DESC')->limiter($page_no, $page_size)->column();
+        self::ensureUserFriendsHasCached();
 
-            if (self::addUserFriendsToCache($user_id, $follow_user_id)) {
-                $cache_data = $follow_user_id;
-            }
-        }
+        $user_ids = Yii::$app->redis->batchZRevGet($cache_key, $page_no, $page_size);
 
-        return $cache_data;
+        return $user_ids;
     }
 }

@@ -14,6 +14,7 @@ use common\entities\FavoriteCategoryEntity;
 use common\entities\FavoriteEntity;
 use common\entities\QuestionEntity;
 use common\exceptions\NotFoundModelException;
+use common\helpers\TimeHelper;
 use Exception;
 use Yii;
 
@@ -23,7 +24,7 @@ class FavoriteService extends BaseService
 
     public static function addFavoriteQuestion($question_id, $user_id)
     {
-        $model = new  FavoriteEntity;
+        $model = new FavoriteEntity();
         $model->created_by = $user_id;
         $model->associate_type = FavoriteEntity::TYPE_QUESTION;
         $model->associate_id = $question_id;
@@ -31,7 +32,16 @@ class FavoriteService extends BaseService
         if ($model->save()) {
             return true;
         } else {
-            return Error::set(-1);
+            return Error::set(
+                Error::TYPE_SYSTEM_AR_SAVE_ERROR,
+                [
+                    FavoriteEntity::className(),
+                    var_export(
+                        $model->getErrors(),
+                        true
+                    ),
+                ]
+            );
         }
     }
 
@@ -158,40 +168,27 @@ class FavoriteService extends BaseService
             throw new NotFoundModelException('question', $question_id);
         }
 
-        $insert_cache_data = [];
         $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
 
         if ($question['count_favorite'] < self::MAX_FAVORITE_QUESTION_COUNT_BY_USING_CACHE) {
             //小于1000，则使用缓存，大于，则不处理。
+            self::ensureUserOfFavoriteQuestionHasCached($cache_key, $question_id);
 
-            if (Yii::$app->redis->sCard($cache_key) == 0) {
-                //判断是否已存在集合缓存，不存在
-                $insert_cache_data = FavoriteEntity::find()->select(['created_by'])->where(
-                    [
-                        'associate_type' => FavoriteEntity::TYPE_QUESTION,
-                        'associate_id'   => $question_id,
-                    ]
-                )->column();
-            } else {
-                //存在则判断是否已存在集合中
-                $cache_data = Yii::$app->redis->sIsMember($cache_key, $user_id);
-                if (!$cache_data) {
-                    $insert_cache_data[] = $user_id;
-                }
+            $insert_cache_data = [];
+            //存在则判断是否已存在集合中
+            $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
+
+            if ($cache_data === false) {
+                $insert_cache_data[] = ['create_at' => TimeHelper::getCurrentTime(), 'user_id' => $user_id];
+            }
+
+            if ($insert_cache_data) {
+                //添加到缓存中
+                return Yii::$app->redis->batchZAdd($cache_key, $insert_cache_data);
             }
         }
 
-        if ($insert_cache_data) {
-            //添加到缓存中
-            $params = array_merge(
-                [$cache_key],
-                array_values($insert_cache_data)
-            );
-
-            return call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
-        } else {
-            return false;
-        }
+        return true;
     }
 
     /**
@@ -211,54 +208,63 @@ class FavoriteService extends BaseService
 
         $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
 
-        return Yii::$app->redis->sRem($cache_key, $user_id);
+        if (Yii::$app->redis->zScore($cache_key, $user_id) !== false) {
+            //存在则移除
+            return Yii::$app->redis->zRem($cache_key, $user_id);
+        } else {
+            return true;
+        }
+    }
+
+    public static function ensureUserOfFavoriteQuestionHasCached($cache_key, $question_id)
+    {
+        if (Yii::$app->redis->zCard($cache_key) == 0) {
+            $insert_cache_data = FavoriteEntity::find()->select(
+                [
+                    'created_at',
+                    'user_id' => 'created_by',
+                ]
+            )->where(
+                [
+                    'associate_type' => FavoriteEntity::TYPE_QUESTION,
+                    'associate_id'   => $question_id,
+                ]
+            )->asArray()->all();
+
+            if ($insert_cache_data) {
+                return Yii::$app->redis->batchZAdd($cache_key, $insert_cache_data);
+            }
+        }
     }
 
     /**
      * 判断用户是否已收藏本问题
-     * @param $question_id
+     * @param $favorite_question_id
      * @param $user_id
      * @return bool
      * @throws NotFoundModelException
      */
-    public static function checkUseIsFavoriteQuestion($question_id, $user_id)
+    public static function checkUseIsFavoriteQuestion($favorite_question_id, $user_id)
     {
-        $question = QuestionService::getQuestionByQuestionId($question_id);
+        $question = QuestionService::getQuestionByQuestionId($favorite_question_id);
 
         if (!$question) {
-            throw new NotFoundModelException('question', $question_id);
+            throw new NotFoundModelException('question', $favorite_question_id);
         }
 
-        $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
+        $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $favorite_question_id];
 
         if ($question['count_favorite'] < self::MAX_FAVORITE_QUESTION_COUNT_BY_USING_CACHE) {
-            if (Yii::$app->redis->sCard($cache_key) == 0) {
-                //判断是否已存在集合缓存，不存在
-                $insert_cache_data = FavoriteEntity::find()->select(['created_by'])->where(
-                    [
-                        'associate_type' => FavoriteEntity::TYPE_QUESTION,
-                        'associate_id'   => $question_id,
-                    ]
-                )->column();
-                if ($insert_cache_data) {
-                    //添加到缓存中
-                    $params = array_merge(
-                        [$cache_key],
-                        array_values($insert_cache_data)
-                    );
-
-                    call_user_func_array([Yii::$app->redis, 'sAdd'], $params);
-                }
-            }
+            self::ensureUserOfFavoriteQuestionHasCached($cache_key, $favorite_question_id);
 
             //小于1000，则使用缓存
-            $result = Yii::$app->redis->sIsMember($cache_key, $user_id);
+            $result = Yii::$app->redis->zScore($cache_key, $user_id);
         } else {
             //大于则查询数据库
             $result = FavoriteEntity::find()->where(
                 [
                     'associate_type' => FavoriteEntity::TYPE_QUESTION,
-                    'associate_id'   => $question_id,
+                    'associate_id'   => $favorite_question_id,
                     'created_by'     => $user_id,
                 ]
             )->count(1);

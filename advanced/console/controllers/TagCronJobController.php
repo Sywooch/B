@@ -62,36 +62,33 @@ class TagCronJobController extends Controller
             ]
         )->limit($limit)->offset($offset)->asArray()->column();
 
-
         if ($questions) {
             $tag_data = $tag_relations = [];
-            foreach ($questions as $item) {
-                $tags = explode(',', $item);
+            foreach ($questions as $tag) {
+                $tags = explode(',', $tag);
                 #此处排序很重要，只负责A与B的关系，不管B与A的关系
                 sort($tags, SORT_STRING);
                 $tag_relations[] = $tags;
                 $tag_data = array_merge($tag_data, $tags);
             }
 
+
             $all_tag_name_id = TagService::getTagIdByName($tag_data);
 
             $all_relations = [];
 
-            foreach ($tag_relations as $relation) {
-                if (count($relation) <= 1) {
+            foreach ($tag_relations as $tag) {
+                if (count($tag) <= 1) {
                     continue;
                 } else {
-                    $current_item = array_shift($relation);
                     do {
-                        foreach ($relation as $tag_name) {
-                            $all_relations[$current_item][] = $tag_name;
+                        $current_tag = array_shift($tag);
+                        foreach ($tag as $tag_name) {
+                            $all_relations[$current_tag][] = $tag_name;
                         }
-
-                        $current_item = array_shift($relation);
-                    } while (count($relation) > 1);
+                    } while (count($tag) > 1);
                 }
             }
-
 
             $data = [];
             foreach ($all_relations as $tag_name_1 => $item_relation) {

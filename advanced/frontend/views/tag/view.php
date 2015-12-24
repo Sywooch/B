@@ -127,135 +127,35 @@ $this->title = $tag['name'];
                 </div>
             <?php endif; ?>
 
-            <div class="widget-box widget-taguser">
-                <h2 class="h4 widget-box__title">本月新人榜</h2>
-                <ol class="widget-top10">
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/157/842/1578424531-1030000000455562_small"
-                             class="avatar-24">
-                        <a href="/u/mcfog" class="ellipsis">mcfog</a>
-                        <span class="text-muted pull-right">+45</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/371/448/3714482234-1030000000203625_small"
-                             class="avatar-24">
-                        <a href="/u/douglarek" class="ellipsis">douglarek</a>
-                        <span class="text-muted pull-right">+17</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/343/761/3437616413-565e77bda71f1_small"
-                             class="avatar-24">
-                        <a href="/u/houshuu" class="ellipsis">方舟</a>
-                        <span class="text-muted pull-right">+16</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/344/431/3444319505-54b4d16166774_small"
-                             class="avatar-24">
-                        <a href="/u/shibar" class="ellipsis">JingDing</a>
-                        <span class="text-muted pull-right">+8</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/184/012/1840129184-1030000000256515_small"
-                             class="avatar-24">
-                        <a href="/u/zaidisu" class="ellipsis">在低诉</a>
-                        <span class="text-muted pull-right">+7</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/266/538/2665388308-1030000000323597_small"
-                             class="avatar-24">
-                        <a href="/u/weakish" class="ellipsis">weakish</a>
-                        <span class="text-muted pull-right">+3</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/893/304/893304847-5508f4f9a6679_small"
-                             class="avatar-24">
-                        <a href="/u/util" class="ellipsis">util</a>
-                        <span class="text-muted pull-right">+2</span>
-                    </li>
-                    <li>
-                        <img src="http://static.segmentfault.com/v-56666dcd/global/img/user-32.png" class="avatar-24">
-                        <a href="/u/jiayi797" class="ellipsis">jiayi797</a>
-                        <span class="text-muted pull-right">+1</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/371/782/371782932-5620bef587fde_small"
-                             class="avatar-24">
-                        <a href="/u/kphcdr" class="ellipsis">kphcdr</a>
-                        <span class="text-muted pull-right">+1</span>
-                    </li>
-                    <li>
-                        <img src="http://static.segmentfault.com/v-56666dcd/global/img/user-32.png" class="avatar-24">
-                        <a href="/u/web_cc" class="ellipsis">前端小c</a>
-                        <span class="text-muted pull-right">+1</span>
-                    </li>
-                </ol>
-            </div>
+            <?php if ($tag_who_good_at_in_30_days): ?>
+                <div class="widget-box widget-taguser">
+                    <h2 class="h4 widget-box__title">本月新人榜</h2>
+                    <ol class="widget-top10">
+                        <?php foreach ($tag_who_good_at_in_30_days as $user_id => $count_follow): ?>
+                            <li>
+                                <?= TemplateHelper::showUserAvatar($user_id, 24, false) ?>
+                                <?= TemplateHelper::showUsername($user_id) ?>
+                                <span class="text-muted pull-right">+<?= $count_follow ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            <?php endif; ?>
 
-            <div class="widget-box widget-taguser">
-                <h2 class="h4 widget-box__title">标签名人榜</h2>
-                <ol class="widget-top10">
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/812/504/812504259-54509cf40aa63_small"
-                             class="avatar-24">
-                        <a href="/u/justjavac" class="ellipsis">justjavac</a>
-                        <span class="text-muted pull-right">+1883</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/263/018/2630188223-1030000000125916_small"
-                             class="avatar-24">
-                        <a href="/u/nightire" class="ellipsis">nightire</a>
-                        <span class="text-muted pull-right">+1057</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/190/789/1907890660-1030000000256749_small"
-                             class="avatar-24">
-                        <a href="/u/yinchuan" class="ellipsis">尹川</a>
-                        <span class="text-muted pull-right">+756</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/157/842/1578424531-1030000000455562_small"
-                             class="avatar-24">
-                        <a href="/u/mcfog" class="ellipsis">mcfog</a>
-                        <span class="text-muted pull-right">+647</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/261/898/2618981758-1030000000091293_small"
-                             class="avatar-24">
-                        <a href="/u/joyqi" class="ellipsis">joyqi</a>
-                        <span class="text-muted pull-right">+643</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/266/538/2665388308-1030000000323597_small"
-                             class="avatar-24">
-                        <a href="/u/weakish" class="ellipsis">weakish</a>
-                        <span class="text-muted pull-right">+625</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/373/745/3737454955-5493d7d24ab19_small"
-                             class="avatar-24">
-                        <a href="/u/sunny" class="ellipsis">高阳Sunny</a>
-                        <span class="text-muted pull-right">+606</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/270/943/2709439599-1030000000321731_small"
-                             class="avatar-24">
-                        <a href="/u/shamiao" class="ellipsis">沙渺</a>
-                        <span class="text-muted pull-right">+531</span>
-                    </li>
-                    <li>
-                        <img src="http://sfault-avatar.b0.upaiyun.com/365/581/3655811061-1030000000094193_small"
-                             class="avatar-24">
-                        <a href="/u/jysperm" class="ellipsis">王子亭</a>
-                        <span class="text-muted pull-right">+517</span>
-                    </li>
-                    <li>
-                        <img src="http://static.segmentfault.com/v-56666dcd/global/img/user-32.png" class="avatar-24">
-                        <a href="/u/syeerzy" class="ellipsis">Syeerzy</a>
-                        <span class="text-muted pull-right">+516</span>
-                    </li>
-                </ol>
-            </div>
-
+            <?php if ($tag_who_good_at_in_365_days): ?>
+                <div class="widget-box widget-taguser">
+                    <h2 class="h4 widget-box__title">标签名人榜</h2>
+                    <ol class="widget-top10">
+                        <?php foreach ($tag_who_good_at_in_365_days as $user_id => $count_follow): ?>
+                            <li>
+                                <?= TemplateHelper::showUserAvatar($user_id, 24, false) ?>
+                                <?= TemplateHelper::showUsername($user_id) ?>
+                                <span class="text-muted pull-right">+<?= $count_follow ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            <?php endif; ?>
         </div>
         <!-- /.side -->
     </div>

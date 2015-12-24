@@ -12,7 +12,7 @@ use yii\db\ActiveRecord;
 
 class FollowQuestionEntity extends FollowQuestion
 {
-    const MAX_FOLLOW_NUMBER = 5000;
+    const MAX_FOLLOW_QUESTION_NUMBER = 5000;
 
     public function behaviors()
     {

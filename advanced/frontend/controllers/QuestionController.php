@@ -409,7 +409,7 @@ class QuestionController extends BaseController
 
         /*if ($user_id) {
             //用户好友
-            $user_friend_user_ids = FollowService::getUserFriendUserIds($user_id);
+            $user_friend_user_ids = FollowService::getUserFriendsUserId($user_id);
             if ($user_friend_user_ids) {
                 $user_ids = array_merge($user_ids, $user_friend_user_ids);
             }

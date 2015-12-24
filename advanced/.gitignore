@@ -39,3 +39,4 @@ console/runtime/*
 
 frontend/runtime/*
 frontend/web/uploads/avatars/*
+tests/_output/*

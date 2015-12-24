@@ -302,4 +302,47 @@ class Connection extends Component
 
         return $cache_hit_data;
     }
+
+    /**
+     * 批量添加
+     * @param $cache_key
+     * @param $data 数据项必须保存格式为：[['score1','member1']['score2','member2']]，注意score与member的顺序
+     * @return bool|mixed
+     */
+    public function batchZAdd($cache_key, $data)
+    {
+        if ($data) {
+            $sset_params = [
+                $cache_key,
+            ];
+
+            foreach ($data as $item) {
+                $item = array_values($item);
+                $sset_params[] = $item[0];
+                $sset_params[] = $item[1];
+            }
+
+            return call_user_func_array([$this, 'zAdd'], $sset_params);
+        } else {
+            return false;
+        }
+    }
+
+    public function batchZRevGet($cache_key, $page_no = 1, $page_size = 10)
+    {
+        $page_no = max($page_no, 1);
+        $start = ($page_no - 1) * $page_size;
+        $end = $page_size * $page_no - 1;
+
+        return call_user_func([$this, 'zRevRange'], $cache_key, $start, $end);
+    }
+
+    public function batchZGet($cache_key, $page_no = 1, $page_size = 10)
+    {
+        $page_no = max($page_no, 1);
+        $start = ($page_no - 1) * $page_size;
+        $end = $page_size * $page_no - 1;
+
+        return call_user_func([$this, 'zRange'], $cache_key, $start, $end);
+    }
 }

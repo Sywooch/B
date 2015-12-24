@@ -10,6 +10,7 @@ namespace common\services;
 
 use common\components\Error;
 use common\components\user\UserGrade;
+use common\exceptions\NotFoundModelException;
 use common\helpers\AvatarHelper;
 use common\models\CacheUserModel;
 use Imagine\Exception\InvalidArgumentException;
@@ -107,8 +108,12 @@ class UserService extends BaseService
     public static function getUserById($user_id)
     {
         $data = self::getUserListByIds([$user_id]);
+        if ($data) {
+            return array_shift($data);
+        } else {
+            throw new NotFoundModelException('user', $user_id);
+        }
 
-        return $data ? array_shift($data) : false;
     }
 
     public static function getUserListByIds($user_ids)
@@ -316,18 +321,6 @@ class UserService extends BaseService
         return $tag_list;
     }
 
-    public static function getUserFriendList($user_id, $limit = 20)
-    {
-        $user_ids = FollowService::getUserFriendUserIds($user_id, 1, $limit);
-        if ($user_ids) {
-            $user_list = UserService::getUserListByIds($user_ids);
-        } else {
-            $user_list = false;
-        }
-
-        return $user_list;
-    }
-
     public static function getUserFollowQuestionList($user_id, $page_no = 1, $page_size = 20)
     {
         $question_id = FollowService::getUserFollowQuestionIdsByUserId($user_id, $page_no, $page_size);
@@ -355,7 +348,7 @@ class UserService extends BaseService
      */
     public static function getUserFansList($user_id, $page_no = 1, $page_size = 50)
     {
-        $user_ids = FollowService::getUserFanUserIds($user_id, $page_no, $page_size);
+        $user_ids = FollowService::getUserFansUserId($user_id, $page_no, $page_size);
 
         if ($user_ids) {
             $user_list = UserService::getUserListByIds($user_ids);
@@ -366,14 +359,21 @@ class UserService extends BaseService
         return $user_list;
     }
 
+    /**
+     * 获取用户关注的好友列表
+     * @param     $user_id
+     * @param int $page_no
+     * @param int $page_size
+     * @return array
+     */
     public static function getUserFriendsList($user_id, $page_no = 1, $page_size = 50)
     {
-        $user_ids = FollowService::getUserFriendUserIds($user_id, $page_no, $page_size);
+        $user_ids = FollowService::getUserFriendsUserId($user_id, $page_no, $page_size);
 
         if ($user_ids) {
             $user_list = UserService::getUserListByIds($user_ids);
         } else {
-            $user_list = false;
+            $user_list = [];
         }
 
         return $user_list;

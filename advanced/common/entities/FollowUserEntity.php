@@ -8,6 +8,7 @@
 
 namespace common\entities;
 
+use common\behaviors\FollowUserBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
 use common\models\FollowUser;
@@ -16,7 +17,7 @@ use yii\db\ActiveRecord;
 
 class FollowUserEntity extends FollowUser
 {
-    const MAX_FOLLOW_USER_NUMBER = 1000;
+    const MAX_FOLLOW_USER_NUMBER = 2000;
 
     public function behaviors()
     {
@@ -26,6 +27,9 @@ class FollowUserEntity extends FollowUser
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
+            ],
+            'follow_user_behavior' => [
+                'class' => FollowUserBehavior::className(),
             ],
         ];
     }

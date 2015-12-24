@@ -20,7 +20,7 @@ use yii\db\ActiveRecord;
 
 class FollowTagEntity extends FollowTag
 {
-    const MAX_FOLLOW_NUMBER = 1000;
+    const MAX_FOLLOW_TAG_NUMBER = 5000;
 
     public function behaviors()
     {

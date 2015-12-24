@@ -50,6 +50,7 @@ class FavoriteBehavior extends BaseBehavior
             }
 
         }
+
         //todo 其他类型的收藏
 
         //更新收藏夹最后更新时间

@@ -265,56 +265,64 @@ class TagService extends BaseService
      */
     public static function getRelateTag($tag_id, $limit = 100)
     {
-        $tag_relate_list = TagRelationEntity::find()->where(
-            [
-                'or',
-                '`tag_id_1`=:tag_id',
-                '`tag_id_2`=:tag_id',
-            ],
-            [':tag_id' => $tag_id]
-        )->andWhere(
-            [
-                'status' => TagRelationEntity::STATUS_ENABLE,
-            ]
-        )->orderBy('count_relation DESC')->limit($limit)->asArray()->all();
+        $cache_key = [REDIS_KEY_RELATE_TAG, implode(':', [$tag_id, $limit])];
+        $cache_data = Yii::$app->redis->get($cache_key);
 
-        /*$relate_tag_ids = [
-            'brother' => [
-                'tag_id' => [
-                    'name' => '',
-                    'count_relation',
+        if ($cache_data === false) {
+            $tag_relate_list = TagRelationEntity::find()->where(
+                [
+                    'or',
+                    '`tag_id_1`=:tag_id',
+                    '`tag_id_2`=:tag_id',
                 ],
-            ],
-        ];*/
+                [':tag_id' => $tag_id]
+            )->andWhere(
+                [
+                    'status' => TagRelationEntity::STATUS_ENABLE,
+                ]
+            )->orderBy('count_relation DESC')->limit($limit)->asArray()->all();
 
-        $relate_tag = $relate_tag_ids = [];
-        foreach ($tag_relate_list as $item) {
-            if ($item['tag_id_1'] == $tag_id) {
-                $relate_tag[$item['type']][$item['tag_id_2']] = [
-                    'id'             => $item['tag_id_2'],
-                    'name'           => '',
-                    'count_relation' => $item['count_relation'],
-                ];
-                $relate_tag_ids[] = $item['tag_id_2'];
-            } else {
-                $relate_tag[$item['type']][$item['tag_id_1']] = [
-                    'id'             => $item['tag_id_1'],
-                    'name'           => '',
-                    'count_relation' => $item['count_relation'],
-                ];
-                $relate_tag_ids[] = $item['tag_id_1'];
+            /*$relate_tag_ids = [
+                'brother' => [
+                    'tag_id' => [
+                        'name' => '',
+                        'count_relation',
+                    ],
+                ],
+            ];*/
+
+            $relate_tag = $relate_tag_ids = [];
+            foreach ($tag_relate_list as $item) {
+                if ($item['tag_id_1'] == $tag_id) {
+                    $relate_tag[$item['type']][$item['tag_id_2']] = [
+                        'id'             => $item['tag_id_2'],
+                        'name'           => '',
+                        'count_relation' => $item['count_relation'],
+                    ];
+                    $relate_tag_ids[] = $item['tag_id_2'];
+                } else {
+                    $relate_tag[$item['type']][$item['tag_id_1']] = [
+                        'id'             => $item['tag_id_1'],
+                        'name'           => '',
+                        'count_relation' => $item['count_relation'],
+                    ];
+                    $relate_tag_ids[] = $item['tag_id_1'];
+                }
             }
+
+            $tags = self::getTagListByTagIds($relate_tag_ids);
+
+            foreach ($relate_tag as $type => $item) {
+                foreach ($item as $tag_id => $tag) {
+                    $relate_tag[$type][$tag_id]['name'] = $tags[$tag_id]['name'];
+                }
+            }
+
+            $cache_data = $relate_tag;
+            Yii::$app->redis->set($cache_key, $cache_data);
         }
 
-        $tags = self::getTagListByTagIds($relate_tag_ids);
-
-        foreach ($relate_tag as $type => $item) {
-            foreach ($item as $tag_id => $tag) {
-                $relate_tag[$type][$tag_id]['name'] = $tags[$tag_id]['name'];
-            }
-        }
-
-        return $relate_tag;
+        return $cache_data;
     }
 
     private static function getHotTagIds($limit = 20, $period = 30)

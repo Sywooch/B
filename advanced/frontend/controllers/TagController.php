@@ -51,7 +51,7 @@ class TagController extends BaseController
         $is_followed = FollowService::checkUseIsFollowedTag($id, Yii::$app->user->id);
 
         if ($is_followed) {
-            $result = FollowService::removeFollowTag([$id], Yii::$app->user->id);
+            $result = FollowService::removeFollowTag($id, Yii::$app->user->id);
         } else {
             $result = FollowService::addFollowTag($id, Yii::$app->user->id);
         }
@@ -122,11 +122,6 @@ class TagController extends BaseController
         return $this->jsonOut($result);
     }
 
-    /**
-     * Displays a single Tag model.
-     * @param string $id
-     * @return mixed
-     */
     public function actionView($id)
     {
         $pages = new Pagination(
@@ -143,13 +138,12 @@ class TagController extends BaseController
             throw new NotFoundModelException('tag', $id);
         }
 
-        //
+        //该标签下的问题
         $questions = QuestionService::getQuestionListByTagId($id, $pages->page, $pages->pageSize);
 
-        //
+        //关联标签
         $tag_relation = TagService::getRelateTag($id);
 
-        //print_r($tag_relation);exit;
         $tag_who_good_at_in_30_days = FollowService::getUserWhichIsGoodAtThisTag($id, 10, 30);
         $tag_who_good_at_in_365_days = FollowService::getUserWhichIsGoodAtThisTag($id, 10, 365);
 
