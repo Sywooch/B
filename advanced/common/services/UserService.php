@@ -10,6 +10,7 @@ namespace common\services;
 
 use common\components\Error;
 use common\components\user\UserGrade;
+use common\config\RedisKey;
 use common\exceptions\NotFoundModelException;
 use common\helpers\AvatarHelper;
 use common\models\CacheUserModel;
@@ -120,7 +121,7 @@ class UserService extends BaseService
     {
         $result = $cache_miss_key = $cache_data = [];
         foreach ($user_ids as $user_id) {
-            $cache_key = [REDIS_KEY_USER, $user_id];
+            $cache_key = [RedisKey::REDIS_KEY_USER, $user_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
             if (empty($cache_data)) {
                 $cache_miss_key[] = $user_id;
@@ -151,7 +152,7 @@ class UserService extends BaseService
                 $user_id = $item['id'];
                 $result[$user_id] = $item;
                 #cache user
-                $cache_key = [REDIS_KEY_USER, $user_id];
+                $cache_key = [RedisKey::REDIS_KEY_USER, $user_id];
                 Yii::$app->redis->hMset($cache_key, $item);
 
                 #cache username to userid
@@ -160,7 +161,7 @@ class UserService extends BaseService
 
             #cache username id relation data
             if ($username_id_data) {
-                Yii::$app->redis->mset([REDIS_KEY_USER_USERNAME_USERID, $username_id_data]);
+                Yii::$app->redis->mset([RedisKey::REDIS_KEY_USER_USERNAME_USERID, $username_id_data]);
             }
         }
 
@@ -235,7 +236,7 @@ class UserService extends BaseService
      */
     public static function getUsernameByUserId($user_id)
     {
-        $cache_key = [REDIS_KEY_USER, $user_id];
+        $cache_key = [RedisKey::REDIS_KEY_USER, $user_id];
         $username = Yii::$app->redis->hGet($cache_key, 'username');
 
         if (false === $username) {
@@ -250,7 +251,7 @@ class UserService extends BaseService
 
     public static function ensureUserHasCached($user_id)
     {
-        $cache_key = [REDIS_KEY_USER, $user_id];
+        $cache_key = [RedisKey::REDIS_KEY_USER, $user_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
             return self::getUserById($user_id);
         }
@@ -260,7 +261,7 @@ class UserService extends BaseService
 
     private static function getUserIdByUsernameUseCache(array $username)
     {
-        $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_USER_USERNAME_USERID, $username]);
+        $cache_hit_data = Yii::$app->redis->mget([RedisKey::REDIS_KEY_USER_USERNAME_USERID, $username]);
         $cache_miss_key = Yii::$app->redis->getMissKey($username, $cache_hit_data);
 
         if (count($cache_miss_key)) {
@@ -280,7 +281,7 @@ class UserService extends BaseService
 
             if ($cache_miss_data) {
                 #add to redis cache
-                Yii::$app->redis->mset([REDIS_KEY_USER_USERNAME_USERID, $cache_miss_data]);
+                Yii::$app->redis->mset([RedisKey::REDIS_KEY_USER_USERNAME_USERID, $cache_miss_data]);
 
                 $cache_hit_data = Yii::$app->redis->paddingMissData(
                     $cache_hit_data,
@@ -392,7 +393,7 @@ class UserService extends BaseService
      */
     public static function updateUserCache($user_id, $data)
     {
-        $cache_key = [REDIS_KEY_USER, $user_id];
+        $cache_key = [RedisKey::REDIS_KEY_USER, $user_id];
         if ($user_id && $data && Yii::$app->redis->hLen($cache_key)) {
             return Yii::$app->redis->hMset($cache_key, $data);
         }

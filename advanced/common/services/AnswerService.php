@@ -8,6 +8,7 @@
 
 namespace common\services;
 
+use common\config\RedisKey;
 use common\entities\AnswerVersionEntity;
 use common\entities\UserEntity;
 use common\helpers\ArrayHelper;
@@ -177,7 +178,7 @@ class AnswerService extends BaseService
 
     public static function checkWhetherHasAnswered($question_id, $user_id)
     {
-        $cache_key = [REDIS_KEY_QUESTION_HAS_ANSWERED, implode(':', [$user_id, $question_id])];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION_HAS_ANSWERED, implode(':', [$user_id, $question_id])];
 
         $cache_data = Yii::$app->redis->get($cache_key);
 
@@ -209,7 +210,7 @@ class AnswerService extends BaseService
 
     private static function getAnswerListByQuestionIdOrderByTime($question_id, $page_no = 1, $page_size = 10)
     {
-        $cache_key = [REDIS_KEY_ANSWER_LIST_TIME, $question_id];
+        $cache_key = [RedisKey::REDIS_KEY_ANSWER_LIST_TIME, $question_id];
         #answer_count
         if (self::getAnswerCountByQuestionId($question_id) > 0) {
             if (0 == Yii::$app->redis->zCard($cache_key)) {
@@ -236,7 +237,7 @@ class AnswerService extends BaseService
 
     private static function getAnswerListByQuestionIdOrderByScore($question_id, $page_no = 1, $page_size = 10)
     {
-        $cache_key = [REDIS_KEY_ANSWER_LIST_SCORE, $question_id];
+        $cache_key = [RedisKey::REDIS_KEY_ANSWER_LIST_SCORE, $question_id];
         $answer_count = self::getAnswerCountByQuestionId($question_id);
 
         if ($answer_count > 0) {
@@ -276,7 +277,7 @@ class AnswerService extends BaseService
 
 
         $score_params = [
-            [REDIS_KEY_ANSWER_LIST_SCORE, $question_id],
+            [RedisKey::REDIS_KEY_ANSWER_LIST_SCORE, $question_id],
         ];
 
         foreach ($answer_data as $item) {
@@ -288,7 +289,7 @@ class AnswerService extends BaseService
 
         #add to time list
         $time_params = [
-            [REDIS_KEY_ANSWER_LIST_TIME, $question_id],
+            [RedisKey::REDIS_KEY_ANSWER_LIST_TIME, $question_id],
         ];
 
         foreach ($answer_data as $item) {
@@ -310,7 +311,7 @@ class AnswerService extends BaseService
     {
         $cache_miss_key = $result = [];
         foreach ($answer_ids as $answer_id) {
-            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
 
             if (empty($cache_data)) {
@@ -331,7 +332,7 @@ class AnswerService extends BaseService
                 #filter attributes
                 $item = $cache_answer_model->filterAttributes($item);
                 $result[$answer_id] = $item;
-                $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+                $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
                 Yii::$app->redis->hMset($cache_key, $item);
             }
         }
@@ -359,7 +360,7 @@ class AnswerService extends BaseService
 
     public static function ensureAnswerHasCache($answer_id)
     {
-        $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+        $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
             return self::getAnswerByAnswerId($answer_id);
         }
@@ -375,7 +376,7 @@ class AnswerService extends BaseService
      */
     public static function updateAnswerCache($answer_id, $data)
     {
-        $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+        $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
         if ($answer_id && $data && Yii::$app->redis->hLen($cache_key)) {
             return Yii::$app->redis->hMset($cache_key, $data);
         }

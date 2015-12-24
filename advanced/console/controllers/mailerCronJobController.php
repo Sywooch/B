@@ -11,6 +11,7 @@ namespace console\controllers;
 
 
 use common\components\Notifier;
+use common\config\RedisKey;
 use common\entities\UserEntity;
 use common\models\UserInteractiveMailLog;
 use fedemotta\cronjob\models\CronJob;
@@ -80,10 +81,10 @@ class MailerCronJobController extends Controller
     private function consumeQueue()
     {
         $i = 0;
-        $mail = Yii::$app->redis->sPop([REDIS_KEY_EMAIL, 'register_active']);
+        $mail = Yii::$app->redis->sPop([RedisKey::REDIS_KEY_EMAIL, 'register_active']);
         while ($i <= self::MAX_NUMBER_PER_LOOP && $mail) {
             $this->deal($mail);
-            $mail = Yii::$app->redis->sPop([REDIS_KEY_EMAIL, 'register_active']);
+            $mail = Yii::$app->redis->sPop([RedisKey::REDIS_KEY_EMAIL, 'register_active']);
             $i++;
         }
 
@@ -143,7 +144,7 @@ class MailerCronJobController extends Controller
     {
         $params = array_merge(
             [
-                [REDIS_KEY_EMAIL, 'register_active'],
+                [RedisKey::REDIS_KEY_EMAIL, 'register_active'],
 
             ],
             array_values($mail_address)

@@ -8,6 +8,7 @@
 
 namespace common\components;
 
+use common\config\RedisKey;
 use common\entities\AnswerEntity;
 use common\entities\FavoriteCategoryEntity;
 use common\entities\PrivateMessageEntity;
@@ -34,7 +35,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_home_views', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_home_views', 1);
         }
 
         return $result;
@@ -50,7 +51,7 @@ class Counter extends BaseCounter
         )->multiple($multiple)->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_fans', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_fans', 1);
         }
 
         return $result;
@@ -66,7 +67,7 @@ class Counter extends BaseCounter
         )->multiple($multiple)->execute();
 
         if ($result) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_fans', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_fans', -1);
         }
 
         return $result;
@@ -82,7 +83,7 @@ class Counter extends BaseCounter
         )->multiple($multiple)->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_user', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_follow_user', 1);
         }
 
         return $result;
@@ -99,7 +100,7 @@ class Counter extends BaseCounter
 
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_user', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_follow_user', -1);
         }
 
         return $result;
@@ -115,7 +116,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_question', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_follow_question', 1);
         }
 
         return $result;
@@ -131,7 +132,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_question', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_follow_question', -1);
         }
 
         return $result;
@@ -147,7 +148,7 @@ class Counter extends BaseCounter
         )->multiple($multiple)->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_tag', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_follow_tag', 1);
         }
 
         return $result;
@@ -163,7 +164,7 @@ class Counter extends BaseCounter
         )->multiple($multiple)->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_tag', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_follow_tag', -1);
         }
 
         return $result;
@@ -179,7 +180,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_follow_question', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_follow_question', 1);
         }
 
         return $result;
@@ -195,7 +196,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_question', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_question', -1);
         }
 
         return $result;
@@ -211,7 +212,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_answer', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_answer', 1);
         }
 
         return $result;
@@ -227,7 +228,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_answer', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_answer', -1);
         }
 
         return $result;
@@ -243,7 +244,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_common_edit', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_common_edit', 1);
         }
 
         return $result;
@@ -259,7 +260,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_USER, $user_id], 'count_common_edit', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_common_edit', -1);
         }
 
         return $result;
@@ -276,7 +277,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_views', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_views', 1);
         }
 
         return $result;
@@ -292,7 +293,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_answer', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_answer', 1);
         }
 
         return $result;
@@ -308,7 +309,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_answer', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_answer', -1);
         }
 
         return $result;
@@ -324,7 +325,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_favorite', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_favorite', 1);
         }
 
         return $result;
@@ -340,7 +341,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_favorite', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_favorite', -1);
         }
 
         return $result;
@@ -356,7 +357,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_follow', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_follow', 1);
         }
 
         return $result;
@@ -372,7 +373,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_follow', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_follow', -1);
         }
 
         return $result;
@@ -388,7 +389,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_like', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_like', 1);
         }
 
         return $result;
@@ -404,7 +405,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_like', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_like', -1);
         }
 
         return $result;
@@ -420,7 +421,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_hate', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_hate', 1);
         }
 
         return $result;
@@ -436,7 +437,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_QUESTION, $question_id], 'count_hate', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_QUESTION, $question_id], 'count_hate', -1);
         }
 
         return $result;
@@ -454,7 +455,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
-            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
             Yii::$app->redis->hIncrBy($cache_key, 'count_comment', 1);
         }
 
@@ -471,7 +472,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_ANSWER, $answer_id], 'count_comment', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_ANSWER, $answer_id], 'count_comment', -1);
         }
 
         return $result;
@@ -487,7 +488,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
-            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
             Yii::$app->redis->hIncrBy($cache_key, 'count_like', 1);
         }
 
@@ -504,7 +505,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
-            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
             Yii::$app->redis->hIncrBy($cache_key, 'count_like', -1);
         }
 
@@ -521,7 +522,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
-            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
             Yii::$app->redis->hIncrBy($cache_key, 'count_hate', 1);
         }
 
@@ -538,7 +539,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
-            $cache_key = [REDIS_KEY_ANSWER, $answer_id];
+            $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
             Yii::$app->redis->hIncrBy($cache_key, 'count_hate', -1);
         }
 
@@ -606,7 +607,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && TagService::ensureTagHasCached($tag_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_TAG, $tag_id], 'count_follow', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_TAG, $tag_id], 'count_follow', 1);
         }
 
         return $result;
@@ -622,7 +623,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && TagService::ensureTagHasCached($tag_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_TAG, $tag_id], 'count_follow', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_TAG, $tag_id], 'count_follow', -1);
         }
 
         return $result;
@@ -638,7 +639,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && TagService::ensureTagHasCached($tag_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_TAG, $tag_id], 'count_use', 1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_TAG, $tag_id], 'count_use', 1);
         }
 
         return $result;
@@ -654,7 +655,7 @@ class Counter extends BaseCounter
         )->execute();
 
         if ($result && TagService::ensureTagHasCached($tag_id)) {
-            Yii::$app->redis->hIncrBy([REDIS_KEY_TAG, $tag_id], 'count_use', -1);
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_TAG, $tag_id], 'count_use', -1);
         }
 
         return $result;

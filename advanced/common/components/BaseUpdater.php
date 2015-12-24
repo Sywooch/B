@@ -8,6 +8,7 @@
 
 namespace common\components;
 
+use common\config\RedisKey;
 use common\exceptions\ParamsInvalidException;
 use Yii;
 use yii\base\Object;
@@ -174,7 +175,7 @@ class BaseUpdater extends Object
         self::addSet($table);
 
         return Yii::$app->redis->rPush(
-            [REDIS_KEY_UPDATER, $table],
+            [RedisKey::REDIS_KEY_UPDATER, $table],
             [
                 'table' => $table,
                 'set'   => $set,
@@ -186,16 +187,16 @@ class BaseUpdater extends Object
 
     public static function popUpQueue($table)
     {
-        return Yii::$app->redis->lPop([REDIS_KEY_UPDATER, $table]);
+        return Yii::$app->redis->lPop([RedisKey::REDIS_KEY_UPDATER, $table]);
     }
 
     public static function getSet()
     {
-        return Yii::$app->redis->SMEMBERS([REDIS_KEY_UPDATER_SET]);
+        return Yii::$app->redis->SMEMBERS([RedisKey::REDIS_KEY_UPDATER_SET]);
     }
 
     private static function addSet($table)
     {
-        return Yii::$app->redis->sAdd([REDIS_KEY_UPDATER_SET], $table);
+        return Yii::$app->redis->sAdd([RedisKey::REDIS_KEY_UPDATER_SET], $table);
     }
 }

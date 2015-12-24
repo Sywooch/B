@@ -9,6 +9,7 @@
 namespace common\services;
 
 use common\components\Error;
+use common\config\RedisKey;
 use common\entities\VoteEntity;
 use common\exceptions\NotFoundModelException;
 use Yii;
@@ -125,11 +126,11 @@ class VoteService extends BaseService
         switch ($associate_type) {
             case VoteEntity::TYPE_QUESTION:
                 $model = QuestionService::getQuestionByQuestionId($associate_id);
-                $cache_key = [REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
+                $cache_key = [RedisKey::REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
                 break;
             case VoteEntity::TYPE_ANSWER:
                 $model = AnswerService::getAnswerByAnswerId($associate_id);
-                $cache_key = [REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
+                $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
             default:
                 throw new \Exception(sprintf('%s todo!', $associate_type));
@@ -208,11 +209,11 @@ class VoteService extends BaseService
         switch ($associate_type) {
             case VoteEntity::TYPE_QUESTION:
                 $model = QuestionService::getQuestionByQuestionId($associate_id);
-                $cache_key = [REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
+                $cache_key = [RedisKey::REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
                 break;
             case VoteEntity::TYPE_ANSWER:
                 $model = AnswerService::getAnswerByAnswerId($associate_id);
-                $cache_key = [REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
+                $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
             default:
                 throw new \Exception(sprintf('%s todo!', $associate_type));
@@ -248,11 +249,11 @@ class VoteService extends BaseService
         switch ($associate_type) {
             case VoteEntity::TYPE_QUESTION:
                 $model = QuestionService::getQuestionByQuestionId($associate_id);
-                $cache_key = [REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
+                $cache_key = [RedisKey::REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
                 break;
             case VoteEntity::TYPE_ANSWER:
                 $model = AnswerService::getAnswerByAnswerId($associate_id);
-                $cache_key = [REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
+                $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
             default:
                 throw new \Exception(sprintf('%s todo!', $associate_type));

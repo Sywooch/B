@@ -14,6 +14,7 @@ use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
 use common\components\user\User;
+use common\config\RedisKey;
 use common\entities\AnswerEntity;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
@@ -111,7 +112,7 @@ class TestController extends BaseController
 
     public function actionAbc()
     {
-        $data = Yii::$app->redis->lRange([REDIS_KEY_NOTIFIER, 200], 0, 10);
+        $data = Yii::$app->redis->lRange([RedisKey::REDIS_KEY_NOTIFIER, 200], 0, 10);
 
         print_r($data);
 
@@ -136,7 +137,7 @@ class TestController extends BaseController
 
          var_dump($result);
 
-         $data = Yii::$app->redis->lRange([REDIS_KEY_NOTIFIER, NotificationService::TYPE_ANSWER_AT_ME], 0, 10);
+         $data = Yii::$app->redis->lRange([RedisKey::REDIS_KEY_NOTIFIER, NotificationService::TYPE_ANSWER_AT_ME], 0, 10);
 
          print_r($data);
 
@@ -151,7 +152,7 @@ class TestController extends BaseController
         $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value('count_question', 1)->execute(
         );
 
-        $data = Yii::$app->redis->lRange([REDIS_KEY_COUNTER, 'user_profile'], 0, 10);
+        $data = Yii::$app->redis->lRange([RedisKey::REDIS_KEY_COUNTER, 'user_profile'], 0, 10);
 
         print_r($data);
 
@@ -168,7 +169,7 @@ class TestController extends BaseController
 
         print_r($result);
 
-        $data = Yii::$app->redis->lRange([REDIS_KEY_UPDATER, QuestionEntity::tableName()], 0, 10);
+        $data = Yii::$app->redis->lRange([RedisKey::REDIS_KEY_UPDATER, QuestionEntity::tableName()], 0, 10);
 
         print_r($data);
 
@@ -212,7 +213,7 @@ class TestController extends BaseController
         //$result = QuestionService::getQuestionListByQuestionIds([2, 3, 4, 5]);
         $associate_id = 198;
         $user_id = 61;
-        $cache_key = [REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
         $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
 
         var_dump($cache_data);
@@ -569,7 +570,7 @@ class TestController extends BaseController
     {
         $question_id = 198;
         $user_id = 732;
-        $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
         $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
 
         var_dump($cache_data);

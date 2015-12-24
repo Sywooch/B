@@ -12,6 +12,7 @@ use common\components\Counter;
 use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
+use common\config\RedisKey;
 use common\entities\AnswerVersionEntity;
 use common\entities\NotificationEntity;
 use common\helpers\StringHelper;
@@ -120,7 +121,7 @@ class AnswerBehavior extends BaseBehavior
 
         #marked user has answered this question
         $cache_key = [
-            REDIS_KEY_QUESTION_HAS_ANSWERED,
+            RedisKey::REDIS_KEY_QUESTION_HAS_ANSWERED,
             implode(':', [$this->owner->created_by, $this->owner->question_id]),
         ];
         Yii::$app->redis->set($cache_key, $this->owner->id);
@@ -128,14 +129,14 @@ class AnswerBehavior extends BaseBehavior
         #add answer to list
         Yii::$app->redis->zAdd(
             [
-                REDIS_KEY_ANSWER_LIST_TIME,
+                RedisKey::REDIS_KEY_ANSWER_LIST_TIME,
                 $this->owner->question_id,
             ],
             TimeHelper::getCurrentTime(),
             $this->owner->id
         );
 
-        Yii::$app->redis->zAdd([REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id], 0, $this->owner->id);
+        Yii::$app->redis->zAdd([RedisKey::REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id], 0, $this->owner->id);
 
         $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
 

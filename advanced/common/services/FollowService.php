@@ -10,6 +10,7 @@ namespace common\services;
 
 use common\components\Counter;
 use common\components\Error;
+use common\config\RedisKey;
 use common\entities\FollowQuestionEntity;
 use common\entities\FollowTagEntity;
 use common\entities\FollowTagPassiveEntity;
@@ -90,7 +91,7 @@ class FollowService extends BaseService
             throw new NotFoundModelException('question', $follow_question_id);
         }
 
-        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $follow_question_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $follow_question_id];
 
         if ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
             self::ensureUserOfFollowQuestionHasCached($cache_key, $follow_question_id);
@@ -127,7 +128,7 @@ class FollowService extends BaseService
             throw new NotFoundModelException('question', $follow_question_id);
         }
 
-        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $follow_question_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $follow_question_id];
         if (Yii::$app->redis->zScore($cache_key, $user_id) !== false) {
             //存在则移除
             return Yii::$app->redis->zRem($cache_key, $user_id);
@@ -151,7 +152,7 @@ class FollowService extends BaseService
             throw new NotFoundModelException('question', $follow_question_id);
         }
 
-        $cache_key = [REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $follow_question_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION_FOLLOW_USER_LIST, $follow_question_id];
 
         if ($question['count_follow'] < self::MAX_FOLLOW_QUESTION_COUNT_BY_USING_CACHE) {
             self::ensureUserOfFollowQuestionHasCached($cache_key, $follow_question_id);
@@ -318,7 +319,7 @@ class FollowService extends BaseService
             }
 
             $params = [
-                [REDIS_KEY_USER_TAG_RELATION, $user_id],
+                [RedisKey::REDIS_KEY_USER_TAG_RELATION, $user_id],
             ];
 
             foreach ($tag_ids as $tag_id) {
@@ -358,7 +359,7 @@ class FollowService extends BaseService
     public static function getUserFollowTagIds($user_id, $page_no = 1, $page_size = 20)
     {
         $tag_ids = [];
-        $cache_key = [REDIS_KEY_USER_TAG_RELATION, $user_id];
+        $cache_key = [RedisKey::REDIS_KEY_USER_TAG_RELATION, $user_id];
 
         if (0 == Yii::$app->redis->zCard($cache_key)) {
             $follow_tag_ids = FollowTagEntity::find()->select(['follow_tag_id', 'created_at'])->where(
@@ -403,7 +404,7 @@ class FollowService extends BaseService
             throw new NotFoundModelException('tag', $follow_tag_id);
         }
 
-        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $follow_tag_id];
+        $cache_key = [RedisKey::REDIS_KEY_TAG_FOLLOW_USER_LIST, $follow_tag_id];
 
         if ($tag['count_follow'] < self::MAX_FOLLOW_TAG_COUNT_BY_USING_CACHE) {
             self::ensureUserOfFollowTagHasCached($cache_key, $follow_tag_id);
@@ -440,7 +441,7 @@ class FollowService extends BaseService
             throw new NotFoundModelException('tag', $follow_tag_id);
         }
 
-        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $follow_tag_id];
+        $cache_key = [RedisKey::REDIS_KEY_TAG_FOLLOW_USER_LIST, $follow_tag_id];
         if (Yii::$app->redis->zScore($cache_key, $user_id) !== false) {
             //存在则移除
             return Yii::$app->redis->zRem($cache_key, $user_id);
@@ -457,7 +458,7 @@ class FollowService extends BaseService
             throw new NotFoundModelException('tag', $follow_tag_id);
         }
 
-        $cache_key = [REDIS_KEY_TAG_FOLLOW_USER_LIST, $follow_tag_id];
+        $cache_key = [RedisKey::REDIS_KEY_TAG_FOLLOW_USER_LIST, $follow_tag_id];
 
         if ($tag['count_follow'] < self::MAX_FOLLOW_TAG_COUNT_BY_USING_CACHE) {
             self::ensureUserOfFollowTagHasCached($cache_key, $follow_tag_id);
@@ -569,7 +570,7 @@ class FollowService extends BaseService
     {
         $user = UserService::getUserById($follow_user_id);
 
-        $cache_key = [REDIS_KEY_USER_FANS_LIST, $follow_user_id];
+        $cache_key = [RedisKey::REDIS_KEY_USER_FANS_LIST, $follow_user_id];
 
         if ($user['count_follow'] < self::MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
             self::ensureUserFansHasCached($cache_key, $follow_user_id);
@@ -593,7 +594,7 @@ class FollowService extends BaseService
 
     public static function removeUserFansCache($follow_user_id, $user_id)
     {
-        $cache_key = [REDIS_KEY_USER_FANS_LIST, $follow_user_id];
+        $cache_key = [RedisKey::REDIS_KEY_USER_FANS_LIST, $follow_user_id];
         if (Yii::$app->redis->zScore($cache_key, $user_id) !== false) {
             //存在则移除
             return Yii::$app->redis->zRem($cache_key, $user_id);
@@ -604,7 +605,7 @@ class FollowService extends BaseService
 
     public static function removeUserFriendsCache($user_id, $follow_user_id)
     {
-        $cache_key = [REDIS_KEY_USER_FRIEND_LIST, $user_id];
+        $cache_key = [RedisKey::REDIS_KEY_USER_FRIEND_LIST, $user_id];
         if (Yii::$app->redis->zScore($cache_key, $follow_user_id) !== false) {
             //存在则移除
             return Yii::$app->redis->zRem($cache_key, $follow_user_id);
@@ -681,7 +682,7 @@ class FollowService extends BaseService
             throw new NotFoundModelException('user', $follow_user_id);
         }
 
-        $cache_key = [REDIS_KEY_USER_FANS_LIST, $follow_user_id];
+        $cache_key = [RedisKey::REDIS_KEY_USER_FANS_LIST, $follow_user_id];
 
         if ($user['count_follow'] < self::MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
             self::ensureUserFansHasCached($cache_key, $follow_user_id);
@@ -703,6 +704,14 @@ class FollowService extends BaseService
 
     ###################### FOLLOW TAG PASSIVE ######################
 
+    /**
+     * todo 使用arBEHAVIOR
+     * @param       $user_id
+     * @param array $tag_ids
+     * @return bool|int
+     * @throws \yii\base\Exception
+     * @throws \yii\db\Exception
+     */
     public static function addFollowTagPassive($user_id, array $tag_ids)
     {
         if (empty($user_id) || empty($tag_ids)) {
@@ -798,7 +807,7 @@ class FollowService extends BaseService
      */
     public static function getTagAndUserRelation($tag_id, $limit = 12)
     {
-        $cache_key = [REDIS_KEY_TAG_USER_RELATION, $tag_id];
+        $cache_key = [RedisKey::REDIS_KEY_TAG_USER_RELATION, $tag_id];
 
         if (0 === Yii::$app->redis->zCard($cache_key)) {
             $data = FollowTagPassiveEntity::find()->select(
@@ -856,7 +865,7 @@ class FollowService extends BaseService
      */
     public static function getTagIdsWhichUserIsGoodAt($user_id, $limit = 20, $period = 30)
     {
-        $cache_key = [REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS, implode(':', [$user_id, $period])];
+        $cache_key = [RedisKey::REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS, implode(':', [$user_id, $period])];
         $cache_data = Yii::$app->redis->get($cache_key);
         if ($cache_data === false) {
             $data = FollowTagPassiveEntity::find()->select(
@@ -894,7 +903,7 @@ class FollowService extends BaseService
      */
     public static function getUserWhichIsGoodAtThisTag($tag_id, $limit = 20, $period = 30)
     {
-        $cache_key = [REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT, implode(':', [$tag_id, $period])];
+        $cache_key = [RedisKey::REDIS_KEY_TAG_WHICH_USER_IS_GOOD_AT, implode(':', [$tag_id, $period])];
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if ($cache_data === false) {
@@ -937,7 +946,7 @@ class FollowService extends BaseService
 
         if ($user['count_fans'] <= MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
             //使用缓存
-            $cache_key = [REDIS_KEY_USER_FANS_LIST, $user_id];
+            $cache_key = [RedisKey::REDIS_KEY_USER_FANS_LIST, $user_id];
 
             self::ensureUserFansHasCached();
 
@@ -964,7 +973,7 @@ class FollowService extends BaseService
      */
     public static function getUserFriendsUserId($user_id, $page_no = 1, $page_size = 20)
     {
-        $cache_key = [REDIS_KEY_USER_FRIEND_LIST, $user_id];
+        $cache_key = [RedisKey::REDIS_KEY_USER_FRIEND_LIST, $user_id];
 
         self::ensureUserFriendsHasCached();
 

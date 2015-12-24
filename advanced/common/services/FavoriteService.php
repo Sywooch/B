@@ -10,6 +10,7 @@ namespace common\services;
 
 use common\components\Counter;
 use common\components\Error;
+use common\config\RedisKey;
 use common\entities\FavoriteCategoryEntity;
 use common\entities\FavoriteEntity;
 use common\entities\QuestionEntity;
@@ -168,7 +169,7 @@ class FavoriteService extends BaseService
             throw new NotFoundModelException('question', $question_id);
         }
 
-        $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
 
         if ($question['count_favorite'] < self::MAX_FAVORITE_QUESTION_COUNT_BY_USING_CACHE) {
             //小于1000，则使用缓存，大于，则不处理。
@@ -206,7 +207,7 @@ class FavoriteService extends BaseService
             throw new NotFoundModelException('question', $question_id);
         }
 
-        $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
 
         if (Yii::$app->redis->zScore($cache_key, $user_id) !== false) {
             //存在则移除
@@ -252,7 +253,7 @@ class FavoriteService extends BaseService
             throw new NotFoundModelException('question', $favorite_question_id);
         }
 
-        $cache_key = [REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $favorite_question_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $favorite_question_id];
 
         if ($question['count_favorite'] < self::MAX_FAVORITE_QUESTION_COUNT_BY_USING_CACHE) {
             self::ensureUserOfFavoriteQuestionHasCached($cache_key, $favorite_question_id);

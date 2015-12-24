@@ -8,6 +8,7 @@
 
 namespace common\components;
 
+use common\config\RedisKey;
 use common\exceptions\ParamsInvalidException;
 use Yii;
 use yii\base\Object;
@@ -190,7 +191,7 @@ class BaseCounter extends Object
         self::addSet($table);
 
         return Yii::$app->redis->rPush(
-            [REDIS_KEY_COUNTER, $table],
+            [RedisKey::REDIS_KEY_COUNTER, $table],
             [
                 'table'            => $table,
                 'primary_key_name' => $primary_key_name,
@@ -204,16 +205,16 @@ class BaseCounter extends Object
 
     public static function popUpQueue($table)
     {
-        return Yii::$app->redis->lPop([REDIS_KEY_COUNTER, $table]);
+        return Yii::$app->redis->lPop([RedisKey::REDIS_KEY_COUNTER, $table]);
     }
 
     public static function getSet()
     {
-        return Yii::$app->redis->SMEMBERS([REDIS_KEY_COUNTER_SET]);
+        return Yii::$app->redis->SMEMBERS([RedisKey::REDIS_KEY_COUNTER_SET]);
     }
 
     private static function addSet($table)
     {
-        return Yii::$app->redis->sAdd([REDIS_KEY_COUNTER_SET], $table);
+        return Yii::$app->redis->sAdd([RedisKey::REDIS_KEY_COUNTER_SET], $table);
     }
 }

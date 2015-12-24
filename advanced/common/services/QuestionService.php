@@ -3,6 +3,7 @@
 namespace common\services;
 
 use common\components\Error;
+use common\config\RedisKey;
 use common\entities\QuestionTagEntity;
 use common\models\CacheQuestionModel;
 use common\models\QuestionTag;
@@ -25,7 +26,7 @@ class QuestionService extends BaseService
     {
         $result = $cache_miss_key = $cache_data = [];
         foreach ($question_ids as $question_id) {
-            $cache_key = [REDIS_KEY_QUESTION, $question_id];
+            $cache_key = [RedisKey::REDIS_KEY_QUESTION, $question_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
 
             if (empty($cache_data)) {
@@ -49,7 +50,7 @@ class QuestionService extends BaseService
 
                 $question_id = $item['id'];
                 $result[$question_id] = $item;
-                $cache_key = [REDIS_KEY_QUESTION, $question_id];
+                $cache_key = [RedisKey::REDIS_KEY_QUESTION, $question_id];
                 Yii::$app->redis->hMset($cache_key, $item);
             }
         }
@@ -84,7 +85,7 @@ class QuestionService extends BaseService
      */
     public static function updateQuestionCache($question_id, $data)
     {
-        $cache_key = [REDIS_KEY_QUESTION, $question_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION, $question_id];
         if ($question_id && $data && Yii::$app->redis->hLen($cache_key)) {
             return Yii::$app->redis->hMset($cache_key, $data);
         }
@@ -123,7 +124,7 @@ class QuestionService extends BaseService
     public static function fetchLatest($limit = 10, $offset = 0, $is_spider = false)
     {
         $cache_key = [
-            REDIS_KEY_QUESTION_BLOCK,
+            RedisKey::REDIS_KEY_QUESTION_BLOCK,
             implode(
                 '_',
                 [
@@ -152,7 +153,7 @@ class QuestionService extends BaseService
     public static function fetchHot($limit = 10, $offset = 0, $is_spider = false, $period = 7)
     {
         $cache_key = [
-            REDIS_KEY_QUESTION_BLOCK,
+            RedisKey::REDIS_KEY_QUESTION_BLOCK,
             implode(
                 '_',
                 [
@@ -191,7 +192,7 @@ class QuestionService extends BaseService
     public static function fetchUnAnswer($limit = 10, $offset = 0, $is_spider = false, $period = 7)
     {
         $cache_key = [
-            REDIS_KEY_QUESTION_BLOCK,
+            RedisKey::REDIS_KEY_QUESTION_BLOCK,
             implode(
                 '_',
                 [
@@ -237,7 +238,7 @@ class QuestionService extends BaseService
         if ($tags) {
             $params = array_merge(['or'], array_unique($tags));
             try {
-                $cache_key = [REDIS_KEY_XUNSEARCH_TAG, md5(implode(':', $tags) . $limit)];
+                $cache_key = [RedisKey::REDIS_KEY_XUNSEARCH_TAG, md5(implode(':', $tags) . $limit)];
                 $cache_data = Yii::$app->redis->get($cache_key);
 
                 if ($cache_data === false) {
@@ -291,7 +292,7 @@ class QuestionService extends BaseService
 
     public static function ensureQuestionHasCache($question_id)
     {
-        $cache_key = [REDIS_KEY_QUESTION, $question_id];
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION, $question_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
             return self::getQuestionByQuestionId($question_id);
         }

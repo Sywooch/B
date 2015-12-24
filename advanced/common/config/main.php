@@ -1,4 +1,6 @@
 <?php
+use common\config\RedisKey;
+
 $redis = require(__DIR__ . '/../../common/config/redis.php');
 
 return [
@@ -73,7 +75,7 @@ return [
         ],
         'session'     => [
             'class'        => 'common\components\redis\Session',
-            'keyPrefix'    => REDIS_KEY_SESSION, #需要在redis.php文件中配置
+            'keyPrefix'    => RedisKey::REDIS_KEY_SESSION, #需要在redis.php文件中配置
 
             //'class'        => 'yii\web\Session',
             //'timeout'      => 7200,

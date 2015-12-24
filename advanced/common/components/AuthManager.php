@@ -8,6 +8,7 @@
 
 namespace common\components;
 
+use common\config\RedisKey;
 use Redis;
 use Yii;
 use yii\db\Query;
@@ -30,7 +31,7 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
         Yii::trace(__FUNCTION__, 'rbac');
 
         $redis_key = [
-            REDIS_KEY_RBAC,
+            RedisKey::REDIS_KEY_RBAC,
             implode(
                 ':',
                 ['Items', $type, implode(':', $excludeItems)]
@@ -55,7 +56,7 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
         Yii::trace(__FUNCTION__, 'rbac');
 
         $redis_key = [
-            REDIS_KEY_RBAC,
+            RedisKey::REDIS_KEY_RBAC,
             implode(
                 ':',
                 ['Item', $name]
@@ -76,7 +77,7 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
         Yii::trace(__FUNCTION__, 'rbac');
 
         $redis_key = [
-            REDIS_KEY_RBAC,
+            RedisKey::REDIS_KEY_RBAC,
             implode(
                 ':',
                 ['UserId', $userId]
@@ -97,7 +98,7 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
         Yii::trace(__FUNCTION__, 'rbac');
 
         $redis_key = [
-            REDIS_KEY_RBAC,
+            RedisKey::REDIS_KEY_RBAC,
             implode(
                 ':',
                 ['Assignment', $userId]
@@ -123,7 +124,7 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
         }
 
         $redis_key = [
-            REDIS_KEY_RBAC,
+            RedisKey::REDIS_KEY_RBAC,
             implode(
                 ':',
                 [
@@ -165,7 +166,7 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
 
         #开始缓存
         $redis_key = [
-            REDIS_KEY_RBAC,
+            RedisKey::REDIS_KEY_RBAC,
             implode(
                 ':',
                 [
@@ -199,7 +200,7 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
 
     public function deleteAllCache()
     {
-        $redis_keys = Yii::$app->redis->keys([REDIS_KEY_RBAC, '*']);
+        $redis_keys = Yii::$app->redis->keys([RedisKey::REDIS_KEY_RBAC, '*']);
 
         if ($redis_keys) {
             $keys = [];
@@ -212,7 +213,7 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
                                 ':',
                                 [
                                     Yii::$app->redis->prefix,
-                                    REDIS_KEY_RBAC,
+                                    RedisKey::REDIS_KEY_RBAC,
                                 ]
                             )
                         ) + 1
@@ -220,8 +221,8 @@ class AuthManager extends \dektrium\rbac\components\DbManager implements \dektri
                 }
             }
 
-            //print_r([[REDIS_KEY_RBAC, $keys]]);exit;
-            return call_user_func_array([Yii::$app->redis, 'delete'], [[REDIS_KEY_RBAC, $keys]]);
+            //print_r([[RedisKey::REDIS_KEY_RBAC, $keys]]);exit;
+            return call_user_func_array([Yii::$app->redis, 'delete'], [[RedisKey::REDIS_KEY_RBAC, $keys]]);
         }
     }
 }

@@ -8,6 +8,7 @@
 
 namespace common\services;
 
+use common\config\RedisKey;
 use common\entities\FollowTagEntity;
 use common\entities\TagEntity;
 use common\entities\TagRelationEntity;
@@ -138,7 +139,7 @@ class TagService extends BaseService
 
     private static function getTagIdByNameUseCache($tag_name)
     {
-        $cache_hit_data = Yii::$app->redis->mget([REDIS_KEY_TAG_NAME_ID, $tag_name]);
+        $cache_hit_data = Yii::$app->redis->mget([RedisKey::REDIS_KEY_TAG_NAME_ID, $tag_name]);
         $cache_miss_key = Yii::$app->redis->getMissKey($tag_name, $cache_hit_data);
 
         if (count($cache_miss_key)) {
@@ -159,7 +160,7 @@ class TagService extends BaseService
 
             if ($cache_miss_data) {
                 #cache user miss databases data
-                Yii::$app->redis->mset([REDIS_KEY_TAG_NAME_ID, $cache_miss_data]);
+                Yii::$app->redis->mset([RedisKey::REDIS_KEY_TAG_NAME_ID, $cache_miss_data]);
 
                 #padding miss data
                 $cache_hit_data = Yii::$app->redis->paddingMissData(
@@ -265,7 +266,7 @@ class TagService extends BaseService
      */
     public static function getRelateTag($tag_id, $limit = 100)
     {
-        $cache_key = [REDIS_KEY_RELATE_TAG, implode(':', [$tag_id, $limit])];
+        $cache_key = [RedisKey::REDIS_KEY_RELATE_TAG, implode(':', [$tag_id, $limit])];
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if ($cache_data === false) {
@@ -327,7 +328,7 @@ class TagService extends BaseService
 
     private static function getHotTagIds($limit = 20, $period = 30)
     {
-        $cache_key = [REDIS_KEY_TAG_LIST, implode('_', ['HOT', $limit, $period])];
+        $cache_key = [RedisKey::REDIS_KEY_TAG_LIST, implode('_', ['HOT', $limit, $period])];
 
         if (0 === Yii::$app->redis->zCard($cache_key)) {
             $result = TagEntity::find()->where(

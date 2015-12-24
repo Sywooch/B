@@ -8,6 +8,7 @@
 
 namespace common\components;
 
+use common\config\RedisKey;
 use common\entities\FavoriteCategoryEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserProfileEntity;
@@ -26,7 +27,7 @@ class Updater extends BaseUpdater
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            Yii::$app->redis->hSet([REDIS_KEY_USER, $user_id], 'count_notification', 0);
+            Yii::$app->redis->hSet([RedisKey::REDIS_KEY_USER, $user_id], 'count_notification', 0);
         }
 
         return $result;
