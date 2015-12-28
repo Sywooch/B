@@ -27,14 +27,14 @@ $this->title = $tag['name'];
                 <div class="mb20">
                     <p><?= $tag['description'] ?></p>
                     <ul class="list-inline">
-                        <li><?= Html::a('修改', ['tag/edit']) ?></li>
+                        <li><?= Html::a('修改', ['tag/update', 'id' => $tag['id']]) ?></li>
                         <li><?= Html::a('记录', ['tag/version']) ?></li>
                     </ul>
                 </div>
             </section>
 
             <ul class="nav nav-tabs nav-tabs-zen mb20">
-                <li class="active"><?= Html::a('问答', ['question/index']) ?></li>
+                <li class="active"><?= Html::a('问答', ['tag/view', 'id' => $tag['id']]) ?></li>
             </ul>
             <div class="tab-content">
                 <div id="qa" class="stream-list question-stream">

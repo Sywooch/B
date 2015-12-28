@@ -110,13 +110,12 @@ class TestController extends BaseController
         exit;
     }
 
-    public function actionAbc()
+    public function actionAt()
     {
-        $data = Yii::$app->redis->lRange([RedisKey::REDIS_KEY_NOTIFIER, 200], 0, 10);
+        $content='@瞎猫 46';
+        $username = AtHelper::findAtUsername($content);
 
-        print_r($data);
-
-        exit;
+        print_r($username);
     }
 
     public function actionNotifier()

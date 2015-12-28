@@ -25,7 +25,6 @@ class NotifierCronJobController extends Controller
 
         $notifier_set = $notifier->getSet();
 
-
         foreach ($notifier_set as $method) {
             $i = 0;
             while ($i <= self::NUMBER_OF_EACH && $item = $notifier->popUpQueue($method)) {

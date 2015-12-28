@@ -72,7 +72,7 @@ class AnswerCommentBehavior extends BaseBehavior
         if($username){
             $user_ids = UserService::getUserIdByUsername($username);
 
-            Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->notice(
+            $result = Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->notice(
                 NotificationService::TYPE_COMMENT_AT_ME,
                 [
                     'user_id' => $this->owner->id,

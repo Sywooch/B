@@ -16,9 +16,9 @@ use yii\helpers\Html;
             <p class="comment-meta">
                 #&nbsp;
                 <?= TemplateHelper::showUsername(
-                        $item['created_by'],
-                        true,
-                        $item['is_anonymous'] == AnswerCommentEntity::STATUS_ANONYMOUS
+                    $item['created_by'],
+                    true,
+                    $item['is_anonymous'] == AnswerCommentEntity::STATUS_ANONYMOUS
                 ) ?>
                 <?php if ($item['is_anonymous'] != AnswerCommentEntity::STATUS_ANONYMOUS): ?>
                     <?php if ($answer_create_user_id == $item['created_by']) : ?>
@@ -41,36 +41,36 @@ use yii\helpers\Html;
                 <?php if ($item['created_by'] != Yii::$app->user->id) : ?>
                     <?php if ($item['is_anonymous'] != AnswerCommentEntity::STATUS_ANONYMOUS): ?>
                         · <?= Html::a(
-                                '回复',
-                                'javascritp:;',
-                                [
-                                        'title'           => '回复Ta',
-                                        'data-do-comment' => true,
-                                        'data-answer-id'       => $item['answer_id'],
-                                        'data-username'   => TemplateHelper::showUsername(
-                                                $item['created_by'],
-                                                false
-                                        ),
-                                ]
+                            '回复',
+                            'javascritp:;',
+                            [
+                                'title'           => '回复Ta',
+                                'data-do-comment' => true,
+                                'data-answer-id'  => $item['answer_id'],
+                                'data-username'   => TemplateHelper::showUsername(
+                                    $item['created_by'],
+                                    false
+                                ),
+                            ]
                         ) ?>
                     <?php endif; ?>
                     <span class="pull-right commentTools hover-show-obj">
                         <?= Html::a(
-                                '举报',
-                                'javascritp:;',
-                                [
-                                        'title'             => '举报',
-                                        'data-do-report'    => true,
-                                        'data-object'       => 'comment',
-                                        'data-associate_id' => $item['id'],
-                                ]
+                            '举报',
+                            'javascritp:;',
+                            [
+                                'title'             => '举报',
+                                'data-do-report'    => true,
+                                'data-object'       => 'comment',
+                                'data-associate_id' => $item['id'],
+                            ]
                         ) ?>
                 </span>
                 <?php endif; ?>
             </p>
 
             <div class="content fmt mb-10">
-                <?= $item['content']; ?>
+                <?= TemplateHelper::dealWithComment($item['content']); ?>
             </div>
         </div>
     </div>

@@ -30,14 +30,12 @@ class ProfileController extends BaseProfileController
         ];
     }
 
-    public function actionShow($id)
+    public function actionShow($username)
     {
 
         //todo 非好友，不允许查看
-
-        $user = UserService::getUserById($id);
-
-        $question_list = QuestionService::getQuestionListByUserId($id);
+        $user = UserService::getUserByUsername($username);
+        $question_list = QuestionService::getQuestionListByUserId($user['id']);
 
         return $this->render(
             'show',

@@ -175,9 +175,18 @@ class AnswerService extends BaseService
         return $data;
     }
 
-
+    /**
+     * 判断用户是否回答过本题，
+     * @param $question_id
+     * @param $user_id
+     * @return bool
+     */
     public static function checkWhetherHasAnswered($question_id, $user_id)
     {
+        if (Yii::$app->user->isGuest) {
+            return false;
+        }
+
         $cache_key = [RedisKey::REDIS_KEY_QUESTION_HAS_ANSWERED, implode(':', [$user_id, $question_id])];
 
         $cache_data = Yii::$app->redis->get($cache_key);
@@ -190,10 +199,14 @@ class AnswerService extends BaseService
                 ]
             )->scalar();
 
+            //如果没有回答过，则设置answer_id=0
+            if (!$cache_data) {
+                $cache_data = 0;
+            }
             Yii::$app->redis->set($cache_key, $cache_data);
         }
 
-        return $cache_data;
+        return $cache_data > 0;
     }
 
     public static function getAnswerCountByQuestionId($question_id)

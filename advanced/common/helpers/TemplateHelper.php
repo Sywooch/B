@@ -27,7 +27,7 @@ class TemplateHelper
         if ($user_id == Yii::$app->user->id || !$anonymity) {
             $user_name = UserService::getUsernameByUserId($user_id);
             if ($link) {
-                $result = Html::a($user_name, ['user/profile/show', 'id' => $user_id]);
+                $result = Html::a($user_name, ['user/profile/show', 'username' => $user_name]);
             } else {
                 $result = $user_name;
             }
@@ -45,6 +45,7 @@ class TemplateHelper
         $link = true,
         $anonymity = AnswerEntity::STATUS_UNANONYMOUS
     ) {
+        $user = UserService::getUserById($user_id);
         //不匿名或当前用户是登陆用户
         if ($user_id == Yii::$app->user->id || $anonymity == AnswerEntity::STATUS_UNANONYMOUS) {
 
@@ -57,7 +58,7 @@ class TemplateHelper
                 ]
             );
             if ($avatar && $link) {
-                $avatar = Html::a($avatar, ['user/profile/show', 'id' => $user_id]);
+                $avatar = Html::a($avatar, ['user/profile/show', 'username' => $user['username']]);
             }
         } else {
             $avatar = '';
@@ -174,5 +175,13 @@ class TemplateHelper
         }
 
         return $result;
+    }
+    
+    public static function dealWithComment($content)
+    {
+        //增加 at username 连接
+        $content = AtHelper::dealWithAtLink($content);
+
+        return $content;
     }
 }

@@ -6,6 +6,7 @@ use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerCommentEntity;
 use common\exceptions\NotFoundModelException;
+use common\exceptions\PermissionDeniedException;
 use common\services\AnswerService;
 use common\services\CommentService;
 use common\services\QuestionService;
@@ -15,6 +16,8 @@ use common\entities\AnswerEntity;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
+use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -34,11 +37,11 @@ class AnswerController extends BaseController
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only'  => ['create', 'update', 'common-edit', 'vote'],
+                'only'  => ['create', 'update', 'delete', 'common-edit', 'vote'],
                 'rules' => [
                     [
                         'allow'   => true,
-                        'actions' => ['create', 'update', 'common-edit', 'vote'],
+                        'actions' => ['create', 'update', 'delete', 'common-edit', 'vote'],
                         'roles'   => ['@'],
                     ],
                 ],
@@ -94,12 +97,16 @@ class AnswerController extends BaseController
         $model->type = AnswerEntity::TYPE_ANSWER;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+            $answer_data = $model->getAttributes();
+            $answer_data['vote_status'] = false;
+
             $data = [
                 'answer_item' => $this->renderPartial(
                     '/question/_question_answer_item',
                     [
                         'question_id' => $question_id,
-                        'data'        => [$model->getAttributes()],
+                        'data'        => [$answer_data],
                         'pages'       => null,
                     ]
                 ),
@@ -166,18 +173,19 @@ class AnswerController extends BaseController
         }
     }
 
-    /**
-     * Deletes an existing AnswerEntity model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
-     * @return mixed
-     */
-    /*public function actionDelete($id)
+    public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $answer = $this->findModel($id);
 
-        return $this->redirect(['index']);
-    }*/
+        if ($answer->created_by = Yii::$app->user->id) {
+            Url::remember(Yii::$app->request->getReferrer());
+            $answer->delete();
+
+            return $this->goBack();
+        } else {
+            throw new PermissionDeniedException();
+        }
+    }
 
     /**
      * Finds the AnswerEntity model based on its primary key value.
@@ -201,15 +209,13 @@ class AnswerController extends BaseController
         $answer_data = AnswerService::getAnswerByAnswerId($id);
         $question_data = QuestionService::getQuestionByQuestionId($answer_data['question_id']);
 
-        $count = CommentService::getCommentCountByAnswerId($id);
-
-        if ($count == 0) {
+        if ($answer_data['count_comment'] == 0) {
             $pages = null;
             $comments_data = [];
         } else {
             $pages = new Pagination(
                 [
-                    'totalCount'    => $count,
+                    'totalCount'    => $answer_data['count_comment'],
                     'pageSize'      => 10,
                     'params'        => array_merge($_GET, ['#' => 'answer-' . $id]),
                     'pageParam'     => 'comment-page',
@@ -222,9 +228,6 @@ class AnswerController extends BaseController
                 $pages->offset
             );
         }
-
-        //print_r($comments_data);exit;
-
 
         $html = $this->renderAjax(
             '_comment_list',

@@ -56,32 +56,10 @@ class DefaultController extends BaseController
         }
 
 
-        //标签
-        $tags = TagService::getHotTag(20, 100);
-
-        //关注标签
-        if (!Yii::$app->user->isGuest) {
-            $user = UserService::getUserById(Yii::$app->user->id);
-            $follow_tag_ids = FollowService::getUserFollowTagIds(Yii::$app->user->id);
-            $follow_tags = TagService::getTagListByTagIds($follow_tag_ids);
-            $follow_tag_count = $user['count_follow_tag'];
-        } else {
-            $follow_tags = [];
-            $follow_tag_count = 0;
-        }
-
-
-        //热门问题
-        $question_hottest = QuestionService::fetchHot(15, 0, ServerHelper::checkIsSpider(), 30);
-
         return $this->render(
             'index',
             [
-                'question_latest'  => $html,
-                'question_hottest' => $question_hottest,
-                'tags'             => $tags,
-                'follow_tags'      => $follow_tags,
-                'follow_tag_count' => $follow_tag_count,
+                'question_latest'  => $html
             ]
         );
     }

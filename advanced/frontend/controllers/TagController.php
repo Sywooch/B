@@ -196,7 +196,7 @@ class TagController extends BaseController
      * @param string $id
      * @return mixed
      */
-    /*public function actionUpdate($id)
+    public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
@@ -210,7 +210,7 @@ class TagController extends BaseController
                 ]
             );
         }
-    }*/
+    }
 
     /**
      * Deletes an existing Tag model.

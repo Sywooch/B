@@ -146,6 +146,10 @@ class FollowService extends BaseService
      */
     public static function checkUseIsFollowedQuestion($follow_question_id, $user_id)
     {
+        if (Yii::$app->user->isGuest) {
+            return false;
+        }
+
         $question = QuestionService::getQuestionByQuestionId($follow_question_id);
 
         if (!$question) {
@@ -169,7 +173,7 @@ class FollowService extends BaseService
             )->count(1);
         }
 
-        return (bool)$result;
+        return (bool) $result;
     }
 
     /**
@@ -452,6 +456,10 @@ class FollowService extends BaseService
 
     public static function checkUseIsFollowedTag($follow_tag_id, $user_id)
     {
+        if (Yii::$app->user->isGuest) {
+            return false;
+        }
+
         $tag = TagService::getTagByTagId($follow_tag_id);
 
         if (!$tag) {
@@ -676,6 +684,10 @@ class FollowService extends BaseService
 
     public static function checkUseIsFollowedUser($follow_user_id, $user_id)
     {
+        if (Yii::$app->user->isGuest) {
+            return false;
+        }
+
         $user = TagService::getTagByTagId($follow_user_id);
 
         if (!$user) {

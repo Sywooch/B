@@ -101,12 +101,8 @@ class QuestionService extends BaseService
                 break;
 
             case 'hottest':
-                $count = QuestionEntity::find()
-                                       ->allowShowStatus($is_spider)
-                                       ->recent()
-                                       ->answered()
-                                       ->orderByTime()
-                                       ->count(1);
+                $count = QuestionEntity::find()->allowShowStatus($is_spider)->recent()->answered()->orderByTime(
+                )->count(1);
                 break;
 
             case 'unAnswer':
@@ -136,18 +132,26 @@ class QuestionService extends BaseService
             ),
         ];
 
-        $cache_data = Yii::$app->redis->get($cache_key);
+        $question_ids = Yii::$app->redis->get($cache_key);
 
-        if ($cache_data === false) {
-            $model = QuestionEntity::find()->allowShowStatus($is_spider)->orderByTime()->limit($limit)->offset(
+        if ($question_ids === false) {
+            $model = QuestionEntity::find()->select(['id'])->allowShowStatus($is_spider)->orderByTime()->limit(
+                $limit
+            )->offset(
                 $offset
-            )->asArray()->all();
-            $cache_data = $model;
+            )->column();
+            $question_ids = $model;
 
-            Yii::$app->redis->set($cache_key, $cache_data);
+            Yii::$app->redis->set($cache_key, $question_ids);
         }
 
-        return $cache_data;
+        if ($question_ids) {
+            $result = QuestionService::getQuestionListByQuestionIds($question_ids);
+        } else {
+            $result = [];
+        }
+
+        return $result;
     }
 
     public static function fetchHot($limit = 10, $offset = 0, $is_spider = false, $period = 7)
@@ -166,30 +170,28 @@ class QuestionService extends BaseService
             ),
         ];
 
-        $cache_data = Yii::$app->redis->get($cache_key);
+        $question_ids = Yii::$app->redis->get($cache_key);
 
-        if ($cache_data === false) {
-            $model = QuestionEntity::find()
-                                   ->answered(3)
-                                   ->allowShowStatus($is_spider)
-                                   ->recent($period)
-                                   ->answered()
-                                   ->orderByTime()
-                                   ->limit(
-                                       $limit
-                                   )
-                                   ->offset($offset)
-                                   ->asArray()
-                                   ->all();
+        if ($question_ids === false) {
+            $model = QuestionEntity::find()->select(['id'])->answered(3)->allowShowStatus($is_spider)->recent($period)->answered(
+            )->orderByTime()->limit(
+                $limit
+            )->offset($offset)->column();
 
-            $cache_data = $model;
-            Yii::$app->redis->set($cache_key, $cache_data);
+            $question_ids = $model;
+            Yii::$app->redis->set($cache_key, $question_ids);
         }
 
-        return $cache_data;
+        if ($question_ids) {
+            $result = QuestionService::getQuestionListByQuestionIds($question_ids);
+        } else {
+            $result = [];
+        }
+
+        return $result;
     }
 
-    public static function fetchUnAnswer($limit = 10, $offset = 0, $is_spider = false, $period = 7)
+    public static function fetchUnAnswer($limit = 10, $offset = 0, $is_spider = false, $period = 30)
     {
         $cache_key = [
             RedisKey::REDIS_KEY_QUESTION_BLOCK,
@@ -205,23 +207,22 @@ class QuestionService extends BaseService
             ),
         ];
 
-        $cache_data = Yii::$app->redis->get($cache_key);
+        $question_ids = Yii::$app->redis->get($cache_key);
 
-        if ($cache_data === false) {
-            $model = QuestionEntity::find()
-                                   ->allowShowStatus($is_spider)
-                                   ->recent($period)
-                                   ->unAnswered()
-                                   ->orderByTime()
-                                   ->limit($limit)
-                                   ->offset($offset)
-                                   ->asArray()
-                                   ->all();
-            $cache_data = $model;
-            Yii::$app->redis->set($cache_key, $cache_data);
+        if ($question_ids === false) {
+            $model = QuestionEntity::find()->select(['id'])->allowShowStatus($is_spider)->recent($period)->unAnswered()->orderByTime(
+            )->limit($limit)->offset($offset)->column();
+            $question_ids = $model;
+            Yii::$app->redis->set($cache_key, $question_ids);
         }
 
-        return $cache_data;
+        if ($question_ids) {
+            $result = QuestionService::getQuestionListByQuestionIds($question_ids);
+        } else {
+            $result = [];
+        }
+
+        return $result;
     }
 
     public static function getSubjectTags($subject, $limit = 5)
@@ -361,7 +362,6 @@ class QuestionService extends BaseService
             $count = 0;
         }
 
-        // QuestionTagEntity::find()->where(['tag_id' => $tag_id])->count(1);
         return $count;
     }
 

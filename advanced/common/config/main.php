@@ -1,8 +1,6 @@
 <?php
 use common\config\RedisKey;
 
-$redis = require(__DIR__ . '/../../common/config/redis.php');
-
 return [
     'name'          => '网站名称',
     'language'      => 'zh-cn',
@@ -132,7 +130,7 @@ return [
                     'maxFileSize' => 1024 * 2,
                     'logVars'     => [],
                 ],
-                'error'      => [
+                'error'       => [
                     'class'       => 'yii\log\FileTarget',
                     'levels'      => ['error'],
                     'maxLogFiles' => 20,
@@ -172,7 +170,7 @@ return [
         'redis'       => [
             'class'  => 'common\components\redis\Connection',
             'prefix' => 'YIIREDIS',
-            'config' => $redis,
+            'config' => RedisKey::buildConfig(),
         ],
         #授权管理
         'authManager' => [

@@ -192,7 +192,7 @@ class BaseNotifier extends Object
             'notifier'
         );
 
-        $cache_key = [RedisKey::REDIS_KEY_NOTIFIER, implode(':', [$this->method, $notice_code])];
+        $cache_key = [RedisKey::REDIS_KEY_NOTIFIER, $this->method];
 
         $this->addSet($this->method);
 
@@ -260,9 +260,9 @@ class BaseNotifier extends Object
         );
     }
 
-    public function popUpQueue($method)
+    public function popUpQueue($set)
     {
-        return Yii::$app->redis->lPop([RedisKey::REDIS_KEY_NOTIFIER, $method]);
+        return Yii::$app->redis->lPop([RedisKey::REDIS_KEY_NOTIFIER, $set]);
     }
 
     public function getSet()
@@ -270,8 +270,8 @@ class BaseNotifier extends Object
         return Yii::$app->redis->SMEMBERS([RedisKey::REDIS_KEY_NOTIFIER_SET]);
     }
 
-    private function addSet($method)
+    private function addSet($set)
     {
-        return Yii::$app->redis->sAdd([RedisKey::REDIS_KEY_NOTIFIER_SET], $method);
+        return Yii::$app->redis->sAdd([RedisKey::REDIS_KEY_NOTIFIER_SET], $set);
     }
 }

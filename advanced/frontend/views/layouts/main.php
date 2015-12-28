@@ -156,7 +156,7 @@ AppAsset::register($this);
                 'items' => [
                         [
                                 'label' => '我的主页',
-                                'url'   => ['/user/profile/show', 'id' => Yii::$app->user->identity->id],
+                                'url'   => ['/user/profile/show', 'username' => Yii::$app->user->identity->username],
                         ],
                         [
                                 'label' => '收藏夹',

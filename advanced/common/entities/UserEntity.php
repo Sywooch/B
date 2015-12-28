@@ -21,6 +21,7 @@ use Yii;
  */
 class UserEntity extends User
 {
+    const MAX_USERNAME_LENGTH = 15;//用户名长度
     public $avatar;
     #注册用户名正则，允许中英文
     public static $usernameRegexp = '/^[_-a-zA-Z0-9\.\x{4e00}-\x{9fa5}]+$/u';

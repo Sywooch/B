@@ -93,7 +93,10 @@ use yii\widgets\LinkPager;
                     <? endif; ?>
                     <li>
                         <?= Html::a(
-                            '评论',
+                            '评论' . ($item['count_comment'] > 0 ? sprintf(
+                                '(%s)',
+                                $item['count_comment']
+                            ) : ''),
                             'javascript:void(0);',
                             [
                                 'data-do-ajax-submit' => true,
@@ -105,10 +108,6 @@ use yii\widgets\LinkPager;
                                 'data-do'             => 'comment',
                             ]
                         ) ?>
-                        <?= ($item['count_comment'] > 0) ? sprintf(
-                            '<span>(%s)</span>',
-                            $item['count_comment']
-                        ) : '' ?>
                     </li>
                     <li class="dropdown">
                         <a href="javascript:void(0);"
@@ -124,9 +123,10 @@ use yii\widgets\LinkPager;
                                         'visible' => !Yii::$app->user->isGuest && $item['created_by'] == Yii::$app->user->id,
                                     ],
                                     [
-                                        'label'   => '删除',
-                                        'url'     => '/',
-                                        'visible' => !Yii::$app->user->isGuest && $item['created_by'] == Yii::$app->user->id,
+                                        'label'       => '删除',
+                                        'url'         => ['answer/delete', 'id' => $item['id']],
+                                        'visible'     => !Yii::$app->user->isGuest && $item['created_by'] == Yii::$app->user->id,
+                                        'linkOptions' => ['data-method' => 'post'],
                                     ],
                                     [
                                         'label'   => $item['is_fold'] == AnswerEntity::STATUS_FOLD ? '取消折叠' : '折叠',

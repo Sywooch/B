@@ -189,7 +189,7 @@ class TagService extends BaseService
 
     public static function ensureTagHasCached($tag_id)
     {
-        $cache_key = [REDIS_KEY_TAG, $tag_id];
+        $cache_key = [RedisKey::REDIS_KEY_TAG, $tag_id];
         if (Yii::$app->redis->hLen($cache_key) == 0) {
             return self::getTagByTagId($tag_id);
         }
@@ -216,7 +216,7 @@ class TagService extends BaseService
 
         $result = $cache_miss_key = $cache_data = [];
         foreach ($tag_ids as $tag_id) {
-            $cache_key = [REDIS_KEY_TAG, $tag_id];
+            $cache_key = [RedisKey::REDIS_KEY_TAG, $tag_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
             if (empty($cache_data)) {
                 $cache_miss_key[] = $tag_id;
@@ -239,7 +239,7 @@ class TagService extends BaseService
                 $item = $cache_question_model->filterAttributes($item);
                 $tag_id = $item['id'];
                 $result[$tag_id] = $item;
-                $cache_key = [REDIS_KEY_TAG, $tag_id];
+                $cache_key = [RedisKey::REDIS_KEY_TAG, $tag_id];
                 Yii::$app->redis->hMset($cache_key, $item);
             }
         }
@@ -375,7 +375,7 @@ class TagService extends BaseService
      */
     public static function updateTagCache($tag_id, $data)
     {
-        $cache_key = [REDIS_KEY_TAG, $tag_id];
+        $cache_key = [RedisKey::REDIS_KEY_TAG, $tag_id];
         if ($tag_id && $data && Yii::$app->redis->hLen($cache_key)) {
             return Yii::$app->redis->hMset($cache_key, $data);
         }

@@ -106,6 +106,11 @@ class AnswerBehavior extends BaseBehavior
     public function afterAnswerDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        //处理回答缓存
+        $this->dealWithAnswerDeleteCache();
+
+        //计数
+        $this->dealWithReduceCounter();
     }
 
 
@@ -142,6 +147,32 @@ class AnswerBehavior extends BaseBehavior
 
         AnswerService::updateAnswerCache($this->owner->id, $item);
     }
+
+    private function dealWithAnswerDeleteCache()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        //清除是否已回答缓存
+        $cache_key_answered = [
+            RedisKey::REDIS_KEY_QUESTION_HAS_ANSWERED,
+            implode(':', [$this->owner->created_by, $this->owner->question_id]),
+        ];
+        if (Yii::$app->redis->get($cache_key_answered)) {
+            Yii::$app->redis->delete($cache_key_answered);
+        }
+
+        //清除按时间回答列表缓存
+        $cache_key_time = [RedisKey::REDIS_KEY_ANSWER_LIST_TIME, $this->owner->question_id,];
+        if (Yii::$app->redis->zScore($cache_key_time, $this->owner->id) !== false) {
+            Yii::$app->redis->zRem($cache_key_time, $this->owner->id);
+        }
+
+        //清除按分数回答列表缓存
+        $cache_key_score = [RedisKey::REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id,];
+        if (Yii::$app->redis->zScore($cache_key_score, $this->owner->id) !== false) {
+            Yii::$app->redis->zRem($cache_key_score, $this->owner->id);
+        }
+    }
     
     private function dealWithCheckWhetherHasAnswered()
     {
@@ -162,6 +193,13 @@ class AnswerBehavior extends BaseBehavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         Counter::userAddAnswer($this->owner->created_by);
         Counter::questionAddAnswer($this->owner->question_id);
+    }
+
+    private function dealWithReduceCounter()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        Counter::userDeleteAnswer($this->owner->created_by);
+        Counter::questionDeleteAnswer($this->owner->question_id);
     }
     
     private function dealWithNotification($type)
