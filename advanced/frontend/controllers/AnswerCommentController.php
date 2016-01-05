@@ -118,7 +118,7 @@ class AnswerCommentController extends BaseController
      * @param string $id
      * @return mixed
      */
-    /*public function actionUpdate($id)
+    public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
@@ -132,7 +132,7 @@ class AnswerCommentController extends BaseController
                 ]
             );
         }
-    }*/
+    }
 
     /**
      * Deletes an existing AnswerCommentEntity model.
@@ -140,12 +140,12 @@ class AnswerCommentController extends BaseController
      * @param string $id
      * @return mixed
      */
-    /*public function actionDelete($id)
+    public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
-    }*/
+    }
 
     /**
      * Finds the AnswerCommentEntity model based on its primary key value.
