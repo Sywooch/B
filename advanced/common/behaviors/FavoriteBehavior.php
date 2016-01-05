@@ -60,7 +60,7 @@ class FavoriteBehavior extends BaseBehavior
         );
 
         //更新收藏夹下的收藏数量
-        Counter::favoriteCagetoryAddFavorite($this->owner->favorite_category_id);
+        Counter::favoriteCategoryAddFavorite($this->owner->favorite_category_id);
     }
 
     public function afterFavoriteDelete()
@@ -101,6 +101,6 @@ class FavoriteBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         Counter::favoriteCagetoryRemoveFavorite($from_favorite_category_id);
-        Counter::favoriteCagetoryAddFavorite($to_favorite_category_id);
+        Counter::favoriteCategoryAddFavorite($to_favorite_category_id);
     }
 }

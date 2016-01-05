@@ -1071,8 +1071,6 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
     background-color: #da5753
 }
 
-
-
 .nav-tabs-zen > li > a {
     margin-right: -1px;
     padding: 7px 15px;
@@ -1115,6 +1113,37 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
 
 .nav-tabs-zen > li.active > a {
     color: #333
+}
+
+body.have-notify {
+    margin-top: 38px
+}
+
+body.modal-open .topframe {
+    right: 15px
+}
+
+.topframe {
+    margin: 0;
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: center;
+    border-radius: 0;
+    left: 0;
+    top: 0;
+    z-index: 1000
+}
+
+.topframe.alert-warning {
+    border-bottom: 1px solid #faebcc
+}
+
+.topframe.alert-danger {
+    border-bottom: 1px solid #ebccd1
+}
+
+.topframe#fuckicp {
+    z-index: initial
 }
 
 /*首页开始*/
@@ -1413,6 +1442,149 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
 .nav-justified > .dropdown .dropdown-menu {
     top: auto;
     left: auto
+}
+
+.widget-welcome {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    color: #666;
+    -moz-box-shadow: 3px 3px 0 rgba(0, 0, 0, .05);
+    -webkit-box-shadow: 3px 3px 0 rgba(0, 0, 0, .05);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, .05)
+}
+
+.widget-welcome .title {
+    margin: 0 0 10px;
+    color: #D0021B
+}
+
+.widget-welcome ul {
+    margin: 15px 0 0
+}
+
+.widget-welcome li {
+    margin-top: 6px
+}
+
+.widget-register {
+    position: fixed;
+    bottom: 0;
+    z-index: 1000;
+    width: 100%;
+    margin-bottom: 0 !important;
+    border-top: 1px solid #dee2de;
+    background-color: #ecf6ed !important
+}
+
+.widget-register .container {
+    position: relative
+}
+
+.widget-register .title {
+    color: #009a61 !important
+}
+
+.widget-register p {
+    color: #999
+}
+
+.widget-register .close {
+    position: absolute;
+    right: 10px
+}
+
+@-webkit-keyframes widget-register-slideUp {
+    from {
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0)
+    }
+    100% {
+        -webkit-transform: none;
+        transform: none
+    }
+}
+
+@keyframes widget-register-slideUp {
+    from {
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0)
+    }
+    100% {
+        -webkit-transform: none;
+        transform: none
+    }
+}
+
+.widget-register-slideUp {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation-name: widget-register-slideUp;
+    animation-name: widget-register-slideUp
+}
+
+@-webkit-keyframes widget-register-slideDown {
+    from {
+        -webkit-transform: none;
+        transform: none
+    }
+    100% {
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0)
+    }
+}
+
+@keyframes widget-register-slideDown {
+    from {
+        -webkit-transform: none;
+        transform: none
+    }
+    100% {
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0)
+    }
+}
+
+.widget-register-slideDown {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation-name: widget-register-slideDown;
+    animation-name: widget-register-slideDown
+}
+
+#footer, #footer a {
+    color: #888
+}
+
+#footer {
+    border-top: 1px solid #EEE;
+    padding: 40px 0;
+    line-height: 1.6;
+    vertical-align: top
+}
+
+#footer .site-link {
+    margin: 0 0 40px
+}
+
+#footer .site-link dt {
+    margin-bottom: 20px;
+    color: #333
+}
+
+#footer .site-link dd {
+    margin: 5px 0;
+    font-size: 13px
+}
+
+#footer .copyright {
+    text-align: center;
+    font-size: 13px
 }
 
 /*首页结束*/
@@ -2137,3 +2309,28 @@ input[type="date"].input-lg, .form-horizontal .form-group-lg input[type="date"].
 }
 
 /*通知页面结束*/
+
+
+/*bootstrap-notify自定义样式开始*/
+.alert-success {
+    background-color: rgb(241, 242, 240);
+    border-color: rgba(149, 149, 149, 0.3);
+    border-radius: 3px;
+    color: rgb(149, 149, 149);
+    padding: 10px;
+}
+.alert-success > [data-notify="icon"] {
+    height: 50px;
+    margin-right: 12px;
+}
+.alert-success > [data-notify="title"] {
+    color: rgb(51, 51, 51);
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.alert-success > [data-notify="message"] {
+    font-size: 80%;
+}
+
+/*bootstrap-notify自定义样式结束*/

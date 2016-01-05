@@ -8,8 +8,6 @@
 
 namespace common\modules\user\models;
 
-
-use common\entities\UserEntity;
 use Yii;
 
 class LoginForm extends \dektrium\user\models\LoginForm

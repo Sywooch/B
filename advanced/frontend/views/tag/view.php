@@ -41,29 +41,50 @@ $this->title = $tag['name'];
                     <?php foreach ($questions as $item): ?>
                         <section class="stream-list__item">
                             <div class="qa-rank">
-                                <div class="answers answered">
-                                    9
+                                <div class="votes hidden-xs">
+                                    <?= $item['count_follow'] ?>
+                                    <small>关注</small>
+                                </div>
+                                <div class="answers<?= $item['count_answer'] > 0 ? ' answered' : ''; ?>">
+                                    <?= $item['count_answer'] ?>
                                     <small>回答</small>
                                 </div>
                                 <div class="views hidden-xs">
-                                    540
+                                    <?= $item['count_views'] ?>
                                     <small>浏览</small>
                                 </div>
                             </div>
                             <div class="summary">
                                 <ul class="author list-inline">
-                                    <li class="pull-right" title="1 收藏">
-                                        <small class="glyphicon glyphicon-bookmark"></small>
-                                        1
-                                    </li>
+                                    <? if ($item['count_favorite'] > 0): ?>
+                                        <li class="pull-right" title="<?= $item['count_favorite'] ?> 收藏">
+                                            <small class="glyphicon glyphicon-bookmark"></small>
+                                            <?= $item['count_favorite'] ?>
+                                        </li>
+                                    <? endif; ?>
                                     <li>
-                                        <a href="/u/f2e">52lidan</a>
+                                        <?= TemplateHelper::showUsername($item['created_by'], true) ?>
                                         <span class="split"></span>
-                                        <a href="/q/1010000003981953/a-1020000003989542">11月13日回答</a>
+                                        <?= Html::a(
+                                            TemplateHelper::showHumanTime(
+                                                $item['created_at']
+                                            ),
+                                            ['question/view', 'id' => $item['id']],
+                                            [
+                                                'class' => 'askDate',
+
+                                            ]
+                                        ) ?>
                                     </li>
                                 </ul>
                                 <h2 class="title">
-                                    <?= Html::a($item['subject'], ['question/view', 'id' => $item['id']]); ?>
+                                    <?= Html::a(
+                                        $item['subject'],
+                                        ['question/view', 'id' => $item['id']],
+                                        [
+                                            'target' => '_blank',
+                                        ]
+                                    ); ?>
                                 </h2>
                                 <ul class="taglist--inline ib">
                                     <?= TemplateHelper::showTagLiLabelByName($item['tags']) ?>

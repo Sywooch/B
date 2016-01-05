@@ -110,9 +110,14 @@ class BaseNotifier extends Object
             $this->notice_code = NotificationService::getNotificationCode($type);
         }
 
+        if (YII_DEBUG) {
+            $this->immediate = true;
+        } elseif (empty($this->immediate)) {
+            $this->immediate = false;
+        }
+
         #filter to_user_id
         if ($this->filterToUserId()) {
-            #immediate = true 为马上执行
             if ($this->immediate) {
                 $result = $this->noticeDatabase($this->sender, $this->receiver, $this->notice_code, $associate_data);
             } else {
@@ -121,6 +126,8 @@ class BaseNotifier extends Object
             Yii::trace(sprintf('Notifier::notice Result: %s', var_export($result, true)), 'notifier');
 
             $this->result[__FUNCTION__] = $result;
+        } else {
+            Yii::trace('已过滤掉自己给自己发通知', 'notifier');
         }
 
         return $this;
@@ -187,7 +194,7 @@ class BaseNotifier extends Object
                 'notice_code'    => $notice_code,
                 'associate_data' => $associate_data,
                 'status'         => NotificationEntity::STATUS_UNREAD,
-                'created_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
+                'created_at'     => $current_time ? $current_time : TimeHelper::getCurrentTime(),
             ],
             'notifier'
         );
@@ -204,7 +211,7 @@ class BaseNotifier extends Object
                 'notice_code'    => $notice_code,
                 'associate_data' => $associate_data,
                 'status'         => NotificationEntity::STATUS_UNREAD,
-                'created_at'      => $current_time ? $current_time : TimeHelper::getCurrentTime(),
+                'created_at'     => $current_time ? $current_time : TimeHelper::getCurrentTime(),
             ]
         );
     }

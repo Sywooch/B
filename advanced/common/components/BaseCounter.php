@@ -97,7 +97,7 @@ class BaseCounter extends Object
     public function execute()
     {
         if (empty($this->table) || empty($this->id)) {
-            throw new ParamsInvalidException(['object']);
+            throw new ParamsInvalidException(['table', 'id']);
         }
         
         if (empty($this->field)) {
@@ -106,8 +106,10 @@ class BaseCounter extends Object
         if (empty($this->value)) {
             throw new ParamsInvalidException(['value']);
         }
-        
-        if (empty($this->immediate)) {
+
+        if (YII_DEBUG) {
+            $this->immediate = true;
+        } elseif (empty($this->immediate)) {
             $this->immediate = false;
         }
 
@@ -142,7 +144,7 @@ class BaseCounter extends Object
     public static function writeToDatabase($table, $primary_key_name, $id, $field, $value)
     {
         $sql = sprintf(
-            'UPDATE %s SET %s=%s+:value WHERE %s=:id',
+            'UPDATE `%s` SET `%s`=`%s`+:value WHERE `%s`=:id',
             $table,
             $field,
             $field,

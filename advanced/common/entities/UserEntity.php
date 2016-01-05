@@ -22,10 +22,11 @@ use Yii;
 class UserEntity extends User
 {
     const MAX_USERNAME_LENGTH = 15;//用户名长度
+    const MIN_USERNAME_LENGTH = 2;//用户名长度
+
     public $avatar;
-    #注册用户名正则，允许中英文
-    public static $usernameRegexp = '/^[_-a-zA-Z0-9\.\x{4e00}-\x{9fa5}]+$/u';
-    
+    public static $usernameRegexp = '/^[_\-a-zA-Z0-9\x{4e00}-\x{9fa5}]+$/u';//注册用户名正则，允许中英文
+
     public static function tableName()
     {
         return 'user';
@@ -58,17 +59,14 @@ class UserEntity extends User
         return $scenarios;
     }
 
-    /*public function behaviors()
+    public function transactions()
     {
-        $behaviors = parent::behaviors();
-        $behaviors[] = [
-            'user_behavior' => [
-                'class' => QuestionBehavior::className(),
-            ],
+        return [
+            //注册场景，走事务
+            'register' => self::OP_INSERT,
         ];
-        return $behaviors;
-    }*/
-    
+    }
+
     /**
      * 字段规则
      * @return array
@@ -76,9 +74,6 @@ class UserEntity extends User
     public function rules()
     {
         $rules = parent::rules();
-        // add some rules
-        //$rules['fieldRequired'] = ['field', 'required'];
-        //$rules['usernameLength']=['username', 'string', 'min' => 2, 'max' => 255];
         return $rules;
     }
 

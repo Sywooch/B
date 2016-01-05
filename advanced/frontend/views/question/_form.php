@@ -1,5 +1,6 @@
 <?php
 
+use common\entities\QuestionEntity;
 use common\widgets\UEditor\UEditor;
 use dosamigos\selectize\SelectizeTextInput;
 
@@ -72,6 +73,11 @@ use yii\widgets\ActiveForm;
 
 
     <div class="form-group">
+        <div class="checkbox pull-left">
+            <?= $form->field($model, 'is_anonymous')->checkbox(
+                ['value' => QuestionEntity::STATUS_ANONYMOUS]
+            ) ?>
+        </div>
         <div class="pull-right">
             <?= Html::submitButton($model->isNewRecord ? '发布问题' : '更新问题', ['class' => 'btn btn-primary btn-lg']) ?><br>
         </div>

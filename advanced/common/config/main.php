@@ -2,7 +2,7 @@
 use common\config\RedisKey;
 
 return [
-    'name'          => '网站名称',
+    'name'          => 'WebSite',
     'language'      => 'zh-cn',
     'vendorPath'    => dirname(dirname(__DIR__)) . '/vendor',
     'modules'       => [

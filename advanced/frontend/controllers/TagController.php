@@ -174,7 +174,7 @@ class TagController extends BaseController
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    /*public function actionCreate()
     {
         $model = new Tag();
 
@@ -188,7 +188,7 @@ class TagController extends BaseController
                 ]
             );
         }
-    }
+    }*/
 
     /**
      * Updates an existing Tag model.

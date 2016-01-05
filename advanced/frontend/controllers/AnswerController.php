@@ -175,11 +175,14 @@ class AnswerController extends BaseController
 
     public function actionDelete($id)
     {
-        $answer = $this->findModel($id);
+        $answer = AnswerService::getAnswerByAnswerId($id);
 
-        if ($answer->created_by = Yii::$app->user->id) {
+        //本人
+        if ($answer['created_by'] == Yii::$app->user->id) {
             Url::remember(Yii::$app->request->getReferrer());
-            $answer->delete();
+
+            //删除回答
+            AnswerEntity::findOne($id)->delete();
 
             return $this->goBack();
         } else {
@@ -287,6 +290,24 @@ class AnswerController extends BaseController
                 'vote_status' => $vote,
             ]
         );
+    }
 
+    public function actionAnonymous($id)
+    {
+        $answer = AnswerService::getAnswerByAnswerId($id);
+
+        if ($answer['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS) {
+            AnswerService::cancelAnonymous($id);
+        } else {
+            AnswerService::setAnonymous($id);
+        }
+
+        $this->redirect(
+            [
+                'question/view',
+                'id'        => $answer['question_id'],
+                'answer_id' => $id,
+            ]
+        );
     }
 }

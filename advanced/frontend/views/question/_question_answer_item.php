@@ -13,6 +13,8 @@ use yii\helpers\Url;
 use yii\widgets\LinkPager;
 
 ?>
+
+<div id="answer_item_area">
 <?php foreach ($data as $item): ?>
     <?php if ($item['type'] == AnswerEntity::TYPE_ANSWER): ?>
         <article class="clearfix widget-answers__item" id="answer-<?= $item['id'] ?>">
@@ -56,11 +58,10 @@ use yii\widgets\LinkPager;
                     ],
                     ['rel' => 'nofollow',]
                 ); ?>
-            <?php elseif ($item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS): ?>
-                匿名回答
             <?php else: ?>
                 回答
             <?php endif; ?>
+            <?= $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '[匿名回答]' : '' ?>
         </span>
 
                 <div class="answer fmt mt10 mb10">
@@ -118,15 +119,33 @@ use yii\widgets\LinkPager;
                             [
                                 'items' => [
                                     [
-                                        'label'   => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '置为匿名',
-                                        'url'     => '/',
-                                        'visible' => !Yii::$app->user->isGuest && $item['created_by'] == Yii::$app->user->id,
+                                        'label'       => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '置为匿名',
+                                        'url'         => '/',
+                                        'visible'     => !Yii::$app->user->isGuest && $item['created_by'] == Yii::$app->user->id,
+                                        'linkOptions' => [
+                                            'data-do-confirm' => true,
+                                            'data-title'      => $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '设置匿名',
+                                            'data-message'    => sprintf(
+                                                '您确定要对此回答%s?',
+                                                $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '取消匿名' : '设置匿名'
+                                            ),
+                                            'data-redirect'   => Url::to(
+                                                ['answer/anonymous', 'id' => $item['id']]
+                                            ),
+                                        ],
                                     ],
                                     [
                                         'label'       => '删除',
                                         'url'         => ['answer/delete', 'id' => $item['id']],
                                         'visible'     => !Yii::$app->user->isGuest && $item['created_by'] == Yii::$app->user->id,
-                                        'linkOptions' => ['data-method' => 'post'],
+                                        'linkOptions' => [
+                                            'data-do-confirm' => true,
+                                            'data-title'      => '删除确认',
+                                            'data-message'    => '您确定要删除此回答？',
+                                            'data-redirect'   => Url::to(
+                                                ['answer/delete', 'id' => $item['id']]
+                                            ),
+                                        ],
                                     ],
                                     [
                                         'label'   => $item['is_fold'] == AnswerEntity::STATUS_FOLD ? '取消折叠' : '折叠',
@@ -167,3 +186,4 @@ use yii\widgets\LinkPager;
         <?= $item['type']; ?>
     <?php endif; ?>
 <?php endforeach; ?>
+</div>

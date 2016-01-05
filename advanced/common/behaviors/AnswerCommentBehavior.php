@@ -33,14 +33,27 @@ class AnswerCommentBehavior extends BaseBehavior
 
         return [
             ActiveRecord::EVENT_AFTER_INSERT => 'afterAnswerCommentInsert',
+            ActiveRecord::EVENT_AFTER_DELETE => 'afterAnswerCommentDelete',
         ];
     }
     
     public function afterAnswerCommentInsert($event)
     {
+        //通知
         $this->dealWithNotification();
+        //处理AT
         $this->dealWithAt();
+        //计数
         $this->dealWithCounter();
+    }
+
+    /**
+     * 评论删除后
+     */
+    public function afterAnswerCommentDelete()
+    {
+        //回答减少评论数量
+        Counter::answerDeleteComment($this->owner->answer_id);
     }
 
     private function dealWithNotification()
@@ -69,7 +82,7 @@ class AnswerCommentBehavior extends BaseBehavior
 
         $username = AtHelper::findAtUsername($this->owner->content);
 
-        if($username){
+        if ($username) {
             $user_ids = UserService::getUserIdByUsername($username);
 
             $result = Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->notice(
@@ -84,7 +97,7 @@ class AnswerCommentBehavior extends BaseBehavior
     private function dealWithCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-
+        //回答添加评论数量
         Counter::answerAddComment($this->owner->answer_id);
     }
 }

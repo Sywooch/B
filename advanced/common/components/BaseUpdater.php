@@ -81,6 +81,12 @@ class BaseUpdater extends Object
             throw new ParamsInvalidException(['set']);
         }
 
+        if (YII_DEBUG) {
+            $this->immediate = true;
+        } elseif (empty($this->immediate)) {
+            $this->immediate = false;
+        }
+
         #priority = true 为马上执行
         if ($this->immediate) {
             $result = $this->immediately();

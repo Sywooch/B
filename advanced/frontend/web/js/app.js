@@ -12,6 +12,30 @@ app.login = {
     }
 };
 app.notice = {
+    success: function (message) {
+        $.notify({
+            icon: app.user.avatar,
+            title: '',
+            message: message
+        },{
+            type: 'success',
+            delay: 8000,
+            icon_type: 'image',
+            placement: {
+                from: "bottom",
+                align: "right"
+            },
+            template: '<div data-notify="container" class="col-xs-9 col-sm-2 alert alert-{0}" role="alert">' +
+            '<img data-notify="icon" class="img-circle pull-left">' +
+            '<span data-notify="title">{1}</span>' +
+            '<span data-notify="message">{2}</span>' +
+            '</div>',
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        });
+    },
     warning: function (message) {
         $.notify({
             // options
@@ -20,7 +44,11 @@ app.notice = {
             message: ''
         }, {
             // settings
-            type: 'danger'
+            type: 'danger',
+            animate: {
+                enter: 'animated zoomInDown',
+                exit: 'animated zoomOutUp'
+            }
         });
     },
     error: function () {
@@ -31,7 +59,11 @@ app.notice = {
             message: ''
         }, {
             // settings
-            type: 'danger'
+            type: 'danger',
+            animate: {
+                enter: 'animated zoomInDown',
+                exit: 'animated zoomOutUp'
+            }
         });
     }
 };
@@ -85,6 +117,7 @@ app.ajax = {
             app.notice.warning(response.message);
             return false;
         } else {
+            app.notice.success(response.message);
             return true;
         }
     },
@@ -133,8 +166,44 @@ app.comment = {
     }
 };
 
+app.dialog = {
+    confirm: function (title, message, redirect) {
+        bootbox.setLocale("zh_CN");
+        bootbox.dialog({
+            message: message,
+            title: title,
+            buttons: {
+                cancel: {
+                    label: "取消",
+                    className: null,
+                    callback: function () {
+                    }
+                },
+                ok: {
+                    label: "确定",
+                    className: "btn-primary",
+                    callback: function () {
+                        if (redirect) {
+                            window.location.href = redirect;
+                        }
+                    }
+                }
+            },
+            onEscape: true,
+            backdrop: true,
+        });
+
+
+        /*bootbox.confirm(title, function (result) {
+         if (result && redirect) {
+         window.location.href = redirect;
+         }
+         });*/
+    }
+};
 app.report = {
     'show': function (report_url) {
+        bootbox.setLocale("zh_CN");
         bootbox.dialog({
             title: "我要举报该问题，理由是：",
             message: '\
@@ -162,7 +231,7 @@ app.report = {
                         var reason = $('#report_form textarea').val();
                         //console.log(option, reason);
                         $.post(report_url, {"option": option, "reason": reason}, function (response) {
-                            console.log(response);
+                            //console.log(response);
                             app.ajax.validate(response);
                         });
                     }

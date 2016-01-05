@@ -483,11 +483,11 @@ class TestController extends BaseController
     public function actionAutoLogin()
     {
         $user_id = rand(1, UserService::MAX_OFFICIAL_ACCOUNT_ID);
-        $result = $this->autoLoginById($user_id);
+        $result = UserService::autoLoginById($user_id);
 
         if ($result) {
             $user = UserService::getUsernameByUserId($user_id);
-            echo sprintf('当前登陆用户[id=>%s, username=>%s]', $user_id, $user);
+            echo sprintf('当前登陆用户["id" => "%s", "username" => "%s"]', $user_id, $user);
         }
     }
 

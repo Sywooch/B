@@ -7,6 +7,7 @@ use Yii;
 use common\entities\ReportEntity;
 use yii\data\ActiveDataProvider;
 use common\controllers\BaseController;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -18,10 +19,21 @@ class ReportController extends BaseController
     public function behaviors()
     {
         return [
-            'verbs' => [
+            'verbs'  => [
                 'class'   => VerbFilter::className(),
                 'actions' => [
                     'create' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only'  => ['create'],
+                'rules' => [
+                    [
+                        'allow'   => true,
+                        'actions' => ['create'],
+                        'roles'   => ['@'],
+                    ],
                 ],
             ],
         ];
@@ -30,21 +42,35 @@ class ReportController extends BaseController
     /**
      * Creates a new ReportEntity model.
      * If creation is successful, the browser will be redirected to the 'view' page.
+     * @param $object
+     * @param $associate_id
      * @return mixed
      */
     public function actionCreate($object, $associate_id)
     {
-        $season = Yii::$app->request->post('season');
-        $season = Yii::$app->request->post('option', $season);
+        $reason = Yii::$app->request->post('reason');
 
+        if(empty($reason)){
+            $reason = Yii::$app->request->post('option');
+        }
 
-        $model = new ReportEntity();
-        $model->report_object = $object;
-        $model->associate_id = $associate_id;
-        $model->created_by = Yii::$app->user->id;
-        $model->report_reason = $season;
+        $model = ReportEntity::find()->where(
+            [
+                'report_object' => $object,
+                'associate_id'  => $associate_id,
+                'created_by'    => Yii::$app->user->id,
+            ]
+        )->one();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if (!$model) {
+            $model = new ReportEntity();
+            $model->report_object = $object;
+            $model->associate_id = $associate_id;
+        }
+
+        $model->report_reason = $reason;
+
+        if ($model->save()) {
             $result = true;
         } else {
             $result = false;

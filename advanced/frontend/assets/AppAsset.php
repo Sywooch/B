@@ -20,6 +20,7 @@ class AppAsset extends AssetBundle
     public $css = [
         //'css/site.css',
         'css/global.css',
+        'css/animate.min.css',
         //'css/qa_all.css',
         //'css/responsive.css',
     ];

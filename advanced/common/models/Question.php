@@ -69,7 +69,7 @@ class Question extends \common\models\BaseActiveRecord
             'created_at' => '创建时间',
             'created_by' => '创建用户',
             'updated_at' => '最后活跃时间',
-            'is_anonymous' => '是否匿名发表',
+            'is_anonymous' => '匿名提问',
             'is_lock' => '是否锁定',
             'status' => 'original原稿 review 审稿 edited已编辑 recommend推荐 disable禁用 lock 锁定 crawl抓取',
         ];

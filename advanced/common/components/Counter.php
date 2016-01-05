@@ -14,7 +14,6 @@ use common\entities\FavoriteCategoryEntity;
 use common\entities\PrivateMessageEntity;
 use common\entities\QuestionEntity;
 use common\entities\TagEntity;
-use common\entities\UserEntity;
 use common\entities\UserProfileEntity;
 use common\services\AnswerService;
 use common\services\QuestionService;
@@ -170,7 +169,7 @@ class Counter extends BaseCounter
         return $result;
     }
 
-        public static function userAddQuestion($user_id)
+    public static function userAddQuestion($user_id)
     {
         Yii::trace('增加用户问题提问数量', 'counter');
 
@@ -571,7 +570,7 @@ class Counter extends BaseCounter
 
     //******************************************FAVORITE***************************************************/
 
-    public static function favoriteCagetoryAddFavorite($favorite_category_id)
+    public static function favoriteCategoryAddFavorite($favorite_category_id)
     {
         Yii::trace('增加收藏夹分类的收藏数量', 'counter');
 
@@ -580,6 +579,8 @@ class Counter extends BaseCounter
                 FavoriteCategoryEntity::tableName(),
                 $favorite_category_id
             )->value('count_favorite', 1)->execute();
+        } else {
+            return false;
         }
     }
 
@@ -592,6 +593,8 @@ class Counter extends BaseCounter
                 FavoriteCategoryEntity::tableName(),
                 $favorite_category_id
             )->value('count_favorite', -1)->execute();
+        } else {
+            return false;
         }
     }
 

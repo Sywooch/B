@@ -65,28 +65,7 @@ class BaseController extends PerformanceRecordController
         Yii::$app->response->data = $data;
         Yii::$app->end();
     }
-    
-    protected function autoLoginByUsername($username)
-    {
-        return $this->autoLogin($username);
-    }
 
-    protected function autoLoginById($user_id)
-    {
-        $username = UserService::getUsernameByUserId($user_id);
-
-        return $this->autoLogin($username);
-    }
-    
-    private function autoLogin($username)
-    {
-        /* @var $login_form LoginForm */
-        $login_form = Yii::createObject(LoginForm::className());
-        $login_form->login = $username;
-
-        return $login_form->loginWithoutPassword();
-    }
-    
     /**
      * @return object
      * @throws \yii\base\InvalidConfigException

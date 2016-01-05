@@ -9,9 +9,11 @@
 namespace common\components;
 
 use common\config\RedisKey;
+use common\entities\AnswerEntity;
 use common\entities\FavoriteCategoryEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserProfileEntity;
+use common\services\AnswerService;
 use common\services\QuestionService;
 use common\services\UserService;
 use Yii;
@@ -70,6 +72,86 @@ class Updater extends BaseUpdater
         )->execute();
 
         //no redis cache
+        return $result;
+    }
+
+    public static function setQuestionAnonymous($question_id)
+    {
+        $result = self::build()->sync(true)->table(QuestionEntity::tableName())->set(
+            ['is_anonymous' => QuestionEntity::STATUS_ANONYMOUS]
+        )->where(
+            ['id' => $question_id]
+        )->execute();
+
+        if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
+            QuestionService::updateQuestionCache(
+                $question_id,
+                [
+                    'is_anonymous' => QuestionEntity::STATUS_ANONYMOUS,
+                ]
+            );
+        }
+
+        return $result;
+    }
+
+    public static function cancelQuestionAnonymous($question_id)
+    {
+        $result = self::build()->sync(true)->table(QuestionEntity::tableName())->set(
+            ['is_anonymous' => QuestionEntity::STATUS_UNANONYMOUS]
+        )->where(
+            ['id' => $question_id]
+        )->execute();
+
+        if ($result && QuestionService::ensureQuestionHasCache($question_id)) {
+            QuestionService::updateQuestionCache(
+                $question_id,
+                [
+                    'is_anonymous' => QuestionEntity::STATUS_UNANONYMOUS,
+                ]
+            );
+        }
+
+        return $result;
+    }
+
+    public static function setAnswerAnonymous($answer_id)
+    {
+        $result = self::build()->sync(true)->table(AnswerEntity::tableName())->set(
+            ['is_anonymous' => AnswerEntity::STATUS_ANONYMOUS]
+        )->where(
+            ['id' => $answer_id]
+        )->execute();
+
+        if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
+            AnswerService::updateAnswerCache(
+                $answer_id,
+                [
+                    'is_anonymous' => AnswerEntity::STATUS_ANONYMOUS,
+                ]
+            );
+        }
+
+        return $result;
+    }
+
+    public static function cancelAnswerAnonymous($answer_id)
+    {
+        $result = self::build()->sync(true)->table(AnswerEntity::tableName())->set(
+            ['is_anonymous' => AnswerEntity::STATUS_UNANONYMOUS]
+        )->where(
+            ['id' => $answer_id]
+        )->execute();
+
+        if ($result && AnswerService::ensureAnswerHasCache($answer_id)) {
+            AnswerService::updateAnswerCache(
+                $answer_id,
+                [
+                    'is_anonymous' => AnswerEntity::STATUS_UNANONYMOUS,
+                ]
+            );
+        }
+
         return $result;
     }
 }

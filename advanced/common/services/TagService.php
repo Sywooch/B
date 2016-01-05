@@ -61,31 +61,13 @@ class TagService extends BaseService
         return $model;
     }
 
+    /**
+     * TODO
+     * @param $question_id
+     */
     public static function getTagsByQuestionId($question_id)
     {
 
-    }
-
-
-    /**
-     * remove question tag
-     * @param       $user_id
-     * @param       $question_id
-     * @param array $tag_ids
-     * @return int
-     */
-    public static function removeQuestionTag($user_id, $question_id, array $tag_ids)
-    {
-        $result = TagEntity::getDb()->createCommand()->delete(
-            QuestionTag::tableName(),
-            [
-                'created_by'  => $user_id,
-                'question_id' => $question_id,
-                'tag_id'      => $tag_ids,
-            ]
-        )->execute();
-
-        return $result;
     }
 
     public static function getTagNameById($tag_id)
@@ -195,6 +177,13 @@ class TagService extends BaseService
         }
 
         return true;
+    }
+
+    public static function deleteTagCache($tag_id)
+    {
+        $cache_key = [RedisKey::REDIS_KEY_TAG, $tag_id];
+
+        return Yii::$app->redis->delete($cache_key);
     }
 
 

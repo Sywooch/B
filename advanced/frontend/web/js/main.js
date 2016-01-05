@@ -45,8 +45,14 @@ $(document).ready(function () {
         $(this).scrollTop() > 720 ? $("#backtop").removeClass("hidden") : $("#backtop").addClass("hidden")
     });
 
+    //关闭提醒
     $(".topframe").length && $(".topframe .close").click(function () {
         $(this).parent().remove(), 0 !== $(".topframe").length && $(".topframe .content").text() || $("body").removeClass("have-notify")
+    });
+
+    //关闭注册提醒
+    $(".widget-register").length && $(".widget-register .close").click(function () {
+        $(".widget-register").removeClass('widget-register-slideUp').addClass('widget-register-slideDown');
     });
 });
 
@@ -108,6 +114,15 @@ jQuery(function ($) {
         if (that.is('a')) {
             e.preventDefault();
             return app.report.show($(e.target).data('report_url'));
+        }
+    });
+
+    //确认框
+    $(document).on('click', '[data-do-confirm]', function (e) {
+        var that = $(this);
+        if (that.is('a')) {
+            e.preventDefault();
+            return app.dialog.confirm($(e.target).data('title'), $(e.target).data('message'), $(e.target).data('redirect'));
         }
     });
 

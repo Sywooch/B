@@ -62,11 +62,10 @@ $this->beginBlock('top-header');
                                 'rel' => 'nofollow',
                             ]
                         ); ?>
-                    <?php elseif ($question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS): ?>
-                        匿名提问
                     <?php else: ?>
                         提问
                     <?php endif; ?>
+                    <?= $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '[匿名提问]' : '' ?>
                 </div>
             </div>
             <div class="col-md-3">
@@ -149,14 +148,34 @@ $this->endBlock();
                                     [
                                         'items' => [
                                             [
-                                                'label'   => $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
-                                                'url'     => '/',
-                                                'visible' => !Yii::$app->user->isGuest && $question_data['created_by'] == Yii::$app->user->id,
+                                                'label'       => $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '匿名提问',
+                                                'url'         => '/',
+                                                'visible'     => !Yii::$app->user->isGuest && $question_data['created_by'] == Yii::$app->user->id,
+                                                'linkOptions' => [
+                                                    'data-do-confirm' => true,
+                                                    'data-title'      => $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '设置匿名',
+                                                    'data-message'      => sprintf(
+                                                        '您确定要对此问题%s?',
+                                                        $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '设置匿名'
+                                                    ),
+                                                    'data-redirect'   => Url::to(
+                                                        ['question/anonymous', 'id' => $question_data['id']]
+                                                    ),
+                                                ],
                                             ],
                                             [
-                                                'label'   => '删除',
-                                                'url'     => '/',
-                                                'visible' => !Yii::$app->user->isGuest && $question_data['created_by'] == Yii::$app->user->id,
+                                                'label'       => '删除',
+                                                'url'         => '/',
+                                                'visible'     => !Yii::$app->user->isGuest && $question_data['created_by'] == Yii::$app->user->id,
+                                                'linkOptions' => [
+                                                    'data-do-confirm' => true,
+                                                    'data-title'      => '删除确认',
+                                                    'data-message'      => '您确定要删除此问题？',
+                                                    'data-redirect'   => Url::to(
+                                                        ['question/delete', 'id' => $question_data['id']]
+                                                    ),
+                                                ],
+
                                             ],
                                             [
                                                 'label'   => '公众编辑',
@@ -245,10 +264,7 @@ $this->endBlock();
                         'timeout'         => 10000,
                         'clientOptions'   => [
                             'container' => 'pjax-container-answer',
-                        ],
-                        'options'         => [
-                            'id' => 'answer_item_area',
-                        ],
+                        ]
                     ]
                 ); ?>
                 <?= $answer_item_html ?>

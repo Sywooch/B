@@ -14,6 +14,7 @@ use common\config\RedisKey;
 use common\exceptions\NotFoundModelException;
 use common\helpers\AvatarHelper;
 use common\models\CacheUserModel;
+use common\modules\user\models\LoginForm;
 use Imagine\Exception\InvalidArgumentException;
 use common\entities\UserEntity;
 use common\entities\UserProfileEntity;
@@ -24,7 +25,7 @@ use Yii;
 class UserService extends BaseService
 {
     #官方账号的最大ID
-    const MAX_OFFICIAL_ACCOUNT_ID = 785;
+    const MAX_OFFICIAL_ACCOUNT_ID = 500;
     const REGISTER_CAPTCHA_ACTION = '/user/registration/captcha';
 
     public static function checkUserSelf($user_id)
@@ -241,9 +242,7 @@ class UserService extends BaseService
 
         if (false === $username) {
             $data = self::getUserById($user_id);
-            if ($data) {
-                $username = $data['username'];
-            }
+            $username = $data['username'];
         }
 
         return $username;
@@ -257,6 +256,13 @@ class UserService extends BaseService
         }
 
         return true;
+    }
+
+    public static function deleteUserCache($user_id)
+    {
+        $cache_key = [RedisKey::REDIS_KEY_USER, $user_id];
+
+        return Yii::$app->redis->delete($cache_key);
     }
 
     private static function getUserIdByUsernameUseCache(array $username)
@@ -427,5 +433,30 @@ class UserService extends BaseService
         } else {
             return Error::set(Error::TYPE_USER_NOT_ALLOW_TO_RESET_COUNT);
         }
+    }
+
+    public static function autoLoginByUsername($username)
+    {
+        return self::autoLogin($username);
+    }
+
+    public static function autoLoginById($user_id)
+    {
+        $username = UserService::getUsernameByUserId($user_id);
+
+        if (empty($username)) {
+            throw new NotFoundModelException('user', $user_id);
+        }
+
+        return self::autoLogin($username);
+    }
+
+    private static function autoLogin($username)
+    {
+        /* @var $login_form LoginForm */
+        $login_form = Yii::createObject(LoginForm::className());
+        $login_form->login = $username;
+
+        return $login_form->loginWithoutPassword();
     }
 }

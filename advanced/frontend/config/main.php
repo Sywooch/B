@@ -30,7 +30,7 @@ return [
             'class'           => 'common\components\user\User',
             'identityClass'   => 'common\entities\UserEntity',
             'enableAutoLogin' => true,
-            'loginUrl'        => ['user/security/login'],
+            'loginUrl'        => ['/user/security/login'],
             'identityCookie'  => [
                 'name'     => '_frontendIdentity',
                 'path'     => '/',

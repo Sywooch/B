@@ -8,6 +8,7 @@
 
 namespace common\modules\user\controllers;
 
+use common\components\user\User;
 use dektrium\user\controllers\SecurityController as BaseSecurityController;
 use yii\helpers\Url;
 use Yii;
@@ -19,6 +20,8 @@ class SecurityController extends BaseSecurityController
         if (strpos(Yii::$app->request->getReferrer(), 'login') === false) {
             Url::remember(Yii::$app->request->getReferrer());
         }
+
+        Yii::$app->user->setStep(User::STEP_LOGIN);
 
         return parent::actionLogin();
     }

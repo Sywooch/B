@@ -3,6 +3,7 @@
 namespace common\services;
 
 use common\components\Error;
+use common\components\Updater;
 use common\config\RedisKey;
 use common\entities\QuestionTagEntity;
 use common\models\CacheQuestionModel;
@@ -173,8 +174,9 @@ class QuestionService extends BaseService
         $question_ids = Yii::$app->redis->get($cache_key);
 
         if ($question_ids === false) {
-            $model = QuestionEntity::find()->select(['id'])->answered(3)->allowShowStatus($is_spider)->recent($period)->answered(
-            )->orderByTime()->limit(
+            $model = QuestionEntity::find()->select(['id'])->answered(3)->allowShowStatus($is_spider)->recent(
+                $period
+            )->answered()->orderByTime()->limit(
                 $limit
             )->offset($offset)->column();
 
@@ -210,8 +212,8 @@ class QuestionService extends BaseService
         $question_ids = Yii::$app->redis->get($cache_key);
 
         if ($question_ids === false) {
-            $model = QuestionEntity::find()->select(['id'])->allowShowStatus($is_spider)->recent($period)->unAnswered()->orderByTime(
-            )->limit($limit)->offset($offset)->column();
+            $model = QuestionEntity::find()->select(['id'])->allowShowStatus($is_spider)->recent($period)->unAnswered(
+            )->orderByTime()->limit($limit)->offset($offset)->column();
             $question_ids = $model;
             Yii::$app->redis->set($cache_key, $question_ids);
         }
@@ -301,6 +303,13 @@ class QuestionService extends BaseService
         return true;
     }
 
+    public static function deleteQuestionCache($question_id)
+    {
+        $cache_key = [RedisKey::REDIS_KEY_QUESTION, $question_id];
+
+        return Yii::$app->redis->delete($cache_key);
+    }
+
     public static function getQuestionListByUserId($user_id, $page_no = 1, $page_size = 10)
     {
         $limit = $page_size;
@@ -366,6 +375,7 @@ class QuestionService extends BaseService
     }
 
     /**
+     * 批量添加问题标签
      * add question tag
      * @param       $user_id
      * @param       $question_id
@@ -378,9 +388,6 @@ class QuestionService extends BaseService
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,question_id,tag_ids']);
         }
 
-        $data = [];
-        $created_at = time();
-
         foreach ($tag_ids as $tag_id) {
             $model = new QuestionTagEntity();
             $model->question_id = $question_id;
@@ -390,26 +397,41 @@ class QuestionService extends BaseService
         }
 
         return true;
-        /*foreach ($tag_ids as $tag_id) {
-            $data[] = [$question_id, $tag_id, $user_id, $created_at];
-        }
-
-        #batch add question tag
-        $result = QuestionTagEntity::getDb()->createCommand()->batchInsert(
-            QuestionTag::tableName(),
-            ['question_id', 'tag_id', 'created_by', 'created_at'],
-            $data
-        )->execute();
-
-        #add follow tag
-        if ($result) {
-            #add user follow tag
-            FollowService::batchAddFollowTag($tag_ids, $user_id);
-            #tag use count
-            TagService::updateTagCountUse($tag_ids);
-        }*/
-
-
     }
 
+    /**
+     * 批量移除问题标签，不考虑是谁创建的问题标签
+     * @param       $question_id
+     * @param array $tag_ids
+     * @return int
+     */
+    public static function removeQuestionTag($question_id, array $tag_ids)
+    {
+        if (empty($question_id) || empty($tag_ids)) {
+            return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['question_id,tag_ids']);
+        }
+
+        $question_tags = QuestionTagEntity::find()->where(
+            [
+                'question_id' => $question_id,
+                'tag_ids'     => $tag_ids,
+            ]
+        )->all();
+
+        foreach ($question_tags as $question_tag) {
+            /* @var QuestionTagEntity $question_tags */
+            $question_tag->delete();
+        }
+
+        return true;
+    }
+
+    public static function setAnonymous($question_id)
+    {
+        return Updater::setQuestionAnonymous($question_id);
+    }
+    public static function cancelAnonymous($question_id)
+    {
+        return Updater::cancelQuestionAnonymous($question_id);
+    }
 }

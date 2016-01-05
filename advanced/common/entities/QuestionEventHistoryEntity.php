@@ -109,7 +109,6 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
 
     private function addEvent($event_type, $event_content, $allow_cancel, $reason = null)
     {
-
         $data = [
             'question_id'   => intval($this->question_id),
             'event_type'    => $event_type,

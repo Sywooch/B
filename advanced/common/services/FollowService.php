@@ -110,7 +110,7 @@ class FollowService extends BaseService
             }
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -133,7 +133,7 @@ class FollowService extends BaseService
             //存在则移除
             return Yii::$app->redis->zRem($cache_key, $user_id);
         } else {
-            return true;
+            return false;
         }
     }
 
@@ -427,7 +427,7 @@ class FollowService extends BaseService
             }
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -450,7 +450,7 @@ class FollowService extends BaseService
             //存在则移除
             return Yii::$app->redis->zRem($cache_key, $user_id);
         } else {
-            return true;
+            return false;
         }
     }
 
@@ -546,7 +546,6 @@ class FollowService extends BaseService
     }
 
     /**
-     * todo 需要用到behavior
      * @param array $follow_user_ids
      * @param null  $user_id when user_id is null, means delete user_id
      * @return bool
@@ -597,7 +596,7 @@ class FollowService extends BaseService
             }
         }
 
-        return true;
+        return false;
     }
 
     public static function removeUserFansCache($follow_user_id, $user_id)
@@ -607,7 +606,7 @@ class FollowService extends BaseService
             //存在则移除
             return Yii::$app->redis->zRem($cache_key, $user_id);
         } else {
-            return true;
+            return false;
         }
     }
 
@@ -618,7 +617,7 @@ class FollowService extends BaseService
             //存在则移除
             return Yii::$app->redis->zRem($cache_key, $follow_user_id);
         } else {
-            return true;
+            return false;
         }
     }
 

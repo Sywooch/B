@@ -8,11 +8,11 @@
 
 namespace frontend\controllers;
 
-
 use common\controllers\BaseController;
-use dektrium\user\models\RegistrationForm;
+use common\exceptions\PermissionDeniedException;
+use common\modules\user\models\RegistrationForm;
 use Yii;
-use yii\base\ErrorException;
+use yii\filters\AccessControl;
 
 class InitController extends BaseController
 {
@@ -36,6 +36,10 @@ class InitController extends BaseController
     private function getUserNames()
     {
         $this->user_names = [
+            '瞎猫',
+            '晕乎乎',
+            '甜腻腻',
+            '扯蛋儿',
             '一剑飞天',
             '一只小白袜',
             '一只猪',
@@ -107,9 +111,9 @@ class InitController extends BaseController
             '伤的笑嘻嘻',
             '似而非',
             '伽罗',
-            '何以倾',
-            '何姣姣',
-            '何婕',
+            '何某',
+            '何如者',
+            '何瞎子',
             '你的春天在哪里',
             '你被写在我的歌',
             '便便兜',
@@ -147,15 +151,6 @@ class InitController extends BaseController
             '凹凸曼',
             '刀客诸葛',
             '刀尖芭蕾',
-            '刘倩含',
-            '刘冠男',
-            '刘声',
-            '刘婕',
-            '刘婷',
-            '刘岁岁',
-            '刘杰',
-            '刘泓池',
-            '刘美芬',
             '初雪之夏',
             '别给我七角饭',
             '劈云纵',
@@ -197,7 +192,7 @@ class InitController extends BaseController
             '古铜色的殇',
             '叮小当',
             '可乐加冰',
-            '可可妈',
+            '可可豆',
             '史登登',
             '叶绿素',
             '各执',
@@ -260,7 +255,7 @@ class InitController extends BaseController
             '夏花雨树',
             '夏若禾木',
             '夏雪晴雨',
-            '夏颖',
+            '夏天来了',
             '夕空',
             '夕雾',
             '夕露',
@@ -299,7 +294,7 @@ class InitController extends BaseController
             '妞妞小葱',
             '妞妞雨',
             '姝文',
-            '娄庆洁',
+            '娄朱',
             '娘可酱',
             '娜一天',
             '娜娜莉',
@@ -441,7 +436,6 @@ class InitController extends BaseController
             '懒懒鱼',
             '我很简单',
             '我是小气鬼',
-            '戼冃',
             '房咩咩',
             '手寺千里',
             '手心的太阳',
@@ -527,7 +521,7 @@ class InitController extends BaseController
             '柒月旒火',
             '柠檬冰茶',
             '柳子陌',
-            '柳敏',
+            '柳敏子',
             '树叶上的贝',
             '格格陈',
             '格桑兔八哥',
@@ -589,7 +583,7 @@ class InitController extends BaseController
             '油桐林',
             '泗水枳',
             '波罗大大王',
-            '注册名称',
+            '注册名称好难啊',
             '泪寒冰',
             '泪汐潇湘',
             '泰坦巨人',
@@ -688,9 +682,9 @@ class InitController extends BaseController
             '猫水上优优',
             '猫爪逃生',
             '猫言者',
-            '王子贤',
-            '王崇洁',
-            '王瑛男',
+            '王者',
+            '王崇阳',
+            '八子',
             '王的天下',
             '玻璃葵',
             '珂哩',
@@ -1048,33 +1042,37 @@ class InitController extends BaseController
 
     public function actionAutoRegister()
     {
-        if (!Yii::$app->user->isAdmin) {
-            throw new ErrorException('出错啦');
+        if (Yii::$app->user->isGuest || !Yii::$app->user->isAdmin) {
+            throw new PermissionDeniedException();
         }
 
         set_time_limit(0);
         $username_data = $this->getUserNames();
+        //$username_data = ['八贤王'];
         $registration = Yii::createObject(RegistrationForm::className());
 
         foreach ($username_data as $username) {
             /* @var $model RegistrationForm */
             $model = clone $registration;
-            $email = sprintf('rand_%s@bo-u.cn', md5($username));
+            $email = sprintf('rand_%s@qq.cn', md5($username));
 
-            if ($model->load(
-                    [
-                        'email'    => $email,
-                        'username' => $username,
-                        'password' => 'yuyunjian',
-                    ],
-                    ''
-                ) && $model->register()
-            ) {
-                echo sprintf('<p>%s Register OK</p>', $username);
+            $data = [
+                'email'    => $email,
+                'username' => $username,
+                'password' => 'yuyunjian',
+            ];
+            if ($model->load($data, '') && $model->register()) {
+                echo sprintf('<p>%s Register S</p>', $username);
             } else {
-                echo sprintf('<p>%s Register Fail</p>', $username);
+                echo sprintf(
+                    '<p>%s F</p><p>%s</p>',
+                    $username,
+                    var_export(
+                        $model->getErrors() ? $model->getErrors() : $model->getAttributes(),
+                        true
+                    )
+                );
             }
         }
     }
-
 }

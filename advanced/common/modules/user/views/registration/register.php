@@ -13,6 +13,7 @@ use common\services\UserService;
 use yii\captcha\Captcha;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+
 /**
  * @var yii\web\View              $this
  * @var dektrium\user\models\User $user
@@ -30,11 +31,11 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="panel-body">
                 <?php $form = ActiveForm::begin(
-                        [
-                                'id'                     => 'registration-form',
-                                'enableAjaxValidation'   => true,
-                                'enableClientValidation' => false,
-                        ]
+                    [
+                        'id'                     => 'registration-form',
+                        'enableAjaxValidation'   => true,
+                        'enableClientValidation' => false,
+                    ]
                 ); ?>
 
                 <?= $form->field($model, 'username') ?>
@@ -46,16 +47,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php endif ?>
 
                 <?= $form->field($model, 'captcha')->widget(
-                        Captcha::className(),
-                        [
-                                'captchaAction' => UserService::REGISTER_CAPTCHA_ACTION,
-                                'imageOptions'  => [
-                                        'id'    => 'captchaImg',
-                                        'alt'   => '点击换图',
-                                        'title' => '点击换图',
-                                        'style' => 'cursor:pointer',
-                                ],
-                        ]
+                    Captcha::className(),
+                    [
+                        'captchaAction' => UserService::REGISTER_CAPTCHA_ACTION,
+                        'imageOptions'  => [
+                            'id'    => 'captchaImg',
+                            'alt'   => '点击换图',
+                            'title' => '点击换图',
+                            'style' => 'cursor:pointer',
+                        ],
+                    ]
                 ) ?>
 
                 <?= Html::submitButton(Yii::t('user', 'Sign up'), ['class' => 'btn btn-success btn-block']) ?>

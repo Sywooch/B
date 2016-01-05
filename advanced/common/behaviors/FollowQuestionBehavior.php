@@ -34,14 +34,13 @@ class FollowQuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        //关注此问题的人，更新缓存，此方法顺序必须比 dealWithCounter 先执行
+        //关注此问题的人，更新缓存
         $result = FollowService::addUserOfFollowQuestionCache($this->owner->follow_question_id, $this->owner->user_id);
-        Yii::trace('增加关注此问题的用户缓存:' . var_export($result, true), 'behavior');
-        if ($result) {
-            //关注问题后，更新问题被关注的数量
-            Counter::userAddFollowQuestion($this->owner->user_id);
-            Counter::questionAddFollow($this->owner->follow_question_id);
-        }
+        Yii::trace('增加关注此问题的用户缓存,结果:' . var_export($result, true), 'behavior');
+
+        //关注问题后，更新问题被关注的数量，不依赖于是否添加缓存成功
+        Counter::userAddFollowQuestion($this->owner->user_id);
+        Counter::questionAddFollow($this->owner->follow_question_id);
     }
 
     public function afterFollowQuestionDelete()
@@ -53,10 +52,9 @@ class FollowQuestionBehavior extends BaseBehavior
             $this->owner->user_id
         );
         Yii::trace('移除关注此问题的用户缓存:' . var_export($result, true), 'behavior');
-        if ($result) {
-            //关注问题后，更新问题被关注的数量
-            Counter::userCancelFollowQuestion($this->owner->user_id);
-            Counter::questionCancelFollow($this->owner->follow_question_id);
-        }
+
+        //关注问题后，更新问题被关注的数量，不依赖于是否添加缓存成功
+        Counter::userCancelFollowQuestion($this->owner->user_id);
+        Counter::questionCancelFollow($this->owner->follow_question_id);
     }
 }

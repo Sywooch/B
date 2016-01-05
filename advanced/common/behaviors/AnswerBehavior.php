@@ -13,6 +13,7 @@ use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
 use common\config\RedisKey;
+use common\entities\AnswerCommentEntity;
 use common\entities\AnswerVersionEntity;
 use common\entities\NotificationEntity;
 use common\helpers\StringHelper;
@@ -108,9 +109,10 @@ class AnswerBehavior extends BaseBehavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //处理回答缓存
         $this->dealWithAnswerDeleteCache();
-
         //计数
         $this->dealWithReduceCounter();
+        //删除回答评论
+        $this->dealWithAnswerCommentDelete();
     }
 
 
@@ -259,5 +261,19 @@ class AnswerBehavior extends BaseBehavior
                 'updated_by' => Yii::$app->user->id,
             ]
         );
+    }
+
+    private function dealWithAnswerCommentDelete()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        $answer_comments = AnswerCommentEntity::find()->where(
+            [
+                'answer_id' => $this->owner->id,
+            ]
+        )->all();
+
+        foreach ($answer_comments as $answer_comment) {
+            $answer_comment->delete();
+        }
     }
 }

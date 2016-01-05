@@ -12,9 +12,7 @@ use common\components\Counter;
 use common\components\Updater;
 use common\entities\AttachmentEntity;
 use common\entities\FavoriteEntity;
-use common\entities\QuestionEntity;
 use common\entities\QuestionEventHistoryEntity;
-use common\entities\QuestionTagEntity;
 use common\entities\TagRelationEntity;
 use common\helpers\TimeHelper;
 use common\models\xunsearch\QuestionSearch;
@@ -45,7 +43,6 @@ class QuestionBehavior extends BaseBehavior
             ActiveRecord::EVENT_AFTER_UPDATE  => 'afterQuestionUpdate',
             ActiveRecord::EVENT_AFTER_DELETE  => 'afterQuestionDelete',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeQuestionSave',
-            //QuestionEntity::EVENT_TEST => 'test',
         ];
     }
 
@@ -65,33 +62,54 @@ class QuestionBehavior extends BaseBehavior
     public function afterQuestionInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        //添加问题事件　
         $this->dealWithAddQuestionEventHistory();
+        //添加问题标签
         $this->dealWithInsertTags();
+        //添加用户统计
         $this->dealWithUserAddQuestionCounter();
+        //添加用户关注问题
         $this->dealWithAddFollowQuestion();
+        //附件处理　todo
         $this->dealWithAddAttachments();
-        $this->dealWithQuestionCacheInsert();
-        $this->dealWithTagRelation();//由计划任务（tag-cron-job）每周执行
+        //生成问题缓存
+        $this->dealWithInsertQuestionCache();
+        //处理标签间的关注
+        $this->dealWithTagRelation();
+        //处理xunsearch
         $this->dealWithInsertXunSearch();
     }
     
     public function afterQuestionUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        //处理问题事件　
         $this->dealWithQuestionUpdateEvent();
+        //更新问题标签
         $this->dealWithUpdateTags();
+        //更新附件
         $this->dealWithAddAttachments();
+        //处理问题缓存
         $this->dealWithRedisCacheUpdate();
+        //处理xunsearch
         $this->dealWithInsertXunSearch();
     }
     
     public function afterQuestionDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        //删除问题事件记录
+        $this->dealWithDeleteQuestionEvent();
+        //移除关注者
         $this->dealWithRemoveFollowQuestion();
+        //移除收藏者
         $this->dealWithFavoriteRecordRemove();
+        //减少问题提问数
         $this->dealWithUserDeleteQuestionCounter();
+        //删除xunsearch缓存
         $this->dealWithDeleteXunSearch();
+        //删除redis缓存
+        $this->dealWithDeleteQuestionCache();
         #delete notify if operator is not delete by others.
     }
     
@@ -108,7 +126,7 @@ class QuestionBehavior extends BaseBehavior
             [
                 'class'       => QuestionEventHistoryEntity::className(),
                 'question_id' => $this->owner->id,
-                'created_by'   => $this->owner->created_by,
+                'created_by'  => $this->owner->created_by,
             ]
         );
         
@@ -134,13 +152,15 @@ class QuestionBehavior extends BaseBehavior
 
         return $result;
     }
-    
+
     private function dealWithRemoveFollowQuestion()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        FollowService::removeFollowQuestion($this->owner->id);
+        $result = FollowService::removeFollowQuestion($this->owner->id);
+        Yii::trace(sprintf('Remove Question Follow: %s', var_export($result, true)), 'behavior');
+
     }
-    
+
     private function dealWithInsertTags()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -170,7 +190,7 @@ class QuestionBehavior extends BaseBehavior
                 [
                     'class'       => QuestionEventHistoryEntity::className(),
                     'question_id' => $this->owner->id,
-                    'created_by'   => $this->owner->created_by,
+                    'created_by'  => $this->owner->created_by,
                 ]
             );
             
@@ -210,13 +230,14 @@ class QuestionBehavior extends BaseBehavior
         } else {
             $add_tags = $new_tags;
         }
-        
+
+        //处理问题事件
         /* @var $questionEventHistoryEntity QuestionEventHistoryEntity */
         $questionEventHistoryEntity = Yii::createObject(
             [
                 'class'       => QuestionEventHistoryEntity::className(),
                 'question_id' => $this->owner->id,
-                'created_by'   => $this->owner->created_by,
+                'created_by'  => $this->owner->created_by,
             ]
         );
         
@@ -225,7 +246,7 @@ class QuestionBehavior extends BaseBehavior
             $tag_relation = TagService::batchAddTags($add_tags);
             if ($tag_relation) {
                 $tag_ids = array_values($tag_relation);
-                QuestionTagEntity::addQuestionTag($this->owner->created_by, $this->owner->id, $tag_ids);
+                QuestionService::addQuestionTag($this->owner->created_by, $this->owner->id, $tag_ids);
             }
             
             $questionEventHistoryEntity->addTag($add_tags);
@@ -236,7 +257,7 @@ class QuestionBehavior extends BaseBehavior
             
             $tag_ids = ArrayHelper::getColumn($tag_relation, 'id');
             if ($tag_ids) {
-                TagService::removeQuestionTag($this->owner->created_by, $this->owner->id, $tag_ids);
+                QuestionService::removeQuestionTag($this->owner->id, $tag_ids);
             }
             
             $questionEventHistoryEntity->removeTag($remove_tags);
@@ -290,8 +311,7 @@ class QuestionBehavior extends BaseBehavior
                         strlen(AttachmentEntity::TEMP_ATTACHMENT_PATH)
                     );
                     
-                    $new_file_path = '/' . AttachmentEntity::ATTACHMENT_PATH . '/' .
-                        Yii::$app->user->id . $new_file_path_without_attachment_dir;
+                    $new_file_path = '/' . AttachmentEntity::ATTACHMENT_PATH . '/' . Yii::$app->user->id . $new_file_path_without_attachment_dir;
                     $new_file_physical_path = Yii::$app->basePath . $new_file_path;
                     
                     
@@ -362,10 +382,16 @@ class QuestionBehavior extends BaseBehavior
         }
     }
 
-    private function dealWithQuestionCacheInsert()
+    private function dealWithInsertQuestionCache()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         QuestionService::ensureQuestionHasCache($this->owner->id);
+    }
+
+    private function dealWithDeleteQuestionCache()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+        QuestionService::deleteQuestionCache($this->owner->id);
     }
 
     private function dealWithRedisCacheUpdate()
@@ -374,6 +400,23 @@ class QuestionBehavior extends BaseBehavior
         QuestionService::updateQuestionCache($this->owner->id, $this->owner->getAttributes());
     }
 
+    /**
+     * 删除事件记录
+     */
+    private function dealWithDeleteQuestionEvent()
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'behavior');
+
+        QuestionEventHistoryEntity::deleteAll(
+            [
+                'question_id' => $this->owner->id,
+            ]
+        );
+    }
+
+    /**
+     * 处理标签
+     */
     private function dealWithTagsOrder()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');

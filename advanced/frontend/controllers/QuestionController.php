@@ -13,6 +13,7 @@ use common\entities\QuestionInviteEntity;
 use common\entities\UserEntity;
 use common\exceptions\NotFoundModelException;
 use common\exceptions\ParamsInvalidException;
+use common\exceptions\PermissionDeniedException;
 use common\helpers\ArrayHelper;
 use common\helpers\ServerHelper;
 use common\services\AnswerService;
@@ -27,6 +28,7 @@ use common\models\QuestionSearch;
 use yii\base\Exception;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -63,9 +65,14 @@ class QuestionController extends BaseController
         $is_followed = FollowService::checkUseIsFollowedQuestion($question_id, Yii::$app->user->id);
 
         if ($is_followed) {
-            FollowService::removeFollowQuestion($question_id, Yii::$app->user->id);
+            $result = FollowService::removeFollowQuestion($question_id, Yii::$app->user->id);
         } else {
-            FollowService::addFollowQuestion($question_id, Yii::$app->user->id);
+            $result = FollowService::addFollowQuestion($question_id, Yii::$app->user->id);
+        }
+
+        //操作成功，才能反转是否已收藏
+        if ($result) {
+            $is_followed = !$is_followed;
         }
 
         $question = QuestionService::getQuestionByQuestionId($question_id);
@@ -79,7 +86,7 @@ class QuestionController extends BaseController
             [
                 'id'           => $question_id,
                 'count_follow' => $question['count_follow'],
-                'is_followed'  => !$is_followed,
+                'is_followed'  => $is_followed,
             ]
         );
     }
@@ -112,6 +119,18 @@ class QuestionController extends BaseController
                 'is_favorite'    => !$is_favorite,
             ]
         );
+    }
+
+    public function actionAnonymous($id)
+    {
+        $question = QuestionService::getQuestionByQuestionId($id);
+        if ($question['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS) {
+            QuestionService::cancelAnonymous($id);
+        } else {
+            QuestionService::setAnonymous($id);
+        }
+
+        $this->redirect(['question/view', 'id' => $id]);
     }
 
     public function actionVote($id, $vote)
@@ -381,6 +400,11 @@ class QuestionController extends BaseController
         }
     }
 
+    /**
+     * @param $id
+     * @return QuestionEntity the loaded model
+     * @throws NotFoundHttpException
+     */
     protected function findModel($id)
     {
         if (($model = QuestionEntity::findOne($id)) !== null) {
@@ -479,5 +503,22 @@ class QuestionController extends BaseController
     public function actionExplore()
     {
         
+    }
+
+    public function actionDelete($id)
+    {
+        $question = QuestionService::getQuestionByQuestionId($id);
+
+        //本人，且没有回答
+        if ($question['created_by'] == Yii::$app->user->id && $question['count_answer'] > 0) {
+            Url::remember(Yii::$app->request->getReferrer());
+
+            //删除问题
+            QuestionEntity::findOne($id)->delete();
+
+            return $this->goBack();
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 }

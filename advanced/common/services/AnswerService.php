@@ -8,6 +8,7 @@
 
 namespace common\services;
 
+use common\components\Updater;
 use common\config\RedisKey;
 use common\entities\AnswerVersionEntity;
 use common\entities\UserEntity;
@@ -381,6 +382,13 @@ class AnswerService extends BaseService
         return true;
     }
 
+    public static function deleteAnswerCache($answer_id)
+    {
+        $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
+
+        return Yii::$app->redis->delete($cache_key);
+    }
+
     /**
      * 更新回答缓存
      * @param $answer_id
@@ -496,5 +504,15 @@ class AnswerService extends BaseService
                 'answer_id' => $answer_id,
             ]
         )->limit($limit)->offset($offset)->orderBy('id DESC')->asArray()->all();
+    }
+
+
+    public static function setAnonymous($answer_id)
+    {
+        return Updater::setAnswerAnonymous($answer_id);
+    }
+    public static function cancelAnonymous($answer_id)
+    {
+        return Updater::cancelAnswerAnonymous($answer_id);
     }
 }

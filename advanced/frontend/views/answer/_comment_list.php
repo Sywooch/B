@@ -22,9 +22,6 @@ use yii\widgets\LinkPager;
                 'clientOptions'   => [
                         'container' => 'pjax-container-comment',
                 ],
-                'options'         => [
-                        'id' => 'comment_item_area_' . $answer_data['id'],
-                ],
         ]
 ); ?>
 <?= $comment_item_html ?>
