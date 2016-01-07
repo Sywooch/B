@@ -154,4 +154,19 @@ class Updater extends BaseUpdater
 
         return $result;
     }
+    
+    public static function updateUserScore($user_id, $type, $score)
+    {
+        $result = self::build()->table(UserProfileEntity::tableName())->set(
+            [$type => $score]
+        )->where(
+            ['user_id' => $user_id]
+        )->execute();
+
+        if ($result && UserService::ensureUserHasCached($user_id)) {
+            UserService::updateUserCache($user_id, [$type => $score]);
+        }
+
+        return $result;
+    }
 }

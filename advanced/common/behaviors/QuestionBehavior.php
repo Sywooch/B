@@ -10,6 +10,8 @@ namespace common\behaviors;
 
 use common\components\Counter;
 use common\components\Updater;
+use common\components\user\User;
+use common\components\user\UserAssociationEvent;
 use common\entities\AttachmentEntity;
 use common\entities\FavoriteEntity;
 use common\entities\QuestionEventHistoryEntity;
@@ -39,7 +41,7 @@ class QuestionBehavior extends BaseBehavior
         Yii::trace('Begin ' . $this->className(), 'behavior');
         
         return [
-            ActiveRecord::EVENT_AFTER_INSERT  => 'afterQuestionInsert',
+            ActiveRecord::EVENT_AFTER_INSERT  => 'eventQuestionCreate',
             ActiveRecord::EVENT_AFTER_UPDATE  => 'afterQuestionUpdate',
             ActiveRecord::EVENT_AFTER_DELETE  => 'afterQuestionDelete',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeQuestionSave',
@@ -59,7 +61,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithTagsOrder();
     }
     
-    public function afterQuestionInsert()
+    public function eventQuestionCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //添加问题事件　
@@ -78,6 +80,17 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithTagRelation();
         //处理xunsearch
         $this->dealWithInsertXunSearch();
+        //触发用户行为
+        Yii::$app->user->trigger(
+            __FUNCTION__,
+            new UserAssociationEvent(
+                [
+                    'id'      => $this->owner->id,
+                    'type'    => 'question',
+                    'content' => '',
+                ]
+            )
+        );
     }
     
     public function afterQuestionUpdate()

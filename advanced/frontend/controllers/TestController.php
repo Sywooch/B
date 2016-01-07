@@ -19,9 +19,12 @@ use common\entities\AnswerEntity;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserEntity;
+use common\entities\UserGradeRuleEntity;
 use common\entities\VoteEntity;
 use common\helpers\AtHelper;
 use common\helpers\TemplateHelper;
+use common\helpers\TimeHelper;
+use common\models\CacheUserGradeModel;
 use common\models\xunsearch\QuestionSearch;
 use common\services\AnswerService;
 use common\services\FollowService;
@@ -112,7 +115,7 @@ class TestController extends BaseController
 
     public function actionAt()
     {
-        $content='@瞎猫 46';
+        $content = '@瞎猫 46';
         $username = AtHelper::findAtUsername($content);
 
         print_r($username);
@@ -210,12 +213,36 @@ class TestController extends BaseController
 
 
         //$result = QuestionService::getQuestionListByQuestionIds([2, 3, 4, 5]);
-        $associate_id = 198;
+        /*$associate_id = 198;
         $user_id = 61;
         $cache_key = [RedisKey::REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
         $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
 
-        var_dump($cache_data);
+        var_dump($cache_data);*/
+
+        //检查保存到redis为一个对象，取的时候是否还是一个对象类型
+        $rules = UserGradeRuleEntity::find()->where(
+            ['status' => UserGradeRuleEntity::STATUS_ENABLE]
+        )->orderBy('credit ASC')->all();
+        $data = [];
+
+
+        foreach ($rules as $rule) {
+            $data[$rule->id] = (new CacheUserGradeModel())->filterAttributes($rule);
+        }
+
+
+        $a = new \stdClass();
+        $a->name = '小明';
+        $a->age = 30;
+
+        $cache_key = [RedisKey::REDIS_KEY_USER_GRADE_RULE];
+        $cache_data = Yii::$app->redis->set($cache_key, $data);
+
+        $data = Yii::$app->redis->get($cache_key);
+
+        print_r($data['age']);
+
     }
 
     public function actionUser()
@@ -229,12 +256,13 @@ class TestController extends BaseController
         $result = UserService::getUserListByIds([1]);
         print_r($result);
 
-        $result = UserService::getUserIdByUsername(['admin', '瞎猫']);
+       /* $result = UserService::getUserIdByUsername(['admin', '瞎猫']);
         print_r($result);
 
 
         $result = UserService::getUserByUsername(['admin', '瞎猫']);
-        print_r($result);
+        print_r($result);*/
+
 
 
     }
@@ -555,11 +583,11 @@ class TestController extends BaseController
     public function actionData($search = null)
     {
         $data = [
-            ['value' => 'a','name'=>'a','description' => 'description'],
-            ['value' => 'admin','name'=>'a','description' => 'description'],
-            ['value' => 'b','name'=>'a','description' => 'description'],
-            ['value' => 'big','name'=>'a','description' => 'description'],
-            ['value' => 'bean','name'=>'a','description' => 'description'],
+            ['value' => 'a', 'name' => 'a', 'description' => 'description'],
+            ['value' => 'admin', 'name' => 'a', 'description' => 'description'],
+            ['value' => 'b', 'name' => 'a', 'description' => 'description'],
+            ['value' => 'big', 'name' => 'a', 'description' => 'description'],
+            ['value' => 'bean', 'name' => 'a', 'description' => 'description'],
         ];
 
         $this->jsonOut($data);
@@ -573,5 +601,46 @@ class TestController extends BaseController
         $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
 
         var_dump($cache_data);
+    }
+
+    public function actionTime()
+    {
+        echo '<p>今天时间范围</p>';
+        echo sprintf(
+            '<p>%s ~ %s</p>',
+            date('Y-m-d H:i:s', TimeHelper::getTodayStartTime()),
+            date(
+                'Y-m-d H:i:s',
+                TimeHelper::getTodayEndTime()
+            )
+        );
+        echo '<p>本周时间范围</p>';
+        echo sprintf(
+            '<p>%s ~ %s</p>',
+            date('Y-m-d H:i:s', TimeHelper::getThisWeekStartTime()),
+            date('Y-m-d H:i:s', TimeHelper::getThisWeekEndTime())
+        );
+        echo '<p>本月时间范围</p>';
+        echo sprintf(
+            '<p>%s ~ %s</p>',
+            date('Y-m-d H:i:s', TimeHelper::getThisMonthStartTime()),
+            date('Y-m-d H:i:s', TimeHelper::getThisMonthEndTime())
+        );
+        echo '<p>本季度时间范围</p>';
+        echo sprintf(
+            '<p>%s ~ %s</p>',
+            date('Y-m-d H:i:s', TimeHelper::getThisSeasonStartTime()),
+            date('Y-m-d H:i:s', TimeHelper::getThisSeasonEndTime())
+        );
+        echo '<p>本年度时间范围</p>';
+        echo sprintf(
+            '<p>%s ~ %s</p>',
+            date('Y-m-d H:i:s', TimeHelper::getThisYearStartTime()),
+            date(
+                'Y-m-d H:i:s',
+                TimeHelper::getThisYearEndTime()
+            )
+        );
+
     }
 }

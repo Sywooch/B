@@ -14,9 +14,10 @@ use Yii;
 use yii\helpers\Inflector;
 
 /**
- * 只需要定义User::EVENT_USER_CREATE_QUESTION　及　public function eventUserCreateQuestion()　的方法即可。
+ * 只需要定义User::EVENT_QUESTION_CREATE　及　public function eventQuestionCreate()　的方法即可。
  * Class UserBehavior
  * @package common\behaviors
+ * @property \common\components\user\User owner
  */
 class UserEventBehavior extends BaseBehavior
 {
@@ -41,17 +42,34 @@ class UserEventBehavior extends BaseBehavior
 
     public function events()
     {
-        Yii::trace('Begin ' . $this->className(), 'user_event');
         $events = $this->getAllEvents();
 
         return $events;
     }
 
-    public function eventAfterCreateQuestion()
+    public function eventQuestionCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'user_event');
-        //todo
+        $this->dealWithFeed(__FUNCTION__);
+        $this->dealWithCredit(__FUNCTION__);
+        $this->dealWithGrade(__FUNCTION__);
     }
 
+    private function dealWithCredit($event)
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'user_event');
+        $event_name = Inflector::underscore($event);
 
+        return $this->owner->executeCreditRule($event_name);
+    }
+
+    private function dealWithGrade($event)
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'user_event');
+    }
+
+    private function dealWithFeed($event)
+    {
+        Yii::trace('Process ' . __FUNCTION__, 'user_event');
+    }
 }

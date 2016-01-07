@@ -8,33 +8,30 @@
 
 namespace common\models;
 
-
 use ReflectionClass;
 use yii\base\Model;
 
 class BaseCacheModel extends Model
 {
+    /**
+     * @param $data
+     * @return BaseCacheModel
+     */
     public function filterAttributes($data)
     {
-        if (empty($data) || !is_array($data)) {
+        if (empty($data)) {
             return [];
         }
 
-        $attributes = $this->attributes();
+        $class = new ReflectionClass($this);
+        $attributes = $class->getDefaultProperties();
 
-        $result = [];
         foreach ($data as $key => $value) {
             if (array_key_exists($key, $attributes)) {
-                $result[$key] =empty($value)? $attributes[$key] : $value;
+                $this->$key = empty($value) ? $attributes[$key] : $value;
             }
         }
 
-        return $result;
-    }
-
-    public function attributes()
-    {
-        $class = new ReflectionClass($this);
-        return $class->getDefaultProperties();
+        return $this;
     }
 }

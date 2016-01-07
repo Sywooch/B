@@ -347,7 +347,7 @@ class AnswerService extends BaseService
                 $item = $cache_answer_model->filterAttributes($item);
                 $result[$answer_id] = $item;
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
-                Yii::$app->redis->hMset($cache_key, $item);
+                Yii::$app->redis->hMset($cache_key, $item->toArray());
             }
         }
 

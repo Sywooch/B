@@ -8,9 +8,9 @@
 
 namespace common\entities;
 
-use common\models\UserCreditLog;
+use common\models\UserScoreLog;
 
-class UserCreditLogEntity extends UserCreditLog
+class UserScoreLogEntity extends UserScoreLog
 {
     
 }

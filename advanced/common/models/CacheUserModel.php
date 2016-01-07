@@ -8,10 +8,12 @@
 
 namespace common\models;
 
+use common\helpers\ArrayHelper;
 use Yii;
 
 class CacheUserModel extends BaseCacheModel
 {
+
     public $id;
     public $name;
     public $username;
@@ -41,14 +43,14 @@ class CacheUserModel extends BaseCacheModel
     /**
      * 自定义属性，合并user user_profile数据
      * @param $data
-     * @return array
+     * @return CacheUserModel
      */
     public function filterAttributes($data)
     {
         if (isset($data['profile'])) {
             $profile = $data['profile'];
             unset($data['profile']);
-            $data = array_merge($data, $profile);
+            $data = ArrayHelper::merge($data, $profile);
         }
 
         return parent::filterAttributes($data);

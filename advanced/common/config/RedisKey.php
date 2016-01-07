@@ -21,6 +21,7 @@ use Redis;
  */
 class RedisKey
 {
+    #user
     const REDIS_KEY_USER = 'user:hash';
     const REDIS_KEY_USER_USERNAME_USERID = 'username_userid:string';
 
@@ -32,6 +33,10 @@ class RedisKey
     const REDIS_KEY_USER_TAG_PASSIVE_RELATION = 'user_tag_passive_relation:sset';#用户被动关注的标签
 
     const REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS = 'user_is_good_at_tag_ids:string';#用户擅长的标签
+
+    const REDIS_KEY_USER_GRADE_RULE = 'user_grade_rule:string';#用户等级规则
+    const REDIS_KEY_USER_CREDIT_RULE = 'user_credit_rule:string';#用户积分变动规则
+    const REDIS_KEY_USER_EVENT_LIST = 'user_event_list:string';#用户事件
 
 
     #TAG
@@ -215,6 +220,21 @@ class RedisKey
             self::REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS     => [
                 'server'     => self::$servers['master'],
                 'expire'     => 86400,
+                'serializer' => Redis::SERIALIZER_IGBINARY,
+            ],
+            self::REDIS_KEY_USER_GRADE_RULE            => [
+                'server'     => self::$servers['master'],
+                'expire'     => 864000,
+                'serializer' => Redis::SERIALIZER_IGBINARY,
+            ],
+            self::REDIS_KEY_USER_CREDIT_RULE            => [
+                'server'     => self::$servers['master'],
+                'expire'     => 864000,
+                'serializer' => Redis::SERIALIZER_IGBINARY,
+            ],
+            self::REDIS_KEY_USER_EVENT_LIST             => [
+                'server'     => self::$servers['master'],
+                'expire'     => 864000,
                 'serializer' => Redis::SERIALIZER_IGBINARY,
             ],
             /*------------- tag ---------------*/

@@ -323,7 +323,6 @@ class QuestionController extends BaseController
             } else {
                 $answer['vote_status'] = false;
             }
-
             $answer['count_vote'] = $answer['count_like'] - $answer['count_hate'];
         }
 

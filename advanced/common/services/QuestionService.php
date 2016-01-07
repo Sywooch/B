@@ -52,7 +52,7 @@ class QuestionService extends BaseService
                 $question_id = $item['id'];
                 $result[$question_id] = $item;
                 $cache_key = [RedisKey::REDIS_KEY_QUESTION, $question_id];
-                Yii::$app->redis->hMset($cache_key, $item);
+                Yii::$app->redis->hMset($cache_key, $item->toArray());
             }
         }
 

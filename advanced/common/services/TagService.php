@@ -229,7 +229,7 @@ class TagService extends BaseService
                 $tag_id = $item['id'];
                 $result[$tag_id] = $item;
                 $cache_key = [RedisKey::REDIS_KEY_TAG, $tag_id];
-                Yii::$app->redis->hMset($cache_key, $item);
+                Yii::$app->redis->hMset($cache_key, $item->toArray());
             }
         }
 

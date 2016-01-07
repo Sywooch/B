@@ -67,6 +67,7 @@
     "nemmo/yii2-attachments": "dev-master",
     "php-imap/php-imap": "~2.0",
     "prawee/yii2-adminlte-theme": "dev-master",
+    "dmstr/yii2-adminlte-asset": "2.*",
     "thamtech/yii2-uuid": "*",
     "trntv/yii2-file-kit": "*",
     "vova07/yii2-imperavi-widget": "*",
@@ -74,7 +75,8 @@
     "yiier/yii2-backup": "*",
     "yzalis/identicon": "*",
     "chrisboulton/php-resque": "1.2.x",
-    "fabpot/goutte": "^3.1"
+    "fabpot/goutte": "^3.1",
+    "vistart/yii2-helpers": "*"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "*",
@@ -83,7 +85,6 @@
     "yiisoft/yii2-faker": "*",
     "hightman/xunsearch": "*",
     "linslin/yii2-curl": "*",
-
     "codeception/specify": "*",
     "codeception/verify": "*"
   },

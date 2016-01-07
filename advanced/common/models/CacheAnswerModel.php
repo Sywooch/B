@@ -16,6 +16,7 @@ class CacheAnswerModel extends BaseCacheModel
     public $question_id;
     public $content;
     public $type;
+    public $count_vote = 0;
     public $count_like = 0;
     public $count_hate = 0;
     public $count_comment = 0;

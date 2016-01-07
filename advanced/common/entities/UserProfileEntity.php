@@ -57,6 +57,9 @@ class UserProfileEntity extends Profile
             'wx_openid'             => '微信的openid',
             'role_name'             => '角色类型名称',
             'role_grade'            => '角色等级',
+            'role_grade'            => '角色等级',
+            'credit'                => '信用',
+            'currency'              => '金钱',
         ];
 
         return ArrayHelper::merge(

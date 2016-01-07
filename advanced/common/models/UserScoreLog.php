@@ -5,23 +5,23 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "user_credit_log".
+ * This is the model class for table "user_score_log".
  *
  * @property string $id
- * @property string $event
+ * @property string $user_event_id
  * @property integer $score
- * @property integer $currency
+ * @property string $type
  * @property string $created_at
  * @property string $created_by
  */
-class UserCreditLog extends \common\models\BaseActiveRecord
+class UserScoreLog extends \common\models\BaseActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'user_credit_log';
+        return 'user_score_log';
     }
 
     /**
@@ -30,9 +30,10 @@ class UserCreditLog extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['event'], 'required'],
-            [['score', 'currency', 'created_at', 'created_by'], 'integer'],
-            [['event'], 'string', 'max' => 45]
+            [['user_event_id', 'type'], 'required'],
+            [['score', 'created_at', 'created_by'], 'integer'],
+            [['type'], 'string'],
+            [['user_event_id'], 'string', 'max' => 45]
         ];
     }
 
@@ -43,9 +44,9 @@ class UserCreditLog extends \common\models\BaseActiveRecord
     {
         return [
             'id' => 'ID',
-            'event' => 'Event',
+            'user_event_id' => 'User Event ID',
             'score' => '积分（声誉度）',
-            'currency' => '货币',
+            'type' => '货币',
             'created_at' => '创建时间',
             'created_by' => '创建用户',
         ];
