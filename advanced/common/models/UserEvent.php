@@ -13,7 +13,8 @@ use Yii;
  * @property string $event
  * @property string $description
  * @property integer $sort
- * @property string $record
+ * @property string $public
+ * @property string $template
  * @property string $status
  */
 class UserEvent extends \common\models\BaseActiveRecord
@@ -34,9 +35,9 @@ class UserEvent extends \common\models\BaseActiveRecord
         return [
             [['group', 'name', 'event'], 'required'],
             [['sort'], 'integer'],
-            [['record', 'status'], 'string'],
+            [['public', 'status'], 'string'],
             [['group', 'name', 'event'], 'string', 'max' => 45],
-            [['description'], 'string', 'max' => 1024],
+            [['description', 'template'], 'string', 'max' => 1024],
             [['event'], 'unique']
         ];
     }
@@ -53,7 +54,8 @@ class UserEvent extends \common\models\BaseActiveRecord
             'event' => '事件名称',
             'description' => '描述',
             'sort' => 'Sort',
-            'record' => '是否记录到FEED表',
+            'public' => '是否公开，不公开只能自己可见',
+            'template' => 'Template',
             'status' => '状态',
         ];
     }

@@ -9,6 +9,7 @@
 namespace common\services;
 
 use common\entities\PrivateMessageEntity;
+use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 
 class PrivateMessageService extends BaseService
@@ -31,8 +32,7 @@ class PrivateMessageService extends BaseService
             if ($model->save()) {
                 $private_message_id = $model->id;
             } else {
-                Yii::error($model->getErrors(), __FUNCTION__);
-                $private_message_id = null;
+                throw new ModelSaveErrorException($model);
             }
         }
 
@@ -62,9 +62,7 @@ class PrivateMessageService extends BaseService
 
             return true;
         } else {
-            Yii::error($model->getErrors(), __FUNCTION__);
-
-            return false;
+            throw new ModelSaveErrorException($model);
         }
     }
 
@@ -89,9 +87,7 @@ class PrivateMessageService extends BaseService
             if ($model->save()) {
                 return true;
             } else {
-                Yii::error($model->getErrors(), __FUNCTION__);
-
-                return false;
+                throw new ModelSaveErrorException($model);
             }
         } else {
             Yii::error(sprintf('model no exist, id: %d', $id), __FUNCTION__);
@@ -148,9 +144,7 @@ class PrivateMessageService extends BaseService
         if ($model->load($data, '') && $model->save()) {
             return $model->id;
         } else {
-            Yii::error($model->getErrors(), __FUNCTION__);
-
-            return false;
+            throw new ModelSaveErrorException($model);
         }
     }
 }

@@ -256,13 +256,12 @@ class TestController extends BaseController
         $result = UserService::getUserListByIds([1]);
         print_r($result);
 
-       /* $result = UserService::getUserIdByUsername(['admin', '瞎猫']);
-        print_r($result);
+        /* $result = UserService::getUserIdByUsername(['admin', '瞎猫']);
+         print_r($result);
 
 
-        $result = UserService::getUserByUsername(['admin', '瞎猫']);
-        print_r($result);*/
-
+         $result = UserService::getUserByUsername(['admin', '瞎猫']);
+         print_r($result);*/
 
 
     }
@@ -595,12 +594,14 @@ class TestController extends BaseController
 
     public function actionTemp()
     {
-        $question_id = 198;
-        $user_id = 732;
-        $cache_key = [RedisKey::REDIS_KEY_QUESTION_FAVORITE_USER_LIST, $question_id];
-        $cache_data = Yii::$app->redis->zScore($cache_key, $user_id);
+        $credit = 1;
+        $currency = 2;
+        $formula = '$credit * 1 + $currency * 2';
+        $credit_calculator = create_function('$credit, $currency', 'return '.$formula.';');
 
-        var_dump($cache_data);
+
+        //算总分　根据 credit + currency 计算
+        echo $credit_calculator($credit, $currency);
     }
 
     public function actionTime()

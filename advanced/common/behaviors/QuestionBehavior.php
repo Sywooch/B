@@ -16,6 +16,7 @@ use common\entities\AttachmentEntity;
 use common\entities\FavoriteEntity;
 use common\entities\QuestionEventHistoryEntity;
 use common\entities\TagRelationEntity;
+use common\entities\UserEventLogEntity;
 use common\helpers\TimeHelper;
 use common\models\xunsearch\QuestionSearch;
 use common\services\FavoriteService;
@@ -42,17 +43,12 @@ class QuestionBehavior extends BaseBehavior
         
         return [
             ActiveRecord::EVENT_AFTER_INSERT  => 'eventQuestionCreate',
-            ActiveRecord::EVENT_AFTER_UPDATE  => 'afterQuestionUpdate',
-            ActiveRecord::EVENT_AFTER_DELETE  => 'afterQuestionDelete',
+            ActiveRecord::EVENT_AFTER_UPDATE  => 'eventQuestionUpdate',
+            ActiveRecord::EVENT_AFTER_DELETE  => 'eventQuestionDelete',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeQuestionSave',
         ];
     }
 
-    public function beforeQuestionValidate()
-    {
-        Yii::trace('Process ' . __FUNCTION__, 'behavior');
-    }
-    
     public function beforeQuestionSave()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -80,20 +76,21 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithTagRelation();
         //处理xunsearch
         $this->dealWithInsertXunSearch();
+
         //触发用户行为
         Yii::$app->user->trigger(
             __FUNCTION__,
             new UserAssociationEvent(
                 [
                     'id'      => $this->owner->id,
-                    'type'    => 'question',
+                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_QUESTION,
                     'content' => '',
                 ]
             )
         );
     }
     
-    public function afterQuestionUpdate()
+    public function eventQuestionUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //处理问题事件　
@@ -108,7 +105,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithInsertXunSearch();
     }
     
-    public function afterQuestionDelete()
+    public function eventQuestionDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //删除问题事件记录
@@ -124,6 +121,18 @@ class QuestionBehavior extends BaseBehavior
         //删除redis缓存
         $this->dealWithDeleteQuestionCache();
         #delete notify if operator is not delete by others.
+
+        //触发用户行为
+        Yii::$app->user->trigger(
+            __FUNCTION__,
+            new UserAssociationEvent(
+                [
+                    'id'      => $this->owner->id,
+                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_QUESTION,
+                    'content' => '',
+                ]
+            )
+        );
     }
     
     /**

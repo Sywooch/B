@@ -265,6 +265,22 @@ class Counter extends BaseCounter
         return $result;
     }
 
+    public static function updateUserScore($user_id, $type, $score)
+    {
+        Yii::trace(sprintf('更新用户%d %s %s', $user_id, $type, $score), 'counter');
+
+        $result = self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
+            $type,
+            $score
+        )->execute();
+
+        if ($result && UserService::ensureUserHasCached($user_id)) {
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], $type, $score);
+        }
+
+        return $result;
+    }
+
     //******************************************QUESTION***************************************************/
     public static function questionAddView($question_id)
     {

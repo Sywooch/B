@@ -55,9 +55,8 @@ class UserProfileEntity extends Profile
             'count_notification'    => '通知数',
             'wx_account'            => '微信账号',
             'wx_openid'             => '微信的openid',
-            'role_name'             => '角色类型名称',
-            'role_grade'            => '角色等级',
-            'role_grade'            => '角色等级',
+            'role'                  => '角色类型名称',
+            'grade'                 => '角色等级',
             'credit'                => '信用',
             'currency'              => '金钱',
         ];

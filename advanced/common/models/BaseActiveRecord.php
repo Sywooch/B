@@ -90,10 +90,10 @@ class BaseActiveRecord extends ActiveRecord
         return $result;
     }
     
-    public function trigger($name, Event $event = null)
+    public function trigger($name, Event $associate_event = null)
     {
         $this->setPerformanceRecordAnchor(sprintf('触发前：%s::%s', self::className(), $name));
-        parent::trigger($name, $event);
+        parent::trigger($name, $associate_event);
         $this->setPerformanceRecordAnchor(sprintf('触发后：%s::%s', self::className(), $name));
     }
     

@@ -12,6 +12,7 @@ use common\components\Updater;
 use common\config\RedisKey;
 use common\entities\AnswerVersionEntity;
 use common\entities\UserEntity;
+use common\exceptions\ModelSaveErrorException;
 use common\helpers\ArrayHelper;
 use common\models\CacheAnswerModel;
 use yii\helpers\Url;
@@ -460,9 +461,7 @@ class AnswerService extends BaseService
         if ($model->load($data, '') && $model->save()) {
             $result = true;
         } else {
-            Yii::error(sprintf('%s insert error', __FUNCTION__));
-            Yii::error($model->getErrors());
-            $result = false;
+            throw new ModelSaveErrorException($model);
         }
 
         return $result;
@@ -486,8 +485,7 @@ class AnswerService extends BaseService
                 if ($model->load($data, '') && $model->save()) {
                     $result = true;
                 } else {
-                    Yii::error(sprintf('%s insert error', __FUNCTION__));
-                    Yii::error($model->getErrors());
+                    throw new ModelSaveErrorException($model);
                 }
             }
         } else {

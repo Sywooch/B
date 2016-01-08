@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerEntity;
+use common\exceptions\ModelSaveErrorException;
 use common\services\AnswerService;
 use common\services\QuestionService;
 use Yii;
@@ -105,8 +106,7 @@ class AnswerCommentController extends BaseController
             );
             $result = Error::get($data);
         } else {
-            Error::set(Error::TYPE_ANSWER_COMMENT_CREATE_FAIL);
-            $result = Error::get($model->getErrors());
+            throw new ModelSaveErrorException($model);
         }
 
         return $this->jsonOut($result);

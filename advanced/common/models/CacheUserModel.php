@@ -35,10 +35,10 @@ class CacheUserModel extends BaseCacheModel
     public $count_home_views = 0;
     public $count_notification = 0;
 
-    public $score = 0;//积分，关联用户角色等级
+    public $credit = 0;//信用
     public $currency = 0;//货币
-    public $role_name = 0;//角色类型名称，刺客、武夫、
-    public $role_grade = '';//角色等级
+    public $user_role_id = 0;//用户角色类型ID，刺客、武夫、
+    public $user_grade_id = '';//用户等级ID
 
     /**
      * 自定义属性，合并user user_profile数据

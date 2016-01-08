@@ -10,8 +10,8 @@ use Yii;
  * @property integer $user_event_id
  * @property string $type
  * @property integer $score
- * @property string $limit_type
- * @property integer $limit_interval
+ * @property string $limit_interval
+ * @property integer $limit_times
  * @property string $status
  */
 class UserScoreRule extends \common\models\BaseActiveRecord
@@ -31,8 +31,8 @@ class UserScoreRule extends \common\models\BaseActiveRecord
     {
         return [
             [['user_event_id', 'type'], 'required'],
-            [['user_event_id', 'score', 'limit_interval'], 'integer'],
-            [['type', 'limit_type', 'status'], 'string']
+            [['user_event_id', 'score', 'limit_times'], 'integer'],
+            [['type', 'limit_interval', 'status'], 'string']
         ];
     }
 
@@ -43,10 +43,10 @@ class UserScoreRule extends \common\models\BaseActiveRecord
     {
         return [
             'user_event_id' => '用户事件ID',
-            'type' => '积分变动的类型',
-            'score' => 'Score',
-            'limit_type' => '限制类型',
-            'limit_interval' => '限制间隔时间',
+            'type' => '变动类型',
+            'score' => '变动值',
+            'limit_interval' => '间隔时间',
+            'limit_times' => '限制次数',
             'status' => '状态',
         ];
     }

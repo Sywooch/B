@@ -12,6 +12,7 @@ use common\behaviors\OperatorBehavior;
 use common\behaviors\QuestionInviteBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
+use common\exceptions\ModelSaveErrorException;
 use common\models\QuestionInvite;
 use common\services\FollowService;
 use common\services\NotificationService;
@@ -55,7 +56,7 @@ class QuestionInviteEntity extends QuestionInvite
             if ($model->save()) {
                 return true;
             } else {
-                return false;
+                throw new ModelSaveErrorException($model);
             }
         } else {
             return Error::set(Error::TYPE_ANSWER_HAS_BEEN_INVITED);

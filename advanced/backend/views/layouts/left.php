@@ -39,13 +39,18 @@
                         'icon'  => 'fa fa-share',
                         'url'   => '#',
                         'items' => [
-                            ['label' => '参数设置', 'icon' => 'fa fa-file-code-o', 'url' => ['/gii'],],
-                            ['label' => 'Debug', 'icon' => 'fa fa-dashboard', 'url' => ['/debug'],],
+                            ['label' => '参数设置', 'icon' => 'fa fa-file-code-o', 'url' => ['/setting'],],
                             [
-                                'label' => 'Level One',
-                                'icon'  => 'fa fa-circle-o',
-                                'url'   => '#',
+                                'label' => '用户设置',
+                                'icon'  => 'fa fa-dashboard',
+                                'url'   => ['#'],
+                                'items' => [
+                                    ['label' => '用户事件', 'icon' => 'fa fa-circle-o', 'url' => ['/user-event'],],
+                                    ['label' => '积分规则', 'icon' => 'fa fa-circle-o', 'url' => ['/user-score-rule'],],
+
+                                ],
                             ],
+
                         ],
                     ],
                 ],

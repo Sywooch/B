@@ -11,6 +11,7 @@ namespace common\entities;
 use common\behaviors\IpBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
+use common\exceptions\ModelSaveErrorException;
 use common\models\QuestionEventHistory;
 use Yii;
 use yii\db\ActiveRecord;
@@ -132,17 +133,7 @@ class QuestionEventHistoryEntity extends QuestionEventHistory
 
             return true;
         } else {
-            Yii::trace(
-                sprintf(
-                    'Add Question History (Event: %s, Content: %s) fail',
-                    $event_type,
-                    $event_content
-                ),
-                'event'
-            );
-            Yii::trace($model->getErrors(), 'event');
-
-            return false;
+            throw new ModelSaveErrorException($model);
         }
     }
 

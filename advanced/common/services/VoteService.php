@@ -11,6 +11,7 @@ namespace common\services;
 use common\components\Error;
 use common\config\RedisKey;
 use common\entities\VoteEntity;
+use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use Yii;
 
@@ -48,9 +49,7 @@ class VoteService extends BaseService
         if ($model->save()) {
             return true;
         } else {
-            Yii::error(sprintf('保存投票记录出错。%s', var_export($model->getErrors(), true)), __FUNCTION__);
-
-            return false;
+            throw new ModelSaveErrorException($model);
         }
     }
 
@@ -94,7 +93,7 @@ class VoteService extends BaseService
             if ($model->save()) {
                 return true;
             } else {
-                Yii::error(sprintf('保存投票记录出错。%s', var_export($model->getErrors(), true)), __FUNCTION__);
+                throw new ModelSaveErrorException($model);
             }
         }
 

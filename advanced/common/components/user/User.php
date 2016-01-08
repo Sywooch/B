@@ -9,14 +9,16 @@
 
 namespace common\components\user;
 
+use common\components\Counter;
 use common\components\Error;
 use common\components\Updater;
 use common\config\RedisKey;
 use common\entities\UserEventEntity;
-use common\entities\UserFeedEntity;
+use common\entities\UserEventLogEntity;
 use common\entities\UserGradeRuleEntity;
 use common\entities\UserScoreLogEntity;
 use common\entities\UserScoreRuleEntity;
+use common\exceptions\ModelSaveErrorException;
 use common\exceptions\UserEventDoesNotDefineException;
 use common\helpers\TimeHelper;
 use common\models\CacheUserScoreRuleModel;
@@ -128,19 +130,22 @@ class User extends \yii\web\User
         }
     }
 
+    /**
+     * @return array|CacheUserGradeModel
+     */
     private function getAllUserGrades()
     {
         $cache_key = [RedisKey::REDIS_KEY_USER_GRADE_RULE];
         $cache_data = Yii::$app->redis->get($cache_key);
 
         if ($cache_data === false) {
-            $rules = UserGradeRuleEntity::find()->where(
+            $grades = UserGradeRuleEntity::find()->where(
                 ['status' => UserGradeRuleEntity::STATUS_ENABLE]
-            )->orderBy('credit ASC')->all();
+            )->orderBy('score ASC')->all();
             $data = [];
 
-            foreach ($rules as $rule) {
-                $data[$rule->id] = (new CacheUserGradeModel())->filterAttributes($rule);
+            foreach ($grades as $grade) {
+                $data[$grade->id] = (new CacheUserGradeModel())->filterAttributes($grade);
             }
 
             $cache_data = $data;
@@ -150,31 +155,55 @@ class User extends \yii\web\User
         return $cache_data;
     }
 
-    private function calculateUserGrade()
+    /**
+     * 计算用户等级
+     * @param $credit
+     * @param $currency
+     * @return int
+     */
+    private function calculateUserGrade($credit, $currency)
     {
-        $creditRule = '';
+        //todo 用户积分的公式
+        $formula = '$credit * 1 + $currency * 2';
+        $credit_calculator = create_function('$credit, $currency', 'return ' . $formula . ';');
+
+        //算总分　根据 credit + currency 计算
+        $score = $credit_calculator($credit, $currency);
+
+        $all_grades = $this->getAllUserGrades();
+        foreach ($all_grades as $grade) {
+            /* @var CacheUserGradeModel $grade */
+            if ($score < $grade->score) {
+                return $grade->id;
+            }
+        }
+
+        return 0;
     }
 
     /**
      * 用户事件触发，不得以 before,after开头，YII框架级别的用户事件，使用before,after开头
      * @param string     $name
-     * @param Event|null $event
+     * @param Event|null $associate_event
      * @throws UserEventDoesNotDefineException
      */
-    public function trigger($name, Event $event = null)
+    public function trigger($name, Event $associate_event = null)
     {
         //触发框架级用户事件
         if (strpos($name, 'before') === 0 || strpos($name, 'after') === 0) {
-            return parent::trigger($name, $event);
+            return parent::trigger($name, $associate_event);
         } else {
             $event_name = Inflector::underscore($name);
 
             //检查事件是否存在
             if ($user_event = $this->getUserEventByEventName($event_name)) {
                 //用户动态
-                $this->dealWithFeed($user_event, $event);
-                //用户积分
-                $this->dealWithCredit($user_event->id);
+                $user_event_log_id = $this->dealWithUserEventLog($user_event, $associate_event);
+                if ($user_event_log_id) {
+                    //用户积分
+                    $this->dealWithCredit($user_event_log_id, $user_event);
+                }
+
             } else {
                 throw new UserEventDoesNotDefineException($event_name);
             }
@@ -183,16 +212,18 @@ class User extends \yii\web\User
 
     /**
      * 处理用户积分变动
-     * @param $event_id
-     * @return mixed
+     * @param                     $user_event_log_id 事件ID
+     * @param CacheUserEventModel $user_event        用户事件
+     * @return bool
+     * @throws ModelSaveErrorException
      */
-    private function dealWithCredit($event_id)
+    private function dealWithCredit($user_event_log_id, CacheUserEventModel $user_event)
     {
-        $rule = $this->getCreditRule($event_id);
+        $rule = $this->getCreditRule($user_event->id);
         if ($rule && $this->checkIfCanExecuteScoreRule($rule)) {
-            if (Updater::updateUserScore($this->id, $rule->type, $rule->score)) {
+            if (Counter::updateUserScore($this->id, $rule->type, $rule->score)) {
                 //积分日志
-                $this->dealWithUserScoreLog($rule);
+                $this->dealWithUserScoreLog($user_event_log_id, $rule);
                 //用户等级
                 $this->dealWithGrade();
 
@@ -203,43 +234,52 @@ class User extends \yii\web\User
         return false;
     }
 
-    private function dealWithUserScoreLog(CacheUserScoreRuleModel $rule)
+    /**
+     * @param                         $user_event_log_id 用户事件ID
+     * @param CacheUserScoreRuleModel $rule              积分规则
+     * @return bool
+     * @throws ModelSaveErrorException
+     */
+    private function dealWithUserScoreLog($user_event_log_id, CacheUserScoreRuleModel $rule)
     {
+        Yii::trace('Process ' . __FUNCTION__, 'user_event');
         $model = new UserScoreLogEntity();
         $data = [
-            'user_event_id' => $rule->user_event_id,
-            'type'          => $rule->type,
-            'score'         => $rule->score,
-            'created_by'    => $this->id,
-            'created_at'    => TimeHelper::getCurrentTime(),
+            'user_event_id'     => $rule->user_event_id,
+            'user_event_log_id' => $user_event_log_id,
+            'type'              => $rule->type,
+            'score'             => $rule->score,
+            'created_by'        => $this->id,
+            'created_at'        => TimeHelper::getCurrentTime(),
         ];
 
         if ($model->load($data, '') && $model->save()) {
             return true;
         } else {
-            return false;
+            throw new ModelSaveErrorException($model);
         }
-
     }
 
     /**
      * 判断当前规则是否可以执行
      * 查看数据库，判断是否超过限制
-     * @param CacheUserScoreRuleModel $rule
+     * @param CacheUserScoreRuleModel $rule 积分规则
      * @return bool
      */
     private function checkIfCanExecuteScoreRule(CacheUserScoreRuleModel $rule)
     {
-        if ($rule->limit_type == UserScoreRuleEntity::LIMIT_TYPE_LIMITLESS) {
+        if ($rule->limit_interval == UserScoreRuleEntity::LIMIT_TYPE_LIMITLESS) {
             return true;
         }
+
         $query = UserScoreLogEntity::find()->where(
             [
                 'user_event_id' => $rule->user_event_id,
                 'created_by'    => $this->id,
             ]
         );
-        switch ($rule->limit_type) {
+
+        switch ($rule->limit_interval) {
             case UserScoreRuleEntity::LIMIT_TYPE_YEAR:
                 $query->andWhere(
                     [
@@ -327,7 +367,7 @@ class User extends \yii\web\User
 
         $count = $query->count(1);
 
-        return $count < $rule->limit_interval;
+        return $count < $rule->limit_times;
     }
 
     /**
@@ -338,7 +378,12 @@ class User extends \yii\web\User
         Yii::trace('Process ' . __FUNCTION__, 'user_event');
         $user = UserService::getUserById($this->id);
 
-
+        $new_grade_id = $this->calculateUserGrade($user['credit'], $user['currency']);
+        
+        //调整用户等级
+        if ($user['user_grade_id'] != $new_grade_id) {
+            return Updater::adjustUserGrade($this->id, $new_grade_id);
+        }
     }
 
     /**
@@ -346,17 +391,13 @@ class User extends \yii\web\User
      * @param CacheUserEventModel  $user_event             用户事件
      * @param UserAssociationEvent $user_association_event 关联事件：问题、回答、评论
      * @return bool
+     * @throws ModelSaveErrorException
      */
-    private function dealWithFeed(CacheUserEventModel $user_event, UserAssociationEvent $user_association_event)
+    private function dealWithUserEventLog(CacheUserEventModel $user_event, UserAssociationEvent $user_association_event)
     {
         Yii::trace('Process ' . __FUNCTION__, 'user_event');
 
-        //不需要记录FEED
-        if ($user_event->record == UserEventEntity::RECORD_NO) {
-            return false;
-        }
-
-        $model = UserFeedEntity::find()->where(
+        $model = UserEventLogEntity::find()->where(
             [
                 'user_event_id'  => $user_event->id,
                 'associate_type' => $user_association_event->type,
@@ -365,19 +406,19 @@ class User extends \yii\web\User
         )->one();
 
         if (!$model) {
-            $model = new UserFeedEntity();
+            $model = new UserEventLogEntity();
             $model->user_event_id = $user_event->id;
             $model->associate_type = $user_association_event->type;
             $model->associate_id = $user_association_event->id;
-            $model->associate_content = $user_association_event->content;
         }
 
+        $model->associate_content = $user_association_event->content;
         $model->created_at = TimeHelper::getCurrentTime();
 
         if ($model->save()) {
-            return true;
+            return $model->id;
         } else {
-            return false;
+            throw new ModelSaveErrorException($model);
         }
     }
 }

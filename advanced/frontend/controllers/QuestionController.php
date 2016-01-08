@@ -370,8 +370,6 @@ class QuestionController extends BaseController
         $model = new QuestionEntity();
         
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            //Yii::$app->user->trigger(UserEntity::EVENT_QUESTION_CREATE);
-
             return $this->redirect(['question/view', 'id' => $model->id]);
         } else {
             return $this->render(

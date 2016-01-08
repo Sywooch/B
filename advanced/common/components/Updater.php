@@ -154,17 +154,43 @@ class Updater extends BaseUpdater
 
         return $result;
     }
-    
-    public static function updateUserScore($user_id, $type, $score)
+
+    ########## user ##########
+    public static function adjustUserGrade($user_id, $new_grade_id)
     {
         $result = self::build()->table(UserProfileEntity::tableName())->set(
-            [$type => $score]
+            ['user_grade_id' => $new_grade_id]
         )->where(
             ['user_id' => $user_id]
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
-            UserService::updateUserCache($user_id, [$type => $score]);
+            UserService::updateUserCache(
+                $user_id,
+                [
+                    'user_grade_id' => $new_grade_id,
+                ]
+            );
+        }
+
+        return $result;
+    }
+
+    public static function adjustUserRole($user_id, $new_role_id)
+    {
+        $result = self::build()->table(UserProfileEntity::tableName())->set(
+            ['user_role_id' => $new_role_id]
+        )->where(
+            ['user_id' => $user_id]
+        )->execute();
+
+        if ($result && UserService::ensureUserHasCached($user_id)) {
+            UserService::updateUserCache(
+                $user_id,
+                [
+                    'user_role_id' => $new_role_id,
+                ]
+            );
         }
 
         return $result;

@@ -10,6 +10,7 @@ namespace common\services;
 
 use common\components\Error;
 use common\entities\AnswerCommentEntity;
+use common\exceptions\ModelSaveErrorException;
 use Yii;
 
 class CommentService extends BaseService
@@ -74,7 +75,7 @@ class CommentService extends BaseService
         if ($model->load(['content' => $content, 'is_anonymous' => $is_anonymous,], '') && $model->save()) {
             return true;
         } else {
-            return false;
+            throw new ModelSaveErrorException($model);
         }
     }
 

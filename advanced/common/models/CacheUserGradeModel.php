@@ -14,5 +14,5 @@ class CacheUserGradeModel extends BaseCacheModel
 {
     public $id;
     public $name;
-    public $credit;
+    public $score;
 }

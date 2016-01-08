@@ -15,6 +15,7 @@ use common\entities\FollowQuestionEntity;
 use common\entities\FollowTagEntity;
 use common\entities\FollowTagPassiveEntity;
 use common\entities\FollowUserEntity;
+use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use common\helpers\TimeHelper;
 use Yii;
@@ -62,9 +63,7 @@ class FollowService extends BaseService
             if ($model->save()) {
                 $result = true;
             } else {
-                Yii::error($model->getErrors(), __FUNCTION__);
-
-                $result = false;
+                throw new ModelSaveErrorException($model);
             }
         } else {
             $result = true;
@@ -264,9 +263,7 @@ class FollowService extends BaseService
             if ($model->save()) {
                 $result = true;
             } else {
-                Yii::error($model->getErrors(), __FUNCTION__);
-
-                $result = false;
+                throw new ModelSaveErrorException($model);
             }
         } else {
             $result = true;
@@ -523,9 +520,7 @@ class FollowService extends BaseService
             if ($model->save()) {
                 $result = true;
             } else {
-                Yii::error($model->getErrors(), __FUNCTION__);
-
-                $result = false;
+                throw new ModelSaveErrorException($model);
             }
         } else {
             $result = true;

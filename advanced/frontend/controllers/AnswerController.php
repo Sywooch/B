@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerCommentEntity;
+use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use common\exceptions\PermissionDeniedException;
 use common\services\AnswerService;
@@ -120,7 +121,7 @@ class AnswerController extends BaseController
             ];
             $result = Error::get($data);
         } else {
-            $result = Error::get($model->getErrors());
+            throw new ModelSaveErrorException($model);
         }
 
         $this->jsonOut($result);

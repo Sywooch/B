@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7ce5cab3d8cad97f89bf6e8946b1cec0",
-    "content-hash": "9f50509f520f3e222ddc55a3ec8ca08c",
+    "hash": "e453b0da99451bf6344a0e989116b237",
+    "content-hash": "42c1e86bdc77e76e3f4518ec1b7671db",
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
@@ -5161,6 +5161,50 @@
                 "punycode"
             ],
             "time": "2015-09-01 14:53:31"
+        },
+        {
+            "name": "vistart/yii2-helpers",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vistart/yii2-helpers.git",
+                "reference": "109cc944d64bbb76384058ba17a1d603019fa754"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vistart/yii2-helpers/zipball/109cc944d64bbb76384058ba17a1d603019fa754",
+                "reference": "109cc944d64bbb76384058ba17a1d603019fa754",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "yiisoft/yii2": ">=2.0.6"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "vistart\\Helpers\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "vistart",
+                    "email": "i@vistart.name"
+                }
+            ],
+            "description": "The helpers for Yii 2 application.",
+            "keywords": [
+                "IP",
+                "extension",
+                "helpers",
+                "number",
+                "yii2"
+            ],
+            "time": "2015-08-06 08:35:32"
         },
         {
             "name": "vova07/yii2-imperavi-widget",

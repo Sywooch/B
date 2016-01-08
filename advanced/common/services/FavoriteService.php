@@ -14,6 +14,7 @@ use common\config\RedisKey;
 use common\entities\FavoriteCategoryEntity;
 use common\entities\FavoriteEntity;
 use common\entities\QuestionEntity;
+use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use common\helpers\TimeHelper;
 use Exception;
@@ -33,16 +34,7 @@ class FavoriteService extends BaseService
         if ($model->save()) {
             return true;
         } else {
-            return Error::set(
-                Error::TYPE_SYSTEM_AR_SAVE_ERROR,
-                [
-                    FavoriteEntity::className(),
-                    var_export(
-                        $model->getErrors(),
-                        true
-                    ),
-                ]
-            );
+            throw new ModelSaveErrorException($model);
         }
     }
 

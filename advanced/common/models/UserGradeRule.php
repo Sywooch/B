@@ -9,7 +9,7 @@ use Yii;
  *
  * @property string $id
  * @property string $name
- * @property integer $credit
+ * @property integer $score
  * @property string $status
  */
 class UserGradeRule extends \common\models\BaseActiveRecord
@@ -29,7 +29,7 @@ class UserGradeRule extends \common\models\BaseActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['credit'], 'integer'],
+            [['score'], 'integer'],
             [['status'], 'string'],
             [['name'], 'string', 'max' => 45]
         ];
@@ -43,7 +43,7 @@ class UserGradeRule extends \common\models\BaseActiveRecord
         return [
             'id' => 'ID',
             'name' => '等级名称',
-            'credit' => '积分',
+            'score' => '分数（信用与货币）',
             'status' => '状态',
         ];
     }

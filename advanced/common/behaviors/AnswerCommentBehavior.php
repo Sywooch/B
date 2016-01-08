@@ -11,8 +11,10 @@ namespace common\behaviors;
 
 use common\components\Counter;
 use common\components\Notifier;
+use common\components\user\UserAssociationEvent;
 use common\entities\AnswerEntity;
 use common\entities\NotificationEntity;
+use common\entities\UserEventLogEntity;
 use common\helpers\AtHelper;
 use common\services\AnswerService;
 use common\services\NotificationService;
@@ -32,12 +34,12 @@ class AnswerCommentBehavior extends BaseBehavior
         Yii::trace('Begin ' . $this->className(), 'behavior');
 
         return [
-            ActiveRecord::EVENT_AFTER_INSERT => 'afterAnswerCommentInsert',
-            ActiveRecord::EVENT_AFTER_DELETE => 'afterAnswerCommentDelete',
+            ActiveRecord::EVENT_AFTER_INSERT => 'eventAnswerCommentCreate',
+            ActiveRecord::EVENT_AFTER_DELETE => 'eventAnswerCommentDelete',
         ];
     }
     
-    public function afterAnswerCommentInsert($event)
+    public function eventAnswerCommentCreate($event)
     {
         //通知
         $this->dealWithNotification();
@@ -45,15 +47,37 @@ class AnswerCommentBehavior extends BaseBehavior
         $this->dealWithAt();
         //计数
         $this->dealWithCounter();
+
+        Yii::$app->user->trigger(
+            __FUNCTION__,
+            new UserAssociationEvent(
+                [
+                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER_COMMENT,
+                    'id'      => $this->owner->id,
+                    'content' => $this->owner->content,
+                ]
+            )
+        );
     }
 
     /**
      * 评论删除后
      */
-    public function afterAnswerCommentDelete()
+    public function eventAnswerCommentDelete()
     {
         //回答减少评论数量
         Counter::answerDeleteComment($this->owner->answer_id);
+
+        Yii::$app->user->trigger(
+            __FUNCTION__,
+            new UserAssociationEvent(
+                [
+                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER_COMMENT,
+                    'id'      => $this->owner->id,
+                    'content' => $this->owner->content,
+                ]
+            )
+        );
     }
 
     private function dealWithNotification()

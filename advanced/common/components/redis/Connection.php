@@ -242,8 +242,8 @@ class Connection extends Component
             #设置缓存时间
             $this->buildCacheKeyExpire($action);
 
-            Yii::trace(sprintf('Reids Call Result:'), 'redis');
-            Yii::trace($result, 'redis');
+            Yii::trace(sprintf('Reids Call Result:%s', var_export($result, true)), 'redis');
+
             Yii::trace('++++++++++ End Redis Call', 'redis');
 
             return $result;

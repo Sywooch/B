@@ -9,6 +9,7 @@ use Yii;
  *
  * @property string $id
  * @property string $user_event_id
+ * @property integer $user_event_log_id
  * @property integer $score
  * @property string $type
  * @property string $created_at
@@ -30,10 +31,9 @@ class UserScoreLog extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['user_event_id', 'type'], 'required'],
-            [['score', 'created_at', 'created_by'], 'integer'],
-            [['type'], 'string'],
-            [['user_event_id'], 'string', 'max' => 45]
+            [['user_event_id', 'user_event_log_id', 'type'], 'required'],
+            [['user_event_id', 'user_event_log_id', 'score', 'created_at', 'created_by'], 'integer'],
+            [['type'], 'string']
         ];
     }
 
@@ -44,7 +44,8 @@ class UserScoreLog extends \common\models\BaseActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_event_id' => 'User Event ID',
+            'user_event_id' => '用户事件类型ID',
+            'user_event_log_id' => '用户事件记录ID',
             'score' => '积分（声誉度）',
             'type' => '货币',
             'created_at' => '创建时间',

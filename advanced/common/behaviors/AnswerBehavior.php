@@ -16,6 +16,7 @@ use common\config\RedisKey;
 use common\entities\AnswerCommentEntity;
 use common\entities\AnswerVersionEntity;
 use common\entities\NotificationEntity;
+use common\entities\UserEventLogEntity;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
 use common\models\CacheAnswerModel;
@@ -42,9 +43,9 @@ class AnswerBehavior extends BaseBehavior
         
         return [
             ActiveRecord::EVENT_BEFORE_INSERT => 'beforeAnswerInsert',
-            ActiveRecord::EVENT_AFTER_INSERT  => 'afterAnswerInsert',
+            ActiveRecord::EVENT_AFTER_INSERT  => 'eventAnswerInsert',
             ActiveRecord::EVENT_AFTER_UPDATE  => 'afterAnswerUpdate',
-            ActiveRecord::EVENT_AFTER_DELETE  => 'afterAnswerDelete',
+            ActiveRecord::EVENT_AFTER_DELETE  => 'eventAnswerDelete',
         ];
     }
     
@@ -66,7 +67,7 @@ class AnswerBehavior extends BaseBehavior
         return true;
     }
     
-    public function afterAnswerInsert()
+    public function eventAnswerInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //通知
@@ -86,6 +87,17 @@ class AnswerBehavior extends BaseBehavior
 
         //计数
         $this->dealWithAddCounter();
+
+        Yii::$app->user->trigger(
+            __FUNCTION__,
+            new UserAssociationEvent(
+                [
+                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER,
+                    'id'      => $this->owner->id,
+                    'content' => $this->owner->content,
+                ]
+            )
+        );
     }
 
     
@@ -104,7 +116,7 @@ class AnswerBehavior extends BaseBehavior
         $this->dealWithUpdateAnswerCache();
     }
     
-    public function afterAnswerDelete()
+    public function eventAnswerDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //处理回答缓存
@@ -113,6 +125,17 @@ class AnswerBehavior extends BaseBehavior
         $this->dealWithReduceCounter();
         //删除回答评论
         $this->dealWithAnswerCommentDelete();
+
+        Yii::$app->user->trigger(
+            __FUNCTION__,
+            new UserAssociationEvent(
+                [
+                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER,
+                    'id'      => $this->owner->id,
+                    'content' => $this->owner->content,
+                ]
+            )
+        );
     }
 
 

@@ -8,6 +8,7 @@
 
 namespace common\modules\user\controllers;
 
+use common\exceptions\ModelSaveErrorException;
 use common\models\Area;
 use common\modules\user\models\AvatarForm;
 use dektrium\user\controllers\SettingsController as BaseSettingsController;
@@ -109,6 +110,8 @@ class SettingsController extends BaseSettingsController
                 }
                 Yii::$app->session->setFlash('success', '您的头像已修改成功');
                 return $this->refresh();
+            }else{
+                throw new ModelSaveErrorException($model);
             }
         }
 

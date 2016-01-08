@@ -10,6 +10,7 @@ namespace common\entities;
 
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
+use common\exceptions\ModelSaveErrorException;
 use common\models\Attachment;
 use Yii;
 use yii\db\ActiveRecord;
@@ -61,7 +62,7 @@ class AttachmentEntity extends Attachment
                 ''
             ) && $model->save()
         ) {
-
+            throw new ModelSaveErrorException($model);
         }
     }
 

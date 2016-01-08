@@ -12,6 +12,7 @@ use common\config\RedisKey;
 use common\entities\FollowTagEntity;
 use common\entities\TagEntity;
 use common\entities\TagRelationEntity;
+use common\exceptions\ModelSaveErrorException;
 use yii\helpers\ArrayHelper;
 use common\helpers\TimeHelper;
 use common\models\CacheTagModel;
@@ -36,7 +37,7 @@ class TagService extends BaseService
                 $model = new TagEntity;
                 $model->name = $tag_name;
                 if (!$model->save()) {
-                    Yii::error($model->getErrors(), __FUNCTION__);
+                    throw new ModelSaveErrorException($model);
                 }
             } elseif ($model->status == TagEntity::STATUS_DISABLE) {
                 #如果存在，但被禁用,则跳过

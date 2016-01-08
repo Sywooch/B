@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\components\Error;
+use common\exceptions\ModelSaveErrorException;
 use Yii;
 use common\entities\ReportEntity;
 use yii\data\ActiveDataProvider;
@@ -73,7 +74,7 @@ class ReportController extends BaseController
         if ($model->save()) {
             $result = true;
         } else {
-            $result = false;
+            throw new ModelSaveErrorException($model);
         }
 
         $this->jsonOut(Error::get($result));

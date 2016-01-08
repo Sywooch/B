@@ -5,7 +5,7 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "user_feed".
+ * This is the model class for table "user_event_log".
  *
  * @property string $id
  * @property string $user_event_id
@@ -15,14 +15,14 @@ use Yii;
  * @property string $created_at
  * @property string $created_by
  */
-class UserFeed extends \common\models\BaseActiveRecord
+class UserEventLog extends \common\models\BaseActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'user_feed';
+        return 'user_event_log';
     }
 
     /**

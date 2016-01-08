@@ -12,6 +12,8 @@ use yii\base\Event;
 
 class UserAssociationEvent extends Event
 {
+    const TYPE_QUESTION = 'question';
+
     public $type;
     public $id;
     public $content;

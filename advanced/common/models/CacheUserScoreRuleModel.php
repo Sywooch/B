@@ -16,6 +16,6 @@ class CacheUserScoreRuleModel extends BaseCacheModel
     public $user_event_id;
     public $type;
     public $score;
-    public $limit_type;
     public $limit_interval;
+    public $limit_times;
 }

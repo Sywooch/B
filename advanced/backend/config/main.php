@@ -12,10 +12,10 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap'           => ['log'],
     'modules'             => [
-        'user' => [
+        //'user' => [
             // following line will restrict access to admin page
             //'as backend' => 'dektrium\user\filters\BackendFilter',
-        ],
+        //],
     ],
     'components'          => [
         'user'         => [
