@@ -56,7 +56,7 @@ class User extends \yii\web\User
         return $this->user_step = $step;
     }
 
-    private function getAllCreditRule()
+    private function getAllScoreRule()
     {
         $cache_key = [RedisKey::REDIS_KEY_USER_CREDIT_RULE];
         $cache_data = Yii::$app->redis->get($cache_key);
@@ -66,7 +66,7 @@ class User extends \yii\web\User
             $data = [];
 
             foreach ($rules as $rule) {
-                $data[$rule->user_event_id] = (new CacheUserScoreRuleModel())->filterAttributes($rule);
+                $data[$rule->user_event_id][] = (new CacheUserScoreRuleModel())->filterAttributes($rule);
             }
 
             $cache_data = $data;
@@ -78,16 +78,16 @@ class User extends \yii\web\User
 
     /**
      * 获取积分规则
-     * @param $event_id
+     * @param $user_event_id
      * @return CacheUserScoreRuleModel
      */
-    private function getCreditRule($event_id)
+    private function getUserScoreRule($user_event_id)
     {
-        $rules = $this->getAllCreditRule();
-        if (isset($rules[$event_id])) {
-            return $rules[$event_id];
+        $rules = $this->getAllScoreRule();
+        if (isset($rules[$user_event_id])) {
+            return $rules[$user_event_id];
         } else {
-            return false;
+            return [];
         }
     }
 
@@ -201,7 +201,7 @@ class User extends \yii\web\User
                 $user_event_log_id = $this->dealWithUserEventLog($user_event, $associate_event);
                 if ($user_event_log_id) {
                     //用户积分
-                    $this->dealWithCredit($user_event_log_id, $user_event);
+                    $this->dealWithUserScore($user_event_log_id, $user_event);
                 }
 
             } else {
@@ -212,26 +212,28 @@ class User extends \yii\web\User
 
     /**
      * 处理用户积分变动
+     * 一个动作可以有多个积分变动规则
      * @param                     $user_event_log_id 事件ID
      * @param CacheUserEventModel $user_event        用户事件
      * @return bool
      * @throws ModelSaveErrorException
      */
-    private function dealWithCredit($user_event_log_id, CacheUserEventModel $user_event)
+    private function dealWithUserScore($user_event_log_id, CacheUserEventModel $user_event)
     {
-        $rule = $this->getCreditRule($user_event->id);
-        if ($rule && $this->checkIfCanExecuteScoreRule($rule)) {
-            if (Counter::updateUserScore($this->id, $rule->type, $rule->score)) {
-                //积分日志
-                $this->dealWithUserScoreLog($user_event_log_id, $rule);
-                //用户等级
-                $this->dealWithGrade();
+        $rules = $this->getUserScoreRule($user_event->id);
 
-                return true;
+        foreach ($rules as $rule) {
+            if ($rule && $this->checkIfCanExecuteScoreRule($rule)) {
+                if (Counter::updateUserScore($this->id, $rule->type, $rule->score)) {
+                    //积分日志
+                    $this->dealWithUserScoreLog($user_event_log_id, $rule);
+                    //用户等级
+                    $this->dealWithGrade();
+                }
             }
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -262,7 +264,7 @@ class User extends \yii\web\User
 
     /**
      * 判断当前规则是否可以执行
-     * 查看数据库，判断是否超过限制
+     * 查看数据库，判断是否超过限制次数
      * @param CacheUserScoreRuleModel $rule 积分规则
      * @return bool
      */
@@ -379,7 +381,7 @@ class User extends \yii\web\User
         $user = UserService::getUserById($this->id);
 
         $new_grade_id = $this->calculateUserGrade($user['credit'], $user['currency']);
-        
+
         //调整用户等级
         if ($user['user_grade_id'] != $new_grade_id) {
             return Updater::adjustUserGrade($this->id, $new_grade_id);

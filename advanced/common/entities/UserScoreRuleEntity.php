@@ -8,6 +8,7 @@
 
 namespace common\entities;
 
+use common\helpers\ArrayHelper;
 use common\models\UserScoreRule;
 
 class UserScoreRuleEntity extends UserScoreRule
@@ -24,5 +25,14 @@ class UserScoreRuleEntity extends UserScoreRule
     const LIMIT_TYPE_HOUR = 'hour';
     const LIMIT_TYPE_MINUTE = 'minute';
     const LIMIT_TYPE_SECOND = 'second';
+
+    public function getUserEventList()
+    {
+        $model = UserEventEntity::find()->select(['id', 'name'])->where(
+            ['status' => UserEventEntity::STATUS_ENABLE]
+        )->all();
+
+        return ArrayHelper::map($model, 'id', 'name');
+    }
 
 }

@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type',
             'score',
             'limit_interval',
-            'limit_times:datetime',
+            'limit_times',
             // 'status',
 
             ['class' => 'yii\grid\ActionColumn'],

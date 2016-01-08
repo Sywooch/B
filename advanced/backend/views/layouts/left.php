@@ -53,6 +53,22 @@
 
                         ],
                     ],
+                    [
+                        'label' => '日志',
+                        'icon'  => 'fa fa-share',
+                        'url'   => '#',
+                        'items' => [
+                            [
+                                'label' => '用户日志',
+                                'icon'  => 'fa fa-file-code-o',
+                                'url'   => ['/setting'],
+                                'items' => [
+                                    ['label' => '用户事件', 'icon' => 'fa fa-circle-o', 'url' => ['#'],],
+                                    ['label' => '积分变动', 'icon' => 'fa fa-circle-o', 'url' => ['#'],],
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
             ]
         )

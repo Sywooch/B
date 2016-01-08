@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'user_event_id')->textInput() ?>
+    <?= $form->field($model, 'user_event_id')->dropDownList($model->getUserEventList(), ['prompt' => '']) ?>
 
     <?= $form->field($model, 'type')->dropDownList([ 'currency' => 'Currency', 'credit' => 'Credit', ], ['prompt' => '']) ?>
 

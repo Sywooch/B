@@ -12,6 +12,7 @@ use common\components\Counter;
 use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
+use common\components\user\UserAssociationEvent;
 use common\config\RedisKey;
 use common\entities\AnswerCommentEntity;
 use common\entities\AnswerVersionEntity;
@@ -43,7 +44,7 @@ class AnswerBehavior extends BaseBehavior
         
         return [
             ActiveRecord::EVENT_BEFORE_INSERT => 'beforeAnswerInsert',
-            ActiveRecord::EVENT_AFTER_INSERT  => 'eventAnswerInsert',
+            ActiveRecord::EVENT_AFTER_INSERT  => 'eventAnswerCreate',
             ActiveRecord::EVENT_AFTER_UPDATE  => 'afterAnswerUpdate',
             ActiveRecord::EVENT_AFTER_DELETE  => 'eventAnswerDelete',
         ];
@@ -67,7 +68,7 @@ class AnswerBehavior extends BaseBehavior
         return true;
     }
     
-    public function eventAnswerInsert()
+    public function eventAnswerCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //通知
