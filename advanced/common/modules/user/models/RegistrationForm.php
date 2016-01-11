@@ -14,7 +14,7 @@ use Yii;
 
 class RegistrationForm extends \dektrium\user\models\RegistrationForm
 {
-    //public $captcha;
+    public $captcha;
 
     /**
      * @inheritdoc
@@ -34,13 +34,13 @@ class RegistrationForm extends \dektrium\user\models\RegistrationForm
 
         unset($rules['usernamePattern']);
 
-        //$rules[] = ['captcha', 'required'];
-        /*$rules[] = [
+        $rules[] = ['captcha', 'required'];
+        $rules[] = [
             'captcha',
             'captcha',
             'captchaAction' => UserService::REGISTER_CAPTCHA_ACTION,
             'message'       => '验证码错误，请重新输入或点击验证码图片重试。',
-        ];*/
+        ];
         //print_r($rules);exit;
         return $rules;
     }

@@ -21051,7 +21051,8 @@
 
 .rep-rects {
     margin: -1px 0 0;
-    padding: 6px 0 6px 6px;
+    /*padding: 6px 0 6px 6px;*/
+    padding: 11px 0 10px 9px;
     border: 1px solid #ddd
 }
 

@@ -20,6 +20,7 @@ use common\entities\UserScoreLogEntity;
 use common\entities\UserScoreRuleEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\exceptions\UserEventDoesNotDefineException;
+use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
 use common\models\CacheUserScoreRuleModel;
 use common\models\CacheUserEventModel;
@@ -58,15 +59,16 @@ class User extends \yii\web\User
 
     private function getAllScoreRule()
     {
-        $cache_key = [RedisKey::REDIS_KEY_USER_CREDIT_RULE];
+        $cache_key = [RedisKey::REDIS_KEY_USER_SCORE_RULE];
         $cache_data = Yii::$app->redis->get($cache_key);
-
+        $cache_user_score_rule_model = new CacheUserScoreRuleModel();
         if ($cache_data === false) {
             $rules = UserScoreRuleEntity::findAll(['status' => UserScoreRuleEntity::STATUS_ENABLE]);
             $data = [];
 
             foreach ($rules as $rule) {
-                $data[$rule->user_event_id][] = (new CacheUserScoreRuleModel())->filterAttributes($rule);
+                $data = $cache_user_score_rule_model->filter($rule);
+                $data[$rule->user_event_id][] = $cache_user_score_rule_model->build($data);
             }
 
             $cache_data = $data;
@@ -92,42 +94,34 @@ class User extends \yii\web\User
     }
 
     /**
-     * @return array|CacheUserEventModel
-     */
-    private function getAllUserEvents()
-    {
-        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT_LIST];
-        $cache_data = Yii::$app->redis->get($cache_key);
-
-        if ($cache_data === false) {
-            $rules = UserEventEntity::findAll(['status' => UserEventEntity::STATUS_ENABLE]);
-            $data = [];
-
-            foreach ($rules as $rule) {
-                $data[$rule->event] = (new CacheUserEventModel())->filterAttributes($rule);
-            }
-
-            $cache_data = $data;
-            Yii::$app->redis->set($cache_key, $cache_data);
-        }
-
-        return $cache_data;
-    }
-
-    /**
      * 根据事件名称获取事件
      * @param $event_name
      * @return CacheUserEventModel
      */
     private function getUserEventByEventName($event_name)
     {
-        $events = $this->getAllUserEvents();
+        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT_LIST, $event_name];
+        $cache_data = Yii::$app->redis->hGetAll($cache_key);
 
-        if (isset($events[$event_name])) {
-            return $events[$event_name];
-        } else {
-            return false;
+        $cacheUserEventModel = new CacheUserEventModel();
+
+        if (empty($cache_data)) {
+            $data = UserEventEntity::find()->where(
+                [
+                    'event'  => $event_name,
+                    'status' => UserEventEntity::STATUS_ENABLE,
+                ]
+            )->one();
+
+            if ($data) {
+                $cache_data = $cacheUserEventModel->filter($data);
+                Yii::$app->redis->hMset($cache_key, $cache_data);
+            } else {
+                $cache_data = false;
+            }
         }
+
+        return $cacheUserEventModel->build($cache_data);
     }
 
     /**
@@ -142,13 +136,16 @@ class User extends \yii\web\User
             $grades = UserGradeRuleEntity::find()->where(
                 ['status' => UserGradeRuleEntity::STATUS_ENABLE]
             )->orderBy('score ASC')->all();
-            $data = [];
 
+            $cache_data = [];
+
+            $cache_user_grade_model = new CacheUserGradeModel();
             foreach ($grades as $grade) {
-                $data[$grade->id] = (new CacheUserGradeModel())->filterAttributes($grade);
+                /* @var UserGradeRuleEntity $grade */
+                $data = $cache_user_grade_model->filter($grade);
+                $cache_data[$grade->id] = $cache_user_grade_model->build($data);
             }
 
-            $cache_data = $data;
             Yii::$app->redis->set($cache_key, $cache_data);
         }
 
@@ -171,6 +168,7 @@ class User extends \yii\web\User
         $score = $credit_calculator($credit, $currency);
 
         $all_grades = $this->getAllUserGrades();
+
         foreach ($all_grades as $grade) {
             /* @var CacheUserGradeModel $grade */
             if ($score < $grade->score) {
@@ -414,13 +412,19 @@ class User extends \yii\web\User
             $model->associate_id = $user_association_event->id;
         }
 
-        $model->associate_content = $user_association_event->content;
-        $model->created_at = TimeHelper::getCurrentTime();
+        $model->associate_content = '';// $user_association_event->content;
 
         if ($model->save()) {
             return $model->id;
         } else {
             throw new ModelSaveErrorException($model);
         }
+    }
+
+    public function goWelcome()
+    {
+        $url = ['/user/default/welcome'];
+
+        return Yii::$app->getResponse()->redirect($url);
     }
 }

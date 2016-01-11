@@ -14,7 +14,7 @@ use yii\widgets\LinkPager;
 
 ?>
 
-<div id="answer_item_area">
+<div id="answer-item-area">
 <?php foreach ($data as $item): ?>
     <?php if ($item['type'] == AnswerEntity::TYPE_ANSWER): ?>
         <article class="clearfix widget-answers__item" id="answer-<?= $item['id'] ?>">
@@ -94,10 +94,10 @@ use yii\widgets\LinkPager;
                     <? endif; ?>
                     <li>
                         <?= Html::a(
-                            '评论' . ($item['count_comment'] > 0 ? sprintf(
-                                '(%s)',
+                            ($item['count_comment'] > 0 ? sprintf(
+                                '%s 评论',
                                 $item['count_comment']
-                            ) : ''),
+                            ) : '评论'),
                             'javascript:void(0);',
                             [
                                 'data-do-ajax-submit' => true,
@@ -179,7 +179,7 @@ use yii\widgets\LinkPager;
                 </ul>
             </div>
 
-            <div class="widget-comments hidden" id="comment-<?= $item['id'] ?>"></div>
+            <div class="widget-comments hidden" id="comment-area-<?= $item['id'] ?>"></div>
             </div>
         </article>
     <?php else: ?>

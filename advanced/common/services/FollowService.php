@@ -172,7 +172,7 @@ class FollowService extends BaseService
             )->count(1);
         }
 
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -728,13 +728,13 @@ class FollowService extends BaseService
         $created_at = time();
 
         foreach ($tag_ids as $tag_id) {
-            $data[] = [$user_id, $tag_id, $created_at];
+            $data[] = [$user_id, $tag_id, $created_at, $created_at];
         }
 
         #batch add
         $sql = FollowTagPassiveEntity::getDb()->createCommand()->batchInsert(
             FollowTagPassiveEntity::tableName(),
-            ['user_id', 'follow_tag_id', 'created_at'],
+            ['user_id', 'follow_tag_id', 'created_at', 'updated_at'],
             $data
         )->getSql();
 
@@ -746,22 +746,7 @@ class FollowService extends BaseService
             )
         )->execute();
 
-        if ($result) {
-            #user follow tag count
-
-            /*$params = [
-                [REDIS_KEY_USER_TAG_PASSIVE_RELATION, $user_id],
-            ];
-
-            foreach ($tag_ids as $tag_id) {
-                $params[] = $created_at;
-                $params[] = $tag_id;
-            }
-            call_user_func_array([Yii::$app->redis, 'zAdd'], $params);*/
-
-        } else {
-            Yii::error(sprintf('Batch Add Passive Follow Tag %s', $result), __FUNCTION__);
-        }
+        Yii::error(sprintf('Batch Add Passive Follow Tag %s', $result), __FUNCTION__);
 
         return $result;
     }
@@ -869,10 +854,11 @@ class FollowService extends BaseService
      * @param int $period
      * @return array|bool|string ['tag_id'=>'count_follow',]
      */
-    public static function getTagIdsWhichUserIsGoodAt($user_id, $limit = 20, $period = 30)
+    public static function getTagIdsWhichUserIsGoodAt($user_id, $limit = 20, $period = 365)
     {
         $cache_key = [RedisKey::REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS, implode(':', [$user_id, $period])];
         $cache_data = Yii::$app->redis->get($cache_key);
+
         if ($cache_data === false) {
             $data = FollowTagPassiveEntity::find()->select(
                 [

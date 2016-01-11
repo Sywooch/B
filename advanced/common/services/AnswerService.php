@@ -13,6 +13,7 @@ use common\config\RedisKey;
 use common\entities\AnswerVersionEntity;
 use common\entities\UserEntity;
 use common\exceptions\ModelSaveErrorException;
+use common\exceptions\NotFoundModelException;
 use common\helpers\ArrayHelper;
 use common\models\CacheAnswerModel;
 use yii\helpers\Url;
@@ -314,17 +315,31 @@ class AnswerService extends BaseService
         call_user_func_array([Yii::$app->redis, 'zAdd'], $time_params);
     }
 
+    /**
+     * @param $answer_id
+     * @return CacheAnswerModel
+     * @throws NotFoundModelException
+     */
     public static function getAnswerByAnswerId($answer_id)
     {
         $data = self::getAnswerListByAnswerId([$answer_id]);
-
-        return $data ? array_shift($data) : false;
+        if ($data) {
+            return array_shift($data);
+        } else {
+            throw new NotFoundModelException('answer', $answer_id);
+        }
     }
 
 
+    /**
+     * @param array $answer_ids
+     * @return array|CacheAnswerModel
+     */
     public static function getAnswerListByAnswerId(array $answer_ids)
     {
         $cache_miss_key = $result = [];
+        $cache_answer_model = new CacheAnswerModel();
+
         foreach ($answer_ids as $answer_id) {
             $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
@@ -333,7 +348,7 @@ class AnswerService extends BaseService
                 $cache_miss_key[] = $answer_id;
                 $result[$answer_id] = null;
             } else {
-                $result[$answer_id] = $cache_data;
+                $result[$answer_id] = $cache_answer_model->build($cache_data);
             }
         }
 
@@ -341,14 +356,14 @@ class AnswerService extends BaseService
             $query = AnswerEntity::find();
             $data = $query->where(['id' => $cache_miss_key])->asArray()->all();
 
-            $cache_answer_model = new CacheAnswerModel();
+
             foreach ($data as $item) {
                 $answer_id = $item['id'];
                 #filter attributes
-                $item = $cache_answer_model->filterAttributes($item);
-                $result[$answer_id] = $item;
+                $data = $cache_answer_model->filter($item);
+                $result[$answer_id] = $cache_answer_model->build($data);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER, $answer_id];
-                Yii::$app->redis->hMset($cache_key, $item->toArray());
+                Yii::$app->redis->hMset($cache_key, $data);
             }
         }
 
@@ -509,6 +524,7 @@ class AnswerService extends BaseService
     {
         return Updater::setAnswerAnonymous($answer_id);
     }
+
     public static function cancelAnonymous($answer_id)
     {
         return Updater::cancelAnswerAnonymous($answer_id);

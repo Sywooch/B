@@ -5,9 +5,12 @@ namespace frontend\controllers;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerEntity;
+use common\entities\VoteEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\services\AnswerService;
+use common\services\CommentService;
 use common\services\QuestionService;
+use common\services\VoteService;
 use Yii;
 use common\entities\AnswerCommentEntity;
 use yii\data\ActiveDataProvider;
@@ -31,11 +34,11 @@ class AnswerCommentController extends BaseController
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only'  => ['create', 'update'],
+                'only'  => ['create', 'update', 'vote'],
                 'rules' => [
                     [
                         'allow'   => true,
-                        'actions' => ['create', 'update'],
+                        'actions' => ['create', 'update', 'vote'],
                         'roles'   => ['@'],
                     ],
                 ],
@@ -78,12 +81,6 @@ class AnswerCommentController extends BaseController
         );
     }
 
-    /**
-     * Creates a new AnswerCommentEntity model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @param $answer_id
-     * @return mixed
-     */
     public function actionCreate($answer_id)
     {
         $model = new AnswerCommentEntity();
@@ -95,13 +92,16 @@ class AnswerCommentController extends BaseController
         //print_r(Yii::$app->request->post());exit;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $answer_comment = $model->getAttributes();
+            $answer_comment['vote_status'] = false;
+
             $data = $this->renderPartial(
                 '/answer/_answer_comment_item',
                 [
                     'answer_id'               => $answer_id,
                     'answer_create_user_id'   => $answer_data['created_by'],
                     'question_create_user_id' => $question_data['created_by'],
-                    'data'                    => [$model->getAttributes()],
+                    'data'                    => [$answer_comment],
                 ]
             );
             $result = Error::get($data);
@@ -161,5 +161,35 @@ class AnswerCommentController extends BaseController
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function actionVote($id, $vote)
+    {
+        $vote_status = VoteService::getUseAnswerCommentVoteStatus($id, Yii::$app->user->id);
+
+        if ($vote_status == VoteEntity::VOTE_YES) {
+            $result = VoteService::deleteAnswerCommentVote($id, Yii::$app->user->id);
+        } else {
+            $result = VoteService::addAnswerCommentVote($id, Yii::$app->user->id, $vote);
+        }
+
+        $answer_comment = CommentService::getAnswerCommentByCommentId($id);
+
+        if ($answer_comment === false) {
+            throw new NotFoundModelException('answer_comment', $id);
+        }
+
+        if ($result) {
+            $vote = ($vote_status == VoteEntity::VOTE_YES) ? false : VoteEntity::VOTE_YES;
+        }
+
+        return $this->renderPartial(
+            '/answer/_answer_comment_vote',
+            [
+                'id'          => $id,
+                'count_vote'  => $answer_comment['count_like'] - $answer_comment['count_hate'],
+                'vote_status' => $vote,
+            ]
+        );
     }
 }

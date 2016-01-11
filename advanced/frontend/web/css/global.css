@@ -1639,7 +1639,7 @@ body.modal-open .topframe {
     background-color: transparent
 }
 
-.widget-comments .votes button {
+.widget-comments .votes button, .widget-comments .votes a {
     position: absolute;
     left: 0;
     top: 0;

@@ -8,6 +8,7 @@
 
 namespace common\entities;
 
+use common\behaviors\UserEventBehavior;
 use common\models\UserEvent;
 
 class UserEventEntity extends UserEvent
@@ -15,6 +16,15 @@ class UserEventEntity extends UserEvent
     const STATUS_ENABLE = 'enable';
     const STATUS_DISABLE = 'disable';
 
-    const RECORD_YES = 'yes';
-    const RECORD_NO = 'no';
+    const PUBLIC_YES = 'yes';
+    const PUBLIC_NO = 'no';
+
+    public function behaviors()
+    {
+        return [
+            'user_event' => [
+                'class' => UserEventBehavior::className(),
+            ],
+        ];
+    }
 }

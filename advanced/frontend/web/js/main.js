@@ -3,6 +3,9 @@
  */
 $(document).ready(function () {
 
+    //tooltip
+    $('[data-toggle="tooltip"]').tooltip();
+
     // 防止重复提交
     $('form').on('beforeValidate', function (e) {
         $(':submit').attr('disabled', true).addClass('disabled');

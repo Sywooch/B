@@ -187,14 +187,25 @@ class TagService extends BaseService
         return Yii::$app->redis->delete($cache_key);
     }
 
-
+    /**
+     * @param $tag_id
+     * @return CacheTagModel
+     * @throws NotFoundModelException
+     */
     public static function getTagByTagId($tag_id)
     {
         $data = self::getTagListByTagIds([$tag_id]);
-
-        return $data ? array_shift($data) : false;
+        if ($data) {
+            return array_shift($data);
+        } else {
+            throw new NotFoundModelException('tag', $tag_id);
+        }
     }
 
+    /**
+     * @param array $tag_ids
+     * @return array|CacheTagModel
+     */
     public static function getTagListByTagIds(array $tag_ids)
     {
         //去重
@@ -205,6 +216,8 @@ class TagService extends BaseService
         }
 
         $result = $cache_miss_key = $cache_data = [];
+        $cache_question_model = new CacheTagModel();
+
         foreach ($tag_ids as $tag_id) {
             $cache_key = [RedisKey::REDIS_KEY_TAG, $tag_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
@@ -212,7 +225,7 @@ class TagService extends BaseService
                 $cache_miss_key[] = $tag_id;
                 $result[$tag_id] = null;
             } else {
-                $result[$tag_id] = $cache_data;
+                $result[$tag_id] = $cache_question_model->build($cache_data);
             }
         }
 
@@ -223,14 +236,14 @@ class TagService extends BaseService
                 ]
             )->asArray()->all();
 
-            $cache_question_model = new CacheTagModel();
             foreach ($cache_data as $item) {
                 #filter attributes
-                $item = $cache_question_model->filterAttributes($item);
-                $tag_id = $item['id'];
-                $result[$tag_id] = $item;
+                $data = $cache_question_model->filter($item);
+
+                $tag_id = $data['id'];
+                $result[$tag_id] = $cache_question_model->build($data);
                 $cache_key = [RedisKey::REDIS_KEY_TAG, $tag_id];
-                Yii::$app->redis->hMset($cache_key, $item->toArray());
+                Yii::$app->redis->hMset($cache_key, $data);
             }
         }
 

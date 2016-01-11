@@ -33,8 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php $form = ActiveForm::begin(
                     [
                         'id'                     => 'registration-form',
-                        'enableAjaxValidation'   => true,
-                        'enableClientValidation' => false,
+                        'enableAjaxValidation'   => false,
+                        'enableClientValidation' => true,
                     ]
                 ); ?>
 

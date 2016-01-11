@@ -17,6 +17,7 @@ use common\config\RedisKey;
 use common\entities\AnswerCommentEntity;
 use common\entities\AnswerVersionEntity;
 use common\entities\NotificationEntity;
+use common\entities\QuestionEntity;
 use common\entities\UserEventLogEntity;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
@@ -169,7 +170,7 @@ class AnswerBehavior extends BaseBehavior
 
         Yii::$app->redis->zAdd([RedisKey::REDIS_KEY_ANSWER_LIST_SCORE, $this->owner->question_id], 0, $this->owner->id);
 
-        $item = (new CacheAnswerModel())->filterAttributes($this->owner->getAttributes());
+        $item = (new CacheAnswerModel())->filter($this->owner->getAttributes());
 
         AnswerService::updateAnswerCache($this->owner->id, $item);
     }
@@ -261,7 +262,8 @@ class AnswerBehavior extends BaseBehavior
     private function dealWithAddPassiveFollowTag()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        
+
+        /* @var QuestionEntity $question */
         $question = $this->owner->question;
 
         $tag_ids = TagService::getTagIdByName($question->tags);

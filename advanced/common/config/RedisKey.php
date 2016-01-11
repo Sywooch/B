@@ -35,8 +35,8 @@ class RedisKey
     const REDIS_KEY_USER_IS_GOOD_AT_TAG_IDS = 'user_is_good_at_tag_ids:string';#用户擅长的标签
 
     const REDIS_KEY_USER_GRADE_RULE = 'user_grade_rule:string';#用户等级规则
-    const REDIS_KEY_USER_CREDIT_RULE = 'user_credit_rule:string';#用户积分变动规则
-    const REDIS_KEY_USER_EVENT_LIST = 'user_event_list:string';#用户事件
+    const REDIS_KEY_USER_SCORE_RULE = 'user_score_rule:string';#用户积分变动规则
+    const REDIS_KEY_USER_EVENT_LIST = 'user_event_list:hash';#用户事件
 
 
     #TAG
@@ -70,6 +70,7 @@ class RedisKey
     #VOTE
     const REDIS_KEY_QUESTION_VOTE_USER_LIST = 'vote_question_user_list:sset';//投票此问题的人
     const REDIS_KEY_ANSWER_VOTE_USER_LIST = 'vote_answer_user_list:sset';//投票此答案的人
+    const REDIS_KEY_ANSWER_COMMENT_VOTE_USER_LIST = 'vote_answer_comment_user_list:sset';//投票此答案的人
     const REDIS_KEY_ARTICLE_VOTE_USER_LIST = 'vote_article_user_list:sset';//投票此文章的人
 
     /*系统级缓存*/
@@ -222,12 +223,12 @@ class RedisKey
                 'expire'     => 86400,
                 'serializer' => Redis::SERIALIZER_IGBINARY,
             ],
-            self::REDIS_KEY_USER_GRADE_RULE            => [
+            self::REDIS_KEY_USER_GRADE_RULE             => [
                 'server'     => self::$servers['master'],
                 'expire'     => 864000,
                 'serializer' => Redis::SERIALIZER_IGBINARY,
             ],
-            self::REDIS_KEY_USER_CREDIT_RULE            => [
+            self::REDIS_KEY_USER_SCORE_RULE            => [
                 'server'     => self::$servers['master'],
                 'expire'     => 864000,
                 'serializer' => Redis::SERIALIZER_IGBINARY,
@@ -235,7 +236,7 @@ class RedisKey
             self::REDIS_KEY_USER_EVENT_LIST             => [
                 'server'     => self::$servers['master'],
                 'expire'     => 864000,
-                'serializer' => Redis::SERIALIZER_IGBINARY,
+                'serializer' => Redis::SERIALIZER_NONE,
             ],
             /*------------- tag ---------------*/
             #tag
@@ -350,6 +351,11 @@ class RedisKey
                 'serializer' => Redis::SERIALIZER_NONE,
             ],
             self::REDIS_KEY_ANSWER_VOTE_USER_LIST       => [
+                'server'     => self::$servers['master'],
+                'expire'     => 86400,
+                'serializer' => Redis::SERIALIZER_NONE,
+            ],
+            self::REDIS_KEY_ANSWER_COMMENT_VOTE_USER_LIST       => [
                 'server'     => self::$servers['master'],
                 'expire'     => 86400,
                 'serializer' => Redis::SERIALIZER_NONE,

@@ -17,7 +17,7 @@ app.notice = {
             icon: app.user.avatar,
             title: '',
             message: message
-        },{
+        }, {
             type: 'success',
             delay: 8000,
             icon_type: 'image',
@@ -134,26 +134,28 @@ app.ajax = {
             // This is called by the link attribute 'data-on-done' => 'linkFormDone';
             // the form name is specified via 'data-form-id' => 'link_form'
             if (app.ajax.validate(response)) {
-                $('#answer_item_area').append(response.data.answer_item);
-                $('#answer_form_area').html(response.data.answer_form);
+                $('#answer-item-area').append(response.data.answer_item);
+                $('#answer-form-area').html(response.data.answer_form);
             }
         },
         //评论
         'afterCommentCreateSuccess': function (response) {
             if (app.ajax.validate(response)) {
-                $('#comment_item_area_' + app.ajax.callbacks.target.data('id')).append(response.data);
-                //$('#comment-content-' + app.ajax.callbacks.target.data('id')).val('');
+                var answer_id = app.ajax.callbacks.target.data('id');
+                if ($('#comment-page-' + answer_id).length) {
+                    $('#comment-page-' + answer_id).before(response.data);
+                } else {
+                    $('#comment-area-' + answer_id + ' #comment-pajax-' + answer_id).append(response.data);
+                }
 
                 UE.getEditor('answercommententity-content-' + app.ajax.callbacks.target.data('id')).execCommand('cleardoc');
             }
         },
         //显示评论列表
         'afterShowCommentList': function (response) {
-            var comment = $('#comment-' + app.ajax.callbacks.target.data('id'));
-
+            var comment = $('#comment-area-' + app.ajax.callbacks.target.data('id'));
             comment.removeClass('hidden');
             comment.html(response);
-
         },
 
     }

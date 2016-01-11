@@ -26,22 +26,22 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'only'  => ['logout', 'signup'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
+                        'allow'   => true,
+                        'roles'   => ['?'],
                     ],
                     [
                         'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
+                        'allow'   => true,
+                        'roles'   => ['@'],
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
+            'verbs'  => [
+                'class'   => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -55,12 +55,14 @@ class SiteController extends Controller
     public function actions()
     {
         return [
-            'error' => [
+            'error'   => [
                 'class' => 'yii\web\ErrorAction',
             ],
             'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
+                'class'           => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                'minLength'       => 4,
+                'maxLength'       => 4,
             ],
         ];
     }
@@ -90,9 +92,12 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         } else {
-            return $this->render('login', [
-                'model' => $model,
-            ]);
+            return $this->render(
+                'login',
+                [
+                    'model' => $model,
+                ]
+            );
         }
     }
 
@@ -118,16 +123,22 @@ class SiteController extends Controller
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
+                Yii::$app->session->setFlash(
+                    'success',
+                    'Thank you for contacting us. We will respond to you as soon as possible.'
+                );
             } else {
                 Yii::$app->session->setFlash('error', 'There was an error sending email.');
             }
 
             return $this->refresh();
         } else {
-            return $this->render('contact', [
-                'model' => $model,
-            ]);
+            return $this->render(
+                'contact',
+                [
+                    'model' => $model,
+                ]
+            );
         }
     }
 
@@ -157,9 +168,12 @@ class SiteController extends Controller
             }
         }
 
-        return $this->render('signup', [
-            'model' => $model,
-        ]);
+        return $this->render(
+            'signup',
+            [
+                'model' => $model,
+            ]
+        );
     }
 
     /**
@@ -180,9 +194,12 @@ class SiteController extends Controller
             }
         }
 
-        return $this->render('requestPasswordResetToken', [
-            'model' => $model,
-        ]);
+        return $this->render(
+            'requestPasswordResetToken',
+            [
+                'model' => $model,
+            ]
+        );
     }
 
     /**
@@ -206,8 +223,11 @@ class SiteController extends Controller
             return $this->goHome();
         }
 
-        return $this->render('resetPassword', [
-            'model' => $model,
-        ]);
+        return $this->render(
+            'resetPassword',
+            [
+                'model' => $model,
+            ]
+        );
     }
 }

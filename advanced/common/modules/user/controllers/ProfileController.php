@@ -8,13 +8,12 @@
 
 namespace common\modules\user\controllers;
 
-use common\helpers\ArrayHelper;
+use common\helpers\TimeHelper;
 use common\services\QuestionService;
 use common\services\UserService;
 use dektrium\user\controllers\ProfileController as BaseProfileController;
 use Yii;
 use yii\filters\AccessControl;
-use yii\web\NotFoundHttpException;
 
 class ProfileController extends BaseProfileController
 {
@@ -32,16 +31,39 @@ class ProfileController extends BaseProfileController
 
     public function actionShow($username)
     {
-
         //todo 非好友，不允许查看
         $user = UserService::getUserByUsername($username);
         $question_list = QuestionService::getQuestionListByUserId($user['id']);
 
+        //积分记录
+        $from = TimeHelper::getBeforeTime(79, true);
+        $to = TimeHelper::getTodayEndTime();
+        $score_list = UserService::getUserScoreList($user['id'], $from, $to);
+        $total_currency = $total_credit = 0;
+        foreach ($score_list as $score) {
+            if ($score) {
+                $total_currency += $score['currency'];
+                $total_credit += $score['credit'];
+            }
+        }
+
+        //动态列表
+        $user_event_log = UserService::getUserEventLogList($user['id']);
+
+        $tag_list = UserService::getUserBeGoodAtTags($user->id);
+
+
+        //print_r($score_list);exit;
         return $this->render(
             'show',
             [
-                'user'          => $user,
-                'question_list' => $question_list,
+                'user'           => $user,
+                'question_list'  => $question_list,
+                'total_currency' => $total_currency,
+                'total_credit'   => $total_credit,
+                'score_list'     => $score_list,
+                'user_event_log' => $user_event_log,
+                'tag_list' => $tag_list,
             ]
         );
     }

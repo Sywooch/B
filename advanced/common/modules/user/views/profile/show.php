@@ -54,11 +54,11 @@ $this->beginBlock('top-header');
                 <p class="mt30">
                     <strong>
                         <?= Html::a(
-                                $user['count_fans'],
-                                [''],
-                                [
-                                        'class' => 'funsCount',
-                                ]
+                            $user['count_fans'],
+                            [''],
+                            [
+                                'class' => 'funsCount',
+                            ]
                         ); ?>
                     </strong> 个粉丝
                 </p>
@@ -70,7 +70,7 @@ $this->beginBlock('top-header');
                        title=""
                        data-original-title="liu_jing">
                         <img class="avatar-24"
-                                                           src="http://sfault-avatar.b0.upaiyun.com/362/203/3622039558-1030000000616304_small"></a>
+                             src="http://sfault-avatar.b0.upaiyun.com/362/203/3622039558-1030000000616304_small"></a>
                 </p>
             </div>
         </div>
@@ -101,177 +101,53 @@ $this->endBlock();
                     </li>
                 </ul>
                 <ul class="rep-rects clearfix">
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-09-26"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-09-27"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.56122448979592"
-                        title=""
-                        data-original-title="+6 声望<br>2015-09-28"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-09-29"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 1"
-                        title=""
-                        data-original-title="+49 声望<br>2015-09-30"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.60204081632653"
-                        title=""
-                        data-original-title="+10 声望<br>2015-10-01"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-02"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-03"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-04"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-10-05"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-06"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-07"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.53061224489796"
-                        title=""
-                        data-original-title="+3 声望<br>2015-10-08"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.56122448979592"
-                        title=""
-                        data-original-title="+6 声望<br>2015-10-09"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.63265306122449"
-                        title=""
-                        data-original-title="+13 声望<br>2015-10-10"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-11"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-12"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.61224489795918"
-                        title=""
-                        data-original-title="+11 声望<br>2015-10-13"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-14"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-15"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-16"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-17"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-18"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-19"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-20"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-21"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-22"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-23"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-24"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-25"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.55102040816327"
-                        title=""
-                        data-original-title="+5 声望<br>2015-10-26"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-10-27"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-28"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.54081632653061"
-                        title=""
-                        data-original-title="+4 声望<br>2015-10-29"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-10-30"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-10-31"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.52040816326531"
-                        title=""
-                        data-original-title="+2 声望<br>2015-11-01"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.72448979591837"
-                        title=""
-                        data-original-title="+22 声望<br>2015-11-02"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.53061224489796"
-                        title=""
-                        data-original-title="+3 声望<br>2015-11-03"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.56122448979592"
-                        title=""
-                        data-original-title="+6 声望<br>2015-11-04"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.52040816326531"
-                        title=""
-                        data-original-title="+2 声望<br>2015-11-05"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-11-06"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-11-07"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.57142857142857"
-                        title=""
-                        data-original-title="+7 声望<br>2015-11-08"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.52040816326531"
-                        title=""
-                        data-original-title="+2 声望<br>2015-11-09"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-10"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-11"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.66326530612245"
-                        title=""
-                        data-original-title="+16 声望<br>2015-11-12"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-11-13"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-11-14"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.80612244897959"
-                        title=""
-                        data-original-title="+30 声望<br>2015-11-15"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.52040816326531"
-                        title=""
-                        data-original-title="+2 声望<br>2015-11-16"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-17"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-18"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-19"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-20"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-11-21"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-22"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-11-23"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.53061224489796"
-                        title=""
-                        data-original-title="+3 声望<br>2015-11-24"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.52040816326531"
-                        title=""
-                        data-original-title="+2 声望<br>2015-11-25"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-11-26"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-27"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-28"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.6530612244898"
-                        title=""
-                        data-original-title="+15 声望<br>2015-11-29"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-11-30"></li>
-                    <li class="rect bg-green"
-                        style="opacity: 0.51020408163265"
-                        title=""
-                        data-original-title="+1 声望<br>2015-12-01"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-12-02"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-12-03"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-12-04"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-12-05"></li>
-                    <li class="rect bg-gray" title="" data-original-title="没有获得声望<br>2015-12-06"></li>
+                    <?php foreach ($score_list as $date => $score): ?>
+                        <?php if (array_sum($score) == 0): ?>
+                            <?= Html::tag(
+                                'li',
+                                '',
+                                [
+                                    'class' => 'rect bg-gray',
+                                    'data'  => [
+                                        'toggle'    => 'tooltip',
+                                        'placement' => 'top',
+                                    ],
+                                    'title' => '没有获得声望或货币',
+                                ]
+                            ) ?>
+                        <?php else: ?>
+                            <?= Html::tag(
+                                'li',
+                                '',
+                                [
+                                    'class' => (array_sum($score) > 0) ? 'rect bg-green' : 'rect bg-red',
+                                    'style' => sprintf(
+                                        "opacity: %f",
+                                        max(
+                                            round(
+                                                ($score['currency'] > 0 ? ($score['currency'] / $total_currency) : 0) + ($score['credit'] > 0 ? ($score['credit'] / $total_credit) : 0),
+                                                1
+                                            ),
+                                            0.3
+                                        )
+                                    ),
+                                    'data'  => [
+                                        'html'      => 'true',
+                                        'toggle'    => 'tooltip',
+                                        'placement' => 'top',
+                                    ],
+                                    'title' => sprintf(
+                                        "声望：%d<br />货币：%d<br /> %s ",
+                                        $score['credit'],
+                                        $score['currency'],
+                                        $date
+                                    ),
+                                ]
+                            ) ?>
+
+                        <?php endif; ?>
+
+                    <?php endforeach; ?>
                 </ul>
                 <div class="profile-bio mono">
                     <?php if (isset($user['description'])) : ?>
@@ -280,353 +156,29 @@ $this->endBlock();
                         <p>个人简介都不给 &lt;(￣ ﹌ ￣)&gt;</p>
                     <?php endif; ?>
                 </div>
-                <div class="profile-goodjob" id="goodJob" data-id="1030000002610133">
-                    <strong>擅长标签</strong>
+                <?php if ($tag_list): ?>
+                    <div class="profile-goodjob">
+                        <strong>擅长标签</strong>
 
-                    <div id="piechart" class="clearfix">
-                        <svg height="200"
-                             version="1.1"
-                             width="319"
-                             xmlns="http://www.w3.org/2000/svg"
-                             style="overflow: hidden; position: relative; left: -0.5px; top: -0.5px;">
-                            <desc style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">Created with Raphaël 2.1.0
-                            </desc>
-                            <defs style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></defs>
-                            <path fill="#59bb0c"
-                                  stroke="#ffffff"
-                                  d="M90,100L27.143785657290124,50.511654720496935A80,80,0,0,1,152.8562143427099,50.51165472049696Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#7edb35"
-                                  stroke="#ffffff"
-                                  d="M90,100L152.8562143427099,50.51165472049696A80,80,0,0,1,169.55126485821438,108.46145728927503Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#62e65d"
-                                  stroke="#ffffff"
-                                  d="M90,100L169.55126485821438,108.46145728927503A80,80,0,0,1,159.5300174916517,139.5673687223526Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#c4ed68"
-                                  stroke="#ffffff"
-                                  d="M90,100L159.5300174916517,139.5673687223526A80,80,0,0,1,138.70091432069765,163.46826722329882Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#e2ff9e"
-                                  stroke="#ffffff"
-                                  d="M90,100L138.70091432069765,163.46826722329882A80,80,0,0,1,111.18679212708216,177.1435016016502Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#f0f2dd"
-                                  stroke="#ffffff"
-                                  d="M90,100L111.18679212708216,177.1435016016502A80,80,0,0,1,80.54748913539257,179.43959993828315Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#d7f6a0"
-                                  stroke="#ffffff"
-                                  d="M90,100L80.54748913539257,179.43959993828315A80,80,0,0,1,51.302489031580826,170.0178737527003Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#5de6a9"
-                                  stroke="#ffffff"
-                                  d="M90,100L51.302489031580826,170.0178737527003A80,80,0,0,1,29.03816903975914,151.80400723858165Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#a0d2f6"
-                                  stroke="#ffffff"
-                                  d="M90,100L29.03816903975914,151.80400723858165A80,80,0,0,1,19.039133345742258,136.93988905880272Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#80def0"
-                                  stroke="#ffffff"
-                                  d="M90,100L19.039133345742258,136.93988905880272A80,80,0,0,1,12.856498398349785,121.18679212708219Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#666666"
-                                  stroke="#ffffff"
-                                  d="M90,100L12.856498398349785,121.18679212708219A80,80,0,0,1,27.14378565729011,50.511654720496956Z"
-                                  stroke-width="1"
-                                  stroke-linejoin="round"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); stroke-linejoin: round;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L27.143785657290124,50.511654720496935A80,80,0,0,1,152.8562143427099,50.51165472049696Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L152.8562143427099,50.51165472049696A80,80,0,0,1,169.55126485821438,108.46145728927503Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L169.55126485821438,108.46145728927503A80,80,0,0,1,159.5300174916517,139.5673687223526Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L159.5300174916517,139.5673687223526A80,80,0,0,1,138.70091432069765,163.46826722329882Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L138.70091432069765,163.46826722329882A80,80,0,0,1,111.18679212708216,177.1435016016502Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L111.18679212708216,177.1435016016502A80,80,0,0,1,80.54748913539257,179.43959993828315Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L80.54748913539257,179.43959993828315A80,80,0,0,1,51.302489031580826,170.0178737527003Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L51.302489031580826,170.0178737527003A80,80,0,0,1,29.03816903975914,151.80400723858165Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L29.03816903975914,151.80400723858165A80,80,0,0,1,19.039133345742258,136.93988905880272Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L19.039133345742258,136.93988905880272A80,80,0,0,1,12.856498398349785,121.18679212708219Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <path fill="#000000"
-                                  stroke="none"
-                                  d="M90,100L12.856498398349785,121.18679212708219A80,80,0,0,1,27.14378565729011,50.511654720496956Z"
-                                  fill-opacity="0"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 0;"></path>
-                            <circle cx="191"
-                                    cy="110"
-                                    r="5"
-                                    fill="#59bb0c"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="110"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">28.8% - php</tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="126.8"
-                                    r="5"
-                                    fill="#7edb35"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="126.8"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.003124999999997" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                                    12.3% - thinkphp
-                                </tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="143.6"
-                                    r="5"
-                                    fill="#62e65d"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="143.6"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.006249999999994" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                                    6.5% - yii2
-                                </tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="160.4"
-                                    r="5"
-                                    fill="#c4ed68"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="160.4"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.009375000000006" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                                    6.3% - rest
-                                </tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="177.20000000000002"
-                                    r="5"
-                                    fill="#e2ff9e"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="177.20000000000002"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.012500000000017" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                                    6.2% - oauth2.0
-                                </tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="194.00000000000003"
-                                    r="5"
-                                    fill="#f0f2dd"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="194.00000000000003"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.000000000000028" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                                    6.2% - 日志
-                                </tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="210.80000000000004"
-                                    r="5"
-                                    fill="#d7f6a0"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="210.80000000000004"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.00312500000004" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">6.2%
-                                                                                                                    -
-                                                                                                                    api
-                                </tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="227.60000000000005"
-                                    r="5"
-                                    fill="#5de6a9"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="227.60000000000005"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.006250000000051" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                                    5.8% - 邮件接收
-                                </tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="244.40000000000006"
-                                    r="5"
-                                    fill="#a0d2f6"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="244.40000000000006"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.0093750000000625" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                                    3.6% - redis
-                                </tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="261.20000000000005"
-                                    r="5"
-                                    fill="#80def0"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="261.20000000000005"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.0125000000000455" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                                    3.4% - hincrby
-                                </tspan>
-                            </text>
-                            <circle cx="191"
-                                    cy="278.00000000000006"
-                                    r="5"
-                                    fill="#666666"
-                                    stroke="none"
-                                    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"
-                                    transform="matrix(1,0,0,1,0,-91)"></circle>
-                            <text x="206"
-                                  y="278.00000000000006"
-                                  text-anchor="start"
-                                  font="12px Arial, sans-serif"
-                                  stroke="none"
-                                  fill="#000000"
-                                  style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: start; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 12px; line-height: normal; font-family: Arial, sans-serif;"
-                                  transform="matrix(1,0,0,1,0,-91)">
-                                <tspan dy="4.000000000000057" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-                                    14.7% - 其他
-                                </tspan>
-                            </text>
-                        </svg>
+                        <ul class="taglist--inline multi">
+                            <?php foreach ($tag_list as $tag): ?>
+                                <li class="tagPopup">
+                                    <?= Html::a(
+                                        $tag['name'],
+                                        ['tag/view', 'id' => $tag['id']],
+                                        [
+                                            'class' => 'tag',
+                                        ]
+                                    ); ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+
+                        <!--<div class="joindate">
+                            始于 3月20日
+                        </div>-->
                     </div>
-                    <div class="joindate">
-                        始于 3月20日
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
 
             <!-- Nav tabs -->

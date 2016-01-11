@@ -24,6 +24,7 @@ use common\entities\VoteEntity;
 use common\helpers\AtHelper;
 use common\helpers\TemplateHelper;
 use common\helpers\TimeHelper;
+use common\models\CacheUserEventModel;
 use common\models\CacheUserGradeModel;
 use common\models\xunsearch\QuestionSearch;
 use common\services\AnswerService;
@@ -228,7 +229,7 @@ class TestController extends BaseController
 
 
         foreach ($rules as $rule) {
-            $data[$rule->id] = (new CacheUserGradeModel())->filterAttributes($rule);
+            $data[$rule->id] = (new CacheUserGradeModel())->filter($rule);
         }
 
 
@@ -642,6 +643,26 @@ class TestController extends BaseController
                 TimeHelper::getThisYearEndTime()
             )
         );
+
+    }
+
+    public function actionCacheModel()
+    {
+        $data = [
+            'id' => 1,
+            'name' => 1,
+            'event' => 1,
+            'template' => 1,
+            'abc' => 1,
+        ];
+
+        $result = (new CacheUserEventModel)->filter($data);
+
+        print_r($result);
+
+        $result = (new CacheUserEventModel)->build($result);
+        print_r($result);
+
 
     }
 }

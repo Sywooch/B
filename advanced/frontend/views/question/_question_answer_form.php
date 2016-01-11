@@ -17,7 +17,7 @@ use common\entities\AnswerEntity;
 /* @var $answer_model AnswerEntity */
 ?>
 
-<div id="answer_form_area">
+<div id="answer-form-area">
 
     <?php if (Yii::$app->request->get('answer_id') && $question_data['count_answer'] > 1): ?>
         <div class="mt20">

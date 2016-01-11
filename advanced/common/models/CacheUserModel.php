@@ -22,6 +22,7 @@ class CacheUserModel extends BaseCacheModel
     public $sex;
     public $title;
     public $bio;
+    public $description;
     public $last_login_at;
     public $count_favorite = 0;
     public $count_question = 0;
@@ -37,6 +38,7 @@ class CacheUserModel extends BaseCacheModel
 
     public $credit = 0;//信用
     public $currency = 0;//货币
+    public $score = 0;//积分，根据信用与货币计算得出
     public $user_role_id = 0;//用户角色类型ID，刺客、武夫、
     public $user_grade_id = '';//用户等级ID
 
@@ -45,7 +47,7 @@ class CacheUserModel extends BaseCacheModel
      * @param $data
      * @return CacheUserModel
      */
-    public function filterAttributes($data)
+    public function filter($data)
     {
         if (isset($data['profile'])) {
             $profile = $data['profile'];
@@ -53,6 +55,6 @@ class CacheUserModel extends BaseCacheModel
             $data = ArrayHelper::merge($data, $profile);
         }
 
-        return parent::filterAttributes($data);
+        return parent::filter($data);
     }
 }

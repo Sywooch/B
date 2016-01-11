@@ -28,7 +28,7 @@ class VoteBehavior extends BaseBehavior
         return [
             ActiveRecord::EVENT_AFTER_INSERT  => 'afterVoteInsert',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'afterVoteUpdate',
-            //ActiveRecord::EVENT_AFTER_DELETE => 'afterVoteDelete',
+            ActiveRecord::EVENT_AFTER_DELETE  => 'afterVoteDelete',
         ];
     }
 
@@ -61,6 +61,12 @@ class VoteBehavior extends BaseBehavior
                         Counter::answerAddLike($this->owner->associate_id);
                     } else {
                         Counter::answerAddHate($this->owner->associate_id);
+                    }
+                    break;
+                case VoteEntity::TYPE_ANSWER_COMMENT:
+                    //更新回答投票数
+                    if ($this->owner->vote == VoteEntity::VOTE_YES) {
+                        Counter::answerCommentAddLike($this->owner->associate_id);
                     }
                     break;
             }
@@ -108,35 +114,21 @@ class VoteBehavior extends BaseBehavior
         }
     }
 
-    /*public function afterVoteDelete()
+    /**
+     * 只有评论投票才有删除动作
+     * @throws \Exception
+     * @throws \common\exceptions\NotFoundModelException
+     */
+    public function afterVoteDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $result = VoteService::removeUserOfVoteCache(
-            $this->owner->associate_type,
-            $this->owner->associate_id,
-            $this->owner->created_by
-        );
 
-        if ($result) {
-            //todo 增加其他类型
-            switch ($this->owner->associate_type) {
-                case VoteEntity::TYPE_QUESTION:
-                    //更新问题投票数
-                    if ($this->owner->vote == VoteEntity::VOTE_YES) {
-                        Counter::questionCancelLike($this->owner->associate_id);
-                    } else {
-                        Counter::questionCancelHate($this->owner->associate_id);
-                    }
-                    break;
-                case VoteEntity::TYPE_ANSWER:
-                    //更新回答投票数
-                    if ($this->owner->vote == VoteEntity::VOTE_YES) {
-                        Counter::answerCancelLike($this->owner->associate_id);
-                    } else {
-                        Counter::answerCancelHate($this->owner->associate_id);
-                    }
-                    break;
-            }
+        switch ($this->owner->associate_type) {
+            case VoteEntity::TYPE_ANSWER_COMMENT:
+                //更新回答投票数
+                Counter::answerCommentCancelLike($this->owner->associate_id);
+                break;
         }
-    }*/
+    }
+
 }

@@ -4,6 +4,7 @@
 /* @var $content string */
 
 use common\components\user\User;
+use common\helpers\TimeHelper;
 use common\modules\user\models\LoginForm;
 
 use kartik\widgets\Typeahead;
@@ -12,6 +13,7 @@ use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\Url;
+use yii\web\Cookie;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 use yii\widgets\Breadcrumbs;
@@ -216,7 +218,38 @@ AppAsset::register($this);
     } ?>
     <?= $content ?>
 </div>
-<? if (Yii::$app->user->isGuest && !in_array(Yii::$app->user->step, [User::STEP_REGISTER, User::STEP_LOGIN])) : ?>
+<?php
+//注册提醒，只对未登陆用户显示3次
+$cookies = Yii::$app->getResponse()->getCookies();
+$cookie_key = 'widget-register';
+
+if (!Yii::$app->request->cookies->has($cookie_key)) {
+    $cookies->add(
+        new Cookie(
+            [
+                'name'   => $cookie_key,
+                'value'  => 1,
+                'expire' => TimeHelper::getAfterTime(1),
+            ]
+        )
+    );
+} else {
+    $cookies->add(
+        new Cookie(
+            [
+                'name'  => $cookie_key,
+                'value' => Yii::$app->request->cookies->getValue($cookie_key) + 1,
+            ]
+        )
+    );
+}
+
+?>
+<? if (Yii::$app->user->isGuest && !in_array(
+        Yii::$app->user->step,
+        [User::STEP_REGISTER, User::STEP_LOGIN]
+    ) && ($cookies->getValue($cookie_key) <= 3)
+) : ?>
     <div class="widget-register mt20 hidden-xs widget-welcome widget-register-slideUp">
         <div class="container">
             <div class="row">
@@ -225,22 +258,11 @@ AppAsset::register($this);
 
                     <p>专业的开发者技术社区，为用户提供多样化的线上知识交流，丰富的线下活动及给力的工作机会</p>
                 </div>
-                <form action="/api/user/register/fast" method="post">
-                    <div class="col-sm-5">
-                        <div class="form-group mb0">
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="邮箱地址"
-                                   name="mail"
-                                   required=""
-                                   autocomplete="off"
-                                   style="background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QsPDiEFu6xIcAAAAXhJREFUOMvNk8FLVFEUxn/ffRdmIAla1CbBFDGCpoiQWYlBLty7UHAvEq2HYLhveDMws2/TIly6E9SdIEj+AVYgRaTgXhe2C968x2nhTOjow8pNZ/ede/ide893Lvx3UavVhkMIk30dQqiGECpF9e68CCG8LpfL3yStAAIk6Z2kT3Ect68C+AGdSroFVEII82aWSXoGYGYHVwE0qOM43pU0BXw3s1zSI2AnSZKXhYB6vT7inLvd7XZ/eu8fOOe2JEW9zjkwZ2bHkoayLDtpt9ufLzzBe/8GWC6VSpc7nIE2pLPLeu/fA0uDQ3T/6pp6039uZnfN7Ieke1EUrQOu3/VawPloNBrbwIyZ7TvnLvg/+mKOJ3xk88NR4R4sADM92fp9MDRMdXaRxenHVMbuFy8SMAFkZval2Wyu9ZN3Hk4zWx0nAtKsWwxotVrNNE2f5nn+CrB+/nRvlSR5y2EK0TWbSKfT+fo3Lribfr4bA/yfl56y2kkuZX8BjXVyqMs8oFcAAAAASUVORK5CYII=); background-attachment: scroll; background-position: 100% 50%; background-repeat: no-repeat;">
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <button type="submit" class="btn btn-primary btn-block">加入只需一步</button>
-                    </div>
-                </form>
+
+                <div class="col-sm-3">
+                    <?= Html::a('加入我们！', ['user/registration/register'], ['class' => 'btn btn-primary btn-block']) ?>
+                </div>
+
                 <a class="close" href="javascript:void(0);" title="暂时不想注册!"><span>×</span></a>
             </div>
         </div>
@@ -326,9 +348,7 @@ AppAsset::register($this);
             'header'       => '<h4 class="modal-title">用户登录</h4>',
             'toggleButton' => false,
             'size'         => Modal::SIZE_DEFAULT,
-            'options'      => [
-                'id' => 'quick-login-modal',
-            ],
+            'options'      => ['id' => 'quick-login-modal',],
         ]
     );
 
@@ -352,7 +372,13 @@ AppAsset::register($this);
             <?= $form->field(
                 $model,
                 'login',
-                ['inputOptions' => ['autofocus' => 'autofocus', 'class' => 'form-control', 'tabindex' => '1']]
+                [
+                    'inputOptions' => [
+                        'autofocus' => 'autofocus',
+                        'class'     => 'form-control',
+                        'tabindex'  => '1',
+                    ],
+                ]
             ) ?>
 
             <?= $form->field(

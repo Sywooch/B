@@ -79,6 +79,15 @@ class CommentService extends BaseService
         }
     }
 
+    public static function getAnswerCommentByCommentId($id)
+    {
+        $model = AnswerCommentEntity::find()->where(
+            ['id' => $id]
+        )->asArray()->one();
+
+        return $model;
+    }
+
     public static function getCommentListByAnswerId($answer_id, $limit = 10, $offset = 0)
     {
         $model = AnswerCommentEntity::find()->where(

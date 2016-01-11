@@ -19,6 +19,7 @@ return [
                 'admin'        => 'common\modules\user\controllers\AdminController',
                 'settings'     => 'common\modules\user\controllers\SettingsController',
                 'registration' => 'common\modules\user\controllers\RegistrationController',
+                'default'      => 'common\modules\user\controllers\DefaultController',
             ],
             'mailer'                   => [
                 #发件人
@@ -30,7 +31,8 @@ return [
                 'recoverySubject'       => '更改密码',
 
             ],
-            'enableFlashMessages'      => true,
+            //不允许显示信息
+            'enableFlashMessages'      => false,
             'enableUnconfirmedLogin'   => true,
             'confirmWithin'            => 86400,
             'cost'                     => 12,

@@ -11,12 +11,14 @@ namespace common\services;
 use common\components\Error;
 use common\components\user\UserGrade;
 use common\config\RedisKey;
+use common\entities\UserEventLogEntity;
 use common\entities\UserScoreRuleEntity;
 use common\exceptions\CreditRuleDoesNotDefineException;
 use common\exceptions\NotFoundModelException;
 use common\helpers\AvatarHelper;
 use common\models\CacheUserScoreRuleModel;
 use common\models\CacheUserModel;
+use common\models\UserScoreLog;
 use common\models\UserScoreRule;
 use common\modules\user\models\LoginForm;
 use Imagine\Exception\InvalidArgumentException;
@@ -30,7 +32,7 @@ class UserService extends BaseService
 {
     #官方账号的最大ID
     const MAX_OFFICIAL_ACCOUNT_ID = 500;
-    const REGISTER_CAPTCHA_ACTION = '/user/registration/captcha';
+    const REGISTER_CAPTCHA_ACTION = '/site/captcha';
 
     public static function checkUserSelf($user_id)
     {
@@ -110,7 +112,11 @@ class UserService extends BaseService
         return $avatar;
     }
 
-
+    /**
+     * @param $user_id
+     * @return CacheUserModel
+     * @throws NotFoundModelException
+     */
     public static function getUserById($user_id)
     {
         $data = self::getUserListByIds([$user_id]);
@@ -119,12 +125,17 @@ class UserService extends BaseService
         } else {
             throw new NotFoundModelException('user', $user_id);
         }
-
     }
 
+    /**
+     * @param $user_ids
+     * @return array|CacheUserModel
+     */
     public static function getUserListByIds($user_ids)
     {
         $result = $cache_miss_key = $cache_data = [];
+        $cache_user_model = new CacheUserModel();
+
         foreach ($user_ids as $user_id) {
             $cache_key = [RedisKey::REDIS_KEY_USER, $user_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
@@ -132,7 +143,7 @@ class UserService extends BaseService
                 $cache_miss_key[] = $user_id;
                 $result[$user_id] = null;
             } else {
-                $result[$user_id] = $cache_data;
+                $result[$user_id] = $cache_user_model->build($cache_data);
             }
         }
 
@@ -143,27 +154,28 @@ class UserService extends BaseService
                 ]
             )->with('profile')->asArray()->all();
 
-            $cache_user_model = new CacheUserModel();
+
             $username_id_data = [];
 
             foreach ($cache_data as $item) {
                 #filter attributes
-                $item = $cache_user_model->filterAttributes($item);
+                $data = $cache_user_model->filter($item);
+
 
                 #计算用户等级
                 //$user_grade = new UserGrade($item['score']);
                 //$item['grade_level'] = $user_grade->grade_level;
                 //$item['grade_name'] = $user_grade->grade_name;
 
-                $user_id = $item['id'];
-                $result[$user_id] = $item;
+                $user_id = $data['id'];
+                $result[$user_id] = $cache_user_model->build($data);
 
 
                 $cache_key = [RedisKey::REDIS_KEY_USER, $user_id];
-                Yii::$app->redis->hMset($cache_key, $item->toArray());
+                Yii::$app->redis->hMset($cache_key, $data);
 
                 #cache username to userid
-                $username_id_data[$item['username']] = $item['id'];
+                $username_id_data[$data['username']] = $data['id'];
             }
 
             #cache username id relation data
@@ -175,6 +187,10 @@ class UserService extends BaseService
         return $result;
     }
 
+    /**
+     * @param $username
+     * @return array|CacheUserModel|mixed
+     */
     public static function getUserByUsername($username)
     {
         #use redis
@@ -349,7 +365,9 @@ class UserService extends BaseService
 
     public static function getUserBeGoodAtTags($user_id, $limit = 20)
     {
-        return FollowService::getTagIdsWhichUserIsGoodAt($user_id, $limit, 90);
+        $tag_ids = FollowService::getTagIdsWhichUserIsGoodAt($user_id, $limit, 365);
+
+        return TagService::getTagListByTagIds($tag_ids);
     }
 
     /**
@@ -464,5 +482,52 @@ class UserService extends BaseService
         $login_form->login = $username;
 
         return $login_form->loginWithoutPassword();
+    }
+
+    public static function getUserScoreList($user_id, $from, $to)
+    {
+        $query = UserScoreLog::find()->select(
+            "
+            FROM_UNIXTIME(`created_at`, '%Y-%m-%d') AS `created_at`,
+            `created_at`,
+            SUM(IF(`type` = 'currency', `score`, 0)) AS `currency`,
+            SUM(IF(`type` = 'credit', `score`, 0)) AS `credit`
+            "
+        )->groupBy('created_at')->where(
+            [
+                'created_by' => $user_id,
+            ]
+        )->andWhere(['between', 'created_at', $from, $to])->asArray();
+
+        $data = $query->all();
+
+
+        $result = [];
+        $time = $from;
+        do {
+            $result[date('Y-m-d', $time)] = [
+                'currency' => 0,
+                'credit'   => 0,
+            ];
+            $time += 86400;
+        } while ($time < $to);
+
+        foreach ($data as $item) {
+            $result[date('Y-m-d', $item['created_at'])] = [
+                'currency' => $item['currency'],
+                'credit'   => $item['credit'],
+            ];
+        }
+
+        return $result;
+    }
+
+    public static function getUserEventLogList($user_id, $limit = 30)
+    {
+        $query = UserEventLogEntity::find()->where(
+            ['created_by' => $user_id]
+        )->orderBy('created_at DESC')->limit($limit)->all();
+
+        return $query;
     }
 }

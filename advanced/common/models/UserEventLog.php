@@ -33,7 +33,7 @@ class UserEventLog extends \common\models\BaseActiveRecord
         return [
             [['user_event_id', 'associate_type', 'associate_id'], 'required'],
             [['user_event_id', 'associate_id', 'created_at', 'created_by'], 'integer'],
-            [['associate_type'], 'string'],
+            [['associate_type'], 'string', 'max' => 45],
             [['associate_content'], 'string', 'max' => 1024]
         ];
     }
@@ -46,7 +46,7 @@ class UserEventLog extends \common\models\BaseActiveRecord
         return [
             'id' => 'ID',
             'user_event_id' => 'User Event ID',
-            'associate_type' => '类型',
+            'associate_type' => '类型:question,answer,answer_comment,article',
             'associate_id' => '关联的对象ID',
             'associate_content' => '关联内容',
             'created_at' => '创建时间',

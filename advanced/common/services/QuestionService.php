@@ -6,6 +6,7 @@ use common\components\Error;
 use common\components\Updater;
 use common\config\RedisKey;
 use common\entities\QuestionTagEntity;
+use common\exceptions\NotFoundModelException;
 use common\models\CacheQuestionModel;
 use common\models\QuestionTag;
 use common\models\xunsearch\QuestionSearch;
@@ -16,16 +17,32 @@ use Yii;
 
 class QuestionService extends BaseService
 {
+    /**
+     * @param $question_id
+     * @return CacheQuestionModel
+     * @throws NotFoundModelException
+     */
     public static function getQuestionByQuestionId($question_id)
     {
         $data = self::getQuestionListByQuestionIds([$question_id]);
 
-        return $data ? array_shift($data) : false;
+        if ($data) {
+            return array_shift($data);
+        } else {
+            throw new NotFoundModelException('question', $question_id);
+        }
     }
 
+    /**
+     * @param array $question_ids
+     * @return array|CacheQuestionModel
+     */
     public static function getQuestionListByQuestionIds(array $question_ids)
     {
         $result = $cache_miss_key = $cache_data = [];
+        $cache_question_model = new CacheQuestionModel();
+
+
         foreach ($question_ids as $question_id) {
             $cache_key = [RedisKey::REDIS_KEY_QUESTION, $question_id];
             $cache_data = Yii::$app->redis->hGetAll($cache_key);
@@ -34,9 +51,10 @@ class QuestionService extends BaseService
                 $cache_miss_key[] = $question_id;
                 $result[$question_id] = null;
             } else {
-                $result[$question_id] = $cache_data;
+                $result[$question_id] = $cache_question_model->build($cache_data);
             }
         }
+
         if ($cache_miss_key) {
             $cache_data = QuestionEntity::find()->where(
                 [
@@ -44,15 +62,15 @@ class QuestionService extends BaseService
                 ]
             )->asArray()->all();
 
-            $cache_question_model = new CacheQuestionModel();
             foreach ($cache_data as $item) {
                 #filter attributes
-                $item = $cache_question_model->filterAttributes($item);
+                $data = $cache_question_model->filter($item);
+                $question_id = $data['id'];
+                $result[$question_id] = $cache_question_model->build($data);
 
-                $question_id = $item['id'];
-                $result[$question_id] = $item;
+                //保存到缓存中
                 $cache_key = [RedisKey::REDIS_KEY_QUESTION, $question_id];
-                Yii::$app->redis->hMset($cache_key, $item->toArray());
+                Yii::$app->redis->hMset($cache_key, $data);
             }
         }
 
@@ -102,8 +120,12 @@ class QuestionService extends BaseService
                 break;
 
             case 'hottest':
-                $count = QuestionEntity::find()->allowShowStatus($is_spider)->recent()->answered()->orderByTime(
-                )->count(1);
+                $count = QuestionEntity::find()
+                                       ->allowShowStatus($is_spider)
+                                       ->recent()
+                                       ->answered()
+                                       ->orderByTime()
+                                       ->count(1);
                 break;
 
             case 'unAnswer':
@@ -138,9 +160,8 @@ class QuestionService extends BaseService
         if ($question_ids === false) {
             $model = QuestionEntity::find()->select(['id'])->allowShowStatus($is_spider)->orderByTime()->limit(
                 $limit
-            )->offset(
-                $offset
-            )->column();
+            )->offset($offset)->column();
+
             $question_ids = $model;
 
             Yii::$app->redis->set($cache_key, $question_ids);
@@ -212,8 +233,15 @@ class QuestionService extends BaseService
         $question_ids = Yii::$app->redis->get($cache_key);
 
         if ($question_ids === false) {
-            $model = QuestionEntity::find()->select(['id'])->allowShowStatus($is_spider)->recent($period)->unAnswered(
-            )->orderByTime()->limit($limit)->offset($offset)->column();
+            $model = QuestionEntity::find()
+                                   ->select(['id'])
+                                   ->allowShowStatus($is_spider)
+                                   ->recent($period)
+                                   ->unAnswered()
+                                   ->orderByTime()
+                                   ->limit($limit)
+                                   ->offset($offset)
+                                   ->column();
             $question_ids = $model;
             Yii::$app->redis->set($cache_key, $question_ids);
         }
@@ -430,6 +458,7 @@ class QuestionService extends BaseService
     {
         return Updater::setQuestionAnonymous($question_id);
     }
+
     public static function cancelAnonymous($question_id)
     {
         return Updater::cancelQuestionAnonymous($question_id);

@@ -9,6 +9,7 @@
 namespace common\components;
 
 use common\config\RedisKey;
+use common\entities\AnswerCommentEntity;
 use common\entities\AnswerEntity;
 use common\entities\FavoriteCategoryEntity;
 use common\entities\PrivateMessageEntity;
@@ -560,6 +561,32 @@ class Counter extends BaseCounter
 
         return $result;
     }
+
+    public static function answerCommentAddLike($answer_comment_id)
+    {
+        Yii::trace('增加评论喜欢数量', 'counter');
+
+        //评论没有使用缓存，不使用队列更新
+        $result = self::build()->sync(true)->set(AnswerCommentEntity::tableName(), $answer_comment_id)->value(
+            'count_like',
+            1
+        )->execute();
+
+        return $result;
+    }
+
+    public static function answerCommentCancelLike($answer_id)
+    {
+        Yii::trace('减少评论喜欢数量', 'counter');
+        //评论没有使用缓存，不使用队列更新
+        $result = self::build()->sync(true)->set(AnswerCommentEntity::tableName(), $answer_id)->value(
+            'count_like',
+            -1
+        )->execute();
+
+        return $result;
+    }
+
 
     //******************************************MESSAGE***************************************************/
 

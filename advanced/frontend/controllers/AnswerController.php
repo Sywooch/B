@@ -233,6 +233,16 @@ class AnswerController extends BaseController
             );
         }
 
+        foreach ($comments_data as &$comment) {
+            if (!Yii::$app->user->isGuest) {
+                $comment['vote_status'] = VoteService::getUseAnswerCommentVoteStatus($comment['id'], Yii::$app->user->id);
+            } else {
+                $comment['vote_status'] = false;
+            }
+            $comment['count_vote'] = $comment['count_like'] - $comment['count_hate'];
+        }
+
+
         $html = $this->renderAjax(
             '_comment_list',
             [

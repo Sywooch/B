@@ -8,7 +8,10 @@
 
 namespace common\entities;
 
+use common\behaviors\OperatorBehavior;
+use common\behaviors\TimestampBehavior;
 use common\models\UserEventLog;
+use yii\db\ActiveRecord;
 
 class UserEventLogEntity extends UserEventLog
 {
@@ -17,4 +20,22 @@ class UserEventLogEntity extends UserEventLog
     const ASSOCIATE_TYPE_ANSWER_COMMENT = 'answer_comment';
     const ASSOCIATE_TYPE_USER = 'user';
     const ASSOCIATE_TYPE_TAG = 'tag';
+
+    public function behaviors()
+    {
+        return [
+            'operator'  => [
+                'class'      => OperatorBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
+                ],
+            ],
+            'timestamp' => [
+                'class'      => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
+                ],
+            ],
+        ];
+    }
 }

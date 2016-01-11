@@ -8,6 +8,7 @@
 
 namespace common\entities;
 
+use common\behaviors\UserScoreRuleBehavior;
 use common\helpers\ArrayHelper;
 use common\models\UserScoreRule;
 
@@ -25,6 +26,15 @@ class UserScoreRuleEntity extends UserScoreRule
     const LIMIT_TYPE_HOUR = 'hour';
     const LIMIT_TYPE_MINUTE = 'minute';
     const LIMIT_TYPE_SECOND = 'second';
+
+    public function behaviors()
+    {
+        return [
+            'user_event' => [
+                'class' => UserScoreRuleBehavior::className(),
+            ],
+        ];
+    }
 
     public function getUserEventList()
     {

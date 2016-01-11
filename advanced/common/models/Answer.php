@@ -11,9 +11,9 @@ use Yii;
  * @property string $question_id
  * @property string $type
  * @property string $content
- * @property integer $count_hate
- * @property integer $count_like
- * @property integer $count_comment
+ * @property string $count_hate
+ * @property string $count_like
+ * @property string $count_comment
  * @property string $created_at
  * @property string $created_by
  * @property string $updated_at

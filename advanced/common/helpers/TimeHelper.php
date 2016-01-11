@@ -13,26 +13,33 @@ class TimeHelper
 {
     /**
      * 获取当前时间
+     * @param bool $nature
      * @return int
      */
-    public static function getCurrentTime()
+    public static function getCurrentTime($nature = false)
     {
-        return time();
+        if ($nature) {
+            return mktime(0, 0, 0, date("m"), date("d"), date("Y"));
+        } else {
+            return time();
+        }
+
     }
     
     /**
      * 获取距X天前最迟的时间
-     * @param int $period
+     * @param int  $period
+     * @param bool $nature true:自然天，即X天前（从零点开始），false：非自然天，即从当前时间往前X天
      * @return int
      */
-    public static function getBeforeTime($period = 7)
+    public static function getBeforeTime($period = 7, $nature = false)
     {
-        return self::getCurrentTime() - $period * 86400;
+        return self::getCurrentTime($nature) - $period * 86400;
     }
     
-    public static function getAfterTime($period = 7)
+    public static function getAfterTime($period = 7, $nature = false)
     {
-        return self::getCurrentTime() + $period * 86400;
+        return self::getCurrentTime($nature) + $period * 86400;
     }
     
     public static function getThisYearStartTime()

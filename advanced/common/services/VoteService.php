@@ -29,6 +29,11 @@ class VoteService extends BaseService
         return self::addVote(VoteEntity::TYPE_ANSWER, $answer_id, $user_id, $vote);
     }
 
+    public static function addAnswerCommentVote($answer_comment_id, $user_id, $vote)
+    {
+        return self::addVote(VoteEntity::TYPE_ANSWER_COMMENT, $answer_comment_id, $user_id, $vote);
+    }
+
     public static function addArticleVote($question_id, $user_id, $vote)
     {
         return self::addVote(VoteEntity::TYPE_ARTICLE, $question_id, $user_id, $vote);
@@ -61,6 +66,11 @@ class VoteService extends BaseService
     public static function updateAnswerVote($answer_id, $user_id, $vote)
     {
         return self::updateVote(VoteEntity::TYPE_ANSWER, $answer_id, $user_id, $vote);
+    }
+
+    public static function updateAnswerCommentVote($answer_comment_id, $user_id, $vote)
+    {
+        return self::updateVote(VoteEntity::TYPE_ANSWER_COMMENT, $answer_comment_id, $user_id, $vote);
     }
 
     public static function updateArticleVote($question_id, $user_id, $vote)
@@ -130,6 +140,10 @@ class VoteService extends BaseService
             case VoteEntity::TYPE_ANSWER:
                 $model = AnswerService::getAnswerByAnswerId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
+                break;
+            case VoteEntity::TYPE_ANSWER_COMMENT:
+                $model = CommentService::getAnswerCommentByCommentId($associate_id);
+                $cache_key = [RedisKey::REDIS_KEY_ANSWER_COMMENT_VOTE_USER_LIST, $associate_id];
                 break;
             default:
                 throw new \Exception(sprintf('%s todo!', $associate_type));
@@ -225,6 +239,23 @@ class VoteService extends BaseService
         return Yii::$app->redis->zRem($cache_key, $user_id);
     }
 
+    public static function deleteAnswerCommentVote($answer_comment_id, $user_id)
+    {
+        $query = VoteEntity::find()->where(
+            [
+                'associate_type' => VoteEntity::TYPE_ANSWER_COMMENT,
+                'associate_id'   => $answer_comment_id,
+                'created_by'     => $user_id,
+            ]
+        )->one();
+
+        if ($query) {
+            return $query->delete();
+        } else {
+            return false;
+        }
+    }
+
     public static function getUseQuestionVoteStatus($associate_id, $user_id)
     {
         return self::getUseVoteStatus(VoteEntity::TYPE_QUESTION, $associate_id, $user_id);
@@ -233,6 +264,11 @@ class VoteService extends BaseService
     public static function getUseAnswerVoteStatus($associate_id, $user_id)
     {
         return self::getUseVoteStatus(VoteEntity::TYPE_ANSWER, $associate_id, $user_id);
+    }
+
+    public static function getUseAnswerCommentVoteStatus($associate_id, $user_id)
+    {
+        return self::getUseVoteStatus(VoteEntity::TYPE_ANSWER_COMMENT, $associate_id, $user_id);
     }
 
     /**
@@ -253,6 +289,10 @@ class VoteService extends BaseService
             case VoteEntity::TYPE_ANSWER:
                 $model = AnswerService::getAnswerByAnswerId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
+                break;
+            case VoteEntity::TYPE_ANSWER_COMMENT:
+                $model = CommentService::getAnswerCommentByCommentId($associate_id);
+                $cache_key = [RedisKey::REDIS_KEY_ANSWER_COMMENT_VOTE_USER_LIST, $associate_id];
                 break;
             default:
                 throw new \Exception(sprintf('%s todo!', $associate_type));

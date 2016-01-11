@@ -8,10 +8,20 @@
 
 namespace common\entities;
 
+use common\behaviors\UserGradeRuleBehavior;
 use common\models\UserGradeRule;
 
 class UserGradeRuleEntity extends UserGradeRule
 {
     const STATUS_ENABLE = 'enable';
     const STATUS_DISABLE = 'disable';
+
+    public function behaviors()
+    {
+        return [
+            'user_event' => [
+                'class' => UserGradeRuleBehavior::className(),
+            ],
+        ];
+    }
 }

@@ -19,7 +19,7 @@ class VoteEntity extends Vote
     const TYPE_QUESTION = 'question';
     const TYPE_ANSWER = 'answer';
     const TYPE_ARTICLE = 'article';
-    const TYPE_COMMENT = 'comment';
+    const TYPE_ANSWER_COMMENT = 'answer_comment';
 
     const VOTE_YES = 'yes';
     const VOTE_NO = 'no';
