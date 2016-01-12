@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerCommentEntity;
+use common\entities\AnswerVersionEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use common\exceptions\PermissionDeniedException;
@@ -127,19 +128,15 @@ class AnswerController extends BaseController
         $this->jsonOut($result);
     }
 
-    /**
-     * Updates an existing AnswerEntity model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param $question_id
-     * @param $id
-     * @return mixed
-     * @throws NotFoundHttpException
-     * @internal param string $id
-     */
     public function actionUpdate($id, $question_id)
     {
         $question_data = QuestionService::getQuestionByQuestionId($question_id);
+
         $answer_model = $this->findModel($id);
+
+        if ($answer_model->created_by != Yii::$app->user->id) {
+            throw new PermissionDeniedException();
+        }
 
         if ($answer_model->load(Yii::$app->request->post()) && $answer_model->save()) {
             return $this->redirect(['question/view', 'id' => $question_id, 'answer_id' => $id]);
@@ -158,9 +155,13 @@ class AnswerController extends BaseController
     {
         $question_data = QuestionService::getQuestionByQuestionId($question_id);
         $answer_model = $this->findModel($id);
-        
-        //$answer_model->scenario = '';
-        #todo 公共编辑状态，有些字段不允许提交
+
+        if ($answer_model->created_by == Yii::$app->user->id) {
+            throw new PermissionDeniedException();
+        }
+
+        $answer_model->setScenario('common_edit');
+
         if ($answer_model->load(Yii::$app->request->post()) && $answer_model->save()) {
             return $this->redirect(['question/view', 'id' => $question_id, 'answer_id' => $id]);
         } else {
@@ -318,6 +319,29 @@ class AnswerController extends BaseController
                 'question/view',
                 'id'        => $answer['question_id'],
                 'answer_id' => $id,
+            ]
+        );
+    }
+
+    public function actionVersionRepository($id)
+    {
+        $pages = new Pagination(
+            [
+                'totalCount'      => AnswerVersionEntity::find()->where(['answer_id' => $id])->count(),
+                'defaultPageSize' => 20,
+                'params'          => array_merge($_GET, ['#' => '']),
+            ]
+        );
+
+        $model = AnswerVersionEntity::find()->where(
+            ['answer_id' => $id]
+        )->offset($pages->offset)->limit($pages->limit)->all();
+
+        return $this->render(
+            'version_repository',
+            [
+                'model' => $model,
+                'pages' => $pages,
             ]
         );
     }

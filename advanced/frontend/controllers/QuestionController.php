@@ -10,6 +10,7 @@ use common\entities\FavoriteEntity;
 use common\entities\FollowUserEntity;
 use common\entities\QuestionEntity;
 use common\entities\QuestionInviteEntity;
+use common\entities\QuestionVersionEntity;
 use common\entities\UserEntity;
 use common\exceptions\NotFoundModelException;
 use common\exceptions\ParamsInvalidException;
@@ -385,6 +386,32 @@ class QuestionController extends BaseController
     {
         $model = $this->findModel($id);
 
+        if ($model->created_by != Yii::$app->user->id) {
+            throw new PermissionDeniedException();
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['question/view', 'id' => $model->id]);
+        } else {
+            return $this->render(
+                'update',
+                [
+                    'model' => $model,
+                ]
+            );
+        }
+    }
+
+    public function actionCommonEdit($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->created_by == Yii::$app->user->id) {
+            throw new PermissionDeniedException();
+        }
+
+        $model->setScenario('common_edit');
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['question/view', 'id' => $model->id]);
         } else {
@@ -517,5 +544,28 @@ class QuestionController extends BaseController
         } else {
             throw new PermissionDeniedException();
         }
+    }
+
+    public function actionVersionRepository($id)
+    {
+        $pages = new Pagination(
+            [
+                'totalCount'      => QuestionVersionEntity::find()->where(['question_id' => $id])->count(),
+                'defaultPageSize' => 20,
+                'params'          => array_merge($_GET, ['#' => '']),
+            ]
+        );
+
+        $model = QuestionVersionEntity::find()->where(
+            ['question_id' => $id]
+        )->offset($pages->offset)->limit($pages->limit)->all();
+
+        return $this->render(
+            'version_repository',
+            [
+                'model' => $model,
+                'pages' => $pages,
+            ]
+        );
     }
 }

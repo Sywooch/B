@@ -442,7 +442,7 @@ class QuestionService extends BaseService
         $question_tags = QuestionTagEntity::find()->where(
             [
                 'question_id' => $question_id,
-                'tag_ids'     => $tag_ids,
+                'tag_id' => $tag_ids,
             ]
         )->all();
 

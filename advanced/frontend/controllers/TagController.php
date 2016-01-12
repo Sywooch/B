@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\controllers\BaseController;
 use common\entities\TagEntity;
 use common\entities\TagSearchEntity;
+use common\entities\TagVersionEntity;
 use common\exceptions\NotFoundModelException;
 use common\services\FollowService;
 use common\services\QuestionService;
@@ -200,6 +201,8 @@ class TagController extends BaseController
     {
         $model = $this->findModel($id);
 
+        $model->setScenario('common_edit');
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
@@ -254,5 +257,28 @@ class TagController extends BaseController
         $data = TagService::getHotTag();
 
         return $this->jsonOut($data);
+    }
+
+    public function actionVersionRepository($id)
+    {
+        $pages = new Pagination(
+            [
+                'totalCount'      => TagVersionEntity::find()->where(['tag_id' => $id])->count(),
+                'defaultPageSize' => 20,
+                'params'          => array_merge($_GET, ['#' => '']),
+            ]
+        );
+
+        $model = TagVersionEntity::find()->where(
+            ['tag_id' => $id]
+        )->offset($pages->offset)->limit($pages->limit)->all();
+
+        return $this->render(
+            'version_repository',
+            [
+                'model' => $model,
+                'pages' => $pages,
+            ]
+        );
     }
 }

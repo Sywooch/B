@@ -5,26 +5,26 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "question_event_history".
- *
+ * This is the model class for table "question_version".
  * @property string $id
  * @property string $question_id
- * @property integer $event_type
- * @property string $event_content
+ * @property string  $subject
+ * @property string  $tags
+ * @property string  $content
+ * @property integer $change_type
  * @property string $reason
  * @property string $ip
  * @property string $created_at
  * @property integer $created_by
- * @property string $allow_cancel
  */
-class QuestionEventHistory extends \common\models\BaseActiveRecord
+class QuestionVersion extends \common\models\BaseActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'question_event_history';
+        return 'question_version';
     }
 
     /**
@@ -33,10 +33,11 @@ class QuestionEventHistory extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['question_id', 'event_type', 'created_by'], 'required'],
-            [['question_id', 'event_type', 'ip', 'created_at', 'created_by'], 'integer'],
-            [['event_content', 'allow_cancel'], 'string'],
-            [['reason'], 'string', 'max' => 45]
+            [['question_id', 'created_by'], 'required'],
+            [['question_id', 'change_type', 'ip', 'created_at', 'created_by'], 'integer'],
+            [['content'], 'string'],
+            [['subject', 'reason'], 'string', 'max' => 45],
+            [['tags'], 'string', 'max' => 1024],
         ];
     }
 
@@ -48,13 +49,14 @@ class QuestionEventHistory extends \common\models\BaseActiveRecord
         return [
             'id' => 'ID',
             'question_id' => '关联的问题ID',
-            'event_type' => '事件类型，创建问题，添加标签……',
-            'event_content' => '事件内容',
+            'subject'     => '标题',
+            'tags'        => '标签',
+            'content'     => '内容',
+            'change_type' => '改变类型',
             'reason' => '为什么进行该操作',
             'ip' => 'IP地址',
             'created_at' => '创建时间',
             'created_by' => '创建用户',
-            'allow_cancel' => '是否允许撤消该事件',
         ];
     }
 }

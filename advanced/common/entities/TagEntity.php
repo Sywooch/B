@@ -6,6 +6,7 @@ use common\behaviors\OperatorBehavior;
 use common\behaviors\TagBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
+use common\helpers\ArrayHelper;
 use common\models\Tag;
 use yii\db\ActiveRecord;
 use Yii;
@@ -16,6 +17,7 @@ class TagEntity extends Tag
     const STATUS_ENABLE = 'enable';
     const STATUS_DISABLE = 'disable';
 
+    public $update_reason;
 
     public function behaviors()
     {
@@ -38,6 +40,24 @@ class TagEntity extends Tag
                 'class' => TagBehavior::className(),
             ],
         ];
+    }
+
+    public function rules()
+    {
+        $rules = parent::rules();
+        $rules[] = [['update_reason'], 'string', 'max' => 255, 'on' => 'common_edit'];
+
+        return $rules;
+    }
+
+    public function scenarios()
+    {
+        return ArrayHelper::merge(
+            parent::scenarios(),
+            [
+                'common_edit' => ['update_reason'],
+            ]
+        );
     }
 
     /**

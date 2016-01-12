@@ -68,7 +68,12 @@ use common\entities\AnswerEntity;
 
         <div class="form-group">
             <div class="checkbox pull-left">
-                <?= $form->field($answer_model, 'is_anonymous')->checkbox() ?>
+                <?= $form->field($answer_model, 'is_anonymous')->checkbox(
+                    [
+                        'value'   => AnswerEntity::STATUS_ANONYMOUS,
+                        'uncheck' => AnswerEntity::STATUS_UNANONYMOUS,
+                    ]
+                ) ?>
             </div>
 
             <div class="pull-right">

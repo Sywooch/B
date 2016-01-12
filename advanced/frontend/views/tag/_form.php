@@ -19,6 +19,19 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'description')->label('简短介绍')->textarea(['rows' => 2]) ?>
     <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
 
+    <?php if ($model->scenario == 'common_edit'): ?>
+        <div class="form-group">
+            <?= $form->field($model, 'update_reason')->textInput(
+                [
+                    'placeholder'  => '请描述您要修改的原因',
+                    'autocomplete' => 'off',
+                    'required'     => 'required',
+                ]
+            )->label('修改原因') ?>
+        </div>
+    <?php endif; ?>
+
+
     <div class="form-group">
         <?= Html::submitButton(
             $model->isNewRecord ? '创建' : '更新',

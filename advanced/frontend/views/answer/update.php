@@ -23,6 +23,7 @@ $this->title = '更新回答: ' . ' ' . $question_data['subject'];
                 '_form',
                 [
                         'model' => $answer_model,
+                        'question_data' => $question_data,
                 ]
         ) ?>
 

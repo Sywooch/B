@@ -2,17 +2,19 @@
 
 namespace common\entities;
 
+use common\behaviors\OperatorBehavior;
+use common\behaviors\QuestionBehavior;
+use common\behaviors\TimestampBehavior;
 use common\components\Error;
 use common\helpers\StringHelper;
-use common\behaviors\OperatorBehavior;
-use common\behaviors\TimestampBehavior;
-use common\behaviors\QuestionBehavior;
 use common\models\Question;
-use yii\db\ActiveRecord;
 use Yii;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
- * @property mixed questionTags
+ * @property mixed  questionTags
+ * @property string season
  */
 class QuestionEntity extends Question
 {
@@ -42,6 +44,8 @@ class QuestionEntity extends Question
     const STATUS_DISPLAY = 'original,review,edited,lock'; //允许显示的状态
     const STATUS_DISPLAY_FOR_SPIDER = 'edited,recommend,lock'; //允许显示的状态，给搜索引擎
 
+    public $update_reason;
+
     public function behaviors()
     {
         return [
@@ -65,8 +69,16 @@ class QuestionEntity extends Question
         ];
     }
 
-    //
-    
+    public function scenarios()
+    {
+        return ArrayHelper::merge(
+            parent::scenarios(),
+            [
+                'common_edit' => ['update_reason'],
+            ]
+        );
+    }
+
     /**
      * 字段规则
      * @return array
@@ -80,10 +92,10 @@ class QuestionEntity extends Question
 
         $rules[] = [['tags'], 'checkTagsAttribute', 'skipOnEmpty' => true];
         $rules[] = [['subject'], 'checkSubjectAttribute'];
+        $rules[] = [['update_reason'], 'string', 'max' => 255, 'on' => 'common_edit'];
 
         return $rules;
     }
-
 
     public function checkSubjectAttribute($attribute, $params)
     {
@@ -211,7 +223,7 @@ class QuestionEntity extends Question
      */
     public function getQuestionEventHistories()
     {
-        return $this->hasMany(QuestionEventHistoryEntity::className(), ['question_id' => 'id']);
+        return $this->hasMany(QuestionVersionEntity::className(), ['question_id' => 'id']);
     }
 
     /**

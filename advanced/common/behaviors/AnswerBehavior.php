@@ -57,7 +57,7 @@ class AnswerBehavior extends BaseBehavior
         $owner = $this->owner;
         $hasAnswered = AnswerService::checkWhetherHasAnswered($owner->question_id, $owner->created_by);
         
-        $owner->is_anonymous = $owner->is_anonymous == 1 ? $owner::STATUS_ANONYMOUS : $owner::STATUS_UNANONYMOUS;
+        //$owner->is_anonymous = $owner->is_anonymous == 1 ? $owner::STATUS_ANONYMOUS : $owner::STATUS_UNANONYMOUS;
 
         if ($hasAnswered) {
             $event->isValid = false;

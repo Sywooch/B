@@ -10,13 +10,14 @@ namespace common\behaviors;
 
 use common\components\Counter;
 use common\components\Updater;
-use common\components\user\User;
 use common\components\user\UserAssociationEvent;
 use common\entities\AttachmentEntity;
 use common\entities\FavoriteEntity;
-use common\entities\QuestionEventHistoryEntity;
+use common\entities\QuestionEntity;
+use common\entities\QuestionVersionEntity;
 use common\entities\TagRelationEntity;
 use common\entities\UserEventLogEntity;
+use common\exceptions\ModelSaveErrorException;
 use common\helpers\TimeHelper;
 use common\models\xunsearch\QuestionSearch;
 use common\services\FavoriteService;
@@ -35,33 +36,36 @@ use yii\helpers\ArrayHelper;
  */
 class QuestionBehavior extends BaseBehavior
 {
-    public $dirtyAttributes;
-    
+    private $dirtyAttributes;
+    private $oldAttributes;
+
     public function events()
     {
         Yii::trace('Begin ' . $this->className(), 'behavior');
         
         return [
-            ActiveRecord::EVENT_AFTER_INSERT  => 'eventQuestionCreate',
-            ActiveRecord::EVENT_AFTER_UPDATE  => 'eventQuestionUpdate',
-            ActiveRecord::EVENT_AFTER_DELETE  => 'eventQuestionDelete',
-            ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeQuestionSave',
+            ActiveRecord::EVENT_AFTER_INSERT   => 'eventQuestionCreate',
+            ActiveRecord::EVENT_AFTER_UPDATE   => 'eventQuestionUpdate',
+            ActiveRecord::EVENT_AFTER_DELETE   => 'eventQuestionDelete',
+            //ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeQuestionSave',
+            ActiveRecord::EVENT_AFTER_VALIDATE => 'afterQuestionValidate',
         ];
     }
 
-    public function beforeQuestionSave()
+    public function afterQuestionValidate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
         $this->dirtyAttributes = $this->owner->getDirtyAttributes();
+        $this->oldAttributes = $this->owner->getOldAttributes();
         $this->dealWithTagsOrder();
     }
     
     public function eventQuestionCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        //添加问题事件　
-        $this->dealWithAddQuestionEventHistory();
+        //添加问题版本
+        $this->dealWithQuestionVersionCreate();
         //添加问题标签
         $this->dealWithInsertTags();
         //添加用户统计
@@ -72,7 +76,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithAddAttachments();
         //生成问题缓存
         $this->dealWithInsertQuestionCache();
-        //处理标签间的关注
+        //处理标签间的关系
         $this->dealWithTagRelation();
         //处理xunsearch
         $this->dealWithInsertXunSearch();
@@ -94,7 +98,7 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //处理问题事件　
-        $this->dealWithQuestionUpdateEvent();
+        $this->dealWithQuestionVersionUpdate();
         //更新问题标签
         $this->dealWithUpdateTags();
         //更新附件
@@ -109,7 +113,7 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //删除问题事件记录
-        $this->dealWithDeleteQuestionEvent();
+        $this->dealWithQuestionVersionDelete();
         //移除关注者
         $this->dealWithRemoveFollowQuestion();
         //移除收藏者
@@ -134,33 +138,28 @@ class QuestionBehavior extends BaseBehavior
             )
         );
     }
-    
-    /**
-     * @return mixed
-     * @throws \yii\base\InvalidConfigException
-     */
-    private function dealWithAddQuestionEventHistory()
+
+    private function dealWithQuestionVersionCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        
-        /* @var $questionEventHistoryEntity QuestionEventHistoryEntity */
-        $questionEventHistoryEntity = Yii::createObject(
+
+        $model = new QuestionVersionEntity;
+
+        $model->setAttributes(
             [
-                'class'       => QuestionEventHistoryEntity::className(),
                 'question_id' => $this->owner->id,
-                'created_by'  => $this->owner->created_by,
+                'subject'     => $this->owner->subject,
+                'content'     => $this->owner->content,
+                'tags'        => $this->owner->tags,
+                'change_type' => QuestionVersionEntity::QUESTION_CHANGE_TYPE_CREATE,
+                'season'      => $this->owner->update_reason,
+                'created_by'  => Yii::$app->user->id,
             ]
         );
-        
-        $event_content = $this->owner->subject;
-        if ($this->owner->content) {
-            $event_content = implode('<decollator></decollator>', [$this->owner->subject, $this->owner->content]);
+
+        if (!$model->save()) {
+            throw new ModelSaveErrorException($model);
         }
-        
-        $result = $questionEventHistoryEntity->addQuestion($event_content);
-        Yii::trace(sprintf('Add Question Event History: %s', var_export($result, true)), 'behavior');
-        
-        return $result;
     }
     
     /**
@@ -202,30 +201,73 @@ class QuestionBehavior extends BaseBehavior
         }
     }
     
-    private function dealWithQuestionUpdateEvent()
+    private function dealWithQuestionVersionUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        if ($this->dirtyAttributes) {
-            /* @var $questionEventHistoryEntity QuestionEventHistoryEntity */
-            $questionEventHistoryEntity = Yii::createObject(
+        $change_type = 0;
+
+        $dirtyAttributes = $this->dirtyAttributes;
+
+        if (array_key_exists('subject', $this->dirtyAttributes)) {
+            $change_type |= QuestionVersionEntity::QUESTION_CHANGE_TYPE_UPDATE_SUBJECT;
+        }
+
+        if (array_key_exists('content', $this->dirtyAttributes)) {
+            $change_type |= QuestionVersionEntity::QUESTION_CHANGE_TYPE_UPDATE_CONTENT;
+        }
+
+        if (array_key_exists('tags', $this->dirtyAttributes)) {
+            $new_tags = explode(',', $this->owner->tags);
+            $old_tags = explode(',', $this->oldAttributes['tags']);
+
+
+            $add_tags = array_diff($new_tags, $old_tags);
+            if ($add_tags) {
+                $change_type |= QuestionVersionEntity::QUESTION_CHANGE_TYPE_ADD_TAGS;
+            }
+
+            $remove_tags = array_diff($old_tags, $new_tags);
+            if ($remove_tags) {
+                $change_type |= QuestionVersionEntity::QUESTION_CHANGE_TYPE_REMOVE_TAGS;
+            }
+
+        }
+
+        if ($change_type) {
+            $model = new QuestionVersionEntity;
+
+            $model->setAttributes(
                 [
-                    'class'       => QuestionEventHistoryEntity::className(),
                     'question_id' => $this->owner->id,
-                    'created_by'  => $this->owner->created_by,
+                    'subject'     => $this->checkChangeType(
+                        $change_type,
+                        QuestionVersionEntity::QUESTION_CHANGE_TYPE_UPDATE_SUBJECT
+                    ) ? $this->owner->subject : '',
+                    'content'     => $this->checkChangeType(
+                        $change_type,
+                        QuestionVersionEntity::QUESTION_CHANGE_TYPE_UPDATE_CONTENT
+                    ) ? $this->owner->content : '',
+                    'tags'        => ($this->checkChangeType(
+                            $change_type,
+                            QuestionVersionEntity::QUESTION_CHANGE_TYPE_ADD_TAGS
+                        ) ||
+                        $this->checkChangeType($change_type, QuestionVersionEntity::QUESTION_CHANGE_TYPE_REMOVE_TAGS)) ?
+                        $this->owner->tags : '',
+                    'change_type' => $change_type,
+                    'reason'      => $this->owner->update_reason,
+                    'created_by'  => Yii::$app->user->id,
                 ]
             );
-            
-            if (array_key_exists('subject', $this->dirtyAttributes)) {
-                $result = $questionEventHistoryEntity->modifyQuestionSubject($this->dirtyAttributes['subject']);
-                Yii::trace(sprintf('Modify　Question　Subject Result: %s', var_export($result, true)), 'behavior');
-            }
-            
-            if (array_key_exists('content', $this->dirtyAttributes)) {
-                $result = $questionEventHistoryEntity->modifyQuestionContent($this->dirtyAttributes['content']);
-                Yii::trace(sprintf('Modify　Question　Content Result: %s', var_export($result, true)), 'behavior');
+            if (!$model->save()) {
+                throw new ModelSaveErrorException($model);
             }
         }
+    }
+
+    private function checkChangeType($change_type_code, $change_type)
+    {
+        return ($change_type_code & $change_type) == $change_type;
     }
     
     /**
@@ -253,25 +295,12 @@ class QuestionBehavior extends BaseBehavior
             $add_tags = $new_tags;
         }
 
-        //处理问题事件
-        /* @var $questionEventHistoryEntity QuestionEventHistoryEntity */
-        $questionEventHistoryEntity = Yii::createObject(
-            [
-                'class'       => QuestionEventHistoryEntity::className(),
-                'question_id' => $this->owner->id,
-                'created_by'  => $this->owner->created_by,
-            ]
-        );
-        
-        
         if ($add_tags) {
             $tag_relation = TagService::batchAddTags($add_tags);
             if ($tag_relation) {
                 $tag_ids = array_values($tag_relation);
                 QuestionService::addQuestionTag($this->owner->created_by, $this->owner->id, $tag_ids);
             }
-            
-            $questionEventHistoryEntity->addTag($add_tags);
         }
         
         if ($remove_tags) {
@@ -281,8 +310,6 @@ class QuestionBehavior extends BaseBehavior
             if ($tag_ids) {
                 QuestionService::removeQuestionTag($this->owner->id, $tag_ids);
             }
-            
-            $questionEventHistoryEntity->removeTag($remove_tags);
         }
     }
     
@@ -425,11 +452,11 @@ class QuestionBehavior extends BaseBehavior
     /**
      * 删除事件记录
      */
-    private function dealWithDeleteQuestionEvent()
+    private function dealWithQuestionVersionDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        QuestionEventHistoryEntity::deleteAll(
+        return QuestionVersionEntity::deleteAll(
             [
                 'question_id' => $this->owner->id,
             ]

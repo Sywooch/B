@@ -12,6 +12,7 @@ use common\behaviors\AnswerBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
+use common\helpers\ArrayHelper;
 use common\models\Answer;
 use Yii;
 use yii\db\ActiveRecord;
@@ -27,7 +28,8 @@ class AnswerEntity extends Answer
     const TYPE_ANSWER = 'answer';
     const TYPE_REFERENCED = 'referenced';
 
-    public $reason;
+
+    public $update_reason;
 
     public function behaviors()
     {
@@ -50,6 +52,24 @@ class AnswerEntity extends Answer
                 'class' => AnswerBehavior::className(),
             ],
         ];
+    }
+
+    public function scenarios()
+    {
+        return ArrayHelper::merge(
+            parent::scenarios(),
+            [
+                'common_edit' => ['update_reason'],
+            ]
+        );
+    }
+
+    public function rules()
+    {
+        $rules = parent::rules();
+        $rules[] = [['update_reason'], 'string', 'max' => 255, 'on' => 'common_edit'];
+
+        return $rules;
     }
 
 

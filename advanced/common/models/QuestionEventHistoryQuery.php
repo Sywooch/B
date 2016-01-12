@@ -3,8 +3,8 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[QuestionEventHistory]].
- *
+ * This is the ActiveQuery class for [[QuestionVersion]].
+
  * @see QuestionEventHistory
  */
 class QuestionEventHistoryQuery extends BaseActiveQuery
@@ -17,7 +17,7 @@ class QuestionEventHistoryQuery extends BaseActiveQuery
 
     /**
      * @inheritdoc
-     * @return QuestionEventHistory[]|array
+     * @return QuestionVersion[]|array
      */
     public function all($db = null)
     {
@@ -26,7 +26,7 @@ class QuestionEventHistoryQuery extends BaseActiveQuery
 
     /**
      * @inheritdoc
-     * @return QuestionEventHistory|array|null
+     * @return QuestionVersion|array|null
      */
     public function one($db = null)
     {

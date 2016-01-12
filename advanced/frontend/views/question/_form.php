@@ -71,12 +71,28 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'content')->label(false)->widget(UEditor::className()); ?>
 
+    <?php if ($model->scenario == 'common_edit'): ?>
+        <div class="form-group">
+            <?= $form->field($model, 'update_reason')->textInput(
+                [
+                    'placeholder'  => '请描述您要修改的原因',
+                    'autocomplete' => 'off',
+                    'required'     => 'required',
+                ]
+            )->label('修改原因') ?>
+        </div>
+    <?php endif; ?>
 
     <div class="form-group">
         <div class="checkbox pull-left">
-            <?= $form->field($model, 'is_anonymous')->checkbox(
-                ['value' => QuestionEntity::STATUS_ANONYMOUS]
-            ) ?>
+            <?php if ($model->scenario != 'common_edit'): ?>
+                <?= $form->field($model, 'is_anonymous')->checkbox(
+                    [
+                        'value'   => QuestionEntity::STATUS_ANONYMOUS,
+                        'uncheck' => QuestionEntity::STATUS_UNANONYMOUS,
+                    ]
+                ) ?>
+            <?php endif; ?>
         </div>
         <div class="pull-right">
             <?= Html::submitButton($model->isNewRecord ? '发布问题' : '更新问题', ['class' => 'btn btn-primary btn-lg']) ?><br>
