@@ -306,7 +306,7 @@ class Connection extends Component
     /**
      * 批量添加
      * @param $cache_key
-     * @param $data 数据项必须保存格式为：[['score1','member1']['score2','member2']]，注意score与member的顺序
+     * @param $data data 数据项必须保存格式为：[['score1','member1']['score2','member2']]，注意score与member的顺序
      * @return bool|mixed
      */
     public function batchZAdd($cache_key, $data)

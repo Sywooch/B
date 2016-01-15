@@ -16,5 +16,5 @@ class UserAssociationEvent extends Event
 
     public $type;
     public $id;
-    public $content;
+    public $data;
 }

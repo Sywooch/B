@@ -9,17 +9,15 @@
 namespace common\services;
 
 use common\components\Error;
-use common\components\user\UserGrade;
 use common\config\RedisKey;
+use common\entities\UserEventEntity;
 use common\entities\UserEventLogEntity;
-use common\entities\UserScoreRuleEntity;
-use common\exceptions\CreditRuleDoesNotDefineException;
 use common\exceptions\NotFoundModelException;
 use common\helpers\AvatarHelper;
-use common\models\CacheUserScoreRuleModel;
+use common\models\CacheTagModel;
+use common\models\CacheUserEventModel;
 use common\models\CacheUserModel;
 use common\models\UserScoreLog;
-use common\models\UserScoreRule;
 use common\modules\user\models\LoginForm;
 use Imagine\Exception\InvalidArgumentException;
 use common\entities\UserEntity;
@@ -365,9 +363,16 @@ class UserService extends BaseService
 
     public static function getUserBeGoodAtTags($user_id, $limit = 20)
     {
-        $tag_ids = FollowService::getTagIdsWhichUserIsGoodAt($user_id, $limit, 365);
+        $passive_tag_data = FollowService::getTagIdsWhichUserIsGoodAt($user_id, $limit, 365);
+        $passive_tag_ids = array_keys($passive_tag_data);
+        $tags = TagService::getTagListByTagIds($passive_tag_ids);
 
-        return TagService::getTagListByTagIds($tag_ids);
+        foreach ($tags as $tag) {
+            /* @var CacheTagModel $tag */
+            $tag->count_passive_follow = $passive_tag_data[$tag->id];
+        }
+
+        return $tags;
     }
 
     /**
@@ -375,7 +380,7 @@ class UserService extends BaseService
      * @param     $user_id
      * @param int $page_no
      * @param int $page_size
-     * @return array|bool
+     * @return array|CacheUserModel
      */
     public static function getUserFansList($user_id, $page_no = 1, $page_size = 50)
     {
@@ -384,7 +389,7 @@ class UserService extends BaseService
         if ($user_ids) {
             $user_list = UserService::getUserListByIds($user_ids);
         } else {
-            $user_list = false;
+            $user_list = [];
         }
 
         return $user_list;
@@ -522,12 +527,53 @@ class UserService extends BaseService
         return $result;
     }
 
-    public static function getUserEventLogList($user_id, $limit = 30)
+    public static function getUserEventLogList($user_id, $view_user_id, $limit = 30)
     {
         $query = UserEventLogEntity::find()->where(
             ['created_by' => $user_id]
-        )->orderBy('created_at DESC')->limit($limit)->all();
+        )->orderBy('created_at DESC')->limit($limit);
 
-        return $query;
+        //不是本人，只能查看公开事件
+        if ($user_id != $view_user_id) {
+            $query->andWhere(['public' => UserEventLogEntity::STATUS_PUBLIC]);
+        }
+
+        return $query->all();
+    }
+
+    /**
+     * @param array $user_event_ids
+     * @return array|CacheUserEventModel
+     */
+    public static function getUserEventByEventIds(array $user_event_ids)
+    {
+        if (empty($user_event_ids) || !is_array($user_event_ids)) {
+            return [];
+        }
+
+        $cache_user_model = new CacheUserEventModel();
+
+        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT_All];
+        $cache_data = Yii::$app->redis->get($cache_key);
+
+        if ($cache_data === false) {
+            $user_event_list = UserEventEntity::find()->where(['status' => UserEventLogEntity::STATUS_ENABLE])->all();
+
+            $cache_data = [];
+            foreach ($user_event_list as $user_event) {
+                $cache_data[$user_event['id']] = $cache_user_model->filter($user_event);
+            }
+
+            Yii::$app->redis->set($cache_key, $cache_data);
+        }
+
+        $result = [];
+        foreach ($cache_data as $event_id => $item) {
+            if (in_array($event_id, $user_event_ids)) {
+                $result[$event_id] = $cache_user_model->build($item);
+            }
+        }
+
+        return $result;
     }
 }

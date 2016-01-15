@@ -8,6 +8,7 @@
 
 namespace common\modules\user\controllers;
 
+use common\helpers\ArrayHelper;
 use common\helpers\TimeHelper;
 use common\services\QuestionService;
 use common\services\UserService;
@@ -48,22 +49,33 @@ class ProfileController extends BaseProfileController
         }
 
         //动态列表
-        $user_event_log = UserService::getUserEventLogList($user['id']);
+        $user_event_log_list = UserService::getUserEventLogList($user['id'], Yii::$app->user->id);
+
+        if ($user_event_log_list) {
+            $user_event_list = UserService::getUserEventByEventIds(
+                ArrayHelper::getColumn($user_event_log_list, 'user_event_id')
+            );
+        } else {
+            $user_event_list = [];
+        }
+
 
         $tag_list = UserService::getUserBeGoodAtTags($user->id);
+        $fans_list = UserService::getUserFansList($user->id, 1, 8);
 
 
-        //print_r($score_list);exit;
         return $this->render(
             'show',
             [
-                'user'           => $user,
-                'question_list'  => $question_list,
-                'total_currency' => $total_currency,
-                'total_credit'   => $total_credit,
-                'score_list'     => $score_list,
-                'user_event_log' => $user_event_log,
-                'tag_list' => $tag_list,
+                'user'                => $user,
+                'question_list'       => $question_list,
+                'total_currency'      => $total_currency,
+                'total_credit'        => $total_credit,
+                'score_list'          => $score_list,
+                'user_event_log_list' => $user_event_log_list,
+                'user_event_list'     => $user_event_list,
+                'tag_list'            => $tag_list,
+                'fans_list'           => $fans_list,
             ]
         );
     }

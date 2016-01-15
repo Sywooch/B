@@ -35,18 +35,18 @@ use kartik\tabs\TabsX;
             <?php
             $items = [
                 [
-                    'label'   => '<i class="glyphicon glyphicon-home"></i> 最新的',
+                    'label' => '<i class="glyphicon glyphicon-time"></i> 最新的',
                     'content' => $question_latest,
                     'active'  => true,
                     //'linkOptions' => ['data-url' => Url::to(['/site/fetch-tab?tab=1'])],
                 ],
                 [
-                    'label'       => '<i class="glyphicon glyphicon-user"></i> 热门的',
+                    'label' => '<i class="glyphicon glyphicon-fire"></i> 热门的',
                     'content'     => '$content2',
                     'linkOptions' => ['data-url' => Url::to(['/default/fetch-hottest'])],
                 ],
                 [
-                    'label'       => '<i class="glyphicon glyphicon-user"></i> 未回答',
+                    'label' => '<i class="glyphicon glyphicon-magnet"></i> 未回答',
                     'content'     => '$content2',
                     'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
                 ],

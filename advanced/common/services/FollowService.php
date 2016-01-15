@@ -8,7 +8,6 @@
 
 namespace common\services;
 
-use common\components\Counter;
 use common\components\Error;
 use common\config\RedisKey;
 use common\entities\FollowQuestionEntity;
@@ -678,7 +677,7 @@ class FollowService extends BaseService
 
     public static function checkUseIsFollowedUser($follow_user_id, $user_id)
     {
-        if (Yii::$app->user->isGuest) {
+        if (Yii::$app->user->isGuest || $follow_user_id == $user_id) {
             return false;
         }
 
@@ -936,11 +935,11 @@ class FollowService extends BaseService
     {
         $user = UserService::getUserById($user_id);
 
-        if ($user['count_fans'] <= MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
+        if ($user['count_fans'] <= self::MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
             //使用缓存
             $cache_key = [RedisKey::REDIS_KEY_USER_FANS_LIST, $user_id];
 
-            self::ensureUserFansHasCached();
+            self::ensureUserFansHasCached($cache_key, $user_id);
 
             $user_ids = Yii::$app->redis->batchZRevGet($cache_key, $page_no, $page_size);
         } else {

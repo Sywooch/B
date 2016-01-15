@@ -10,6 +10,7 @@ namespace common\entities;
 
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
+use common\behaviors\UserEventLogBehavior;
 use common\models\UserEventLog;
 use yii\db\ActiveRecord;
 
@@ -21,20 +22,29 @@ class UserEventLogEntity extends UserEventLog
     const ASSOCIATE_TYPE_USER = 'user';
     const ASSOCIATE_TYPE_TAG = 'tag';
 
+    const STATUS_PUBLIC = 'yes';
+    const STATUS_PRIVATE = 'no';
+
+    const STATUS_ENABLE = 'enable';
+    const STATUS_DISABLE = 'disable';
+
     public function behaviors()
     {
         return [
-            'operator'  => [
+            'operator'       => [
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
                 ],
             ],
-            'timestamp' => [
+            'timestamp'      => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
                 ],
+            ],
+            'user_event_log' => [
+                'class' => UserEventLogBehavior::className(),
             ],
         ];
     }

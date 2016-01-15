@@ -525,6 +525,18 @@ p {
     background-color: #F6F6F6
 }
 
+.hover-show-obj {
+    visibility: hidden;
+    -moz-transition-delay: .4s;
+    -o-transition-delay: .4s;
+    -webkit-transition-delay: .4s;
+    transition-delay: .4s
+}
+
+.hover-show:hover .hover-show-obj {
+    visibility: visible
+}
+
 /**************************/
 
 .bs-callout {
@@ -1238,6 +1250,76 @@ body.modal-open .topframe {
     overflow: hidden
 }
 
+.bookmark-rank, .qa-rank {
+    margin-right: 5px;
+    font-size: 16px;
+    color: #666
+}
+
+.bookmark-rank small, .qa-rank small {
+    display: block;
+    font-size: 12px
+}
+
+.bookmark-rank .answers, .bookmark-rank .views, .bookmark-rank .votes, .qa-rank .answers, .qa-rank .views, .qa-rank .votes {
+    display: inline-block;
+    padding-top: 3px;
+    width: 40px;
+    height: 40px;
+    -moz-border-radius: 1px;
+    -webkit-border-radius: 1px;
+    border-radius: 1px
+}
+
+.bookmark-rank .answers, .qa-rank .answers {
+    background-color: #AD3A37;
+    color: #fff
+}
+
+.bookmark-rank .answered, .qa-rank .answered {
+    background-color: #009a61;
+    color: #fff
+}
+
+.bookmark-rank .solved, .qa-rank .solved {
+    background-color: #808B87
+}
+
+.bookmark-rank .views, .qa-rank .views {
+    width: 50px;
+    color: #999
+}
+
+.bookmark-rank .plus, .qa-rank .plus {
+    color: #009a61
+}
+
+.bookmark-rank .minus, .qa-rank .minus {
+    color: #AD3A37
+}
+
+.bookmark-rank {
+    margin-right: 10px
+}
+
+.bookmark-rank .favs, .bookmark-rank .followers {
+    display: inline-block;
+    padding-top: 3px;
+    width: 40px;
+    height: 40px;
+    -moz-border-radius: 1px;
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
+    background: #F0F5F3;
+    color: #017E66
+}
+
+.bookmark-rank .followers {
+    background: #5cb85c;
+    color: #fff
+}
+
+
 .qa-rank, .bookmark-rank {
     float: left;
     margin-right: 5px;
@@ -1442,6 +1524,211 @@ body.modal-open .topframe {
 .nav-justified > .dropdown .dropdown-menu {
     top: auto;
     left: auto
+}
+
+.global-nav {
+    position: relative;
+    background: #222E2A
+}
+
+.global-nav .logo {
+    float: left;
+    margin: 0;
+    display: inline-block
+}
+
+.global-nav .logo a {
+    text-decoration: none;
+    float: left
+}
+
+.global-nav .logo a.sf {
+    display: block;
+    height: 54px;
+    width: 161px;
+    background: url(../img/logo-w.svg) left center no-repeat;
+    -moz-background-size: 161px auto;
+    -o-background-size: 161px auto;
+    -webkit-background-size: 161px auto;
+    background-size: 161px auto;
+    white-space: nowrap;
+    overflow: hidden
+}
+
+.global-nav .logo a.logo-sub-text {
+    font-size: 20px;
+    color: #B3D3C7;
+    line-height: 52px;
+    padding-left: 10px
+}
+
+.global-nav .nav {
+    height: 54px;
+    padding: 0 15px
+}
+
+.global-nav .menu {
+    margin: 12px 0 0 10px
+}
+
+.global-nav .opts {
+    margin: 12px 0 0
+}
+
+.global-nav .opts .user .user-avatar {
+    margin-left: 10px;
+    width: 30px;
+    vertical-align: bottom;
+    background-size: contain
+}
+
+.global-nav .menu__item, .global-nav .opts__item {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    vertical-align: middle;
+    line-height: 30px;
+    color: #A4BFB4
+}
+
+.global-nav .menu__item .avatar, .global-nav .opts__item .avatar {
+    vertical-align: text-top;
+    height: 20px;
+    border-radius: 2px
+}
+
+.global-nav .menu__item > a, .global-nav .opts__item > a {
+    display: inline-block;
+    padding: 0 9px;
+    height: 30px;
+    color: #A4BFB4;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px
+}
+
+.global-nav .menu__item > a:link, .global-nav .opts__item > a:link {
+    background: 0 0
+}
+
+.global-nav .menu__item > a:active, .global-nav .menu__item > a:focus, .global-nav .menu__item > a:hover, .global-nav .opts__item > a:active, .global-nav .opts__item > a:focus, .global-nav .opts__item > a:hover {
+    background-color: #3F4F49
+}
+
+.global-nav .menu__item > a.em, .global-nav .opts__item > a.em {
+    background-color: #009a61;
+    color: #fff
+}
+
+.global-nav ul ul.dropdown-menu {
+    min-width: 120px
+}
+
+.global-nav ul ul.dropdown-menu a {
+    padding: 3px 15px
+}
+
+.global-nav li a {
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none
+}
+
+.global-nav .opts .caret {
+    margin: -4px 0 0 5px
+}
+
+.global-nav .opts .dropdown-menu a {
+    font-weight: 400
+}
+
+.global-nav .count-num, .global-nav .has-unread__count {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0 4px;
+    background-color: #ED1C24;
+    max-width: 28px;
+    min-width: 16px;
+    height: 14px;
+    line-height: 14px;
+    font-size: 12px;
+    font-weight: 400;
+    text-align: center;
+    color: #fff;
+    border-radius: 14px
+}
+
+.global-nav .count-num, .global-nav .has-unread .count-num, .global-nav .has-unread .has-unread__count {
+    display: block
+}
+
+.global-nav .count, .global-nav .has-unread, .header-search {
+    position: relative
+}
+
+.global-nav .has-unread .glyphicon-envelope {
+    line-height: 30px
+}
+
+.global-nav .message, .global-nav .search {
+    width: 36px;
+    height: 30px
+}
+
+.global-nav .search .dropdown-menu {
+    padding: 15px
+}
+
+.global-nav .search .dropdown-menu input {
+    width: 300px
+}
+
+.header-search {
+    margin: 10px 0 0 20px;
+    width: 180px
+}
+
+.header-search .btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #7D938A
+}
+
+.header-search .form-control {
+    padding-left: 35px;
+    border-color: transparent;
+    height: 34px;
+    background: #3F4F49;
+    color: #fff
+}
+
+.header-search .form-control:focus {
+    background: #52605B
+}
+
+.header-search .form-control, .header-search .form-control:focus {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none
+}
+
+.header-search input:-moz-placeholder {
+    color: #859E94
+}
+
+.header-search input::-moz-placeholder {
+    color: #859E94
+}
+
+.header-search input:-ms-input-placeholder {
+    color: #859E94
+}
+
+.header-search input::-webkit-input-placeholder {
+    color: #859E94
 }
 
 .widget-welcome {
@@ -2334,3 +2621,36 @@ input[type="date"].input-lg, .form-horizontal .form-group-lg input[type="date"].
 }
 
 /*bootstrap-notify自定义样式结束*/
+
+/*用户样式开始*/
+
+.widget-messages {
+    margin-bottom: 15px
+}
+
+.widget-messages__item {
+    display: block;
+    color: #666;
+    margin-left: -10px;
+    padding: 6px 10px;
+    width: 100%;
+    text-decoration: none
+}
+
+.widget-messages__item .badge {
+    margin-left: 5px;
+    padding: 2px 6px;
+    font-weight: 400
+}
+
+.widget-messages__item.active, .widget-messages__item:hover {
+    text-decoration: none;
+    color: #008E59;
+    background-color: #F6F6F6
+}
+
+.widget-messages__item.active .badge, .widget-messages__item:hover .badge {
+    background-color: #008E59
+}
+
+/*用户样式结束*/

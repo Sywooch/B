@@ -12,8 +12,6 @@ namespace common\behaviors;
 use common\components\Counter;
 use common\components\Notifier;
 use common\components\user\UserAssociationEvent;
-use common\entities\AnswerEntity;
-use common\entities\NotificationEntity;
 use common\entities\UserEventLogEntity;
 use common\helpers\AtHelper;
 use common\services\AnswerService;
@@ -39,7 +37,7 @@ class AnswerCommentBehavior extends BaseBehavior
         ];
     }
     
-    public function eventAnswerCommentCreate($event)
+    public function eventAnswerCommentCreate()
     {
         //通知
         $this->dealWithNotification();
@@ -52,9 +50,12 @@ class AnswerCommentBehavior extends BaseBehavior
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER_COMMENT,
-                    'id'      => $this->owner->id,
-                    'content' => $this->owner->content,
+                    'type' => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER_COMMENT,
+                    'id'   => $this->owner->id,
+                    'data' => [
+                        'question_id' => $this->owner->getAnswer()->question_id,
+                        'answer_id'   => $this->owner->answer_id,
+                    ],
                 ]
             )
         );
@@ -74,7 +75,10 @@ class AnswerCommentBehavior extends BaseBehavior
                 [
                     'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER_COMMENT,
                     'id'      => $this->owner->id,
-                    'content' => $this->owner->content,
+                    'data' => [
+                        'question_id' => $this->owner->getAnswer()->question_id,
+                        'answer_id'   => $this->owner->answer_id,
+                    ],
                 ]
             )
         );

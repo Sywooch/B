@@ -18,6 +18,7 @@ class CacheTagModel extends BaseCacheModel
     public $icon = '';
     public $description = '';
     public $updated_at;
-    public $count_follow = 0;
+    public $count_follow = 0; //主动关注
+    public $count_passive_follow = 0;//被动关注，即回答次数
     public $count_use = 0;
 }

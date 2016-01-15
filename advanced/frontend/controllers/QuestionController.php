@@ -6,16 +6,12 @@ use common\components\Counter;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerEntity;
-use common\entities\FavoriteEntity;
-use common\entities\FollowUserEntity;
 use common\entities\QuestionEntity;
 use common\entities\QuestionInviteEntity;
 use common\entities\QuestionVersionEntity;
-use common\entities\UserEntity;
 use common\exceptions\NotFoundModelException;
 use common\exceptions\ParamsInvalidException;
 use common\exceptions\PermissionDeniedException;
-use common\helpers\ArrayHelper;
 use common\helpers\ServerHelper;
 use common\services\AnswerService;
 use common\services\FavoriteService;
@@ -24,7 +20,6 @@ use common\services\QuestionService;
 use common\services\UserService;
 use common\services\VoteService;
 use Yii;
-use common\models\Question;
 use common\models\QuestionSearch;
 use yii\base\Exception;
 use yii\data\Pagination;
@@ -71,7 +66,7 @@ class QuestionController extends BaseController
             $result = FollowService::addFollowQuestion($question_id, Yii::$app->user->id);
         }
 
-        //操作成功，才能反转是否已收藏
+        //操作成功，才能反转是否已关注
         if ($result) {
             $is_followed = !$is_followed;
         }
@@ -511,6 +506,7 @@ class QuestionController extends BaseController
                 $result = QuestionInviteEntity::inviteToAnswerByEmail($question_id, $be_invited_user);
                 break;
             default:
+                $result = false;
                 throw new Exception(sprintf('暂未支持 %s 通知', $method));
         }
         

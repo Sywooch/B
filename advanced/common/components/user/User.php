@@ -29,6 +29,7 @@ use common\services\UserService;
 use yii\base\Event;
 use yii\helpers\Inflector;
 use Yii;
+use yii\helpers\Json;
 
 class User extends \yii\web\User
 {
@@ -100,7 +101,7 @@ class User extends \yii\web\User
      */
     private function getUserEventByEventName($event_name)
     {
-        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT_LIST, $event_name];
+        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT, $event_name];
         $cache_data = Yii::$app->redis->hGetAll($cache_key);
 
         $cacheUserEventModel = new CacheUserEventModel();
@@ -412,7 +413,7 @@ class User extends \yii\web\User
             $model->associate_id = $user_association_event->id;
         }
 
-        $model->associate_content = '';// $user_association_event->content;
+        $model->associate_data = $user_association_event->data;
 
         if ($model->save()) {
             return $model->id;

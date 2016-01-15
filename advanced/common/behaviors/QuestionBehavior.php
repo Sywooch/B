@@ -88,7 +88,9 @@ class QuestionBehavior extends BaseBehavior
                 [
                     'id'      => $this->owner->id,
                     'type'    => UserEventLogEntity::ASSOCIATE_TYPE_QUESTION,
-                    'content' => '',
+                    'data' => [
+                        'question_id' => $this->owner->id,
+                    ],
                 ]
             )
         );
@@ -133,7 +135,9 @@ class QuestionBehavior extends BaseBehavior
                 [
                     'id'      => $this->owner->id,
                     'type'    => UserEventLogEntity::ASSOCIATE_TYPE_QUESTION,
-                    'content' => '',
+                    'data' => [
+                        'question_id' => $this->owner->id,
+                    ],
                 ]
             )
         );

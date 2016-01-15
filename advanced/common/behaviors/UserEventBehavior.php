@@ -35,7 +35,7 @@ class UserEventBehavior extends BaseBehavior
     public function eventUserEventCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT_LIST, $this->owner->event];
+        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT, $this->owner->event];
         $cache_data = (new CacheUserEventModel())->filter($this->owner->getAttributes());
         Yii::$app->redis->hMset($cache_key, $cache_data);
     }
@@ -43,7 +43,7 @@ class UserEventBehavior extends BaseBehavior
     public function eventUserEventUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT_LIST, $this->owner->event];
+        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT, $this->owner->event];
 
         if ($this->owner->status == UserEventEntity::STATUS_ENABLE) {
             $cache_data = (new CacheUserEventModel())->filter($this->owner->getAttributes());
@@ -56,7 +56,7 @@ class UserEventBehavior extends BaseBehavior
     public function eventUserEventDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT_LIST, $this->owner->event];
+        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT, $this->owner->event];
         Yii::$app->redis->hDel($cache_key);
     }
 }

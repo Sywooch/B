@@ -1068,29 +1068,33 @@ class TestController extends BaseController
         ];
 
         //print_r(array_keys($data));
-
+        $domain_group = [];
         $domains = array_keys($data);
 
-        $domain_group = [];
+        $i = 0;
+        $index = 0;
         do {
-            $first = array_shift($domains);
-
+            $first = $domains[$index];
 
             foreach ($domains as $domain) {
                 //$domain_group[] = $first . $domain;
-                //echo $first . $domain, PHP_EOL;
+                //echo $first . $domain, '<br />';
 
-                if (strlen($first) <= 3 && strlen($domain) <= 3) {
-                    echo $first, $first, PHP_EOL;
-                    echo $first, $first, $first, PHP_EOL;
-                    echo $first, $domain, $first, PHP_EOL;
-                    echo $first, $first, $domain, PHP_EOL;
+                if ($first != $domain && strlen($first) == 2 && strlen($domain) == 2) {
+                    $domain_group[] = $first . $first . $first;
+                    $domain_group[] = $first . $first . $domain;
+                    $domain_group[] = $first . $domain . $domain;
+                    $domain_group[] = $first . $domain . $first;
+                    //$i++;
                 }
             }
+            $index++;
+        } while ($index < count($domains));
 
-        } while (count($domains) > 1);
+        $result = file_put_contents('domain.txt', implode("\r\n", array_unique($domain_group)));
 
-        //print_r($domain_group);
+        print_r($result);
+
     }
 
     public function actionAndOr()

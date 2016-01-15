@@ -149,10 +149,11 @@ AppAsset::register($this);
         ];
 
 
-        /*$menuItems[] = [
-            'label'   => '<span class="sr-only">消息</span><span id="messageCount" class="glyphicon glyphicon-envelope"></span>',
+        $menuItems[] = [
+            'label'   => '<span class="sr-only">消息</span><span id="messageCount" class="glyphicon glyphicon-envelope"></span><span class="has-unread__count">1</span>',
             'url'     => false,
-        ];*/
+            'visible' => true,
+        ];
 
         // 个人中心
         $menuItems[] = [
@@ -196,6 +197,7 @@ AppAsset::register($this);
         [
             'options' => ['class' => 'navbar-nav navbar-right'],
             'items'   => $menuItems,
+            'encodeLabels' => false,
         ]
     );
     NavBar::end();

@@ -50,11 +50,11 @@ class AnswerCommentEntity extends AnswerComment
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return AnswerEntity
      */
     public function getAnswer()
     {
-        return $this->hasOne(AnswerEntity::className(), ['id' => 'answer_id']);
+        return AnswerEntity::find()->where(['id' => $this->answer_id])->one();
     }
 
     /**

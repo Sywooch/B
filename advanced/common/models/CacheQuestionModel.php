@@ -29,6 +29,7 @@ class CacheQuestionModel extends BaseCacheModel
     public $is_anonymous = 'no';
     public $is_lock = 'no';
     public $status;
+    public $answer_id; //用于后期附带上该用户的回答
 }
 
 

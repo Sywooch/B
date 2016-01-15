@@ -96,7 +96,10 @@ class AnswerBehavior extends BaseBehavior
                 [
                     'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER,
                     'id'      => $this->owner->id,
-                    'content' => $this->owner->content,
+                    'data' => [
+                        'question_id' => $this->owner->question_id,
+                        'answer_id'   => $this->owner->id,
+                    ],
                 ]
             )
         );
@@ -134,7 +137,10 @@ class AnswerBehavior extends BaseBehavior
                 [
                     'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER,
                     'id'      => $this->owner->id,
-                    'content' => $this->owner->content,
+                    'data' => [
+                        'question_id' => $this->owner->question_id,
+                        'answer_id'   => $this->owner->id,
+                    ],
                 ]
             )
         );
@@ -250,7 +256,7 @@ class AnswerBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         #check whether has exist version
-        $result = AnswerService::addNewVersion($this->owner->id, $this->owner->content, $this->owner->reason);
+        $result = AnswerService::addNewVersion($this->owner->id, $this->owner->content, $this->owner->update_reason);
         
         if ($result && $this->owner->created_by != Yii::$app->user->id) {
             #count_common_edit
