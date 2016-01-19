@@ -53,7 +53,6 @@ class QuestionEntity extends Question
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
-                    //ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_by',
                 ],
             ],
             'timestamp'         => [
@@ -74,7 +73,7 @@ class QuestionEntity extends Question
         return ArrayHelper::merge(
             parent::scenarios(),
             [
-                'common_edit' => ['update_reason'],
+                'common_edit' => ['update_reason', 'subject', 'tags', 'content'],
             ]
         );
     }
@@ -86,9 +85,6 @@ class QuestionEntity extends Question
     public function rules()
     {
         $rules = parent::rules();
-        // add some rules
-        //$rules['fieldRequired'] = ['field', 'required'];
-        //$rules['usernameLength']=['username', 'string', 'min' => 2, 'max' => 255];
 
         $rules[] = [['tags'], 'checkTagsAttribute', 'skipOnEmpty' => true];
         $rules[] = [['subject'], 'checkSubjectAttribute'];
@@ -168,15 +164,6 @@ class QuestionEntity extends Question
     {
         return self::MIN_TAGS_NUMBERS;
     }
-
-    /*public function init()
-    {
-        parent::init();
-
-        #注册事件，修改问题，当有回答用户，触发方法 $this->trigger(self::EVENT_QUESTION_MODIFY, new EventXXX($user))
-        //Yii::trace('On Event ' . self::EVENT_QUESTION_MODIFY, 'event');
-        //$this->on(self::EVENT_QUESTION_MODIFY, [NotificationService::className(), 'questionModify']);
-    }*/
 
     /**
      * @return \yii\db\ActiveQuery

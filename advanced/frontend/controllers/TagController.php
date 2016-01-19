@@ -171,27 +171,6 @@ class TagController extends BaseController
     }
 
     /**
-     * Creates a new Tag model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    /*public function actionCreate()
-    {
-        $model = new Tag();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render(
-                'create',
-                [
-                    'model' => $model,
-                ]
-            );
-        }
-    }*/
-
-    /**
      * Updates an existing Tag model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param string $id
@@ -216,19 +195,6 @@ class TagController extends BaseController
     }
 
     /**
-     * Deletes an existing Tag model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
-     * @return mixed
-     */
-    /*public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }*/
-
-    /**
      * Finds the Tag model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id
@@ -237,7 +203,7 @@ class TagController extends BaseController
      */
     protected function findModel($id)
     {
-        if (($model = Tag::findOne($id)) !== null) {
+        if (($model = TagEntity::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

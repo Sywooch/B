@@ -12,11 +12,10 @@ $tags = TagService::getHotTag(20, 100);
 //关注标签
 if (!Yii::$app->user->isGuest) {
     $user = UserService::getUserById(Yii::$app->user->id);
-    $follow_tag_ids = FollowService::getUserFollowTagIds(Yii::$app->user->id);
-    $follow_tags = TagService::getTagListByTagIds($follow_tag_ids);
+    $follow_tag_list = FollowService::getUserFollowTagList(Yii::$app->user->id);
     $follow_tag_count = $user['count_follow_tag'];
 } else {
-    $follow_tags = [];
+    $follow_tag_list = [];
     $follow_tag_count = 0;
 }
 
@@ -33,11 +32,11 @@ $question_hottest = QuestionService::fetchHot(15, 0, ServerHelper::checkIsSpider
 
 
 <?php
-if ($follow_tags): ?>
+if ($follow_tag_list): ?>
     <div class="widget-box">
         <h2 class="h4 widget-box__title">关注 <?= Html::a($follow_tag_count, ['user']) ?> 个标签</h2>
         <ul class="taglist--inline multi">
-            <?php foreach ($follow_tags as $follow_tag) : ?>
+            <?php foreach ($follow_tag_list as $follow_tag) : ?>
                 <li class="tagPopup">
                     <?= Html::a(
                         $follow_tag['name'],

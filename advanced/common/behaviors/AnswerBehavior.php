@@ -21,6 +21,7 @@ use common\entities\QuestionEntity;
 use common\entities\UserEventLogEntity;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
+use common\models\AssociateModel;
 use common\models\CacheAnswerModel;
 use common\services\AnswerService;
 use common\services\FollowService;
@@ -94,11 +95,10 @@ class AnswerBehavior extends BaseBehavior
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER,
+                    'type'    => AssociateModel::TYPE_ANSWER,
                     'id'      => $this->owner->id,
                     'data' => [
                         'question_id' => $this->owner->question_id,
-                        'answer_id'   => $this->owner->id,
                     ],
                 ]
             )
@@ -110,14 +110,18 @@ class AnswerBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $this->dealWithNotification(NotificationService::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
-        #不是本人，或本人，但创建时间已超过 ? 天
+        /*#不是本人，或本人，但创建时间已超过 ? 天
         if (Yii::$app->user->id != $this->owner->created_by || $this->owner->created_at <= TimeHelper::getBeforeTime(
                 1
             )
         ) {
-            $this->dealWithNewAnswerVersion();
-        }
+
+        }*/
+        //版本记录
+        $this->dealWithNewAnswerVersion();
+        //更新问题最后更新时间
         $this->dealWithUpdateQuestionActiveTime();
+        //更新回答缓存
         $this->dealWithUpdateAnswerCache();
     }
     
@@ -135,11 +139,10 @@ class AnswerBehavior extends BaseBehavior
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER,
+                    'type'    => AssociateModel::TYPE_ANSWER,
                     'id'      => $this->owner->id,
                     'data' => [
                         'question_id' => $this->owner->question_id,
-                        'answer_id'   => $this->owner->id,
                     ],
                 ]
             )

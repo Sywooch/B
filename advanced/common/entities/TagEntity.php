@@ -45,7 +45,12 @@ class TagEntity extends Tag
     public function rules()
     {
         $rules = parent::rules();
-        $rules[] = [['update_reason'], 'string', 'max' => 255, 'on' => 'common_edit'];
+        $rules[] = [
+            ['update_reason'],
+            'string',
+            'max' => 255,
+            'on'  => 'common_edit',
+        ];
 
         return $rules;
     }
@@ -55,7 +60,7 @@ class TagEntity extends Tag
         return ArrayHelper::merge(
             parent::scenarios(),
             [
-                'common_edit' => ['update_reason'],
+                'common_edit' => ['update_reason', 'alias', 'icon', 'description', 'content', 'type'],
             ]
         );
     }

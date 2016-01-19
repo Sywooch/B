@@ -422,6 +422,12 @@ class AnswerService extends BaseService
     }
 
 
+    /**
+     * @param $user_id
+     * @param $page_no
+     * @param $page_size
+     * @return array|bool|CacheAnswerModel
+     */
     public static function getAnswerListByUserId($user_id, $page_no, $page_size)
     {
         $limit = $page_size;
@@ -445,17 +451,56 @@ class AnswerService extends BaseService
             $query->andWhere(['is_anonymous' => AnswerEntity::STATUS_UNANONYMOUS]);
         }
 
-        $answer_id = $query->column();
+        $answer_ids = $query->column();
 
-        if ($answer_id) {
-            $question_list = AnswerService::getAnswerListByAnswerId($answer_id);
+        if ($answer_ids) {
+            $answer_list = AnswerService::getAnswerListByAnswerId($answer_ids);
+        } else {
+            $answer_list = false;
+        }
+
+        return $answer_list;
+    }
+
+    /**
+     * @param $user_id
+     * @param $page_no
+     * @param $page_size
+     * @return array|bool|\common\models\CacheQuestionModel
+     */
+    public static function getAnsweredQuestionListByUserId($user_id, $page_no, $page_size)
+    {
+        $limit = $page_size;
+        $offset = max($page_no - 1, 0) * $page_size;
+
+        $query = AnswerEntity::find()->select(
+            [
+                'question_id',
+            ]
+        )->where(
+            [
+                'created_by' => $user_id,
+            ]
+        )->orderBy('updated_at DESC, created_at DESC')->limit($limit)->offset(
+            $offset
+        );
+
+        //do not show anonymous answer
+        $show_anonymous = UserService::checkUserSelf($user_id);
+        if (!$show_anonymous) {
+            $query->andWhere(['is_anonymous' => AnswerEntity::STATUS_UNANONYMOUS]);
+        }
+
+        $question_ids = $query->column();
+
+        if ($question_ids) {
+            $question_list = QuestionService::getQuestionListByQuestionIds($question_ids);
         } else {
             $question_list = false;
         }
 
         return $question_list;
     }
-
 
     // answer version
 

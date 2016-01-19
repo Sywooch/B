@@ -5,10 +5,10 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model common\models\Tag */
 
-$this->title = '完善标签: ' . ' ' . $model->name;
+$this->title = '完善标签 ';
 ?>
 <div class="container">
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h2><?= Html::encode($this->title) ?></h2>
 
     <?= $this->render(
         '_form',

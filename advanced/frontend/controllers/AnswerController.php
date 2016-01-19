@@ -132,19 +132,21 @@ class AnswerController extends BaseController
     {
         $question_data = QuestionService::getQuestionByQuestionId($question_id);
 
-        $answer_model = $this->findModel($id);
+        $model = $this->findModel($id);
 
-        if ($answer_model->created_by != Yii::$app->user->id) {
+        if ($model->created_by != Yii::$app->user->id) {
             throw new PermissionDeniedException();
         }
 
-        if ($answer_model->load(Yii::$app->request->post()) && $answer_model->save()) {
+        $model->setScenario('common_edit');
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['question/view', 'id' => $question_id, 'answer_id' => $id]);
         } else {
             return $this->render(
                 'update',
                 [
-                    'answer_model'  => $answer_model,
+                    'answer_model'  => $model,
                     'question_data' => $question_data,
                 ]
             );
@@ -236,7 +238,10 @@ class AnswerController extends BaseController
 
         foreach ($comments_data as &$comment) {
             if (!Yii::$app->user->isGuest) {
-                $comment['vote_status'] = VoteService::getUseAnswerCommentVoteStatus($comment['id'], Yii::$app->user->id);
+                $comment['vote_status'] = VoteService::getUseAnswerCommentVoteStatus(
+                    $comment['id'],
+                    Yii::$app->user->id
+                );
             } else {
                 $comment['vote_status'] = false;
             }
@@ -250,6 +255,7 @@ class AnswerController extends BaseController
                 'comment_item_html' => $this->renderAjax(
                     '_answer_comment_item',
                     [
+                        'question_id'             => $question_data['id'],
                         'answer_id'               => $id,
                         'answer_create_user_id'   => $answer_data['created_by'],
                         'question_create_user_id' => $question_data['created_by'],
@@ -323,7 +329,7 @@ class AnswerController extends BaseController
         );
     }
 
-    public function actionVersionRepository($id)
+    public function actionVersionRepository($id, $question_id)
     {
         $pages = new Pagination(
             [
@@ -337,11 +343,16 @@ class AnswerController extends BaseController
             ['answer_id' => $id]
         )->offset($pages->offset)->limit($pages->limit)->all();
 
+        $question = QuestionService::getQuestionByQuestionId($question_id);
+        $answer = AnswerService::getAnswerByAnswerId($id);
+
         return $this->render(
             'version_repository',
             [
-                'model' => $model,
-                'pages' => $pages,
+                'question' => $question,
+                'answer' => $answer,
+                'model'    => $model,
+                'pages'    => $pages,
             ]
         );
     }

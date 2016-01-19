@@ -19,6 +19,7 @@ use common\entities\TagRelationEntity;
 use common\entities\UserEventLogEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\helpers\TimeHelper;
+use common\models\AssociateModel;
 use common\models\xunsearch\QuestionSearch;
 use common\services\FavoriteService;
 use common\services\FollowService;
@@ -87,10 +88,8 @@ class QuestionBehavior extends BaseBehavior
             new UserAssociationEvent(
                 [
                     'id'      => $this->owner->id,
-                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_QUESTION,
-                    'data' => [
-                        'question_id' => $this->owner->id,
-                    ],
+                    'type'    => AssociateModel::TYPE_QUESTION,
+                    'data' => [],
                 ]
             )
         );
@@ -134,10 +133,8 @@ class QuestionBehavior extends BaseBehavior
             new UserAssociationEvent(
                 [
                     'id'      => $this->owner->id,
-                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_QUESTION,
-                    'data' => [
-                        'question_id' => $this->owner->id,
-                    ],
+                    'type'    => AssociateModel::TYPE_QUESTION,
+                    'data' => [],
                 ]
             )
         );

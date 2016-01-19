@@ -770,16 +770,16 @@
         },
         {
             "name": "bower-asset/highlightjs",
-            "version": "9.0.0",
+            "version": "9.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/components/highlightjs.git",
-                "reference": "fbbd6eea988fd759d950e15b8d16fef559eebca2"
+                "reference": "08edd75426b52b165cc2b8a569870df4794c36dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/components/highlightjs/zipball/fbbd6eea988fd759d950e15b8d16fef559eebca2",
-                "reference": "fbbd6eea988fd759d950e15b8d16fef559eebca2",
+                "url": "https://api.github.com/repos/components/highlightjs/zipball/08edd75426b52b165cc2b8a569870df4794c36dc",
+                "reference": "08edd75426b52b165cc2b8a569870df4794c36dc",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -1962,20 +1962,20 @@
         },
         {
             "name": "devgroup/yii2-tag-dependency-helper",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DevGroup-ru/yii2-tag-dependency-helper.git",
-                "reference": "5375a9001f95b0fdb4eb46f21881b9408396ddf0"
+                "reference": "c52149f3a718f57e5335697734fb1151aa0bf3c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DevGroup-ru/yii2-tag-dependency-helper/zipball/5375a9001f95b0fdb4eb46f21881b9408396ddf0",
-                "reference": "5375a9001f95b0fdb4eb46f21881b9408396ddf0",
+                "url": "https://api.github.com/repos/DevGroup-ru/yii2-tag-dependency-helper/zipball/c52149f3a718f57e5335697734fb1151aa0bf3c2",
+                "reference": "c52149f3a718f57e5335697734fb1151aa0bf3c2",
                 "shasum": ""
             },
             "require": {
-                "yiisoft/yii2": "~2.0.0"
+                "yiisoft/yii2": "~2.0.6"
             },
             "require-dev": {
                 "phpunit/dbunit": "~1.0",
@@ -2003,6 +2003,10 @@
                 {
                     "name": "Pavel Fedotov",
                     "email": "fps.06@mail.ru"
+                },
+                {
+                    "name": "Salikh Fakhrutdinov",
+                    "email": "me@free6k.ru"
                 }
             ],
             "description": "Helper for unifying cache tag names with invalidation support in yii2",
@@ -2010,7 +2014,7 @@
                 "cache",
                 "yii2"
             ],
-            "time": "2015-10-02 13:40:30"
+            "time": "2016-01-15 09:29:24"
         },
         {
             "name": "dmstr/yii2-adminlte-asset",

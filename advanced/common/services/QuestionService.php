@@ -282,6 +282,7 @@ class QuestionService extends BaseService
                     )->limit(
                         $limit
                     )->orderBy('created_at DESC')->asArray()->all();
+
                     Yii::$app->redis->set($cache_key, $cache_data);
                 }
 

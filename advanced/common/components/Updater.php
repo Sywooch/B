@@ -9,11 +9,13 @@
 namespace common\components;
 
 use common\config\RedisKey;
+use common\entities\AnswerCommentEntity;
 use common\entities\AnswerEntity;
 use common\entities\FavoriteCategoryEntity;
 use common\entities\QuestionEntity;
 use common\entities\UserProfileEntity;
 use common\services\AnswerService;
+use common\services\CommentService;
 use common\services\QuestionService;
 use common\services\UserService;
 use Yii;
@@ -155,6 +157,29 @@ class Updater extends BaseUpdater
         return $result;
     }
 
+    public static function setAnswerCommentAnonymous($comment_id)
+    {
+        $result = self::build()->sync(true)->table(AnswerCommentEntity::tableName())->set(
+            ['is_anonymous' => AnswerCommentEntity::STATUS_ANONYMOUS]
+        )->where(
+            ['id' => $comment_id]
+        )->execute();
+
+        //缓存处理
+
+        return $result;
+    }
+
+    public static function cancelAnswerCommentAnonymous($comment_id)
+    {
+        $result = self::build()->sync(true)->table(AnswerCommentEntity::tableName())->set(
+            ['is_anonymous' => AnswerCommentEntity::STATUS_UNANONYMOUS]
+        )->where(
+            ['id' => $comment_id]
+        )->execute();
+
+        return $result;
+    }
     ########## user ##########
     public static function adjustUserGrade($user_id, $new_grade_id)
     {

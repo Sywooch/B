@@ -53,8 +53,9 @@ use yii\widgets\LinkPager;
                 <?= Html::a(
                     '更新回答',
                     [
-                        'answer-version/index',
-                        'answer_id' => $item['id'],
+                        'answer/version-repository',
+                        'id' => $item['id'],
+                        'question_id' => $item['question_id'],
                     ],
                     ['rel' => 'nofollow',]
                 ); ?>
@@ -64,13 +65,12 @@ use yii\widgets\LinkPager;
             <?= $item['is_anonymous'] == AnswerEntity::STATUS_ANONYMOUS ? '[匿名回答]' : '' ?>
         </span>
 
-                <div class="answer fmt mt10 mb10">
+                <div class="answer fmt mt10">
                     <?= $item['content']; ?>
                 </div>
 
 
-                <div class="post-opt"
-                ">
+                <div class="post-opt"">
                 <ul class="list-inline mb0">
                     <li><?= Html::a(
                             '链接',
@@ -179,7 +179,9 @@ use yii\widgets\LinkPager;
                 </ul>
             </div>
 
-            <div class="widget-comments hidden" id="comment-area-<?= $item['id'] ?>"></div>
+            <div class="widget-comments<?php if(!$comment_item_html){echo ' hidden';}?>" id="comment-area-<?= $item['id'] ?>">
+                <?=$comment_item_html?>
+            </div>
             </div>
         </article>
     <?php else: ?>

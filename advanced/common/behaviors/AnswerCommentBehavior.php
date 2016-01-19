@@ -14,6 +14,7 @@ use common\components\Notifier;
 use common\components\user\UserAssociationEvent;
 use common\entities\UserEventLogEntity;
 use common\helpers\AtHelper;
+use common\models\AssociateModel;
 use common\services\AnswerService;
 use common\services\NotificationService;
 use common\services\UserService;
@@ -50,7 +51,7 @@ class AnswerCommentBehavior extends BaseBehavior
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'type' => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER_COMMENT,
+                    'type' => AssociateModel::TYPE_ANSWER_COMMENT,
                     'id'   => $this->owner->id,
                     'data' => [
                         'question_id' => $this->owner->getAnswer()->question_id,
@@ -73,7 +74,7 @@ class AnswerCommentBehavior extends BaseBehavior
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'type'    => UserEventLogEntity::ASSOCIATE_TYPE_ANSWER_COMMENT,
+                    'type'    => AssociateModel::TYPE_ANSWER_COMMENT,
                     'id'      => $this->owner->id,
                     'data' => [
                         'question_id' => $this->owner->getAnswer()->question_id,

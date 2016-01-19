@@ -25,6 +25,7 @@ use common\helpers\TimeHelper;
 use common\models\CacheUserScoreRuleModel;
 use common\models\CacheUserEventModel;
 use common\models\CacheUserGradeModel;
+use common\services\UserEventService;
 use common\services\UserService;
 use yii\base\Event;
 use yii\helpers\Inflector;
@@ -92,37 +93,6 @@ class User extends \yii\web\User
         } else {
             return [];
         }
-    }
-
-    /**
-     * 根据事件名称获取事件
-     * @param $event_name
-     * @return CacheUserEventModel
-     */
-    private function getUserEventByEventName($event_name)
-    {
-        $cache_key = [RedisKey::REDIS_KEY_USER_EVENT, $event_name];
-        $cache_data = Yii::$app->redis->hGetAll($cache_key);
-
-        $cacheUserEventModel = new CacheUserEventModel();
-
-        if (empty($cache_data)) {
-            $data = UserEventEntity::find()->where(
-                [
-                    'event'  => $event_name,
-                    'status' => UserEventEntity::STATUS_ENABLE,
-                ]
-            )->one();
-
-            if ($data) {
-                $cache_data = $cacheUserEventModel->filter($data);
-                Yii::$app->redis->hMset($cache_key, $cache_data);
-            } else {
-                $cache_data = false;
-            }
-        }
-
-        return $cacheUserEventModel->build($cache_data);
     }
 
     /**
@@ -195,15 +165,14 @@ class User extends \yii\web\User
             $event_name = Inflector::underscore($name);
 
             //检查事件是否存在
-            if ($user_event = $this->getUserEventByEventName($event_name)) {
+            if ($user_event = UserEventService::getUserEventByEventName($event_name)) {
                 //用户动态
                 $user_event_log_id = $this->dealWithUserEventLog($user_event, $associate_event);
                 if ($user_event_log_id) {
                     //用户积分
                     $this->dealWithUserScore($user_event_log_id, $user_event);
                 }
-
-            } else {
+            } elseif (YII_DEBUG) {
                 throw new UserEventDoesNotDefineException($event_name);
             }
         }
@@ -213,7 +182,7 @@ class User extends \yii\web\User
      * 处理用户积分变动
      * 一个动作可以有多个积分变动规则
      * @param                     $user_event_log_id 事件ID
-     * @param CacheUserEventModel $user_event        用户事件
+     * @param CacheUserEventModel $user_event 用户事件
      * @return bool
      * @throws ModelSaveErrorException
      */
@@ -237,7 +206,7 @@ class User extends \yii\web\User
 
     /**
      * @param                         $user_event_log_id 用户事件ID
-     * @param CacheUserScoreRuleModel $rule              积分规则
+     * @param CacheUserScoreRuleModel $rule 积分规则
      * @return bool
      * @throws ModelSaveErrorException
      */
@@ -389,7 +358,7 @@ class User extends \yii\web\User
 
     /**
      * 处理用户动态
-     * @param CacheUserEventModel  $user_event             用户事件
+     * @param CacheUserEventModel  $user_event 用户事件
      * @param UserAssociationEvent $user_association_event 关联事件：问题、回答、评论
      * @return bool
      * @throws ModelSaveErrorException
@@ -397,6 +366,11 @@ class User extends \yii\web\User
     private function dealWithUserEventLog(CacheUserEventModel $user_event, UserAssociationEvent $user_association_event)
     {
         Yii::trace('Process ' . __FUNCTION__, 'user_event');
+
+        //不需要记录到数据库中
+        if ($user_event->need_record == UserEventEntity::NO_NEED_RECORD) {
+            return true;
+        }
 
         $model = UserEventLogEntity::find()->where(
             [

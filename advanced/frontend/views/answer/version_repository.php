@@ -1,12 +1,14 @@
 <?php
 use common\entities\QuestionVersionEntity;
 use common\helpers\TemplateHelper;
+use common\models\CacheAnswerModel;
 use common\models\CacheQuestionModel;
 use yii\data\Pagination;
 use yii\widgets\Breadcrumbs;
 
 /* @var $this yii\web\View */
 /* @var $question CacheQuestionModel */
+/* @var $answer CacheAnswerModel */
 /* @var $pages Pagination */
 
 $this->title = $question->subject;
@@ -32,7 +34,8 @@ $this->beginBlock('top-header');
                 $question->subject,
                 [
                     '/question/view',
-                    'id' => $question->id,
+                    'id'        => $question->id,
+                    'answer_id' => $answer->id,
                 ]
             ) ?></h1>
     </div>
@@ -65,12 +68,7 @@ $this->endBlock();
                         </td>
                         <td><?= TemplateHelper::showHumanTime($item->created_at) ?></td>
                         <td><?= TemplateHelper::showUsername($item->created_by) ?></td>
-                        <td>
-                            <em class="text-muted">
-                                <?= $item->reason ? $item->reason :
-                                    $item->getChangeList($item->change_type) ?>
-                            </em>
-                        </td>
+                        <td><em class="text-muted"><?= $item->reason ?></em></td>
                         <td><a href="#r<?= $item->id ?>"
                                class="check-revision btn btn-xs btn-default collapsed"
                                data-toggle="collapse"
@@ -81,17 +79,12 @@ $this->endBlock();
                         style="height: 0px;">
                         <td colspan="5">
                             <div class="revision-content">
-                                <h1 class="title h3"><?= $item->subject ? $item->subject : $question->subject ?></h1>
+                                <h1 class="title h3"><?= $item->subject ?></h1>
 
-                                <div class="fmt"><?= $item->content ? $item->content : $question->content ?></div>
+                                <div class="fmt"><?= $item->content ?></div>
                                 <ul class="taglist--inline mb0">
-                                    <?= TemplateHelper::showTagLiLabelByName(
-                                        $item->tags ? $item->tags : $question->tags
-                                    ) ?>
+                                    <?= TemplateHelper::showTagLiLabelByName($item->tags) ?>
                                 </ul>
-                                <div class="widget-active--right__quote mt30">编辑原因：
-                                    <?= $item->getChangeList($item->change_type) ?>
-                                </div>
                             </div>
                         </td>
                     </tr>

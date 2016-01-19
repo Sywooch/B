@@ -172,9 +172,19 @@ class DefaultController extends BaseController
         );
     }
     
-    public function actionFavorite()
+    public function actionOwnerFavorite()
     {
-        
+        $active = 'owner';
+
+        return $this->render(
+            'favorite',
+            [
+                'active' => $active,
+                'data'   => '',
+            ]
+        );
     }
+
+
 
 }

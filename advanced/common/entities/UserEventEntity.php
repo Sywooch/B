@@ -16,6 +16,9 @@ class UserEventEntity extends UserEvent
     const STATUS_ENABLE = 'enable';
     const STATUS_DISABLE = 'disable';
 
+    const NEED_RECORD = 'yes';
+    const NO_NEED_RECORD = 'no';
+
     const PUBLIC_YES = 'yes';
     const PUBLIC_NO = 'no';
 

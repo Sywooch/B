@@ -10,11 +10,15 @@ namespace common\modules\user\controllers;
 
 use common\helpers\ArrayHelper;
 use common\helpers\TimeHelper;
+use common\services\AnswerService;
+use common\services\FollowService;
 use common\services\QuestionService;
+use common\services\TagService;
 use common\services\UserService;
 use dektrium\user\controllers\ProfileController as BaseProfileController;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\Json;
 
 class ProfileController extends BaseProfileController
 {
@@ -24,7 +28,7 @@ class ProfileController extends BaseProfileController
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
-                    ['allow' => true, 'actions' => ['index', 'show'], 'roles' => ['@']],
+                    ['allow' => true, 'roles' => ['@']],
                 ],
             ],
         ];
@@ -59,6 +63,7 @@ class ProfileController extends BaseProfileController
             $user_event_list = [];
         }
 
+        //print_r($user_event_list);exit;
 
         $tag_list = UserService::getUserBeGoodAtTags($user->id);
         $fans_list = UserService::getUserFansList($user->id, 1, 8);
@@ -78,5 +83,95 @@ class ProfileController extends BaseProfileController
                 'fans_list'           => $fans_list,
             ]
         );
+    }
+
+    public function actionOwnerQuestion($user_id)
+    {
+        $data = QuestionService::getQuestionListByUserId($user_id, 1, 20);
+
+        if ($data) {
+            $html = $this->renderPartial(
+                '_question',
+                [
+                    'data' => $data,
+                ]
+            );
+        } else {
+            $html = '';
+        }
+
+        return Json::encode($html);
+    }
+
+    public function actionFollowedQuestion($user_id)
+    {
+        $data = FollowService::getFollowQuestionListByUserId($user_id, 1, 20);
+
+        if ($data) {
+            $html = $this->renderPartial(
+                '_answer',
+                [
+                    'data' => $data,
+                ]
+            );
+        } else {
+            $html = '';
+        }
+
+        return Json::encode($html);
+    }
+
+    public function actionAnsweredQuestion($user_id)
+    {
+        $data = AnswerService::getAnswerListByUserId($user_id, 1, 20);
+
+        if ($data) {
+            $html = $this->renderPartial(
+                '_answer',
+                [
+                    'data' => $data,
+                ]
+            );
+        } else {
+            $html = '';
+        }
+
+        return Json::encode($html);
+    }
+
+    public function actionFollowedTag($user_id)
+    {
+        $data = FollowService::getUserFollowTagList($user_id, 1, 20);
+
+        if ($data) {
+            $html = $this->renderPartial(
+                '_tag',
+                [
+                    'data' => $data,
+                ]
+            );
+        } else {
+            $html = '';
+        }
+
+        return Json::encode($html);
+    }
+
+    public function actionFollowedUser($user_id)
+    {
+        $data = FollowService::getUserFriendsUserList($user_id, 1, 20);
+
+        if ($data) {
+            $html = $this->renderPartial(
+                '_user',
+                [
+                    'data' => $data,
+                ]
+            );
+        } else {
+            $html = '';
+        }
+
+        return Json::encode($html);
     }
 }
