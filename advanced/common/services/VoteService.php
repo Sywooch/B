@@ -13,6 +13,7 @@ use common\config\RedisKey;
 use common\entities\VoteEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
+use common\models\AssociateModel;
 use Yii;
 
 class VoteService extends BaseService
@@ -21,22 +22,22 @@ class VoteService extends BaseService
     
     public static function addQuestionVote($question_id, $user_id, $vote)
     {
-        return self::addVote(VoteEntity::TYPE_QUESTION, $question_id, $user_id, $vote);
+        return self::addVote(AssociateModel::TYPE_QUESTION, $question_id, $user_id, $vote);
     }
 
     public static function addAnswerVote($answer_id, $user_id, $vote)
     {
-        return self::addVote(VoteEntity::TYPE_ANSWER, $answer_id, $user_id, $vote);
+        return self::addVote(AssociateModel::TYPE_ANSWER, $answer_id, $user_id, $vote);
     }
 
     public static function addAnswerCommentVote($answer_comment_id, $user_id, $vote)
     {
-        return self::addVote(VoteEntity::TYPE_ANSWER_COMMENT, $answer_comment_id, $user_id, $vote);
+        return self::addVote(AssociateModel::TYPE_ANSWER_COMMENT, $answer_comment_id, $user_id, $vote);
     }
 
     public static function addArticleVote($question_id, $user_id, $vote)
     {
-        return self::addVote(VoteEntity::TYPE_ARTICLE, $question_id, $user_id, $vote);
+        return self::addVote(AssociateModel::TYPE_ARTICLE, $question_id, $user_id, $vote);
     }
 
     public static function addVote($type, $associate_id, $user_id, $vote)
@@ -60,22 +61,22 @@ class VoteService extends BaseService
 
     public static function updateQuestionVote($question_id, $user_id, $vote)
     {
-        return self::updateVote(VoteEntity::TYPE_QUESTION, $question_id, $user_id, $vote);
+        return self::updateVote(AssociateModel::TYPE_QUESTION, $question_id, $user_id, $vote);
     }
 
     public static function updateAnswerVote($answer_id, $user_id, $vote)
     {
-        return self::updateVote(VoteEntity::TYPE_ANSWER, $answer_id, $user_id, $vote);
+        return self::updateVote(AssociateModel::TYPE_ANSWER, $answer_id, $user_id, $vote);
     }
 
     public static function updateAnswerCommentVote($answer_comment_id, $user_id, $vote)
     {
-        return self::updateVote(VoteEntity::TYPE_ANSWER_COMMENT, $answer_comment_id, $user_id, $vote);
+        return self::updateVote(AssociateModel::TYPE_ANSWER_COMMENT, $answer_comment_id, $user_id, $vote);
     }
 
     public static function updateArticleVote($question_id, $user_id, $vote)
     {
-        return self::updateVote(VoteEntity::TYPE_ARTICLE, $question_id, $user_id, $vote);
+        return self::updateVote(AssociateModel::TYPE_ARTICLE, $question_id, $user_id, $vote);
     }
 
     public static function updateVote($type, $associate_id, $user_id, $vote)
@@ -113,12 +114,12 @@ class VoteService extends BaseService
 
     public static function addUserOfVoteQuestionCache($associate_id, $user_id, $vote)
     {
-        return self::addUserOfVoteCache(VoteEntity::TYPE_QUESTION, $associate_id, $user_id, $vote);
+        return self::addUserOfVoteCache(AssociateModel::TYPE_QUESTION, $associate_id, $user_id, $vote);
     }
 
     public static function addUserOfVoteAnswerCache($associate_id, $user_id, $vote)
     {
-        return self::addUserOfVoteCache(VoteEntity::TYPE_ANSWER, $associate_id, $user_id, $vote);
+        return self::addUserOfVoteCache(AssociateModel::TYPE_ANSWER, $associate_id, $user_id, $vote);
     }
 
     /**
@@ -133,15 +134,15 @@ class VoteService extends BaseService
     public static function addUserOfVoteCache($associate_type, $associate_id, $user_id, $vote)
     {
         switch ($associate_type) {
-            case VoteEntity::TYPE_QUESTION:
+            case AssociateModel::TYPE_QUESTION:
                 $model = QuestionService::getQuestionByQuestionId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
                 break;
-            case VoteEntity::TYPE_ANSWER:
+            case AssociateModel::TYPE_ANSWER:
                 $model = AnswerService::getAnswerByAnswerId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
-            case VoteEntity::TYPE_ANSWER_COMMENT:
+            case AssociateModel::TYPE_ANSWER_COMMENT:
                 $model = CommentService::getAnswerCommentByCommentId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_COMMENT_VOTE_USER_LIST, $associate_id];
                 break;
@@ -209,22 +210,22 @@ class VoteService extends BaseService
 
     public static function removeUserOfVoteQuestionCache($associate_id, $user_id)
     {
-        return self::removeUserOfVoteCache(VoteEntity::TYPE_QUESTION, $associate_id, $user_id);
+        return self::removeUserOfVoteCache(AssociateModel::TYPE_QUESTION, $associate_id, $user_id);
     }
 
     public static function removeUserOfVoteAnswerCache($associate_id, $user_id)
     {
-        return self::removeUserOfVoteCache(VoteEntity::TYPE_ANSWER, $associate_id, $user_id);
+        return self::removeUserOfVoteCache(AssociateModel::TYPE_ANSWER, $associate_id, $user_id);
     }
 
     public static function removeUserOfVoteCache($associate_type, $associate_id, $user_id)
     {
         switch ($associate_type) {
-            case VoteEntity::TYPE_QUESTION:
+            case AssociateModel::TYPE_QUESTION:
                 $model = QuestionService::getQuestionByQuestionId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
                 break;
-            case VoteEntity::TYPE_ANSWER:
+            case AssociateModel::TYPE_ANSWER:
                 $model = AnswerService::getAnswerByAnswerId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
@@ -243,7 +244,7 @@ class VoteService extends BaseService
     {
         $query = VoteEntity::find()->where(
             [
-                'associate_type' => VoteEntity::TYPE_ANSWER_COMMENT,
+                'associate_type' => AssociateModel::TYPE_ANSWER_COMMENT,
                 'associate_id'   => $answer_comment_id,
                 'created_by'     => $user_id,
             ]
@@ -258,17 +259,17 @@ class VoteService extends BaseService
 
     public static function getUseQuestionVoteStatus($associate_id, $user_id)
     {
-        return self::getUseVoteStatus(VoteEntity::TYPE_QUESTION, $associate_id, $user_id);
+        return self::getUseVoteStatus(AssociateModel::TYPE_QUESTION, $associate_id, $user_id);
     }
 
     public static function getUseAnswerVoteStatus($associate_id, $user_id)
     {
-        return self::getUseVoteStatus(VoteEntity::TYPE_ANSWER, $associate_id, $user_id);
+        return self::getUseVoteStatus(AssociateModel::TYPE_ANSWER, $associate_id, $user_id);
     }
 
     public static function getUseAnswerCommentVoteStatus($associate_id, $user_id)
     {
-        return self::getUseVoteStatus(VoteEntity::TYPE_ANSWER_COMMENT, $associate_id, $user_id);
+        return self::getUseVoteStatus(AssociateModel::TYPE_ANSWER_COMMENT, $associate_id, $user_id);
     }
 
     /**
@@ -282,15 +283,15 @@ class VoteService extends BaseService
     public static function getUseVoteStatus($associate_type, $associate_id, $user_id)
     {
         switch ($associate_type) {
-            case VoteEntity::TYPE_QUESTION:
+            case AssociateModel::TYPE_QUESTION:
                 $model = QuestionService::getQuestionByQuestionId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_QUESTION_VOTE_USER_LIST, $associate_id];
                 break;
-            case VoteEntity::TYPE_ANSWER:
+            case AssociateModel::TYPE_ANSWER:
                 $model = AnswerService::getAnswerByAnswerId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
-            case VoteEntity::TYPE_ANSWER_COMMENT:
+            case AssociateModel::TYPE_ANSWER_COMMENT:
                 $model = CommentService::getAnswerCommentByCommentId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_COMMENT_VOTE_USER_LIST, $associate_id];
                 break;

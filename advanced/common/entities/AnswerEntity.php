@@ -59,7 +59,7 @@ class AnswerEntity extends Answer
         return ArrayHelper::merge(
             parent::scenarios(),
             [
-                'common_edit' => ['update_reason'],
+                'common_edit' => ['update_reason', 'content'],
             ]
         );
     }

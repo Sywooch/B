@@ -16,12 +16,6 @@ use yii\db\ActiveRecord;
 
 class UserEventLogEntity extends UserEventLog
 {
-    const ASSOCIATE_TYPE_QUESTION = 'question';
-    const ASSOCIATE_TYPE_ANSWER = 'answer';
-    const ASSOCIATE_TYPE_ANSWER_COMMENT = 'answer_comment';
-    const ASSOCIATE_TYPE_USER = 'user';
-    const ASSOCIATE_TYPE_TAG = 'tag';
-
     const STATUS_PUBLIC = 'yes';
     const STATUS_PRIVATE = 'no';
 
@@ -41,6 +35,7 @@ class UserEventLogEntity extends UserEventLog
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'created_at',
                 ],
             ],
             'user_event_log' => [

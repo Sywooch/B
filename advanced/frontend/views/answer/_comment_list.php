@@ -5,6 +5,7 @@
  * Date: 2015/11/8
  * Time: 13:17
  */
+use common\entities\AnswerCommentEntity;
 use common\helpers\TemplateHelper;
 use common\widgets\UEditor\UEditor;
 use yii\bootstrap\Html;
@@ -99,7 +100,12 @@ use yii\widgets\LinkPager;
             <?= $form->field(
                 $comment_form,
                 'is_anonymous'
-            )->checkbox() ?>
+            )->checkbox(
+                [
+                    'value'   => AnswerCommentEntity::STATUS_ANONYMOUS,
+                    'uncheck' => AnswerCommentEntity::STATUS_UNANONYMOUS,
+                ]
+            ) ?>
         </div>
     </div>
     <?php ActiveForm::end(); ?>

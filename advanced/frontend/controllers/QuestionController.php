@@ -14,6 +14,7 @@ use common\exceptions\ParamsInvalidException;
 use common\exceptions\PermissionDeniedException;
 use common\helpers\ServerHelper;
 use common\services\AnswerService;
+use common\services\CommentService;
 use common\services\FavoriteService;
 use common\services\FollowService;
 use common\services\QuestionService;
@@ -143,7 +144,6 @@ class QuestionController extends BaseController
             VoteService::addQuestionVote($id, Yii::$app->user->id, $vote);
         }
 
-
         $question = QuestionService::getQuestionByQuestionId($id);
 
         if ($question === false) {
@@ -261,7 +261,7 @@ class QuestionController extends BaseController
         );
     }
 
-    public function actionView($id, $sort = 'default', $answer_id = null)
+    public function actionView($id, $sort = 'default', $answer_id = null, $comment_id = null)
     {
         $question_data = QuestionService::getQuestionByQuestionId($id);
         
@@ -292,7 +292,7 @@ class QuestionController extends BaseController
         #回答
         if ($answer_id) {
             $pages = null;
-            $answer_data = AnswerService::getAnswerListByAnswerId([$answer_id]);
+            $answers_data = AnswerService::getAnswerListByAnswerId([$answer_id]);
         } else {
             //print_r(array_merge($_GET, ['#' => 'answer-list']));exit;
             $pages = new Pagination(
@@ -305,7 +305,7 @@ class QuestionController extends BaseController
                 ]
             );
             
-            $answer_data = AnswerService::getAnswerListByQuestionId(
+            $answers_data = AnswerService::getAnswerListByQuestionId(
                 $id,
                 Yii::$app->request->get('answer-page', 1),
                 Yii::$app->request->get('answer-per-page', 10),
@@ -313,7 +313,7 @@ class QuestionController extends BaseController
             );
         }
 
-        foreach ($answer_data as &$answer) {
+        foreach ($answers_data as &$answer) {
             if (!Yii::$app->user->isGuest) {
                 $answer['vote_status'] = VoteService::getUseAnswerVoteStatus($answer['id'], Yii::$app->user->id);
             } else {
@@ -339,18 +339,46 @@ class QuestionController extends BaseController
             $vote_status = VoteService::getUseQuestionVoteStatus($id, Yii::$app->user->id);
         }
 
+        #评论
+        if ($answer_id && $comment_id) {
+            $comments_data = [CommentService::getAnswerCommentByCommentId($comment_id)];
+
+            foreach ($comments_data as &$comment) {
+                if (!Yii::$app->user->isGuest) {
+                    $comment['vote_status'] = VoteService::getUseAnswerCommentVoteStatus(
+                        $comment['id'],
+                        Yii::$app->user->id
+                    );
+                } else {
+                    $comment['vote_status'] = false;
+                }
+                $comment['count_vote'] = $comment['count_like'] - $comment['count_hate'];
+            }
+        } else {
+            $comments_data = null;
+        }
+
+
         return $this->render(
             'view',
             [
                 'question_data'    => $question_data,
                 'answer_model'     => $answer_model,
-                'answer_item_html' => $this->renderPartial(
+                'answer_item_html' => $answers_data ? $this->renderPartial(
                     '_question_answer_item',
                     [
-                        'question_id' => $id,
-                        'data'        => $answer_data,
+                        'question_id'       => $id,
+                        'data'              => $answers_data,
+                        'comment_item_html' => $comments_data ? $this->renderPartial(
+                            '/answer/_answer_comment_item',
+                            [
+                                'question_id' => $id,
+                                'answer_id'   => $answer_id,
+                                'data'        => $comments_data,
+                            ]
+                        ) : '',
                     ]
-                ),
+                ) : '',
                 'sort'             => $sort,
                 'pages'            => $pages,
                 'similar_question' => $similar_question,
@@ -556,11 +584,14 @@ class QuestionController extends BaseController
             ['question_id' => $id]
         )->offset($pages->offset)->limit($pages->limit)->all();
 
+        $question = QuestionService::getQuestionByQuestionId($id);
+
         return $this->render(
             'version_repository',
             [
-                'model' => $model,
-                'pages' => $pages,
+                'model'    => $model,
+                'question' => $question,
+                'pages'    => $pages,
             ]
         );
     }

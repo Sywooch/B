@@ -306,7 +306,7 @@ class RepairCronJobController extends Controller
             ]
         )->where(
             [
-                'associate_type' => VoteEntity::TYPE_QUESTION,
+                'associate_type' => AssociateModel::TYPE_QUESTION,
                 'vote'           => VoteEntity::VOTE_YES,
             ]
         )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
@@ -331,7 +331,7 @@ class RepairCronJobController extends Controller
             ]
         )->where(
             [
-                'associate_type' => VoteEntity::TYPE_QUESTION,
+                'associate_type' => AssociateModel::TYPE_QUESTION,
                 'vote'           => VoteEntity::VOTE_NO,
             ]
         )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
@@ -380,7 +380,7 @@ class RepairCronJobController extends Controller
             ]
         )->where(
             [
-                'associate_type' => VoteEntity::TYPE_ANSWER,
+                'associate_type' => AssociateModel::TYPE_ANSWER,
                 'vote'           => VoteEntity::VOTE_YES,
             ]
         )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
@@ -405,7 +405,7 @@ class RepairCronJobController extends Controller
             ]
         )->where(
             [
-                'associate_type' => VoteEntity::TYPE_ANSWER,
+                'associate_type' => AssociateModel::TYPE_ANSWER,
                 'vote'           => VoteEntity::VOTE_NO,
             ]
         )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();

@@ -218,16 +218,22 @@ class FollowService extends BaseService
 
         return $user_ids;
     }
-    
-    public static function getUserFollowQuestionIdsByUserId($user_id, $page_no, $page_size)
+
+    public static function getFollowQuestionListByUserId($user_id, $page_no, $page_size)
     {
-        $user_ids = FollowQuestionEntity::find()->select('follow_question_id')->where(
+        $question_ids = FollowQuestionEntity::find()->select(['follow_question_id'])->where(
             [
                 'user_id' => $user_id,
             ]
         )->limiter($page_no, $page_size)->asArray()->column();
 
-        return $user_ids;
+        if ($question_ids) {
+            $question_list = QuestionService::getQuestionListByQuestionIds($question_ids);
+        } else {
+            $question_list = [];
+        }
+
+        return $question_list;
     }
 
     ###################### FOLLOW TAG ######################
@@ -388,6 +394,20 @@ class FollowService extends BaseService
 
         return $tag_ids;
     }
+
+    public static function getUserFollowTagList($user_id, $page_no = 1, $page_size = 20)
+    {
+        $tag_ids = self::getUserFollowTagIds($user_id, $page_no, $page_size);
+
+        if ($tag_ids) {
+            $tag_list = TagService::getTagListByTagIds($tag_ids);
+        } else {
+            $tag_list = false;
+        }
+
+        return $tag_list;
+    }
+
 
     /**
      * 添加此标签的用户缓存
@@ -966,10 +986,29 @@ class FollowService extends BaseService
     {
         $cache_key = [RedisKey::REDIS_KEY_USER_FRIEND_LIST, $user_id];
 
-        self::ensureUserFriendsHasCached();
+        self::ensureUserFriendsHasCached($cache_key, $user_id);
 
         $user_ids = Yii::$app->redis->batchZRevGet($cache_key, $page_no, $page_size);
 
         return $user_ids;
+    }
+
+    /**
+     * @param     $user_id
+     * @param int $page_no
+     * @param int $page_size
+     * @return array|\common\models\CacheUserModel
+     */
+    public static function getUserFriendsUserList($user_id, $page_no = 1, $page_size = 20)
+    {
+        $user_ids = self::getUserFriendsUserId($user_id, $page_no = 1, $page_size = 20);
+
+        if ($user_ids) {
+            $user_list = UserService::getUserListByIds($user_ids);
+        } else {
+            $user_list = [];
+        }
+
+        return $user_list;
     }
 }

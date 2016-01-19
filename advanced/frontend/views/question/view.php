@@ -50,13 +50,15 @@ $this->beginBlock('top-header');
                     <?= TemplateHelper::showUserAvatar($question_data['created_by'], 24, true) ?>
                     <strong><?= TemplateHelper::showUsername($question_data['created_by'], true) ?></strong>
 
-                    <?= TemplateHelper::showHumanTime($question_data['created_at']) ?>
+                    <?= TemplateHelper::showHumanTime(
+                        $question_data['updated_at'] > 0 ? $question_data['updated_at'] : $question_data['created_at']
+                    ) ?>
                     <?php if ($question_data['updated_at'] > 0): ?>
                         <?= Html::a(
                             '更新问题',
                             [
-                                'question-version/index',
-                                'question_id' => $question_data['id'],
+                                'question/version-repository',
+                                'id' => $question_data['id'],
                             ],
                             [
                                 'rel' => 'nofollow',
@@ -154,7 +156,7 @@ $this->endBlock();
                                                 'linkOptions' => [
                                                     'data-do-confirm' => true,
                                                     'data-title'      => $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '设置匿名',
-                                                    'data-message'      => sprintf(
+                                                    'data-message'    => sprintf(
                                                         '您确定要对此问题%s?',
                                                         $question_data['is_anonymous'] == QuestionEntity::STATUS_ANONYMOUS ? '取消匿名' : '设置匿名'
                                                     ),
@@ -170,7 +172,7 @@ $this->endBlock();
                                                 'linkOptions' => [
                                                     'data-do-confirm' => true,
                                                     'data-title'      => '删除确认',
-                                                    'data-message'      => '您确定要删除此问题？',
+                                                    'data-message'    => '您确定要删除此问题？',
                                                     'data-redirect'   => Url::to(
                                                         ['question/delete', 'id' => $question_data['id']]
                                                     ),
@@ -264,7 +266,7 @@ $this->endBlock();
                         'timeout'         => 10000,
                         'clientOptions'   => [
                             'container' => 'pjax-container-answer',
-                        ]
+                        ],
                     ]
                 ); ?>
                 <?= $answer_item_html ?>

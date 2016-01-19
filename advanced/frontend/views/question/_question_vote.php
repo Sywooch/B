@@ -27,19 +27,24 @@ use yii\widgets\Pjax;
     [
         'class'           => 'like' . ($vote_status == VoteEntity::VOTE_YES ? ' active' : ''),
         'title'           => '问题对人有帮助，内容完整，我也想知道答案',
-        'data-need-login' => true,
-        'data-do'         => 'pjax',
+        'data'  => [
+            'do'    => 'pjax',
+            'need-login'    => true,
+        ],
     ]
 ) ?>
 <span class="count"><?= $count_vote; ?></span>
 <?= Html::a(
-    '<span class="sr-only">问题没有实际价值，缺少关键内容，没有改进余地</span>',
+    '',
     ['question/vote', 'id' => $id, 'vote' => VoteEntity::VOTE_NO],
     [
         'class'           => 'hate' . ($vote_status == VoteEntity::VOTE_NO ? ' active' : ''),
         'title'           => '问题没有实际价值，缺少关键内容，没有改进余地',
-        'data-need-login' => true,
-        'data-do'         => 'pjax',
+        'data'  => [
+            'do'    => 'pjax',
+            'need-login'    => true,
+        ],
+
     ]
 ) ?>
 <?php Pjax::end(); ?>

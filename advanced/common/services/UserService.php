@@ -335,32 +335,6 @@ class UserService extends BaseService
         return FavoriteService::getUserFavoriteList($user_id, $page_no, $page_size);
     }
 
-    public static function getUserFollowTagList($user_id, $page_no = 1, $page_size = 20)
-    {
-        $tag_ids = FollowService::getUserFollowTagIds($user_id, $page_no, $page_size);
-
-        if ($tag_ids) {
-            $tag_list = TagService::getTagListByTagIds($tag_ids);
-        } else {
-            $tag_list = false;
-        }
-
-        return $tag_list;
-    }
-
-    public static function getUserFollowQuestionList($user_id, $page_no = 1, $page_size = 20)
-    {
-        $question_id = FollowService::getUserFollowQuestionIdsByUserId($user_id, $page_no, $page_size);
-
-        if ($question_id) {
-            $question_list = QuestionService::getQuestionListByQuestionIds($question_id);
-        } else {
-            $question_list = false;
-        }
-
-        return $question_list;
-    }
-
     public static function getUserBeGoodAtTags($user_id, $limit = 20)
     {
         $passive_tag_data = FollowService::getTagIdsWhichUserIsGoodAt($user_id, $limit, 365);

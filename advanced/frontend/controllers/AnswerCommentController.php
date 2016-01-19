@@ -98,6 +98,7 @@ class AnswerCommentController extends BaseController
             $data = $this->renderPartial(
                 '/answer/_answer_comment_item',
                 [
+                    'question_id'             => $question_data['id'],
                     'answer_id'               => $answer_id,
                     'answer_create_user_id'   => $answer_data['created_by'],
                     'question_create_user_id' => $question_data['created_by'],
@@ -189,6 +190,25 @@ class AnswerCommentController extends BaseController
                 'id'          => $id,
                 'count_vote'  => $answer_comment['count_like'] - $answer_comment['count_hate'],
                 'vote_status' => $vote,
+            ]
+        );
+    }
+
+    public function actionAnonymous($id, $question_id, $answer_id)
+    {
+        $comment = CommentService::getAnswerCommentByCommentId($id);
+        if ($comment['is_anonymous'] == AnswerCommentEntity::STATUS_ANONYMOUS) {
+            CommentService::cancelAnonymous($id);
+        } else {
+            CommentService::setAnonymous($id);
+        }
+
+        $this->redirect(
+            [
+                'question/view',
+                'id'         => $question_id,
+                'answer_id'  => $answer_id,
+                'comment_id' => $id,
             ]
         );
     }

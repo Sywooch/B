@@ -339,7 +339,9 @@ if (!Yii::$app->request->cookies->has($cookie_key)) {
     <div class="container">
         <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?></p>
+        <p class="pull-right">自豪地采用
+            <a href="http://www.yiiframework.com/" rel="external" target="_blank">Yii Framework 2</a>
+        </p>
     </div>
 </footer>
 

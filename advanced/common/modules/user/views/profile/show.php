@@ -195,7 +195,7 @@ $this->endBlock();
                                 <li class="tagPopup">
                                     <?= Html::a(
                                         sprintf('%s x %d', $tag->name, $tag->count_passive_follow),
-                                        ['tag/view', 'id' => $tag['id']],
+                                        ['/tag/view', 'id' => $tag['id']],
                                         [
                                             'class' => 'tag',
                                         ]
@@ -232,7 +232,7 @@ $this->endBlock();
                             $user->count_question
                         ),
                         'content'     => '',
-                        'linkOptions' => ['data-url' => Url::to(['/default/fetch-hottest'])],
+                        'linkOptions' => ['data-url' => Url::to(['profile/owner-question','user_id' => $user->id])],
                     ],
                     [
                         'label'       => sprintf(
@@ -240,57 +240,67 @@ $this->endBlock();
                             $user->count_answer
                         ),
                         'content'     => '',
-                        'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
+                        'linkOptions' => ['data-url' => Url::to(['profile/answered-question','user_id' => $user->id])],
                     ],
-                    [
+                    /*[
                         'label'       => '<i class="glyphicon glyphicon-pencil"></i> 文章',
                         'content'     => '',
                         'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
-                    ],
+                    ],*/
                     [
                         'label' => '<i class="glyphicon glyphicon-star"></i> 收藏',
                         'items' => [
                             [
-                                'label'       => '收藏的问题',
+                                'label'       => sprintf(
+                                    '收藏的问题 <span class="badge">%d</span>',
+                                    $user->count_favorite
+                                ),
+                                'encode' => false,
+                                'content'     => '',
+                                'linkOptions' => ['data-url' => Url::to(['profile/followed-question','user_id' => $user->id])],
+                            ],
+                            /*[
+                                'label'       => '收藏的文章',
                                 'content'     => '',
                                 'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
-                            ],
-                            [
-                                'label'       => '收藏的专栏',
-                                'content'     => '',
-                                'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
-                            ],
-                            [
-                                'label'       => '收藏的标签',
-                                'content'     => '',
-                                'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
-                            ],
+                            ],*/
                         ],
                     ],
                     [
                         'label'   => '<i class="glyphicon glyphicon-heart"></i> 关注',
-                        'content' => '',
                         'items'   => [
                             [
-                                'label'       => '关注的人',
+                                'label'       => sprintf(
+                                    '关注的人 <span class="badge">%d</span>',
+                                    $user->count_follow_user
+                                ),
+                                'encode' => false,
                                 'content'     => '',
-                                'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
+                                'linkOptions' => ['data-url' => Url::to(['profile/followed-user','user_id' => $user->id])],
                             ],
                             [
-                                'label'       => '关注的问题',
+                                'label'       => sprintf(
+                                    '关注的问题 <span class="badge">%d</span>',
+                                    $user->count_follow_question
+                                ),
+                                'encode' => false,
                                 'content'     => '',
-                                'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
+                                'linkOptions' => ['data-url' => Url::to(['profile/followed-question','user_id' => $user->id])],
                             ],
                             [
-                                'label'       => '关注的标签',
+                                'label'       => sprintf(
+                                    '关注的标签 <span class="badge">%d</span>',
+                                    $user->count_follow_tag
+                                ),
+                                'encode' => false,
                                 'content'     => '',
-                                'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
+                                'linkOptions' => ['data-url' => Url::to(['profile/followed-tag','user_id' => $user->id])],
                             ],
-                            [
+                            /*[
                                 'label'       => '关注的专栏',
                                 'content'     => '',
-                                'linkOptions' => ['data-url' => Url::to(['/default/fetch-un-answer'])],
-                            ],
+                                'linkOptions' => ['data-url' => Url::to(['profile/followed-blog','user_id' => $user->id])],
+                            ],*/
                         ],
                     ],
 

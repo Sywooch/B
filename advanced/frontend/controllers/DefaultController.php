@@ -52,7 +52,7 @@ class DefaultController extends BaseController
                 ]
             );
         } else {
-            $html = null;
+            $html = '';
         }
 
 
@@ -75,7 +75,7 @@ class DefaultController extends BaseController
                 ]
             );
         } else {
-            $html = null;
+            $html = '';
         }
 
         $this->htmlOut($html);
@@ -92,7 +92,7 @@ class DefaultController extends BaseController
                 ]
             );
         } else {
-            $html = null;
+            $html = '';
         }
 
         $this->htmlOut($html);

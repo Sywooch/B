@@ -14,11 +14,11 @@ use common\services\QuestionService;
 use yii\helpers\Html;
 
 $question = QuestionService::getQuestionByQuestionId($item->associate_data['question_id']);
-$answer = AnswerService::getAnswerByAnswerId($item->associate_data['answer_id']);
+$answer = AnswerService::getAnswerByAnswerId($item->associate_id)
 ?>
-<section class="widget-active__comment">
+<section class="widget-active__answer">
     <div class="widget-active--left">
-        <span class="glyphicon glyphicon-comment"></span>
+        <span class="glyphicon glyphicon-pencil"></span>
     </div>
     <div class="widget-active--right">
         <p class="widget-active--right__info"><?= TemplateHelper::showHumanTime(
@@ -30,18 +30,15 @@ $answer = AnswerService::getAnswerByAnswerId($item->associate_data['answer_id'])
             <?php else: ?>
                 <?= $user_event_list[$item->user_event_id]['name']; ?>
             <?php endif; ?>
-
-            <small class="ml10 glyphicon glyphicon-comment" title="回答数"></small>
-            <?= $question->count_answer ?>
+            <small class="ml10 glyphicon glyphicon-comment" title="回答数"></small> <?= $question->count_answer ?>
         </p>
         <div class="widget-active--right__title">
             <h4><?= Html::a(
                     $question->subject,
                     [
                         '/question/view',
-                        'id' => $question->id,
-                        'answer_id' => $answer->id,
-                        'comment_id' => $item->associate_id,
+                        'id'        => $question->id,
+                        'answer_id' => $item->associate_id,
                     ]
                 ) ?></h4>
             <ul class="taglist--inline ib">
