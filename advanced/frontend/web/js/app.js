@@ -148,7 +148,7 @@ app.ajax = {
                     $('#comment-area-' + answer_id + ' #comment-pajax-' + answer_id).append(response.data);
                 }
 
-                UE.getEditor('answercommententity-content-' + app.ajax.callbacks.target.data('id')).execCommand('cleardoc');
+                UE.getEditor('commententity-content-' + app.ajax.callbacks.target.data('id')).execCommand('cleardoc');
             }
         },
         //显示评论列表

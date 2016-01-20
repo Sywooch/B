@@ -85,6 +85,7 @@
     "yiisoft/yii2-faker": "*",
     "hightman/xunsearch": "*",
     "linslin/yii2-curl": "*",
+    "codeception/codeception": "*",
     "codeception/specify": "*",
     "codeception/verify": "*"
   },

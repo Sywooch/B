@@ -15,14 +15,14 @@ use yii\widgets\Pjax;
 
 <?php Pjax::begin(
     [
-        'id'              => 'answer-comment-vote-' . $id,
+        'id'              => 'comment-vote-' . $id,
         'enablePushState' => false,
         'timeout'         => 10000,
     ]
 ); ?>
 <?= Html::a(
     '',
-    ['answer-comment/vote', 'id' => $id, 'vote' => VoteEntity::VOTE_YES],
+    ['comment/vote', 'id' => $id, 'vote' => VoteEntity::VOTE_YES],
     [
         'class'           => 'like' . ($vote_status == VoteEntity::VOTE_YES ? ' active' : ''),
         'title'           => '评论对我有帮助',

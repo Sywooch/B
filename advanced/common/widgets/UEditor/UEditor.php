@@ -103,6 +103,34 @@ class UEditor extends BaseUEditor
                 ];
                 break;
 
+            case 'comment_update':
+                $this->config['maximumWords'] = 1000;
+                $this->config['initialFrameHeight'] = 480;
+                $this->config['toolbars'] = [
+                    [
+                        //'fullscreen',
+                        //'formatmatch',
+                        'bold',
+                        'italic',
+                        'underline',
+                        'strikethrough',
+                        '|',
+                        //'removeformat',
+                        //'pasteplain',
+                        //'|',
+                        'blockquote',
+                        //'|',
+                        //'insertimage',
+                        //'emotion',
+                        //'scrawl',
+                        //'insertvideo',
+                        //'music',
+                        //'attachment',
+                        //'map',
+                    ],
+                ];
+                break;
+
             default:
                 $this->config['toolbars'] = [
                     [

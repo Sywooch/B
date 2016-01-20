@@ -148,11 +148,17 @@ AppAsset::register($this);
             ],
         ];
 
+        $notification_count = \common\services\UserService::getUserNotificationCount(Yii::$app->user->id);
 
         $menuItems[] = [
-            'label'   => '<span class="sr-only">消息</span><span id="messageCount" class="glyphicon glyphicon-envelope"></span><span class="has-unread__count">1</span>',
-            'url'     => false,
-            'visible' => true,
+            'label'  => '<span id="messageCount" class="glyphicon glyphicon-envelope"></span>' .
+                ($notification_count > 0 ?
+                    sprintf(
+                        '<span class="has-unread__count">%d</span>',
+                        $notification_count
+                    ) : ''),
+            'url'    => ['notification/index'],
+            'encode' => false,
         ];
 
         // 个人中心
@@ -195,8 +201,8 @@ AppAsset::register($this);
 
     echo Nav::widget(
         [
-            'options' => ['class' => 'navbar-nav navbar-right'],
-            'items'   => $menuItems,
+            'options'      => ['class' => 'navbar-nav navbar-right'],
+            'items'        => $menuItems,
             'encodeLabels' => false,
         ]
     );

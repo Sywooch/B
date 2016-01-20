@@ -550,4 +550,15 @@ class UserService extends BaseService
 
         return $result;
     }
+
+    public static function getUserNotificationCount($user_id)
+    {
+        if (!$user_id) {
+            return 0;
+        }
+
+        $user = self::getUserById($user_id);
+
+        return $user->count_notification;
+    }
 }

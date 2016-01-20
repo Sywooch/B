@@ -8,7 +8,7 @@
 
 namespace console\controllers;
 
-use common\entities\AnswerCommentEntity;
+use common\entities\CommentEntity;
 use common\entities\AnswerEntity;
 use common\entities\FavoriteEntity;
 use common\entities\FollowQuestionEntity;
@@ -20,6 +20,7 @@ use common\entities\TagEntity;
 use common\entities\UserEntity;
 use common\entities\UserProfileEntity;
 use common\entities\VoteEntity;
+use common\models\AssociateModel;
 use common\models\QuestionTag;
 use common\services\AnswerService;
 use common\services\QuestionService;
@@ -40,6 +41,7 @@ class RepairCronJobController extends Controller
         $this->actionAnswer();
         $this->actionUser();
         $this->actionTag();
+        $this->actionComment();
 
         $end_time = microtime(true);
 
@@ -50,6 +52,8 @@ class RepairCronJobController extends Controller
     {
         //问题的回答数
         $this->actuator('QuestionAnswerCount');
+        //问题的评论数
+        $this->actuator('QuestionCommentCount');
         //问题的关注数
         $this->actuator('QuestionFollowCount');
         //问题的收藏数
@@ -99,6 +103,10 @@ class RepairCronJobController extends Controller
         $this->actuator('TagUseCount');
     }
 
+    public function actionComment()
+    {
+        //todo
+    }
 
     /**
      * 执行器
@@ -128,7 +136,7 @@ class RepairCronJobController extends Controller
                 QuestionEntity::tableName(),
                 $update_field,
                 $item['total'],
-                $item['question_id']
+                $item['associate_id']
             );
         }
 
@@ -138,7 +146,7 @@ class RepairCronJobController extends Controller
             echo sprintf('%s SUCCESS SQL:%s%s%s', __FUNCTION__, PHP_EOL, $command->getRawSql(), PHP_EOL);
             //更新redis cache
             foreach ($data as $item) {
-                QuestionService::updateQuestionCache($item['question_id'], [$update_field => intval($item['total'])]);
+                QuestionService::updateQuestionCache($item['associate_id'], [$update_field => intval($item['total'])]);
             }
         } else {
             echo sprintf('FAIL [%s]%s', $command->getRawSql(), PHP_EOL);
@@ -154,7 +162,7 @@ class RepairCronJobController extends Controller
                 AnswerEntity::tableName(),
                 $update_field,
                 $item['total'],
-                $item['answer_id']
+                $item['associate_id']
             );
         }
 
@@ -166,7 +174,7 @@ class RepairCronJobController extends Controller
             echo sprintf('%s SUCCESS SQL:%s%s%s', __FUNCTION__, PHP_EOL, $command->getRawSql(), PHP_EOL);
             //更新redis cache
             foreach ($data as $item) {
-                AnswerService::updateAnswerCache($item['answer_id'], [$update_field => intval($item['total'])]);
+                AnswerService::updateAnswerCache($item['associate_id'], [$update_field => intval($item['total'])]);
             }
         } else {
             echo sprintf('FAIL [%s]%s', $command->getRawSql(), PHP_EOL);
@@ -234,11 +242,12 @@ class RepairCronJobController extends Controller
 
     private function dealWithQuestionAnswerCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_answer';
         $data = AnswerEntity::find()->select(
             [
-                'total' => 'count(1)',
-                'question_id',
+                'total'        => 'count(1)',
+                'associate_id' => 'question_id',
             ]
         )->limit($limit)->offset($offset)->groupBy('question_id')->asArray()->all();
 
@@ -251,14 +260,24 @@ class RepairCronJobController extends Controller
         return true;
     }
 
+    private function dealWithQuestionCommentCount($limit, $offset)
+    {
+        echo __FUNCTION__, PHP_EOL;
+
+        //todo
+
+        return false;
+    }
+
     private function dealWithQuestionFollowCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_follow';
 
         $data = FollowQuestionEntity::find()->select(
             [
-                'total'       => 'count(1)',
-                'question_id' => 'follow_question_id',
+                'total'        => 'count(1)',
+                'associate_id' => 'follow_question_id',
             ]
         )->limit($limit)->offset($offset)->groupBy('follow_question_id')->asArray()->all();
 
@@ -273,12 +292,13 @@ class RepairCronJobController extends Controller
 
     private function dealWithQuestionFavoriteCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_favorite';
 
         $data = FavoriteEntity::find()->select(
             [
-                'total'       => 'count(1)',
-                'question_id' => 'associate_id',
+                'total'        => 'count(1)',
+                'associate_id' => 'associate_id',
             ]
         )->where(
             [
@@ -297,12 +317,13 @@ class RepairCronJobController extends Controller
 
     private function dealWithQuestionLikeCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_like';
 
         $data = VoteEntity::find()->select(
             [
-                'total'       => 'count(1)',
-                'question_id' => 'associate_id',
+                'total'        => 'count(1)',
+                'associate_id' => 'associate_id',
             ]
         )->where(
             [
@@ -322,12 +343,13 @@ class RepairCronJobController extends Controller
 
     private function dealWithQuestionHateCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_hate';
 
         $data = VoteEntity::find()->select(
             [
-                'total'       => 'count(1)',
-                'question_id' => 'associate_id',
+                'total'        => 'count(1)',
+                'associate_id' => 'associate_id',
             ]
         )->where(
             [
@@ -350,33 +372,60 @@ class RepairCronJobController extends Controller
 
     private function dealWithAnswerCommentCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
+
         $update_field = 'count_comment';
 
-        $data = AnswerCommentEntity::find()->select(
-            [
-                'total' => 'count(1)',
-                'answer_id',
-            ]
-        )->limit($limit)->offset($offset)->groupBy('answer_id')->asArray()->all();
+        $data = $this->dealWithCommentCount(AssociateModel::TYPE_ANSWER_COMMENT, $limit, $offset);
 
-        if (empty($data)) {
+        if ($data) {
+            return $this->executeAnswerUpdate($update_field, $data);
+        } else {
             return false;
         }
+    }
 
-        $this->executeAnswerUpdate($update_field, $data);
+    private function dealWithBlogCommentCount($limit, $offset)
+    {
+        echo __FUNCTION__, PHP_EOL;
+        $update_field = 'count_comment';
 
-        return true;
+        $data = $this->dealWithCommentCount(AssociateModel::TYPE_BLOG_COMMENT, $limit, $offset);
+
+        if ($data) {
+            return $this->executeAnswerUpdate($update_field, $data);
+        } else {
+            return false;
+        }
+    }
+
+    private function dealWithCommentCount($associate_type, $limit, $offset)
+    {
+        echo __FUNCTION__, PHP_EOL;
+        $data = CommentEntity::find()->select(
+            [
+                'total' => 'count(1)',
+                'associate_id',
+            ]
+        )->where(
+            [
+                'associate_type' => $associate_type,
+            ]
+        )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
+
+        return $data;
     }
 
 
     private function dealWithAnswerLikeCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_like';
 
         $data = VoteEntity::find()->select(
             [
-                'total'     => 'count(1)',
-                'answer_id' => 'associate_id',
+                'total'        => 'count(1)',
+                'associate_id' => 'associate_id',
             ]
         )->where(
             [
@@ -396,12 +445,13 @@ class RepairCronJobController extends Controller
 
     private function dealWithAnswerHateCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_hate';
 
         $data = VoteEntity::find()->select(
             [
-                'total'     => 'count(1)',
-                'answer_id' => 'associate_id',
+                'total'        => 'count(1)',
+                'associate_id' => 'associate_id',
             ]
         )->where(
             [
@@ -424,6 +474,7 @@ class RepairCronJobController extends Controller
 
     private function dealWithUserQuestionCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_question';
 
         $data = QuestionEntity::find()->select(
@@ -444,6 +495,7 @@ class RepairCronJobController extends Controller
 
     private function dealWithUserAnswerCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_answer';
 
         $data = AnswerEntity::find()->select(
@@ -464,6 +516,7 @@ class RepairCronJobController extends Controller
 
     private function dealWithUserFollowUserCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_follow_user';
 
         $data = FollowUserEntity::find()->select(
@@ -484,6 +537,7 @@ class RepairCronJobController extends Controller
 
     private function dealWithUserFollowQuestionCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_follow_question';
 
         $data = FollowQuestionEntity::find()->select(
@@ -504,6 +558,7 @@ class RepairCronJobController extends Controller
 
     private function dealWithUserFollowTagCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_follow_tag';
 
         $data = FollowTagEntity::find()->select(
@@ -524,6 +579,7 @@ class RepairCronJobController extends Controller
 
     private function dealWithUserFansCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_fans';
 
         $data = FollowUserEntity::find()->select(
@@ -546,6 +602,7 @@ class RepairCronJobController extends Controller
 
     private function dealWithTagFollowCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_follow';
 
         $data = FollowTagEntity::find()->select(
@@ -566,6 +623,7 @@ class RepairCronJobController extends Controller
 
     private function dealWithTagUseCount($limit, $offset)
     {
+        echo __FUNCTION__, PHP_EOL;
         $update_field = 'count_use';
 
         $data = QuestionTagEntity::find()->select(
