@@ -42,39 +42,39 @@ class NotificationService extends BaseService
 
 
     /**
-     * 模板中可用的替换变量：[who] [question]
+     * 模板中可用的替换变量：{who} {question}
      * @var array
      */
     public static $notice_type = [
         'pm'              => [
-            'to_me' => [100, '[who] 给我发了条私信。'],
+            'to_me' => [100, '{who} 给我发了条私信。'],
         ],
         'at'              => [
-            'in_answer'  => [200, '[who] 在 [question] 的中提到我。'],
-            'in_comment' => [201, '[who] 在 [question] 的中回复我。'],
-            'in_reply'   => [202, '[who] 在 [question] 的中评论我。'],
+            'in_answer'  => [200, '{who} 在 {question} 的中提到我。'],
+            'in_comment' => [201, '{who} 在 {question} 的中回复我。'],
+            'in_reply'   => [202, '{who} 在 {question} 的中评论我。'],
         ],
         'follow'          => [
-            'me'                => [300, '[who] 关注了我。'],
-            'my_special_column' => [301, '[who] 关注了我的专栏。'],
+            'me'                => [300, '{who} 关注了我。'],
+            'my_special_column' => [301, '{who} 关注了我的专栏。'],
         ],
         'follow_question' => [
-            'has_new_answer' => [400, '您关注的 [question]，有新的回答！'],
-            'modify_answer'  => [401, '您关注的 [question]，有人更新了回答！'],
+            'has_new_answer' => [400, '您关注的 {question}，有新的回答！'],
+            'modify_answer'  => [401, '您关注的 {question}，有人更新了回答！'],
         ],
         'answer'          => [
-            'is_agreed'       => [500, '[who] 赞了你的回答！'],
-            'is_modified'     => [501, '[who] 修改了你的回答！'],
-            'is_fold'         => [502, '[who] 折叠了你的回答！'],
-            'has_new_comment' => [503, '[who] 评论了你的回答！'],
+            'is_agreed'       => [500, '{who} 赞了你的回答 {question}！'],
+            'is_modified'     => [501, '{who} 修改了你的回答 {question}！'],
+            'is_fold'         => [502, '{who} 折叠了你的回答 {question}！'],
+            'has_new_comment' => [503, '{who} 评论了你的回答 {question}！'],
         ],
         'question'        => [
-            'is_modified' => [600, '我的问题 [question] 被修改。'],
-            'is_locked'   => [601, '我的问题 [question] 被锁定。'],
-            'is_close'    => [602, '我的问题 [question] 被关闭。'],
+            'is_modified' => [600, '我的问题 {question} 被修改。'],
+            'is_locked'   => [601, '我的问题 {question} 被锁定。'],
+            'is_close'    => [602, '我的问题 {question} 被关闭。'],
         ],
         'invite'          => [
-            'to_answer_question' => [700, '[who] 邀请我回答问题 [question]！'],
+            'to_answer_question' => [700, '{who} 邀请我回答问题 {question}！'],
         ],
     ];
 
@@ -233,7 +233,7 @@ class NotificationService extends BaseService
         foreach ($notices as $date_index => &$item) {
             foreach ($item as $mix_index => &$notice) {
                 //$new_index = date('Y-m-d', $notice['created_at']);
-                if (preg_match_all('/\[(.+?)\]/i', $notice['template'], $symbols)) {
+                if (preg_match_all('/\{(.+?)\}/i', $notice['template'], $symbols)) {
                     $finder = $symbols[0];
                     unset($symbols[0]);
 
@@ -241,10 +241,18 @@ class NotificationService extends BaseService
                     $senders = [];
                     $notice['sender'] = array_unique($notice['sender']);
                     foreach ($notice['sender'] as $sender) {
-                        $senders[] = Html::a($users[$sender]['username'], ['/user/member']);
+                        $senders[] = Html::a(
+                            $users[$sender]['username'],
+                            [
+                                '/user/profile/show',
+                                'username' => $users[$sender]['username'],
+
+                            ],
+                            ['target' => '_blank']
+                        );
                     }
 
-                    #todo 目前模板中仅支持 [who] [question] 两个替换变量，更多请添加case
+                    #todo 目前模板中仅支持 {who} {question} 两个替换变量，更多请添加case
                     foreach ($symbols[1] as $key => $symbol) {
                         switch ($symbol) {
                             case 'who':
@@ -256,9 +264,21 @@ class NotificationService extends BaseService
                                 break;
                             case 'question':
                                 if (!empty($notice['data']['question_id'])) {
+                                    $question_url_data = [
+                                        'question/view',
+                                        'id' => $notice['data']['question_id'],
+                                    ];
+                                    if (isset($notice['data']['answer_id'])) {
+                                        $question_url_data['answer_id'] = $notice['data']['answer_id'];
+                                    }
+                                    if (isset($notice['data']['comment_id'])) {
+                                        $question_url_data['comment_id'] = $notice['data']['comment_id'];
+                                    }
+
                                     $replace = Html::a(
                                         $questions[$notice['data']['question_id']]['subject'],
-                                        ['question/view', 'id' => $notice['data']['question_id']]
+                                        $question_url_data,
+                                        ['target' => '_blank']
                                     );
 
                                     $notice['template'] = str_replace($finder[$key], $replace, $notice['template']);

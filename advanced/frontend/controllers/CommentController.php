@@ -118,12 +118,6 @@ class CommentController extends BaseController
         return $this->jsonOut($result);
     }
 
-    /**
-     * Updates an existing CommentEntity model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
-     */
     public function actionUpdate($id, $answer_id, $question_id)
     {
         $question_data = QuestionService::getQuestionByQuestionId($question_id);
@@ -134,14 +128,21 @@ class CommentController extends BaseController
         $model->setScenario('common_edit');
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(
+                [
+                    'question/view',
+                    'id'         => $question_id,
+                    'answer_id'  => $answer_id,
+                    'comment_id' => $model->id,
+                ]
+            );
         } else {
             return $this->render(
                 'update',
                 [
-                    'answer_data' => $answer_data,
+                    'answer_data'   => $answer_data,
                     'question_data' => $question_data,
-                    'model' => $model,
+                    'model'         => $model,
                 ]
             );
         }

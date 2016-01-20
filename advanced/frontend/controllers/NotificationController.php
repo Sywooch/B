@@ -24,8 +24,8 @@ class NotificationController extends BaseController
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'allow'   => true,
-                        'roles'   => ['@'],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
             ],
@@ -34,7 +34,7 @@ class NotificationController extends BaseController
 
     public function actionIndex()
     {
-        $count = NotificationEntity::find()->where(['receiver' => Yii::$app->user->id])->count(1);
+        $count = UserService::getUserNotificationCount(Yii::$app->user->id);
 
         $pages = new Pagination(
             [
@@ -50,6 +50,8 @@ class NotificationController extends BaseController
             )->offset(
                 $pages->offset
             )->orderBy('created_at DESC')->asArray()->all();
+
+            //Updater::clearNotifyCount(Yii::$app->user->id);
         } else {
             $data = [];
         }
@@ -57,9 +59,6 @@ class NotificationController extends BaseController
         $data = NotificationService::makeUpNotification($data);
         //print_r($data);
         //exit;
-
-        #
-        Updater::clearNotifyCount(Yii::$app->user->id);
 
         return $this->render(
             'index',

@@ -16,9 +16,6 @@ use yii\db\ActiveRecord;
 
 class UserEventLogEntity extends UserEventLog
 {
-    const STATUS_PUBLIC = 'yes';
-    const STATUS_PRIVATE = 'no';
-
     const STATUS_ENABLE = 'enable';
     const STATUS_DISABLE = 'disable';
 

@@ -1745,17 +1745,16 @@ body.modal-open .topframe {
 #global-nav .count-num, #global-nav .has-unread__count {
     position: absolute;
     top: 10px;
-    right: 0px;
+    right: 5px;
     padding: 0 4px;
     background-color: #ED1C24;
-    max-width: 28px;
-    min-width: 16px;
-    height: 14px;
-    line-height: 14px;
-    font-size: 12px;
+    width: 10px;
+    height: 10px;
+    line-height: 10px;
+    font-size: 0px;
     font-weight: 400;
     text-align: center;
-    color: #fff;
+    color: #ED1C24;
     border-radius: 14px
 }
 

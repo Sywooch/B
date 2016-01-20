@@ -52,10 +52,10 @@ class CommentBehavior extends BaseBehavior
             new UserAssociationEvent(
                 [
                     'type' => $this->owner->associate_type,
-                    'id'   => $this->owner->associate_id,
+                    'id'   => $this->owner->id,
                     'data' => [
                         'question_id'  => $this->owner->getAnswer()->question_id,
-                        'associate_id' => $this->owner->associate_id,
+                        'answer_id' => $this->owner->associate_id,
                     ],
                 ]
             )
@@ -78,7 +78,7 @@ class CommentBehavior extends BaseBehavior
                     'id'   => $this->owner->id,
                     'data' => [
                         'question_id' => $this->owner->getAnswer()->question_id,
-                        'associate_id'   => $this->owner->associate_id,
+                        'answer_id'   => $this->owner->associate_id,
                     ],
                 ]
             )

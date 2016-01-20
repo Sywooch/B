@@ -85,7 +85,7 @@ class VoteBehavior extends BaseBehavior
 
                     //关联数据
                     $comment = CommentService::getCommentByCommentId($this->owner->associate_id);
-                    $answer = AnswerService::getAnswerByAnswerId($comment->answer_id);
+                    $answer = AnswerService::getAnswerByAnswerId($comment->associate_id);
                     $associate_data = [
                         'question_id' => $answer->question_id,
                         'answer_id'   => $answer->id,
@@ -172,7 +172,7 @@ class VoteBehavior extends BaseBehavior
 
                 //关联数据
                 $comment = CommentService::getCommentByCommentId($this->owner->associate_id);
-                $answer = AnswerService::getAnswerByAnswerId($comment->answer_id);
+                $answer = AnswerService::getAnswerByAnswerId($comment->associate_id);
                 $associate_data = [
                     'question_id' => $answer->question_id,
                     'answer_id'   => $answer->id,

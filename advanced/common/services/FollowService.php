@@ -17,6 +17,7 @@ use common\entities\FollowUserEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use common\helpers\TimeHelper;
+use common\models\CacheUserModel;
 use Yii;
 
 class FollowService extends BaseService
@@ -701,7 +702,8 @@ class FollowService extends BaseService
             return false;
         }
 
-        $user = TagService::getTagByTagId($follow_user_id);
+        /* @var $user CacheUserModel */
+        $user = UserService::getUserById($follow_user_id);
 
         if (!$user) {
             throw new NotFoundModelException('user', $follow_user_id);
@@ -709,7 +711,7 @@ class FollowService extends BaseService
 
         $cache_key = [RedisKey::REDIS_KEY_USER_FANS_LIST, $follow_user_id];
 
-        if ($user['count_follow'] < self::MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
+        if ($user->count_follow_user < self::MAX_FOLLOW_USER_COUNT_BY_USING_CACHE) {
             self::ensureUserFansHasCached($cache_key, $follow_user_id);
 
             //小于1000，则使用缓存

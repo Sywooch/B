@@ -68,7 +68,8 @@ $this->endBlock();
                         </td>
                         <td><?= TemplateHelper::showHumanTime($item->created_at) ?></td>
                         <td><?= TemplateHelper::showUsername($item->created_by) ?></td>
-                        <td><em class="text-muted"><?= $item->reason ?></em></td>
+                        <td><em class="text-muted"><?= $item->reason ? $item->reason :
+                                    '添加回答' ?></em></td>
                         <td><a href="#r<?= $item->id ?>"
                                class="check-revision btn btn-xs btn-default collapsed"
                                data-toggle="collapse"
@@ -79,12 +80,7 @@ $this->endBlock();
                         style="height: 0px;">
                         <td colspan="5">
                             <div class="revision-content">
-                                <h1 class="title h3"><?= $item->subject ?></h1>
-
                                 <div class="fmt"><?= $item->content ?></div>
-                                <ul class="taglist--inline mb0">
-                                    <?= TemplateHelper::showTagLiLabelByName($item->tags) ?>
-                                </ul>
                             </div>
                         </td>
                     </tr>

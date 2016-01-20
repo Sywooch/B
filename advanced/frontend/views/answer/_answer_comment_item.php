@@ -53,37 +53,23 @@ use yii\helpers\Url;
                 <?php else: ?>
                     评论
                 <?php endif; ?></li>
-            <?php if ($item->created_by != Yii::$app->user->id) : ?>
-        <li>
-        <?php if ($item->is_anonymous != CommentEntity::STATUS_ANONYMOUS): ?>
-            <?= Html::a(
-                '回复',
-                'javascritp:;',
-                [
-                    'title'           => '回复Ta',
-                    'data-do-comment' => true,
-                    'data-answer-id'  => $item->associate_id,
-                    'data-username'   => TemplateHelper::showUsername(
-                        $item->created_by,
-                        false
-                    ),
-                ]
-            ) ?>
-            </li>
-        <?php endif; ?>
-            <li><span class="pull-right commentTools hover-show-obj">
-                        <?= Html::a(
-                            '举报',
-                            'javascritp:;',
-                            [
-                                'title'             => '举报',
-                                'data-do-report'    => true,
-                                'data-object'       => 'comment',
-                                'data-associate_id' => $item->id,
-                            ]
-                        ) ?>
-                </span>
-                <?php endif; ?></li>
+            <?php if ($item->created_by != Yii::$app->user->id && $item->is_anonymous != CommentEntity::STATUS_ANONYMOUS) : ?>
+                <li>
+                    <?= Html::a(
+                        '回复',
+                        'javascritp:;',
+                        [
+                            'title'           => '回复Ta',
+                            'data-do-comment' => true,
+                            'data-answer-id'  => $item->associate_id,
+                            'data-username'   => TemplateHelper::showUsername(
+                                $item->created_by,
+                                false
+                            ),
+                        ]
+                    ) ?>
+                </li>
+            <?php endif; ?>
 
 
             <? if ($item->created_by == Yii::$app->user->id): ?>

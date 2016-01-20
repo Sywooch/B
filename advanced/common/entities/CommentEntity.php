@@ -16,6 +16,7 @@ use common\components\Error;
 use common\models\Comment;
 use yii\db\ActiveRecord;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class CommentEntity extends Comment
 {
@@ -51,6 +52,16 @@ class CommentEntity extends Comment
                 'class' => CommentBehavior::className(),
             ],
         ];
+    }
+
+    public function scenarios()
+    {
+        return ArrayHelper::merge(
+            parent::scenarios(),
+            [
+                'common_edit' => ['update_reason', 'content'],
+            ]
+        );
     }
 
     /**
