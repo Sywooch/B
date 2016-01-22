@@ -9,7 +9,7 @@
 namespace common\components;
 
 use common\config\RedisKey;
-use common\entities\CommentEntity;
+use common\entities\AnswerCommentEntity;
 use common\entities\AnswerEntity;
 use common\entities\FavoriteCategoryEntity;
 use common\entities\QuestionEntity;
@@ -24,12 +24,10 @@ class Updater extends BaseUpdater
 {
     public static function clearNotifyCount($user_id)
     {
-        $result = self::build()->sync(true)->table(UserProfileEntity::tableName())->set(
+        $result = self::build()->table(UserProfileEntity::tableName())->set(
             [
                 'count_notification' => 0,
             ]
-        )->where(
-            ['user_id' => $user_id]
         )->execute();
 
         if ($result && UserService::ensureUserHasCached($user_id)) {
@@ -161,8 +159,8 @@ class Updater extends BaseUpdater
 
     public static function setAnswerCommentAnonymous($comment_id)
     {
-        $result = self::build()->sync(true)->table(CommentEntity::tableName())->set(
-            ['is_anonymous' => CommentEntity::STATUS_ANONYMOUS]
+        $result = self::build()->sync(true)->table(AnswerCommentEntity::tableName())->set(
+            ['is_anonymous' => AnswerCommentEntity::STATUS_ANONYMOUS]
         )->where(
             ['id' => $comment_id]
         )->execute();
@@ -174,15 +172,14 @@ class Updater extends BaseUpdater
 
     public static function cancelAnswerCommentAnonymous($comment_id)
     {
-        $result = self::build()->sync(true)->table(CommentEntity::tableName())->set(
-            ['is_anonymous' => CommentEntity::STATUS_UNANONYMOUS]
+        $result = self::build()->sync(true)->table(AnswerCommentEntity::tableName())->set(
+            ['is_anonymous' => AnswerCommentEntity::STATUS_UNANONYMOUS]
         )->where(
             ['id' => $comment_id]
         )->execute();
 
         return $result;
     }
-
     ########## user ##########
     public static function adjustUserGrade($user_id, $new_grade_id)
     {

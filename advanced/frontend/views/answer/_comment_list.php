@@ -5,7 +5,7 @@
  * Date: 2015/11/8
  * Time: 13:17
  */
-use common\entities\CommentEntity;
+use common\entities\AnswerCommentEntity;
 use common\helpers\TemplateHelper;
 use common\widgets\UEditor\UEditor;
 use yii\bootstrap\Html;
@@ -87,7 +87,7 @@ use yii\widgets\LinkPager;
                     'id'                  => 'btn_ajax_answer',
                     'data-do-ajax-submit' => true,
                     'data-href'           => Url::to(
-                        ['comment/create', 'answer_id' => $answer_data['id']]
+                        ['answer-comment/create', 'answer_id' => $answer_data['id']]
                     ),
                     'data-on-done'        => 'afterCommentCreateSuccess',
                     'data-form-id'        => 'comment-form-' . $answer_data['id'],
@@ -102,8 +102,8 @@ use yii\widgets\LinkPager;
                 'is_anonymous'
             )->checkbox(
                 [
-                    'value'   => CommentEntity::STATUS_ANONYMOUS,
-                    'uncheck' => CommentEntity::STATUS_UNANONYMOUS,
+                    'value'   => AnswerCommentEntity::STATUS_ANONYMOUS,
+                    'uncheck' => AnswerCommentEntity::STATUS_UNANONYMOUS,
                 ]
             ) ?>
         </div>

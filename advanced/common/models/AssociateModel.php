@@ -14,10 +14,8 @@ class AssociateModel extends Model
 {
     const TYPE_QUESTION = 'question';
     const TYPE_ANSWER = 'answer';
-    const TYPE_BLOG = 'blog';
+    const TYPE_ARTICLE = 'article';
+    const TYPE_ANSWER_COMMENT = 'answer_comment';
     const YPE_USER = 'user';
     const TYPE_TAG = 'tag';
-
-    const TYPE_ANSWER_COMMENT = 'answer_comment';
-    const TYPE_BLOG_COMMENT = 'blog_comment';
 }

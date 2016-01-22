@@ -569,7 +569,7 @@ class TestController extends BaseController
         $type = 'question';
         $associate_id = 198;
         $user_id = 347;
-        $vote = VoteService::getQuestionVoteStatus($type, $associate_id, $user_id);
+        $vote = VoteService::getUserVoteStatus($type, $associate_id, $user_id);
         var_dump($vote);
     }
 

@@ -14,7 +14,7 @@ use common\components\Notifier;
 use common\components\Updater;
 use common\components\user\UserAssociationEvent;
 use common\config\RedisKey;
-use common\entities\CommentEntity;
+use common\entities\AnswerCommentEntity;
 use common\entities\AnswerVersionEntity;
 use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
@@ -301,7 +301,7 @@ class AnswerBehavior extends BaseBehavior
     private function dealWithAnswerCommentDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $answer_comments = CommentEntity::find()->where(
+        $answer_comments = AnswerCommentEntity::find()->where(
             [
                 'answer_id' => $this->owner->id,
             ]

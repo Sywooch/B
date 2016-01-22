@@ -103,7 +103,7 @@ class AnswerEntity extends Answer
      */
     public function getAnswerComments()
     {
-        return $this->hasMany(CommentEntity::className(), ['answer_id' => 'id']);
+        return $this->hasMany(AnswerCommentEntity::className(), ['answer_id' => 'id']);
     }
 
     /**

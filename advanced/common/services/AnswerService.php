@@ -11,12 +11,10 @@ namespace common\services;
 use common\components\Updater;
 use common\config\RedisKey;
 use common\entities\AnswerVersionEntity;
-use common\entities\CommentEntity;
 use common\entities\UserEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use common\helpers\ArrayHelper;
-use common\models\AssociateModel;
 use common\models\CacheAnswerModel;
 use yii\helpers\Url;
 use common\components\Judger;
@@ -143,36 +141,31 @@ class AnswerService extends BaseService
 
     public static function getAnswerUserIdsByQuestionId($question_id, $limit = 100)
     {
-        $sql = sprintf(
-            "SELECT
+        $sql = "SELECT
                   GROUP_CONCAT(
                     CONCAT(
                       a.`created_by`,
                       ',',
-                      c.`created_by`
+                      ac.`created_by`
                     )
                   ) as user_ids
                 FROM
-                  `%s` a
-                  LEFT JOIN `%s` c
-                    ON a.`id` = c.`associate_id` AND c.`associate_type`=:associate_type
+                  `answer` a
+                  LEFT JOIN `answer_comment` ac
+                    ON a.`id` = ac.`answer_id`
                 WHERE a.`question_id` =:question_id
                 AND a.is_anonymous=:not_anonymous
-                AND c.is_anonymous=:not_anonymous
-                ORDER BY a.`created_at` DESC, c.`created_at` DESC
+                AND ac.is_anonymous=:not_anonymous
+                ORDER BY a.`created_at` DESC, ac.`created_at` DESC
                 LIMIT :limit ;
-                ",
-            AnswerEntity::tableName(),
-            CommentEntity::tableName()
-        );
+                ";
 
         $command = AnswerEntity::getDb()->createCommand(
             $sql,
             [
-                ':associate_type' => AssociateModel::TYPE_ANSWER_COMMENT,
-                ':not_anonymous'  => AnswerEntity::STATUS_UNANONYMOUS,
-                ':question_id'    => $question_id,
-                ':limit'          => $limit,
+                ':not_anonymous' => AnswerEntity::STATUS_UNANONYMOUS,
+                ':question_id'   => $question_id,
+                ':limit'         => $limit,
             ]
         );
 
