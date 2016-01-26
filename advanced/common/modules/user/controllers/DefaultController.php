@@ -48,7 +48,7 @@ class DefaultController extends BaseController
         $is_followed = FollowService::checkUseIsFollowedUser($user_id, Yii::$app->user->id);
 
         if ($is_followed) {
-            $result = FollowService::removeFollowUser($user_id, Yii::$app->user->id);
+            $result = FollowService::removeFollowUser([$user_id], Yii::$app->user->id);
         } else {
             $result = FollowService::addFollowUser($user_id, Yii::$app->user->id);
         }
@@ -65,7 +65,7 @@ class DefaultController extends BaseController
         }
 
         return $this->renderPartial(
-            'profile/_user_follow',
+            '/profile/_user_follow',
             [
                 'id'          => $user_id,
                 'is_followed' => $is_followed,

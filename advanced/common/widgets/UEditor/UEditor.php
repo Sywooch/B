@@ -30,15 +30,22 @@ class UEditor extends BaseUEditor
             ]
         );
         //百度应用的APIkey，每个站长必须首先去百度官网注册一个key后方能正常使用app功能，注册介绍，http://app.baidu.com/static/cms/getapikey.html
-        $this->config['webAppKey '] = false;
+        $this->config['webAppKey '] = 'sIZCSuT04xkWx58hGspHiQ63'; //通用浏览器AK
 
         //是否启用元素路径，默认是显示
+        $this->config['charset'] = 'utf-8';
+        //是否启用元素路径，默认是显示
         $this->config['elementPathEnabled'] = false;
+        //粘贴只保留标签，去除标签所有属性
+        //$this->config['retainOnlyLabelPasted'] = true;
+        //是否默认为纯文本粘贴。false为不使用纯文本粘贴，true为使用纯文本粘贴
+        $this->config['pasteplain'] = true;
+        $this->config['wordOverFlowMsg'] = '<span style="color:red;">你输入的字符个数已经超出最大允许值，请您修改后再提交！</span>';
 
         switch ($this->style) {
             case 'answer' :
+                $this->config['maximumWords'] = 100000;
                 $this->config['initialFrameHeight'] = 150;
-
                 $this->config['toolbars'] = [
                     [
                         'fullscreen',
@@ -76,7 +83,7 @@ class UEditor extends BaseUEditor
                 ];
                 break;
             case 'comment':
-                $this->config['maximumWords'] = 1000;
+                $this->config['maximumWords'] = 10000;
                 $this->config['initialFrameHeight'] = 80;
                 $this->config['toolbars'] = [
                     [
@@ -230,6 +237,7 @@ UEDITOR;
             [
                 'answer',
                 'comment',
+                'comment_update',
             ]
         )) {
             AtWhoAsset::register($this->getView());

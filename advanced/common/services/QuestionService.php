@@ -361,10 +361,11 @@ class QuestionService extends BaseService
         }
 
         $question_ids = $query->column();
+
         if ($question_ids) {
             $question_list = QuestionService::getQuestionListByQuestionIds($question_ids);
         } else {
-            $question_list = false;
+            $question_list = [];
         }
 
         return $question_list;

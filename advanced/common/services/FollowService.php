@@ -566,11 +566,13 @@ class FollowService extends BaseService
      * @return bool
      * @throws \Exception
      */
-    public static function removeFollowUser(array $follow_user_ids, $user_id = null)
+    public static function removeFollowUser($follow_user_ids, $user_id = null)
     {
         if (empty($follow_user_ids)) {
             return Error::set(Error::TYPE_SYSTEM_PARAMS_IS_EMPTY, ['user_id,follow_user_id']);
         }
+
+        $follow_user_ids = is_array($follow_user_ids) ? $follow_user_ids : [$follow_user_ids];
 
         #delete
         /* @var $model FollowUserEntity */

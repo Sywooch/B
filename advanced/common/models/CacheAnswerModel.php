@@ -8,8 +8,14 @@
 
 namespace common\models;
 
+use common\services\QuestionService;
 use Yii;
 
+/**
+ * Class CacheAnswerModel
+ * @package common\models
+ * @property string $question
+ */
 class CacheAnswerModel extends BaseCacheModel
 {
     public $id;
@@ -27,4 +33,7 @@ class CacheAnswerModel extends BaseCacheModel
     public $is_anonymous = 'no';
     public $is_fold = 'no';
     public $vote_status = false;
+    public $question = null;
+
+
 }

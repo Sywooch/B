@@ -215,7 +215,7 @@ return [
     ],
     'controllerMap' => [
         'ueditor' => [
-            'class'     => 'crazydb\ueditor\UEditorController',
+            'class'     => 'common\controllers\UEditorController',
             'thumbnail' => false,//如果将'thumbnail'设置为空，将不生成缩略图。
             'watermark' => [    //默认不生存水印
                 'path'  => '', //水印图片路径
@@ -224,14 +224,38 @@ return [
             'zoom'      => ['height' => 500, 'width' => 500], //缩放，默认不缩放
             'config'    => [
                 //server config @see http://fex-team.github.io/ueditor/#server-config
+                //上传保存路径,可以自定义保存路径和文件名格式
                 'imagePathFormat'      => '/uploads/tmp_attachments/image/{yyyy}{mm}{dd}/{time}{rand:6}',
+                //涂鸦图片上传路径
                 'scrawlPathFormat'     => '/uploads/tmp_attachments/image/{yyyy}{mm}{dd}/{time}{rand:6}',
+                //截图工具上传
                 'snapscreenPathFormat' => '/uploads/tmp_attachments/image/{yyyy}{mm}{dd}/{time}{rand:6}',
+                //抓取远程图片路径
                 'catcherPathFormat'    => '/uploads/tmp_attachments/image/{yyyy}{mm}{dd}/{time}{rand:6}',
+                //上传视频路径
                 'videoPathFormat'      => '/uploads/tmp_attachments/video/{yyyy}{mm}{dd}/{time}{rand:6}',
+                //上传文件路径
                 'filePathFormat'       => '/uploads/tmp_attachments/file/{yyyy}{mm}{dd}/{rand:4}_{filename}',
+                //列出指定目录下的图片
                 'imageManagerListPath' => '/uploads/tmp_attachments/image/',
+                //列出指定目录下的文件
                 'fileManagerListPath'  => '/uploads/tmp_attachments/file/',
+                //上传图片格式
+                'imageAllowFiles'      => [".png", ".jpg", ".gif"],
+                //上传文件格式
+                'fileAllowFiles'       => [
+                    ".doc",
+                    ".docx",
+                    ".xls",
+                    ".xlsx",
+                    ".ppt",
+                    ".pptx",
+                    ".pdf",
+                    ".txt",
+                    ".md",
+                ],
+
+
             ],
         ],
     ],

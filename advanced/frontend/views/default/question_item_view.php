@@ -31,29 +31,20 @@ use yii\helpers\Html;
                 <li>
                     <?= TemplateHelper::showUsername($item->created_by) ?>
                     <span class="split"></span>
-                    <?= Html::a(
-                            TemplateHelper::showHumanTime(
-                                $item->created_at
-                            ),
-                            ['question/view', 'id' => $item->id],
-                            [
-                                    'class' => 'askDate',
-
-                            ]
-                    ) ?>
+                    <?= TemplateHelper::showHumanTime($item->created_at) ?>
                 </li>
             </ul>
             <h2 class="title">
                 <?= Html::a(
                     $item->subject,
-                        [
-                                'question/view',
-                            'id' => $item->id,
+                    [
+                        '/question/view',
+                        'id' => $item->id,
 
-                        ],
-                        [
-                                'target' => '_blank',
-                        ]
+                    ],
+                    [
+                        'target' => '_blank',
+                    ]
                 ) ?>
             </h2>
             <ul class="taglist--inline ib">

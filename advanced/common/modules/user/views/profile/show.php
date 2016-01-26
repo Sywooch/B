@@ -64,10 +64,7 @@ $this->beginBlock('top-header');
                             [
                                 'id'          => $user->id,
                                 'count_fans'  => $user->count_fans,
-                                'is_followed' => FollowService::checkUseIsFollowedUser(
-                                    $user->id,
-                                    Yii::$app->user->id
-                                ),
+                                'is_followed' => $follow_status,
                             ]
                         ) ?>
                     <?php } else { ?>
@@ -88,7 +85,7 @@ $this->beginBlock('top-header');
                         <?= Html::a(
                             Html::img(UserService::getAvatar($fans->id, 24, true), ['class' => 'avatar-24']),
                             [
-                                'user/profile/show',
+                                '/user/profile/show',
                                 'username'
                                 => $fans->username,
                             ],

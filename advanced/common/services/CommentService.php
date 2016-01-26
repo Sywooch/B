@@ -38,16 +38,14 @@ class CommentService extends BaseService
 
         $model = new CommentEntity;
 
-        if ($model->load(
-                [
-                    'answer_id'    => $answer_id,
-                    'content'      => $content,
-                    'is_anonymous' => $is_anonymous,
-                    'answer_id'    => $answer_id,
-                ],
-                ''
-            ) && $model->save()
-        ) {
+        $data = [
+            'associate_type' => AssociateModel::TYPE_ANSWER_COMMENT,
+            'associate_id'   => $answer_id,
+            'content'        => $content,
+            'is_anonymous'   => $is_anonymous,
+        ];
+
+        if ($model->load($data, '') && $model->save()) {
             return true;
         } else {
             return false;

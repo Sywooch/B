@@ -562,12 +562,12 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function answerCommentAddLike($answer_comment_id)
+    public static function answerCommentAddLike($comment_id)
     {
         Yii::trace('增加评论喜欢数量', 'counter');
 
         //评论没有使用缓存，不使用队列更新
-        $result = self::build()->sync(true)->set(CommentEntity::tableName(), $answer_comment_id)->value(
+        $result = self::build()->sync(true)->set(CommentEntity::tableName(), $comment_id)->value(
             'count_like',
             1
         )->execute();
@@ -575,11 +575,11 @@ class Counter extends BaseCounter
         return $result;
     }
 
-    public static function answerCommentCancelLike($answer_id)
+    public static function answerCommentCancelLike($comment_id)
     {
         Yii::trace('减少评论喜欢数量', 'counter');
         //评论没有使用缓存，不使用队列更新
-        $result = self::build()->sync(true)->set(CommentEntity::tableName(), $answer_id)->value(
+        $result = self::build()->sync(true)->set(CommentEntity::tableName(), $comment_id)->value(
             'count_like',
             -1
         )->execute();

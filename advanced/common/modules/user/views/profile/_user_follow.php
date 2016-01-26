@@ -24,7 +24,7 @@ use yii\widgets\Pjax;
             $count_fans,
             [''],
             [
-                'class' => 'funsCount',
+                'class' => 'fansCount',
             ]
         ); ?>
     </strong> 个粉丝

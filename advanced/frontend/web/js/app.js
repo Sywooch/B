@@ -164,7 +164,7 @@ app.ajax = {
 app.comment = {
     //插入AT
     'insertAT': function (answer_id, username) {
-        UE.getEditor('answercommententity-content-' + answer_id).execCommand("inserthtml", '@' + username + '&nbsp;', true);
+        UE.getEditor('commententity-content-' + answer_id).execCommand("inserthtml", '@' + username + '&nbsp;', true);
     }
 };
 

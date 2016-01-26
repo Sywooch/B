@@ -15,10 +15,7 @@ use common\components\Updater;
 use common\components\user\UserAssociationEvent;
 use common\config\RedisKey;
 use common\entities\CommentEntity;
-use common\entities\AnswerVersionEntity;
-use common\entities\NotificationEntity;
 use common\entities\QuestionEntity;
-use common\entities\UserEventLogEntity;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
 use common\models\AssociateModel;
@@ -303,7 +300,8 @@ class AnswerBehavior extends BaseBehavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $answer_comments = CommentEntity::find()->where(
             [
-                'answer_id' => $this->owner->id,
+                'associate_type' => AssociateModel::TYPE_ANSWER_COMMENT,
+                'associate_id' => $this->owner->id,
             ]
         )->all();
 

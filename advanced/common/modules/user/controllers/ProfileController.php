@@ -10,6 +10,7 @@ namespace common\modules\user\controllers;
 
 use common\helpers\ArrayHelper;
 use common\helpers\TimeHelper;
+use common\models\CacheAnswerModel;
 use common\services\AnswerService;
 use common\services\FollowService;
 use common\services\QuestionService;
@@ -68,6 +69,10 @@ class ProfileController extends BaseProfileController
         $tag_list = UserService::getUserBeGoodAtTags($user->id);
         $fans_list = UserService::getUserFansList($user->id, 1, 8);
 
+        $follow_status = FollowService::checkUseIsFollowedUser(
+            $user->id,
+            Yii::$app->user->id
+        );
 
         return $this->render(
             'show',
@@ -81,18 +86,21 @@ class ProfileController extends BaseProfileController
                 'user_event_list'     => $user_event_list,
                 'tag_list'            => $tag_list,
                 'fans_list'           => $fans_list,
+                'follow_status'       => $follow_status,
             ]
         );
     }
 
     public function actionOwnerQuestion($user_id)
     {
-        $data = QuestionService::getQuestionListByUserId($user_id, 1, 20);
+        $user = UserService::getUserById($user_id);
+        $data = QuestionService::getQuestionListByUserId($user_id, 1, 30);
 
         if ($data) {
             $html = $this->renderPartial(
                 '_question',
                 [
+                    'user' => $user,
                     'data' => $data,
                 ]
             );
@@ -123,12 +131,24 @@ class ProfileController extends BaseProfileController
 
     public function actionAnsweredQuestion($user_id)
     {
+        $user = UserService::getUserById($user_id);
         $data = AnswerService::getAnswerListByUserId($user_id, 1, 20);
+
+        if ($data) {
+            $question_list = QuestionService::getQuestionListByQuestionIds(
+                ArrayHelper::getColumn($data, 'question_id')
+            );
+            foreach ($data as $item) {
+                /* @var $item CacheAnswerModel */
+                $item->question = $question_list[$item->question_id];
+            }
+        }
 
         if ($data) {
             $html = $this->renderPartial(
                 '_answer',
                 [
+                    'user' => $user,
                     'data' => $data,
                 ]
             );
