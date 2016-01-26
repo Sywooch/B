@@ -132,7 +132,7 @@ class QuestionController extends BaseController
 
     public function actionVote($id, $vote)
     {
-        $vote_status = VoteService::getQuestionVoteStatus($id, Yii::$app->user->id);
+        $vote_status = VoteService::getUseQuestionVoteStatus($id, Yii::$app->user->id);
 
         if ($vote_status !== false) {
             VoteService::updateQuestionVote(
@@ -265,8 +265,10 @@ class QuestionController extends BaseController
     {
         $question_data = QuestionService::getQuestionByQuestionId($id);
         
-        if (ServerHelper::checkIsSpider() &&
-            !in_array($question_data['status'], explode(',', QuestionEntity::STATUS_DISPLAY_FOR_SPIDER))
+        if (ServerHelper::checkIsSpider() && !in_array(
+                $question_data['status'],
+                explode(',', QuestionEntity::STATUS_DISPLAY_FOR_SPIDER)
+            )
         ) {
             throw new NotFoundHttpException();
         }
@@ -313,7 +315,7 @@ class QuestionController extends BaseController
 
         foreach ($answers_data as &$answer) {
             if (!Yii::$app->user->isGuest) {
-                $answer['vote_status'] = VoteService::getAnswerVoteStatus($answer['id'], Yii::$app->user->id);
+                $answer['vote_status'] = VoteService::getUseAnswerVoteStatus($answer['id'], Yii::$app->user->id);
             } else {
                 $answer['vote_status'] = false;
             }
@@ -334,16 +336,16 @@ class QuestionController extends BaseController
             $is_favorite = FavoriteService::checkUseIsFavoriteQuestion($id, Yii::$app->user->id);
 
             //是否已对问题投票
-            $vote_status = VoteService::getQuestionVoteStatus($id, Yii::$app->user->id);
+            $vote_status = VoteService::getUseQuestionVoteStatus($id, Yii::$app->user->id);
         }
 
         #评论
         if ($answer_id && $comment_id) {
-            $comments_data = [CommentService::getCommentByCommentId($comment_id)];
+            $comments_data = [CommentService::getAnswerCommentByCommentId($comment_id)];
 
             foreach ($comments_data as &$comment) {
                 if (!Yii::$app->user->isGuest) {
-                    $comment['vote_status'] = VoteService::getAnswerCommentVoteStatus(
+                    $comment['vote_status'] = VoteService::getUseAnswerCommentVoteStatus(
                         $comment['id'],
                         Yii::$app->user->id
                     );

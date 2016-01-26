@@ -28,7 +28,7 @@ class SecurityController extends BaseSecurityController
 
     public function actionLogout()
     {
-        Yii::$app->user->logout();
+        Yii::$app->getUser()->logout();
         if (strpos(Yii::$app->request->getReferrer(), 'logout') === false) {
             Url::remember(Yii::$app->request->getReferrer());
         }

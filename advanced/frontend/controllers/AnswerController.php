@@ -4,12 +4,11 @@ namespace frontend\controllers;
 
 use common\components\Error;
 use common\controllers\BaseController;
-use common\entities\CommentEntity;
+use common\entities\AnswerCommentEntity;
 use common\entities\AnswerVersionEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use common\exceptions\PermissionDeniedException;
-use common\models\CacheCommentModel;
 use common\services\AnswerService;
 use common\services\CommentService;
 use common\services\QuestionService;
@@ -213,7 +212,7 @@ class AnswerController extends BaseController
 
     public function actionGetCommentList($id)
     {
-        $comment_form = new CommentEntity();
+        $comment_form = new AnswerCommentEntity();
         $answer_data = AnswerService::getAnswerByAnswerId($id);
         $question_data = QuestionService::getQuestionByQuestionId($answer_data['question_id']);
 
@@ -238,16 +237,15 @@ class AnswerController extends BaseController
         }
 
         foreach ($comments_data as &$comment) {
-            /* @var $comment CacheCommentModel */
             if (!Yii::$app->user->isGuest) {
-                $comment->vote_status = VoteService::getAnswerCommentVoteStatus(
-                    $comment->id,
+                $comment['vote_status'] = VoteService::getUseAnswerCommentVoteStatus(
+                    $comment['id'],
                     Yii::$app->user->id
                 );
             } else {
-                $comment->vote_status = false;
+                $comment['vote_status'] = false;
             }
-            $comment->count_vote = $comment->count_like - $comment->count_hate;
+            $comment['count_vote'] = $comment['count_like'] - $comment['count_hate'];
         }
 
 
@@ -284,7 +282,7 @@ class AnswerController extends BaseController
 
     public function actionVote($id, $vote)
     {
-        $vote_status = VoteService::getAnswerVoteStatus($id, Yii::$app->user->id);
+        $vote_status = VoteService::getUseAnswerVoteStatus($id, Yii::$app->user->id);
 
         if ($vote_status !== false) {
             VoteService::updateAnswerVote(
@@ -352,7 +350,7 @@ class AnswerController extends BaseController
             'version_repository',
             [
                 'question' => $question,
-                'answer'   => $answer,
+                'answer' => $answer,
                 'model'    => $model,
                 'pages'    => $pages,
             ]

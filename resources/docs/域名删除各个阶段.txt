@@ -1,0 +1,22 @@
+COM过期后首先
+
+40天宽限期（grace period）
+30天赎回期（redemption period），这是域名只有原注册人可以赎回，但是要有费用
+5天的删除期（pending delete），这个时候是谁了注册不了，谁也续不了。
+
+
+clientDeleteProhibited 
+禁止更新，禁止删除，禁止转移。是你的域名注册商设置的。
+
+
+clientDeleteProhibited
+如果域名在这个状态，则需要解除后才可以删除域名。为防自己误删域名，这个状态可以保留。
+
+clientRenewProhibited：
+域名在手，一般还是要续费，所以这个状态可以不要。
+
+clientTransferProhibited：
+这个很重要，平时都要保持这个状态，只有在转移注册商的操作时才解除这个状态，而且转移成功后还是要锁住，目的是防止别人得到转移密码后转移你的域名。
+
+clientUpdateProhibited：
+这个是针对域名管理的，在这种状态下，你就不能去修改域名的DNS，或者做解析之类的操作。
