@@ -134,7 +134,13 @@ app.ajax = {
             // This is called by the link attribute 'data-on-done' => 'linkFormDone';
             // the form name is specified via 'data-form-id' => 'link_form'
             if (app.ajax.validate(response)) {
-                $('#answer-item-area').append(response.data.answer_item);
+                //回答成功后插入回答内容
+                if ($('#answer-item-area').length) {
+                    $('#answer-item-area').append(response.data.answer_item);
+                } else {
+                    $('#answer-pjax').append(response.data.answer_item);
+                }
+
                 $('#answer-form-area').html(response.data.answer_form);
             }
         },

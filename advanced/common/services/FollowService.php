@@ -430,7 +430,9 @@ class FollowService extends BaseService
             )
         )->execute();
 
-        Yii::error(sprintf('Batch Add Passive Follow Tag %s', $result), __FUNCTION__);
+        if ($result === false) {
+            Yii::error(sprintf('Batch Add Passive Follow Tag Error', $result), __FUNCTION__);
+        }
 
         return $result;
     }
