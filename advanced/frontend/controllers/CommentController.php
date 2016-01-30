@@ -4,9 +4,9 @@ namespace frontend\controllers;
 
 use common\components\Error;
 use common\controllers\BaseController;
-use common\entities\AnswerEntity;
 use common\entities\VoteEntity;
 use common\exceptions\ModelSaveErrorException;
+use common\exceptions\NotFoundModelException;
 use common\models\AssociateModel;
 use common\models\CacheCommentModel;
 use common\services\AnswerService;
@@ -179,7 +179,7 @@ class CommentController extends BaseController
 
     public function actionVote($id, $vote)
     {
-        $vote_status = VoteService::getAnswerCommentVoteStatus($id, Yii::$app->user->id);
+        $vote_status = VoteService::getCommentVoteStatus($id, Yii::$app->user->id);
 
         if ($vote_status == VoteEntity::VOTE_YES) {
             $result = VoteService::deleteAnswerCommentVote($id, Yii::$app->user->id);

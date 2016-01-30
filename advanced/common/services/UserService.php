@@ -13,6 +13,7 @@ use common\config\RedisKey;
 use common\entities\UserEventEntity;
 use common\entities\UserEventLogEntity;
 use common\exceptions\NotFoundModelException;
+use common\helpers\ArrayHelper;
 use common\helpers\AvatarHelper;
 use common\models\CacheTagModel;
 use common\models\CacheUserEventModel;
@@ -47,14 +48,9 @@ class UserService extends BaseService
         UserProfileEntity::updateAllCounters(['count_notification' => 1], ['user_id' => $user_ids]);
     }
 
-    public static function clearNotificationCount(array $user_ids)
+    public static function markAllNotificationRead($user_ids)
     {
         UserProfileEntity::updateAll(['count_notification' => 0], ['user_id' => $user_ids]);
-    }
-
-    public static function deleteAllNotification(array $user_ids)
-    {
-        UserProfileEntity::deleteAll(['user_id' => $user_ids]);
     }
 
     /**
@@ -509,7 +505,11 @@ class UserService extends BaseService
 
         //不是本人，只能查看公开事件
         if ($user_id != $view_user_id) {
-            $query->andWhere(['public' => UserEventLogEntity::STATUS_PUBLIC]);
+            $public_event_list = self::getUserPublicEventList();
+            if ($public_event_list) {
+                $public_user_event_id = ArrayHelper::getColumn($public_event_list, 'id');
+                $query->andWhere(['user_event_id' => $public_user_event_id]);
+            }
         }
 
         return $query->all();
@@ -525,6 +525,36 @@ class UserService extends BaseService
             return [];
         }
 
+        $user_event_list = self::getUserEventList();
+
+        $result = [];
+        foreach ($user_event_list as $event_id => $item) {
+            if (in_array($event_id, $user_event_ids)) {
+                $result[$event_id] = $item;
+            }
+        }
+
+        return $result;
+    }
+
+    public static function getUserPublicEventList()
+    {
+        $user_event_list = self::getUserEventList();
+
+        $result = [];
+        foreach ($user_event_list as $event_id => $item) {
+            /* @var $item CacheUserEventModel */
+            if ($item->public == UserEventEntity::PUBLIC_YES) {
+                $result[$event_id] = $item;
+            }
+        }
+
+        return $result;
+    }
+
+
+    public static function getUserEventList()
+    {
         $cache_user_model = new CacheUserEventModel();
 
         $cache_key = [RedisKey::REDIS_KEY_USER_EVENT_All];
@@ -535,19 +565,23 @@ class UserService extends BaseService
 
             $cache_data = [];
             foreach ($user_event_list as $user_event) {
-                $cache_data[$user_event['id']] = $cache_user_model->filter($user_event);
+                $cache_data[$user_event['id']] = $cache_user_model->build($cache_user_model->filter($user_event));
             }
 
             Yii::$app->redis->set($cache_key, $cache_data);
         }
 
-        $result = [];
-        foreach ($cache_data as $event_id => $item) {
-            if (in_array($event_id, $user_event_ids)) {
-                $result[$event_id] = $cache_user_model->build($item);
-            }
+        return $cache_data;
+    }
+
+    public static function getUserNotificationCount($user_id)
+    {
+        if (!$user_id) {
+            return 0;
         }
 
-        return $result;
+        $user = self::getUserById($user_id);
+
+        return $user->count_notification;
     }
 }

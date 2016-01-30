@@ -4,11 +4,12 @@ namespace frontend\controllers;
 
 use common\components\Error;
 use common\controllers\BaseController;
-use common\entities\AnswerCommentEntity;
+use common\entities\CommentEntity;
 use common\entities\AnswerVersionEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use common\exceptions\PermissionDeniedException;
+use common\models\CacheCommentModel;
 use common\services\AnswerService;
 use common\services\CommentService;
 use common\services\QuestionService;
@@ -19,7 +20,6 @@ use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
-use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -86,12 +86,6 @@ class AnswerController extends BaseController
         );
     }
 
-    /**
-     * Creates a new AnswerEntity model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @param $question_id
-     * @return mixed
-     */
     public function actionCreate($question_id)
     {
         $model = new AnswerEntity();
@@ -99,7 +93,6 @@ class AnswerController extends BaseController
         $model->type = AnswerEntity::TYPE_ANSWER;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
             $answer_data = $model->getAttributes();
             $answer_data['vote_status'] = false;
 
@@ -110,6 +103,7 @@ class AnswerController extends BaseController
                         'question_id' => $question_id,
                         'data'        => [$answer_data],
                         'pages'       => null,
+                        'comment_item_html' => '',
                     ]
                 ),
                 'answer_form' => $this->renderPartial(
@@ -212,7 +206,7 @@ class AnswerController extends BaseController
 
     public function actionGetCommentList($id)
     {
-        $comment_form = new AnswerCommentEntity();
+        $comment_form = new CommentEntity();
         $answer_data = AnswerService::getAnswerByAnswerId($id);
         $question_data = QuestionService::getQuestionByQuestionId($answer_data['question_id']);
 
@@ -237,15 +231,16 @@ class AnswerController extends BaseController
         }
 
         foreach ($comments_data as &$comment) {
+            /* @var $comment CacheCommentModel */
             if (!Yii::$app->user->isGuest) {
-                $comment['vote_status'] = VoteService::getUseAnswerCommentVoteStatus(
-                    $comment['id'],
+                $comment->vote_status = VoteService::getCommentVoteStatus(
+                    $comment->id,
                     Yii::$app->user->id
                 );
             } else {
-                $comment['vote_status'] = false;
+                $comment->vote_status = false;
             }
-            $comment['count_vote'] = $comment['count_like'] - $comment['count_hate'];
+            $comment->count_vote = $comment->count_like - $comment->count_hate;
         }
 
 
@@ -282,7 +277,7 @@ class AnswerController extends BaseController
 
     public function actionVote($id, $vote)
     {
-        $vote_status = VoteService::getUseAnswerVoteStatus($id, Yii::$app->user->id);
+        $vote_status = VoteService::getAnswerVoteStatus($id, Yii::$app->user->id);
 
         if ($vote_status !== false) {
             VoteService::updateAnswerVote(
@@ -350,7 +345,7 @@ class AnswerController extends BaseController
             'version_repository',
             [
                 'question' => $question,
-                'answer' => $answer,
+                'answer'   => $answer,
                 'model'    => $model,
                 'pages'    => $pages,
             ]

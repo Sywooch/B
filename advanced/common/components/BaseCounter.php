@@ -144,7 +144,7 @@ class BaseCounter extends Object
     public static function writeToDatabase($table, $primary_key_name, $id, $field, $value)
     {
         $sql = sprintf(
-            'UPDATE `%s` SET `%s`=`%s`+:value WHERE `%s`=:id',
+            'UPDATE `%s` SET `%s`=`%s`+(:value) WHERE `%s`=:id',
             $table,
             $field,
             $field,

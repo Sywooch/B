@@ -10,7 +10,6 @@ namespace common\modules\user\controllers;
 
 use common\controllers\BaseController;
 use common\entities\AnswerEntity;
-use common\entities\FollowQuestionEntity;
 use common\entities\QuestionEntity;
 use common\helpers\ArrayHelper;
 use common\services\FollowService;
@@ -19,7 +18,6 @@ use common\services\UserService;
 use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
 
 class DefaultController extends BaseController
 {
@@ -48,10 +46,12 @@ class DefaultController extends BaseController
         $is_followed = FollowService::checkUseIsFollowedUser($user_id, Yii::$app->user->id);
 
         if ($is_followed) {
-            $result = FollowService::removeFollowUser([$user_id], Yii::$app->user->id);
+            $result = FollowService::removeFollowUser($user_id, Yii::$app->user->id);
         } else {
             $result = FollowService::addFollowUser($user_id, Yii::$app->user->id);
         }
+
+        //var_dump($result);exit('~~~~');
 
         //操作成功，才能反转是否已关注
         if ($result) {
@@ -155,13 +155,11 @@ class DefaultController extends BaseController
             ]
         );
 
-        $question_ids = FollowQuestionEntity::find()->select(['follow_question_id'])->where(
-            [
-                'user_id' => Yii::$app->user->id,
-            ]
-        )->offset($pages->offset)->limit($pages->limit)->orderBy('created_at DESC')->column();
-
-        $question_list = QuestionService::getQuestionListByQuestionIds($question_ids);
+        $question_list = FollowService::getFollowQuestionListByUserId(
+            Yii::$app->user->id,
+            $pages->getPage(),
+            $pages->getPageSize()
+        );
 
         return $this->render(
             'question',
@@ -184,7 +182,6 @@ class DefaultController extends BaseController
             ]
         );
     }
-
 
 
 }

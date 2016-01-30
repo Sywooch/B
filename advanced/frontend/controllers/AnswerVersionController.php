@@ -2,16 +2,19 @@
 
 namespace frontend\controllers;
 
+use common\controllers\BaseController;
 use common\entities\AnswerVersionEntity;
 use common\services\AnswerService;
 use yii\data\Pagination;
+use Yii;
+use yii\web\NotFoundHttpException;
 
-class AnswerVersionController extends \yii\web\Controller
+class AnswerVersionController extends BaseController
 {
     public function actionIndex($answer_id)
     {
-        if(\Yii::$app->user->can($this->action->id)){
-
+        if (Yii::$app->user->can($this->action->id)) {
+            //
         }
 
         $query = AnswerVersionEntity::find()->where(['answer_id' => $answer_id]);
@@ -56,6 +59,4 @@ class AnswerVersionController extends \yii\web\Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
-
 }

@@ -10,17 +10,15 @@ namespace console\controllers;
 
 use common\entities\AnswerCommentEntity;
 use common\entities\AnswerEntity;
+use common\entities\CommentEntity;
 use common\entities\FavoriteEntity;
-use common\entities\FollowQuestionEntity;
-use common\entities\FollowTagEntity;
-use common\entities\FollowUserEntity;
+use common\entities\FollowEntity;
 use common\entities\QuestionEntity;
 use common\entities\QuestionTagEntity;
 use common\entities\TagEntity;
-use common\entities\UserEntity;
 use common\entities\UserProfileEntity;
 use common\entities\VoteEntity;
-use common\models\QuestionTag;
+use common\models\AssociateModel;
 use common\services\AnswerService;
 use common\services\QuestionService;
 use common\services\TagService;
@@ -255,12 +253,19 @@ class RepairCronJobController extends Controller
     {
         $update_field = 'count_follow';
 
-        $data = FollowQuestionEntity::find()->select(
+        $data = FollowEntity::find()->select(
             [
                 'total'       => 'count(1)',
-                'question_id' => 'follow_question_id',
+                'question_id' => 'associate_id',
             ]
-        )->limit($limit)->offset($offset)->groupBy('follow_question_id')->asArray()->all();
+        )->where(
+            [
+                'associate_type' => AssociateModel::TYPE_QUESTION,
+            ]
+        )->limit($limit)->offset($offset)->groupBy(
+            'associate_id'
+        )->asArray()
+                            ->all();
 
         if (empty($data)) {
             return false;
@@ -352,12 +357,14 @@ class RepairCronJobController extends Controller
     {
         $update_field = 'count_comment';
 
-        $data = AnswerCommentEntity::find()->select(
+        $data = CommentEntity::find()->select(
             [
-                'total' => 'count(1)',
-                'answer_id',
+                'total'     => 'count(1)',
+                'answer_id' => 'associate_id',
             ]
-        )->limit($limit)->offset($offset)->groupBy('answer_id')->asArray()->all();
+        )->where(['associate_type' => AssociateModel::TYPE_ANSWER])->limit($limit)->offset($offset)->groupBy(
+            'associate_id'
+        )->asArray()->all();
 
         if (empty($data)) {
             return false;
@@ -466,10 +473,10 @@ class RepairCronJobController extends Controller
     {
         $update_field = 'count_follow_user';
 
-        $data = FollowUserEntity::find()->select(
+        $data = FollowEntity::find()->select(
             [
-                'total' => 'count(1)',
-                'user_id',
+                'total'   => 'count(1)',
+                'user_id' => 'associate_id',
             ]
         )->limit($limit)->offset($offset)->groupBy('user_id')->asArray()->all();
 
@@ -486,10 +493,14 @@ class RepairCronJobController extends Controller
     {
         $update_field = 'count_follow_question';
 
-        $data = FollowQuestionEntity::find()->select(
+        $data = FollowEntity::find()->select(
             [
                 'total' => 'count(1)',
                 'user_id',
+            ]
+        )->where(
+            [
+                'associate_type' => AssociateModel::TYPE_QUESTION,
             ]
         )->limit($limit)->offset($offset)->groupBy('user_id')->asArray()->all();
 
@@ -506,12 +517,13 @@ class RepairCronJobController extends Controller
     {
         $update_field = 'count_follow_tag';
 
-        $data = FollowTagEntity::find()->select(
+        $data = FollowEntity::find()->select(
             [
                 'total'   => 'count(1)',
                 'user_id' => 'user_id',
             ]
-        )->limit($limit)->offset($offset)->groupBy('user_id')->asArray()->all();
+        )->where(['associate_type' => AssociateModel::TYPE_TAG])->limit($limit)->offset($offset)->groupBy('user_id')
+                            ->asArray()->all();
 
         if (empty($data)) {
             return false;
@@ -526,12 +538,15 @@ class RepairCronJobController extends Controller
     {
         $update_field = 'count_fans';
 
-        $data = FollowUserEntity::find()->select(
+        $data = FollowEntity::find()->select(
             [
                 'total'   => 'count(1)',
-                'user_id' => 'follow_user_id',
+                'user_id' => 'associate_id',
             ]
-        )->limit($limit)->offset($offset)->groupBy('follow_user_id')->asArray()->all();
+        )->where(['associate_type' => AssociateModel::TYPE_USER])->limit($limit)->offset($offset)->groupBy(
+            'associate_id'
+        )
+                            ->asArray()->all();
 
         if (empty($data)) {
             return false;
@@ -548,12 +563,16 @@ class RepairCronJobController extends Controller
     {
         $update_field = 'count_follow';
 
-        $data = FollowTagEntity::find()->select(
+        $data = FollowEntity::find()->select(
             [
                 'total'  => 'count(1)',
-                'tag_id' => 'follow_tag_id',
+                'tag_id' => 'associate_id',
             ]
-        )->limit($limit)->offset($offset)->groupBy('follow_tag_id')->asArray()->all();
+        )->where(
+            [
+                'associate_type' => AssociateModel::TYPE_TAG,
+            ]
+        )->limit($limit)->offset($offset)->groupBy('associate_id')->asArray()->all();
 
         if (empty($data)) {
             return false;

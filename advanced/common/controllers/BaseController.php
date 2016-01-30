@@ -8,12 +8,9 @@
 
 namespace common\controllers;
 
-use common\modules\user\models\LoginForm;
-use common\services\UserService;
 use Yii;
 use yii\helpers\Json;
 use yii\web\Response;
-use yii\web\UnauthorizedHttpException;
 
 class BaseController extends PerformanceRecordController
 {
@@ -36,6 +33,7 @@ class BaseController extends PerformanceRecordController
     /**
      * JSON输出
      * @param array $response ['code'=> '', 'msg' => '', 'data' => '']
+     * @return bool
      * @throws \yii\base\ExitException
      */
     public function jsonOut(array $response)
@@ -46,6 +44,7 @@ class BaseController extends PerformanceRecordController
         Yii::$app->response->data = $response;
         
         Yii::$app->end();
+        return true;
     }
     
     public function htmlOut($html)

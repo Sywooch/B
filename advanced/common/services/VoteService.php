@@ -35,9 +35,9 @@ class VoteService extends BaseService
         return self::addVote(AssociateModel::TYPE_ANSWER_COMMENT, $answer_comment_id, $user_id, $vote);
     }
 
-    public static function addArticleVote($question_id, $user_id, $vote)
+    public static function addBlogVote($question_id, $user_id, $vote)
     {
-        return self::addVote(AssociateModel::TYPE_ARTICLE, $question_id, $user_id, $vote);
+        return self::addVote(AssociateModel::TYPE_BLOG, $question_id, $user_id, $vote);
     }
 
     public static function addVote($type, $associate_id, $user_id, $vote)
@@ -76,7 +76,7 @@ class VoteService extends BaseService
 
     public static function updateArticleVote($question_id, $user_id, $vote)
     {
-        return self::updateVote(AssociateModel::TYPE_ARTICLE, $question_id, $user_id, $vote);
+        return self::updateVote(AssociateModel::TYPE_BLOG, $question_id, $user_id, $vote);
     }
 
     public static function updateVote($type, $associate_id, $user_id, $vote)
@@ -143,7 +143,7 @@ class VoteService extends BaseService
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
             case AssociateModel::TYPE_ANSWER_COMMENT:
-                $model = CommentService::getAnswerCommentByCommentId($associate_id);
+                $model = CommentService::getCommentByCommentId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_COMMENT_VOTE_USER_LIST, $associate_id];
                 break;
             default:
@@ -257,19 +257,19 @@ class VoteService extends BaseService
         }
     }
 
-    public static function getUseQuestionVoteStatus($associate_id, $user_id)
+    public static function getQuestionVoteStatus($associate_id, $user_id)
     {
-        return self::getUserVoteStatus(AssociateModel::TYPE_QUESTION, $associate_id, $user_id);
+        return self::getVoteStatus(AssociateModel::TYPE_QUESTION, $associate_id, $user_id);
     }
 
-    public static function getUseAnswerVoteStatus($associate_id, $user_id)
+    public static function getAnswerVoteStatus($associate_id, $user_id)
     {
-        return self::getUserVoteStatus(AssociateModel::TYPE_ANSWER, $associate_id, $user_id);
+        return self::getVoteStatus(AssociateModel::TYPE_ANSWER, $associate_id, $user_id);
     }
 
-    public static function getUseAnswerCommentVoteStatus($associate_id, $user_id)
+    public static function getCommentVoteStatus($associate_id, $user_id)
     {
-        return self::getUserVoteStatus(AssociateModel::TYPE_ANSWER_COMMENT, $associate_id, $user_id);
+        return self::getVoteStatus(AssociateModel::TYPE_COMMENT, $associate_id, $user_id);
     }
 
     /**
@@ -280,7 +280,7 @@ class VoteService extends BaseService
      * @throws NotFoundModelException
      * @throws \Exception
      */
-    public static function getUserVoteStatus($associate_type, $associate_id, $user_id)
+    public static function getVoteStatus($associate_type, $associate_id, $user_id)
     {
         switch ($associate_type) {
             case AssociateModel::TYPE_QUESTION:
@@ -291,8 +291,8 @@ class VoteService extends BaseService
                 $model = AnswerService::getAnswerByAnswerId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_VOTE_USER_LIST, $associate_id];
                 break;
-            case AssociateModel::TYPE_ANSWER_COMMENT:
-                $model = CommentService::getAnswerCommentByCommentId($associate_id);
+            case AssociateModel::TYPE_COMMENT:
+                $model = CommentService::getCommentByCommentId($associate_id);
                 $cache_key = [RedisKey::REDIS_KEY_ANSWER_COMMENT_VOTE_USER_LIST, $associate_id];
                 break;
             default:

@@ -3,10 +3,7 @@ namespace frontend\controllers;
 
 use common\controllers\BaseController;
 use common\helpers\ServerHelper;
-use common\services\FollowService;
 use common\services\QuestionService;
-use common\services\TagService;
-use common\services\UserService;
 use Yii;
 
 /**

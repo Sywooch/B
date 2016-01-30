@@ -21,7 +21,6 @@ use common\services\QuestionService;
 use common\services\UserService;
 use common\services\VoteService;
 use Yii;
-use common\models\QuestionSearch;
 use yii\base\Exception;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
@@ -60,7 +59,6 @@ class QuestionController extends BaseController
     public function actionFollow($question_id)
     {
         $is_followed = FollowService::checkUseIsFollowedQuestion($question_id, Yii::$app->user->id);
-
         if ($is_followed) {
             $result = FollowService::removeFollowQuestion($question_id, Yii::$app->user->id);
         } else {
@@ -132,7 +130,7 @@ class QuestionController extends BaseController
 
     public function actionVote($id, $vote)
     {
-        $vote_status = VoteService::getUseQuestionVoteStatus($id, Yii::$app->user->id);
+        $vote_status = VoteService::getQuestionVoteStatus($id, Yii::$app->user->id);
 
         if ($vote_status !== false) {
             VoteService::updateQuestionVote(
@@ -315,7 +313,7 @@ class QuestionController extends BaseController
 
         foreach ($answers_data as &$answer) {
             if (!Yii::$app->user->isGuest) {
-                $answer['vote_status'] = VoteService::getUseAnswerVoteStatus($answer['id'], Yii::$app->user->id);
+                $answer['vote_status'] = VoteService::getAnswerVoteStatus($answer['id'], Yii::$app->user->id);
             } else {
                 $answer['vote_status'] = false;
             }
@@ -336,16 +334,16 @@ class QuestionController extends BaseController
             $is_favorite = FavoriteService::checkUseIsFavoriteQuestion($id, Yii::$app->user->id);
 
             //是否已对问题投票
-            $vote_status = VoteService::getUseQuestionVoteStatus($id, Yii::$app->user->id);
+            $vote_status = VoteService::getQuestionVoteStatus($id, Yii::$app->user->id);
         }
 
         #评论
         if ($answer_id && $comment_id) {
-            $comments_data = [CommentService::getAnswerCommentByCommentId($comment_id)];
+            $comments_data = [CommentService::getCommentByCommentId($comment_id)];
 
             foreach ($comments_data as &$comment) {
                 if (!Yii::$app->user->isGuest) {
-                    $comment['vote_status'] = VoteService::getUseAnswerCommentVoteStatus(
+                    $comment['vote_status'] = VoteService::getCommentVoteStatus(
                         $comment['id'],
                         Yii::$app->user->id
                     );
@@ -516,7 +514,7 @@ class QuestionController extends BaseController
         if (!$be_invited_user || !$question_id) {
             throw new ParamsInvalidException(['be_invited_user', 'question_id']);
         }
-        
+        $result = false;
         switch ($method) {
             case 'username':
                 $user_data = UserService::getUserIdByUsername($be_invited_user);
@@ -536,7 +534,6 @@ class QuestionController extends BaseController
                 $result = QuestionInviteEntity::inviteToAnswerByEmail($question_id, $be_invited_user);
                 break;
             default:
-                $result = false;
                 throw new Exception(sprintf('暂未支持 %s 通知', $method));
         }
         

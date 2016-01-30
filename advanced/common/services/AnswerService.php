@@ -15,6 +15,7 @@ use common\entities\UserEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\exceptions\NotFoundModelException;
 use common\helpers\ArrayHelper;
+use common\models\AssociateModel;
 use common\models\CacheAnswerModel;
 use yii\helpers\Url;
 use common\components\Judger;
@@ -146,26 +147,28 @@ class AnswerService extends BaseService
                     CONCAT(
                       a.`created_by`,
                       ',',
-                      ac.`created_by`
+                      c.`created_by`
                     )
                   ) as user_ids
                 FROM
                   `answer` a
-                  LEFT JOIN `answer_comment` ac
-                    ON a.`id` = ac.`answer_id`
+                  LEFT JOIN `comment` c
+                    ON a.`id` = c.`associate_id`
                 WHERE a.`question_id` =:question_id
                 AND a.is_anonymous=:not_anonymous
-                AND ac.is_anonymous=:not_anonymous
-                ORDER BY a.`created_at` DESC, ac.`created_at` DESC
+                AND c.is_anonymous=:not_anonymous
+                AND c.associate_type=:associate_type
+                ORDER BY a.`created_at` DESC, c.`created_at` DESC
                 LIMIT :limit ;
                 ";
 
         $command = AnswerEntity::getDb()->createCommand(
             $sql,
             [
-                ':not_anonymous' => AnswerEntity::STATUS_UNANONYMOUS,
-                ':question_id'   => $question_id,
-                ':limit'         => $limit,
+                ':not_anonymous'  => AnswerEntity::STATUS_UNANONYMOUS,
+                ':question_id'    => $question_id,
+                ':associate_type' => AssociateModel::TYPE_ANSWER_COMMENT,
+                ':limit'          => $limit,
             ]
         );
 

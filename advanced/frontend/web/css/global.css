@@ -1742,46 +1742,44 @@ body.modal-open .topframe {
     font-weight: 400
 }
 
-.global-nav .count-num, .global-nav .has-unread__count {
-    display: none;
+#global-nav .count-num, #global-nav .has-unread__count {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 10px;
+    right: 5px;
     padding: 0 4px;
     background-color: #ED1C24;
-    max-width: 28px;
-    min-width: 16px;
-    height: 14px;
-    line-height: 14px;
-    font-size: 12px;
+    width: 10px;
+    height: 10px;
+    line-height: 10px;
+    font-size: 0px;
     font-weight: 400;
     text-align: center;
-    color: #fff;
+    color: #ED1C24;
     border-radius: 14px
 }
 
-.global-nav .count-num, .global-nav .has-unread .count-num, .global-nav .has-unread .has-unread__count {
+#global-nav .count-num, #global-nav .has-unread .count-num,#global-nav .has-unread .has-unread__count {
     display: block
 }
 
-.global-nav .count, .global-nav .has-unread, .header-search {
+#global-nav .count,#global-nav .has-unread, .header-search {
     position: relative
 }
 
-.global-nav .has-unread .glyphicon-envelope {
+#global-nav .has-unread .glyphicon-envelope {
     line-height: 30px
 }
 
-.global-nav .message, .global-nav .search {
+#global-nav .message, .global-nav .search {
     width: 36px;
     height: 30px
 }
 
-.global-nav .search .dropdown-menu {
+#global-nav .search .dropdown-menu {
     padding: 15px
 }
 
-.global-nav .search .dropdown-menu input {
+#global-nav .search .dropdown-menu input {
     width: 300px
 }
 

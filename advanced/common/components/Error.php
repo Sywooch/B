@@ -46,6 +46,9 @@ class Error extends Object
     /* follow tag */
     const TYPE_FOLLOW_TAG_FOLLOW_TOO_MUCH_TAG = 'follow_tag:follow_too_much_tag';
 
+    const TYPE_FOLLOW_OVER_MAX_NUMBER = 'follow:over_max_number';
+
+
     /* favorite */
     const TYPE_FAVORITE_CATEGORY_DELETE_FAIL = 'favorite:category_delete_fail';
 
@@ -95,6 +98,9 @@ class Error extends Object
         #11000
         'favorite'        => [
             'category_delete_fail' => [11001, '当前收藏夹下还有 %d 个收藏项，请先删除这些收藏项。'],
+        ],
+        'follow' => [
+            'over_max_number' => [12000, '你当前的关注问题数量已超过限制。'],
         ],
     ];
 }

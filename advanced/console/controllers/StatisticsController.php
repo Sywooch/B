@@ -8,8 +8,6 @@
 
 namespace console\controllers;
 
-
-use common\entities\FollowTagPassiveEntity;
 use yii\console\Controller;
 
 class StatisticsController extends Controller

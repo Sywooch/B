@@ -9,14 +9,11 @@
 namespace common\services;
 
 use common\config\RedisKey;
-use common\entities\FollowTagEntity;
 use common\entities\TagEntity;
 use common\entities\TagRelationEntity;
 use common\exceptions\ModelSaveErrorException;
-use yii\helpers\ArrayHelper;
 use common\helpers\TimeHelper;
 use common\models\CacheTagModel;
-use common\models\QuestionTag;
 use Yii;
 
 class TagService extends BaseService

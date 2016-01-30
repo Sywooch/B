@@ -28,12 +28,14 @@ use common\models\CacheAnswerModel;
                 <div class="summary">
                     <p class="text-muted mb0"><?= TemplateHelper::showHumanTime($item->created_at) ?></p>
 
-                    <h2 class="title">
-                        <?= $item->question->subject ?>
-                    </h2>
-                    <ul class="taglist--inline ib">
-                        <?= TemplateHelper::showTagLiLabelByName($item->question->tags) ?>
-                    </ul>
+                    <?php if ($item->question): ?>
+                        <h2 class="title">
+                            <?= $item->question->subject ?>
+                        </h2>
+                        <ul class="taglist--inline ib">
+                            <?= TemplateHelper::showTagLiLabelByName($item->question->tags) ?>
+                        </ul>
+                    <?php endif; ?>
                     <p class="text-muted mb0"> <?= TemplateHelper::truncateString($item->content, 94) ?></p>
                 </div>
             </section>

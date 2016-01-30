@@ -178,7 +178,7 @@ class QuestionEntity extends Question
      */
     public function getFollowQuestions()
     {
-        return $this->hasMany(FollowQuestionEntity::className(), ['follow_question_id' => 'id']);
+       //todo
     }
 
     /**

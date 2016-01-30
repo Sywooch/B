@@ -4,7 +4,6 @@ namespace frontend\controllers;
 
 use common\controllers\BaseController;
 use common\entities\TagEntity;
-use common\entities\TagSearchEntity;
 use common\entities\TagVersionEntity;
 use common\exceptions\NotFoundModelException;
 use common\services\FollowService;
@@ -108,12 +107,12 @@ class TagController extends BaseController
 
             $dataProvider = $searchModel->search($queryParams);
 
-
             #ajax
             if (Yii::$app->request->getIsAjax()) {
                 $result = ArrayHelper::getColumn(
                     $dataProvider->getModels(),
                     function ($model) {
+                        /* @var TagSearch $model */
                         return $model->getAttributes(['name']);
                     }
                 );

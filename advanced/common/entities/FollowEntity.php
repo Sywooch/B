@@ -1,18 +1,26 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: yuyj
+ * Date: 2016-01-27
+ * Time: 11:34
+ */
 
 namespace common\entities;
 
-use common\behaviors\FollowQuestionBehavior;
-use common\components\Error;
-use Yii;
-use common\models\FollowQuestion;
+
+use common\behaviors\FollowBehavior;
 use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
+use common\models\Follow;
+use Yii;
 use yii\db\ActiveRecord;
 
-class FollowQuestionEntity extends FollowQuestion
+class FollowEntity extends Follow
 {
     const MAX_FOLLOW_QUESTION_NUMBER = 5000;
+    const MAX_FOLLOW_TAG_NUMBER = 5000;
+    const MAX_FOLLOW_USER_NUMBER = 2000;
 
     public function behaviors()
     {
@@ -26,29 +34,13 @@ class FollowQuestionEntity extends FollowQuestion
             'timestamp'                => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_at',
                 ],
             ],
             'follow_question_behavior' => [
-                'class' => FollowQuestionBehavior::className(),
+                'class' => FollowBehavior::className(),
             ],
         ];
     }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser()
-    {
-        return $this->hasOne(UserEntity::className(), ['id' => 'user_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getQuestion()
-    {
-        return $this->hasOne(QuestionEntity::className(), ['id' => 'follow_question_id']);
-    }
-
 }

@@ -70,7 +70,7 @@ class TagEntity extends Tag
      */
     public function getFollowTags()
     {
-        return $this->hasMany(FollowTagEntity::className(), ['follow_tag_id' => 'id']);
+        //todo
     }
 
     /**
@@ -89,7 +89,7 @@ class TagEntity extends Tag
      */
     public function getFollowTagPassives()
     {
-        return $this->hasMany(FollowTagPassiveEntity::className(), ['follow_tag_id' => 'id']);
+       //todo
     }
 
     /**
