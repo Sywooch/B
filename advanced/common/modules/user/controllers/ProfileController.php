@@ -12,6 +12,7 @@ use common\helpers\ArrayHelper;
 use common\helpers\TimeHelper;
 use common\models\CacheAnswerModel;
 use common\services\AnswerService;
+use common\services\FavoriteService;
 use common\services\FollowService;
 use common\services\QuestionService;
 use common\services\TagService;
@@ -113,12 +114,34 @@ class ProfileController extends BaseProfileController
 
     public function actionFollowedQuestion($user_id)
     {
+        $user = UserService::getUserById($user_id);
         $data = FollowService::getFollowQuestionListByUserId($user_id, 1, 20);
 
         if ($data) {
             $html = $this->renderPartial(
-                '_answer',
+                '_followed_question',
                 [
+                    'user' => $user,
+                    'data' => $data,
+                ]
+            );
+        } else {
+            $html = '';
+        }
+
+        return Json::encode($html);
+    }
+
+    public function actionFavoriteQuestion($user_id)
+    {
+        $user = UserService::getUserById($user_id);
+        $data = FavoriteService::getUserFavoriteList($user_id, 1, 20);
+
+        if ($data) {
+            $html = $this->renderPartial(
+                '_favorite_question',
+                [
+                    'user' => $user,
                     'data' => $data,
                 ]
             );
@@ -162,11 +185,12 @@ class ProfileController extends BaseProfileController
     public function actionFollowedTag($user_id)
     {
         $data = FollowService::getUserFollowTagList($user_id, 1, 20);
-
+        $user = UserService::getUserById($user_id);
         if ($data) {
             $html = $this->renderPartial(
-                '_tag',
+                '_followed_tag',
                 [
+                    'user' => $user,
                     'data' => $data,
                 ]
             );
@@ -179,12 +203,14 @@ class ProfileController extends BaseProfileController
 
     public function actionFollowedUser($user_id)
     {
+        $user = UserService::getUserById($user_id);
         $data = FollowService::getUserFriendsUserList($user_id, 1, 20);
 
         if ($data) {
             $html = $this->renderPartial(
                 '_user',
                 [
+                    'user' => $user,
                     'data' => $data,
                 ]
             );

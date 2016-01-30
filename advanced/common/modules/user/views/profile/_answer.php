@@ -7,8 +7,7 @@
  * @var $user_event_log_list array CacheUserEventModel
  * @var $user_event_list     array CacheUserEventModel
  */
-use common\entities\UserEventLogEntity;
-use common\helpers\StringHelper;
+
 use common\helpers\TemplateHelper;
 use common\models\CacheAnswerModel;
 
