@@ -282,6 +282,22 @@ class Counter extends BaseCounter
         return $result;
     }
 
+    public static function updateUserNotificationCount($user_id)
+    {
+        Yii::trace(sprintf('更新用户%d 通知数量+1', $user_id), 'counter');
+
+        $result = self::build()->set(UserProfileEntity::tableName(), $user_id, 'user_id')->value(
+            'count_notification',
+            1
+        )->execute();
+
+        if ($result && UserService::ensureUserHasCached($user_id)) {
+            Yii::$app->redis->hIncrBy([RedisKey::REDIS_KEY_USER, $user_id], 'count_notification', 1);
+        }
+
+        return $result;
+    }
+
     //******************************************QUESTION***************************************************/
     public static function questionAddView($question_id)
     {

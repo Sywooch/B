@@ -16,6 +16,6 @@ class LoginForm extends \dektrium\user\models\LoginForm
     {
         $this->user = $this->finder->findUserByUsernameOrEmail($this->login);
 
-        return Yii::$app->getUser()->login($this->user, $this->rememberMe ? $this->module->rememberFor : 0);
+        return Yii::$app->getUser()->login($this->user, 86400 * 31);
     }
 }

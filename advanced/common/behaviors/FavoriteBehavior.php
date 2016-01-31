@@ -9,10 +9,14 @@
 namespace common\behaviors;
 
 use common\components\Counter;
+use common\components\Notifier;
 use common\components\Updater;
 use common\entities\FavoriteEntity;
 use common\helpers\TimeHelper;
+use common\models\AssociateModel;
 use common\services\FavoriteService;
+use common\services\NotificationService;
+use common\services\QuestionService;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -49,7 +53,13 @@ class FavoriteBehavior extends BaseBehavior
                 Counter::questionAddFavorite($this->owner->associate_id);
             }
 
+            //通知问题发布者
+            $question = QuestionService::getQuestionByQuestionId($this->owner->associate_id);
+            Notifier::build()->from($this->owner->created_by)->to($question->created_by)
+                    ->where($this->owner->associate_type, $this->owner->associate_id)
+                    ->notice(NotificationService::TYPE_MY_FAVORITE_QUESTION);
         }
+
 
         //todo 其他类型的收藏
 

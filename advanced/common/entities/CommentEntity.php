@@ -14,6 +14,7 @@ use common\behaviors\OperatorBehavior;
 use common\behaviors\TimestampBehavior;
 use common\components\Error;
 use common\models\Comment;
+use common\services\AnswerService;
 use yii\db\ActiveRecord;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -69,7 +70,7 @@ class CommentEntity extends Comment
      */
     public function getAnswer()
     {
-        return AnswerEntity::find()->where(['id' => $this->associate_id])->one();
+        return AnswerService::getAnswerByAnswerId($this->associate_id);
     }
 
     /**

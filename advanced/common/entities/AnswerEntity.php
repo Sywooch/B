@@ -14,6 +14,7 @@ use common\behaviors\TimestampBehavior;
 use common\components\Error;
 use common\helpers\ArrayHelper;
 use common\models\Answer;
+use common\services\QuestionService;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -83,11 +84,11 @@ class AnswerEntity extends Answer
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return QuestionService
      */
     public function getQuestion()
     {
-        return $this->hasOne(QuestionEntity::className(), ['id' => 'question_id']);
+        return QuestionService::getQuestionByQuestionId($this->question_id);
     }
 
     /**

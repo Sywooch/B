@@ -113,6 +113,7 @@ class FollowService extends BaseService
      */
     public static function getFollowQuestionUserIdsByQuestionId($question_id, $limit = 100)
     {
+        //todo 未使用缓存
         $user_ids = FollowEntity::find()->select(['user_id'])->where(
             [
                 'associate_type' => AssociateModel::TYPE_QUESTION,

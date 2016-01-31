@@ -16,7 +16,7 @@ use yii\widgets\LinkPager;
                 <div class="stream-list notify-stream border-top">
 
                     <? foreach ($data as $key => $item): ?>
-                        <h3 class="time"><?= TemplateHelper::showHumanTime(strtotime($key)) ?></h3>
+                        <h3 class="time"><?= $key ?></h3>
 
                         <? foreach ($item as $section): ?>
                             <section class="stream-list__item<?= $section['status'] == NotificationEntity::STATUS_READ ? ' viewed' : '' ?> "><?= $section['template'] ?></section>

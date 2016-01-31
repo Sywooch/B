@@ -9,12 +9,15 @@
 namespace common\behaviors;
 
 use common\components\Counter;
+use common\components\Notifier;
 use common\components\user\UserAssociationEvent;
 use common\entities\UserEventLogEntity;
 use common\entities\VoteEntity;
 use common\models\AssociateModel;
 use common\services\AnswerService;
 use common\services\CommentService;
+use common\services\NotificationService;
+use common\services\QuestionService;
 use common\services\UserEventService;
 use common\services\VoteService;
 use Yii;
@@ -62,6 +65,14 @@ class VoteBehavior extends BaseBehavior
                     } else {
                         Counter::questionAddHate($this->owner->associate_id);
                     }
+                    //赞问题通知
+                    $question = QuestionService::getQuestionByQuestionId($this->owner->associate_id);
+                    Notifier::build()->from($this->owner->created_by)
+                            ->to($question->created_by)
+                            ->where(
+                                $this->owner->associate_type,
+                                $this->owner->associate_id
+                            )->notice(NotificationService::TYPE_MY_QUESTION_IS_AGREED);
                     break;
                 case AssociateModel::TYPE_ANSWER:
                     //更新回答投票数
@@ -76,6 +87,15 @@ class VoteBehavior extends BaseBehavior
                     $associate_data = [
                         'question_id' => $answer->question_id,
                     ];
+
+                    //赞问题通知
+                    Notifier::build()->from($this->owner->created_by)
+                            ->to($answer->created_by)
+                            ->where(
+                                $this->owner->associate_type,
+                                $answer->question_id,
+                                ['answer_id' => $this->owner->associate_id]
+                            )->notice(NotificationService::TYPE_MY_ANSWER_IS_AGREED);
                     break;
                 case AssociateModel::TYPE_ANSWER_COMMENT:
                     //更新评论投票数
@@ -90,6 +110,19 @@ class VoteBehavior extends BaseBehavior
                         'question_id' => $answer->question_id,
                         'answer_id'   => $answer->id,
                     ];
+
+                    //赞评论通知
+                    $comment = CommentService::getCommentByCommentId($this->owner->associate_id);
+                    Notifier::build()->from($this->owner->created_by)
+                            ->to($comment->created_by)
+                            ->where(
+                                $this->owner->associate_type,
+                                $comment->getAnswer()->question_id,
+                                [
+                                    'answer_id'  => $comment->associate_id,
+                                    'comment_id' => $this->owner->associate_id,
+                                ]
+                            )->notice(NotificationService::TYPE_MY_ANSWER_COMMENT_IS_AGREED);
                     break;
                 default:
                     throw new Exception(sprintf('暂不支持 %s insert 事件', $this->owner->associate_type));

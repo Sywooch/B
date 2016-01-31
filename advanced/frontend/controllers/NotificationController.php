@@ -48,7 +48,7 @@ class NotificationController extends BaseController
                 $pages->limit
             )->offset(
                 $pages->offset
-            )->orderBy('created_at DESC')->asArray()->all();
+            )->orderBy('`date` DESC, id DESC')->asArray()->all();
 
             //Updater::clearNotifyCount(Yii::$app->user->id);
         } else {
@@ -56,8 +56,7 @@ class NotificationController extends BaseController
         }
 
         $data = NotificationService::makeUpNotification($data);
-        //print_r($data);
-        //exit;
+
 
         return $this->render(
             'index',

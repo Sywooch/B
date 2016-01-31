@@ -158,7 +158,7 @@ AppAsset::register($this);
                         '<span class="has-unread__count">%d</span>',
                         $notification_count
                     ) : ''),
-            'url'    => ['notification/index'],
+            'url'    => ['/notification/index'],
             'encode' => false,
         ];
 

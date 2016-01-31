@@ -8,6 +8,7 @@
 
 namespace common\services;
 
+use common\components\Counter;
 use common\components\Error;
 use common\config\RedisKey;
 use common\entities\UserEventEntity;
@@ -43,9 +44,9 @@ class UserService extends BaseService
         return $user_id <= self::MAX_OFFICIAL_ACCOUNT_ID;
     }
 
-    public static function increaseNotificationCount(array $user_ids)
+    public static function increaseNotificationCount($user_id)
     {
-        UserProfileEntity::updateAllCounters(['count_notification' => 1], ['user_id' => $user_ids]);
+        return Counter::updateUserNotificationCount($user_id);
     }
 
     public static function markAllNotificationRead($user_ids)

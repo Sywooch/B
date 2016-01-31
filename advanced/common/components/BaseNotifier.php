@@ -10,13 +10,14 @@ namespace common\components;
 
 use common\config\RedisKey;
 use common\entities\NotificationEntity;
-use common\entities\UserEntity;
 use common\exceptions\ParamsInvalidException;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
+use common\models\AssociateModel;
 use common\services\NotificationService;
 use common\services\UserService;
 use Yii;
+use yii\base\Exception;
 use yii\base\Object;
 use yii\helpers\Json;
 
@@ -36,6 +37,9 @@ class BaseNotifier extends Object
     private $method; #通知方法:notice,email,sms,weixin
 
     private $notice_code;
+    private $associate_type;
+    private $associate_id;
+    private $associate_data;
 
     public static function build()
     {
@@ -90,13 +94,54 @@ class BaseNotifier extends Object
     }
 
     /**
+     * 指通知对应的主体
+     * 如：回答、评论、在问题或回答或评论中@用户，对应的主体是问题
+     * 如：专栏文章评论对应的是专栏文章
+     * @param       $associate_type 注意这个，如果associate_type是 answer\answer_comment ,需将主体转换为question
+     * @param       $associate_id   主体ID
+     * @param array $associate_data
+     * @return $this
+     */
+    public function where($associate_type, $associate_id, $associate_data = [])
+    {
+        $this->associate_type = $this->changeAssociateType($associate_type);
+        $this->associate_id = $associate_id;
+        $this->associate_data = $associate_data;
+
+        return $this;
+    }
+
+    /**
+     * 因为评论服务做切片化，所以需要对评论做特殊转换，在回答中评论，主题为问题。
+     * @param $associate_type
+     * @return string
+     * @throws Exception
+     */
+    private function changeAssociateType($associate_type)
+    {
+        $result = $associate_type;
+        switch ($associate_type) {
+            case AssociateModel::TYPE_QUESTION:
+            case AssociateModel::TYPE_ANSWER:
+            case AssociateModel::TYPE_COMMENT:
+            case AssociateModel::TYPE_ANSWER_COMMENT:
+                $result = AssociateModel::TYPE_QUESTION;
+                break;
+            default:
+                throw new Exception(sprintf('关注类型:%s 未指定转换业务。', $associate_type));
+        }
+
+        return $result;
+    }
+
+    /**
      * @param      $type
      * @param null $associate_data 目前仅支持三种变量 ['tag_id' => 1,'question_id' => 1, 'answer_id' => 1]
      * @return $this
      * @throws ParamsInvalidException
      * @throws \yii\base\Exception
      */
-    public function notice($type, $associate_data = null)
+    public function notice($type)
     {
         $this->method = 'notice';
 
@@ -119,9 +164,9 @@ class BaseNotifier extends Object
         #filter to_user_id
         if ($this->filterToUserId()) {
             if ($this->immediate) {
-                $result = $this->noticeDatabase($this->sender, $this->receiver, $this->notice_code, $associate_data);
+                $result = $this->noticeDatabase();
             } else {
-                $result = $this->noticeQueue($this->sender, $this->receiver, $this->notice_code, $associate_data);
+                $result = $this->noticeQueue();
             }
             Yii::trace(sprintf('Notifier::notice Result: %s', var_export($result, true)), 'notifier');
 
@@ -172,46 +217,41 @@ class BaseNotifier extends Object
 
         return $this->receiver;
     }
-    
-    public function noticeDatabase($sender, $receiver, $notice_code, $associate_data, $current_time = null)
+
+    /**
+     * 通知写入数据库
+     * @return bool
+     */
+    public function noticeDatabase()
     {
-        return NotificationService::addNotify(
-            $sender,
-            $receiver,
-            $notice_code,
-            $associate_data,
-            $current_time ? $current_time : TimeHelper::getCurrentTime()
+        return NotificationService::addNotification(
+            $this->sender,
+            $this->receiver,
+            $this->notice_code,
+            $this->associate_type,
+            $this->associate_id,
+            $this->associate_data,
+            TimeHelper::getCurrentTime()
         );
     }
 
 
-    public function noticeQueue($sender, $receiver, $notice_code, $associate_data, $current_time = null)
+    public function noticeQueue()
     {
-        Yii::trace(
-            [
-                'sender'         => $sender,
-                'receiver'       => $receiver,
-                'notice_code'    => $notice_code,
-                'associate_data' => $associate_data,
-                'status'         => NotificationEntity::STATUS_UNREAD,
-                'created_at'     => $current_time ? $current_time : TimeHelper::getCurrentTime(),
-            ],
-            'notifier'
-        );
-
         $cache_key = [RedisKey::REDIS_KEY_NOTIFIER, $this->method];
-
         $this->addSet($this->method);
 
         return Yii::$app->redis->rPush(
             $cache_key,
             [
-                'sender'         => $sender,
-                'receiver'       => $receiver,
-                'notice_code'    => $notice_code,
-                'associate_data' => $associate_data,
+                'sender'         => $this->sender,
+                'receiver'       => $this->receiver,
+                'notice_code'    => $this->notice_code,
+                'associate_type' => $this->associate_type,
+                'associate_id'   => $this->associate_id,
+                'associate_data' => $this->associate_data,
                 'status'         => NotificationEntity::STATUS_UNREAD,
-                'created_at'     => $current_time ? $current_time : TimeHelper::getCurrentTime(),
+                'created_at'     => TimeHelper::getCurrentTime(),
             ]
         );
     }

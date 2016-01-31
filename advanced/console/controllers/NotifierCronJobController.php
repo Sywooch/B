@@ -21,35 +21,36 @@ class NotifierCronJobController extends Controller
     public function actionIndex()
     {
         /* @var $notifier Notifier */
-        $notifier = Yii::createObject(Notifier::className());
+        $notifier = Notifier::build();
 
         $notifier_set = $notifier->getSet();
 
         foreach ($notifier_set as $method) {
             $i = 0;
-            while ($i <= self::NUMBER_OF_EACH && $item = $notifier->popUpQueue($method)) {
-
+            while ($i <= self::NUMBER_OF_EACH &&
+                $item = $notifier->popUpQueue($method)) {
                 switch ($method) {
                     case 'notice':
+                        $result = $notifier->sync(true)->from($item['sender'])
+                                           ->to($item['receiver'])
+                                           ->where(
+                                               $item['associate_type'],
+                                               $item['associate_id'],
+                                               $item['associate_data']
+                                           )
+                                           ->notice($item['notice_code']);
 
-                        $result = $notifier->noticeDatabase(
-                            $item['sender'],
-                            $item['receiver'],
-                            $item['notice_code'],
-                            $item['associate_data'],
-                            $item['created_at']
-                        );
 
+                        //消费失败，插入队列
                         if (!$result) {
-                            //when update nothing, nothing to do
-                            $notifier->noticeQueue(
-                                $item['sender'],
-                                $item['receiver'],
-                                $item['notice_code'],
-                                $item['associate_data'],
-                                $item['created_at']
-                            );
-                            //echo sprintf('Notification Type:  %s, no affected!', $object), PHP_EOL;
+                            $notifier->sync(false)->from($item['sender'])
+                                     ->to($item['receiver'])
+                                     ->where(
+                                         $item['associate_type'],
+                                         $item['associate_id'],
+                                         $item['associate_data']
+                                     )
+                                     ->notice($item['notice_code']);
                         } else {
                             echo sprintf('Notification Notice Code:  %s ', $item['notice_code']) . 'Success', PHP_EOL;
                         }
@@ -75,16 +76,14 @@ class NotifierCronJobController extends Controller
                             );
                             //echo sprintf('Notification Type:  %s, no affected!', $object), PHP_EOL;
                         } else {
-                            echo sprintf(
+                            echo
+                                sprintf(
                                     'Notification Email:  %s ',
                                     var_export($item['receiver'], true)
                                 ) . 'Success', PHP_EOL;
                         }
-
                         break;
                 }
-
-
                 $i++;
             }
         }

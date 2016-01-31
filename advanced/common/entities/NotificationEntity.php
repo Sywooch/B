@@ -8,6 +8,7 @@
 
 namespace common\entities;
 
+use common\behaviors\NotificationBehavior;
 use common\models\Notification;
 use Yii;
 
@@ -15,6 +16,15 @@ class NotificationEntity extends Notification
 {
     const STATUS_UNREAD = 'unread';
     const STATUS_READ = 'read';
+
+    public function behaviors()
+    {
+        return [
+            'notification_behavior' => [
+                'class' => NotificationBehavior::className(),
+            ],
+        ];
+    }
 
     /**
      * @return \yii\db\ActiveQuery

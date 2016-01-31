@@ -24,6 +24,7 @@ use common\entities\VoteEntity;
 use common\helpers\AtHelper;
 use common\helpers\TemplateHelper;
 use common\helpers\TimeHelper;
+use common\models\AssociateModel;
 use common\models\CacheUserEventModel;
 use common\models\CacheUserGradeModel;
 use common\models\xunsearch\QuestionSearch;
@@ -38,6 +39,7 @@ use console\modules\crawler\controllers\crawlers\CrawlerBase;
 use Yii;
 use common\controllers\BaseController;
 use yii\helpers\Inflector;
+use yii\helpers\Json;
 use yii\helpers\VarDumper;
 
 
@@ -124,29 +126,14 @@ class TestController extends BaseController
 
     public function actionNotifier()
     {
+        $question_id = 1;
+        $from_user_id = 1;
+        $to_user_id = 2;
 
-        $result = Notifier::build()->sync(true)->from(1)->to([1, 2])->notice(
-            NotificationService::TYPE_ANSWER_AT_ME,
-            1
-        );
-
-        var_dump($result->result);
-        exit;
-
-        /* $result = Notifier::build()->sync(false)->from(1)->to([1, 2])->notice(
-             NotificationService::TYPE_ANSWER_AT_ME,
-             1
-         );
-
-         var_dump($result);
-
-         $data = Yii::$app->redis->lRange([RedisKey::REDIS_KEY_NOTIFIER, NotificationService::TYPE_ANSWER_AT_ME], 0, 10);
-
-         print_r($data);
-
-         exit;*/
-
-        //$notifier = Notifier::build()->sync(false)->to(1)->email('a', 'b');
+        $data = Notifier::build()->from($from_user_id)->to($to_user_id)
+                        ->where(AssociateModel::TYPE_QUESTION, $question_id)
+                        ->notice(NotificationService::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
+        print_r($data);
     }
 
     public function actionCounter()
@@ -476,19 +463,6 @@ class TestController extends BaseController
 
         //echo json_encode($arr);exit;
 
-        Notifier::build()->sync(0)->from(1)->to(2)->notice(
-            NotificationService::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
-            [
-                'question_id' => 16,
-            ]
-        );
-        Notifier::build()->sync(0)->from(2)->to(23)->notice(
-            NotificationService::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER,
-            [
-                'question_id' => 17,
-            ]
-        );
-
         $data = NotificationService::find()->orderBy('created_at DESC')->asArray()->all();
 
         $result = NotificationService::makeUpNotification($data);
@@ -508,14 +482,18 @@ class TestController extends BaseController
 
     }
 
-    public function actionAutoLogin()
+    public function actionAutoLogin($user_id = null)
     {
-        $user_id = rand(1, UserService::MAX_OFFICIAL_ACCOUNT_ID);
+        $user_id = $user_id ? $user_id : rand(1, UserService::MAX_OFFICIAL_ACCOUNT_ID);
         $result = UserService::autoLoginById($user_id);
 
         if ($result) {
-            $user = UserService::getUsernameByUserId($user_id);
-            echo sprintf('当前登陆用户["id" => "%s", "username" => "%s"]', $user_id, $user);
+            $user = UserService::getUserById($user_id);
+            //echo sprintf('当前登陆用户["id" => "%s", "username" => "%s"]', $user_id, $user);
+
+            echo Json::encode($user);
+        } else {
+            echo '自动登陆失败';
         }
     }
 
@@ -649,11 +627,11 @@ class TestController extends BaseController
     public function actionCacheModel()
     {
         $data = [
-            'id'    => 1,
-            'name'  => 1,
-            'event' => 1,
+            'id'       => 1,
+            'name'     => 1,
+            'event'    => 1,
             'template' => 1,
-            'abc'   => 1,
+            'abc'      => 1,
         ];
 
         $result = (new CacheUserEventModel)->filter($data);

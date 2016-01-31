@@ -54,8 +54,8 @@ class CommentBehavior extends BaseBehavior
                     'type' => $this->owner->associate_type,
                     'id'   => $this->owner->id,
                     'data' => [
-                        'question_id'  => $this->owner->getAnswer()->question_id,
-                        'answer_id' => $this->owner->associate_id,
+                        'question_id' => $this->owner->getAnswer()->question_id,
+                        'answer_id'   => $this->owner->associate_id,
                     ],
                 ]
             )
@@ -91,14 +91,20 @@ class CommentBehavior extends BaseBehavior
 
 
         $answer_data = AnswerService::getAnswerByAnswerId($this->owner->associate_id);
-        if ($answer_data && isset($answer_data['created_by'])) {
-            Notifier::build()->from($this->owner->created_by)->to($answer_data['created_by'])->notice(
-                NotificationService::TYPE_MY_ANSWER_HAS_NEW_COMMENT,
-                [
-                    'question_id' => $this->owner->getAnswer()->question_id,
-                    'answer_id'   => $answer_data['id'],
-                ]
-            );
+        if ($answer_data && $answer_data->created_by) {
+            Notifier::build()
+                    ->from($this->owner->created_by)
+                    ->to($answer_data->created_by)
+                    ->where(
+                        $this->owner->associate_type,
+                        $this->owner->associate_id,
+                        [
+                            'question_id' => $this->owner->getAnswer()->question_id,
+                            'answer_id'   => $answer_data->id,
+                            'comment_id'  => $this->owner->id,
+                        ]
+                    )
+                    ->notice(NotificationService::TYPE_MY_ANSWER_HAS_NEW_COMMENT);
         }
     }
 
@@ -110,17 +116,23 @@ class CommentBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        $username = AtHelper::findAtUsername($this->owner->content);
+        $at_username = AtHelper::findAtUsername($this->owner->content);
 
-        if ($username) {
-            $user_ids = UserService::getUserIdByUsername($username);
+        if ($at_username) {
+            $at_user_ids = UserService::getUserIdByUsername($at_username);
 
-            $result = Notifier::build()->from(Yii::$app->user->id)->to($user_ids)->notice(
-                NotificationService::TYPE_COMMENT_AT_ME,
-                [
-                    'user_id' => $this->owner->id,
-                ]
-            );
+            Notifier::build()
+                    ->from($this->owner->created_by)
+                    ->to($at_user_ids)
+                    ->where(
+                        $this->owner->associate_type,
+                        $this->owner->getAnswer()->question_id,
+                        [
+                            'user_id'    => $this->owner->id,
+                            'answer_id'  => $this->owner->associate_id,
+                            'comment_id' => $this->owner->id,
+                        ]
+                    )->notice(NotificationService::TYPE_COMMENT_AT_ME);
         }
     }
 

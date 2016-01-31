@@ -20,6 +20,7 @@ use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
 use common\models\AssociateModel;
 use common\models\CacheAnswerModel;
+use common\models\CacheQuestionModel;
 use common\services\AnswerService;
 use common\services\FollowService;
 use common\services\NotificationService;
@@ -92,8 +93,8 @@ class AnswerBehavior extends BaseBehavior
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'type'    => AssociateModel::TYPE_ANSWER,
-                    'id'      => $this->owner->id,
+                    'type' => AssociateModel::TYPE_ANSWER,
+                    'id'   => $this->owner->id,
                     'data' => [
                         'question_id' => $this->owner->question_id,
                     ],
@@ -136,8 +137,8 @@ class AnswerBehavior extends BaseBehavior
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'type'    => AssociateModel::TYPE_ANSWER,
-                    'id'      => $this->owner->id,
+                    'type' => AssociateModel::TYPE_ANSWER,
+                    'id'   => $this->owner->id,
                     'data' => [
                         'question_id' => $this->owner->question_id,
                     ],
@@ -239,16 +240,28 @@ class AnswerBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        #notification where answer is enough long.
+        #当前回复内容超过指定长度，通知所有关注者，否则只通知提问者
         if (StringHelper::countStringLength($this->owner->content) >= self::NEED_NOTIFICATION_ANSWER_CONTENT_LENGTH) {
             $user_ids = FollowService::getFollowQuestionUserIdsByQuestionId($this->owner->question_id);
+        } else {
+            /* @var $question CacheQuestionModel */
+            $question = $this->owner->getQuestion();
+            $user_ids = [$question->created_by];
+        }
 
-            if ($user_ids) {
-                Notifier::build()->from($this->owner->created_by)->to($user_ids)->notice(
-                    $type,
-                    ['question_id' => $this->owner->question_id]
-                );
-            }
+
+
+        if ($user_ids) {
+            Yii::trace(sprintf('通知关注此问题的人 %s', implode(',', $user_ids)), 'behavior');
+
+            Notifier::build()->from($this->owner->created_by)->to($user_ids)->where
+            (
+                AssociateModel::TYPE_QUESTION,
+                $this->owner->question_id,
+                ['answer_id' => $this->owner->id]
+            )->notice(
+                $type
+            );
         }
     }
     
@@ -301,7 +314,7 @@ class AnswerBehavior extends BaseBehavior
         $answer_comments = CommentEntity::find()->where(
             [
                 'associate_type' => AssociateModel::TYPE_ANSWER_COMMENT,
-                'associate_id' => $this->owner->id,
+                'associate_id'   => $this->owner->id,
             ]
         )->all();
 

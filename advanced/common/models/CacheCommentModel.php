@@ -9,6 +9,7 @@
 namespace common\models;
 
 use common\entities\CommentEntity;
+use common\services\AnswerService;
 use Yii;
 
 class CacheCommentModel extends BaseCacheModel
@@ -28,4 +29,9 @@ class CacheCommentModel extends BaseCacheModel
     public $status = CommentEntity::STATUS_ENABLE;
     public $ip;
     public $vote_status = false;
+
+    public function getAnswer()
+    {
+        return AnswerService::getAnswerByAnswerId($this->associate_id);
+    }
 }
