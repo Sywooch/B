@@ -6,6 +6,7 @@ use common\components\Counter;
 use common\components\Error;
 use common\controllers\BaseController;
 use common\entities\AnswerEntity;
+use common\entities\CommentEntity;
 use common\entities\QuestionEntity;
 use common\entities\QuestionInviteEntity;
 use common\entities\QuestionVersionEntity;
@@ -55,7 +56,7 @@ class QuestionController extends BaseController
             ],
         ];
     }
-    
+
     public function actionFollow($question_id)
     {
         $is_followed = FollowService::checkUseIsFollowedQuestion($question_id, Yii::$app->user->id);
@@ -180,7 +181,7 @@ class QuestionController extends BaseController
         } else {
             $html = null;
         }
-        
+
         return $this->render(
             'index',
             [
@@ -190,7 +191,7 @@ class QuestionController extends BaseController
             ]
         );
     }
-    
+
     public function actionHottest()
     {
         $pages = new Pagination(
@@ -200,9 +201,9 @@ class QuestionController extends BaseController
                 'params'     => array_merge($_GET),
             ]
         );
-        
+
         $data = QuestionService::fetchHot($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
-        
+
         if ($data) {
             $html = $this->renderPartial(
                 '/default/question_item_view',
@@ -214,7 +215,7 @@ class QuestionController extends BaseController
         } else {
             $html = null;
         }
-        
+
         return $this->render(
             'index',
             [
@@ -224,7 +225,7 @@ class QuestionController extends BaseController
             ]
         );
     }
-    
+
     public function actionUnAnswer()
     {
         $pages = new Pagination(
@@ -234,10 +235,10 @@ class QuestionController extends BaseController
                 'params'     => array_merge($_GET),
             ]
         );
-        
+
         $data = QuestionService::fetchUnAnswer($pages->pageSize, $pages->offset, ServerHelper::checkIsSpider());
-        
-        
+
+
         if ($data) {
             $html = $this->renderPartial(
                 '/default/question_item_view',
@@ -248,7 +249,7 @@ class QuestionController extends BaseController
         } else {
             $html = null;
         }
-        
+
         return $this->render(
             'index',
             [
@@ -262,36 +263,25 @@ class QuestionController extends BaseController
     public function actionView($id, $sort = 'default', $answer_id = null, $comment_id = null)
     {
         $question_data = QuestionService::getQuestionByQuestionId($id);
-        
-        if (ServerHelper::checkIsSpider() && !in_array(
-                $question_data['status'],
-                explode(',', QuestionEntity::STATUS_DISPLAY_FOR_SPIDER)
-            )
+
+        if (ServerHelper::checkIsSpider() &&
+            !in_array($question_data['status'], explode(',', QuestionEntity::STATUS_DISPLAY_FOR_SPIDER))
         ) {
             throw new NotFoundHttpException();
         }
-        
-        $answer_model = new AnswerEntity();
-        
-        if ($question_data['tags']) {
-            $tags = explode(',', $question_data['tags']);
-        } else {
-            $tags = [];
-        }
-        
-        $tags = array_merge(QuestionService::getSubjectTags($question_data['subject']), $tags);
-
-        #相似问题
-        $similar_question = QuestionService::searchQuestionByTag($tags);
-        
-        #增加查看问题计数
-        Counter::questionAddView($id);
 
         #回答
         if ($answer_id) {
             $pages = null;
-            $answers_data = AnswerService::getAnswerListByAnswerId([$answer_id]);
+
+            $answer_data = AnswerService::getAnswerByAnswerId($answer_id);
+            if ($answer_data->question_id != $id) {
+                throw new NotFoundHttpException('当前回答不在此问题下');
+            }
+
+            $answer_list_data = [$answer_data];
         } else {
+            $answer_data = null;
             //print_r(array_merge($_GET, ['#' => 'answer-list']));exit;
             $pages = new Pagination(
                 [
@@ -302,8 +292,8 @@ class QuestionController extends BaseController
                     'pageSizeParam'   => 'answer-per-page',
                 ]
             );
-            
-            $answers_data = AnswerService::getAnswerListByQuestionId(
+
+            $answer_list_data = AnswerService::getAnswerListByQuestionId(
                 $id,
                 Yii::$app->request->get('answer-page', 1),
                 Yii::$app->request->get('answer-per-page', 10),
@@ -311,18 +301,44 @@ class QuestionController extends BaseController
             );
         }
 
-        foreach ($answers_data as &$answer) {
+        foreach ($answer_list_data as &$item) {
             if (!Yii::$app->user->isGuest) {
-                $answer['vote_status'] = VoteService::getAnswerVoteStatus($answer['id'], Yii::$app->user->id);
+                $item['vote_status'] = VoteService::getAnswerVoteStatus($item['id'], Yii::$app->user->id);
             } else {
-                $answer['vote_status'] = false;
+                $item['vote_status'] = false;
             }
-            $answer['count_vote'] = $answer['count_like'] - $answer['count_hate'];
+            $item['count_vote'] = $item['count_like'] - $item['count_hate'];
         }
+        unset($item);
 
-        /*print_r($answer_data);
-        exit;*/
+        #评论
+        if ($answer_id && $comment_id) {
+            $comment_data = CommentService::getCommentByCommentId($comment_id);
 
+            if ($comment_data->associate_id != $answer_id) {
+                throw new NotFoundHttpException('当前回答不在此问题下');
+            }
+
+            $comments_list_data = [$comment_data];
+
+            foreach ($comments_list_data as &$item) {
+                if (!Yii::$app->user->isGuest) {
+                    $item['vote_status'] = VoteService::getCommentVoteStatus(
+                        $item['id'],
+                        Yii::$app->user->id
+                    );
+                } else {
+                    $item['vote_status'] = false;
+                }
+                $item['count_vote'] = $item['count_like'] - $item['count_hate'];
+            }
+            unset($item);
+
+            $comment_form = new CommentEntity();
+        } else {
+            $comments_list_data = null;
+            $comment_form = null;
+        }
 
         if (Yii::$app->user->isGuest) {
             $is_followed = $is_favorite = $vote_status = false;
@@ -337,24 +353,21 @@ class QuestionController extends BaseController
             $vote_status = VoteService::getQuestionVoteStatus($id, Yii::$app->user->id);
         }
 
-        #评论
-        if ($answer_id && $comment_id) {
-            $comments_data = [CommentService::getCommentByCommentId($comment_id)];
+        $answer_model = new AnswerEntity();
 
-            foreach ($comments_data as &$comment) {
-                if (!Yii::$app->user->isGuest) {
-                    $comment['vote_status'] = VoteService::getCommentVoteStatus(
-                        $comment['id'],
-                        Yii::$app->user->id
-                    );
-                } else {
-                    $comment['vote_status'] = false;
-                }
-                $comment['count_vote'] = $comment['count_like'] - $comment['count_hate'];
-            }
+        if ($question_data['tags']) {
+            $tags = explode(',', $question_data['tags']);
         } else {
-            $comments_data = null;
+            $tags = [];
         }
+
+        $tags = array_merge(QuestionService::getSubjectTags($question_data['subject']), $tags);
+
+        #相似问题
+        $similar_question = QuestionService::searchQuestionByTag($tags);
+
+        #增加查看问题计数
+        Counter::questionAddView($id);
 
 
         return $this->render(
@@ -362,19 +375,40 @@ class QuestionController extends BaseController
             [
                 'question_data'    => $question_data,
                 'answer_model'     => $answer_model,
-                'answer_item_html' => $answers_data ? $this->renderPartial(
+                'answer_item_html' => $answer_list_data ? $this->renderPartial(
                     '_question_answer_item',
                     [
-                        'question_id'       => $id,
-                        'data'              => $answers_data,
-                        'comment_item_html' => $comments_data ? $this->renderPartial(
+                        'question_id'  => $id,
+                        //回答
+                        'data'         => $answer_list_data,
+                        //评论
+                        'comment_list' => $comments_list_data ? $this->renderPartial(
+                            '/answer/_comment_list',
+                            [
+                                'comment_item_html' => $this->renderPartial(
+                                    '/answer/_answer_comment_item',
+                                    [
+                                        'question_id'             => $id,
+                                        'answer_id'               => $answer_id,
+                                        'answer_create_user_id'   => $answer_data['created_by'],
+                                        'question_create_user_id' => $question_data['created_by'],
+                                        'data'                    => $comments_list_data,
+                                    ]
+                                ),
+                                'comment_form'      => $comment_form,
+                                'answer_data'       => $answer_data,
+                                'pages'             => false,
+                            ]
+                        ) : '',
+
+                        /*'comment_item_html' => $comments_list_data ? $this->renderPartial(
                             '/answer/_answer_comment_item',
                             [
                                 'question_id' => $id,
                                 'answer_id'   => $answer_id,
-                                'data'        => $comments_data,
+                                'data'        => $comments_list_data,
                             ]
-                        ) : '',
+                        ) : '',*/
                     ]
                 ) : '',
                 'sort'             => $sort,
@@ -390,7 +424,7 @@ class QuestionController extends BaseController
     public function actionCreate()
     {
         $model = new QuestionEntity();
-        
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['question/view', 'id' => $model->id]);
         } else {
@@ -502,15 +536,15 @@ class QuestionController extends BaseController
     public function actionInvite($method = 'username')
     {
         $allow_method = ['username', 'email'];
-        
+
         if (!in_array($method, $allow_method)) {
             throw new ParamsInvalidException('method');
         }
-        
+
         #POST参数
         $be_invited_user = Yii::$app->request->post('be_invited_user', '');
         $question_id = Yii::$app->request->post('question_id', '');
-        
+
         if (!$be_invited_user || !$question_id) {
             throw new ParamsInvalidException(['be_invited_user', 'question_id']);
         }
@@ -527,29 +561,29 @@ class QuestionController extends BaseController
                 } else {
                     Error::set(Error::TYPE_USER_IS_NOT_EXIST);
                 }
-                
+
                 break;
-            
+
             case 'email':
                 $result = QuestionInviteEntity::inviteToAnswerByEmail($question_id, $be_invited_user);
                 break;
             default:
                 throw new Exception(sprintf('暂未支持 %s 通知', $method));
         }
-        
+
         $this->jsonOut(Error::get($result));
     }
-    
+
     public function getSimilarQuestionBySubject($subject)
     {
         $similar_question = QuestionService::searchQuestionBySubject($subject);
-        
+
         $this->jsonOut(Error::get($similar_question));
     }
-    
+
     public function actionExplore()
     {
-        
+
     }
 
     public function actionDelete($id)

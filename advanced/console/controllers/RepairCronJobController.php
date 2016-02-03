@@ -36,6 +36,7 @@ class RepairCronJobController extends Controller
 
         $this->actionQuestion();
         $this->actionAnswer();
+        $this->actionComment();
         $this->actionUser();
         $this->actionTag();
 
@@ -62,11 +63,18 @@ class RepairCronJobController extends Controller
     public function actionAnswer()
     {
         //回答的评论数
-        $this->actuator('AnswerCommentCount');
+        //$this->actuator('AnswerCommentCount');
         //回答的喜欢
         $this->actuator('AnswerLikeCount');
         //回答的讨厌
         $this->actuator('AnswerHateCount');
+    }
+
+    public function actionComment()
+    {
+        //评论处理
+        $this->actuator('AnswerCommentCount');
+
     }
 
     public function actionUser()
@@ -362,7 +370,12 @@ class RepairCronJobController extends Controller
                 'total'     => 'count(1)',
                 'answer_id' => 'associate_id',
             ]
-        )->where(['associate_type' => AssociateModel::TYPE_ANSWER])->limit($limit)->offset($offset)->groupBy(
+        )->where(
+            [
+                'associate_type' =>
+                    AssociateModel::TYPE_ANSWER_COMMENT,
+            ]
+        )->limit($limit)->offset($offset)->groupBy(
             'associate_id'
         )->asArray()->all();
 

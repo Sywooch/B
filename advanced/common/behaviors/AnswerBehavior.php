@@ -41,7 +41,7 @@ class AnswerBehavior extends BaseBehavior
     public function events()
     {
         Yii::trace('Begin ' . $this->className(), 'behavior');
-        
+
         return [
             ActiveRecord::EVENT_BEFORE_INSERT => 'beforeAnswerInsert',
             ActiveRecord::EVENT_AFTER_INSERT  => 'eventAnswerCreate',
@@ -49,30 +49,30 @@ class AnswerBehavior extends BaseBehavior
             ActiveRecord::EVENT_AFTER_DELETE  => 'eventAnswerDelete',
         ];
     }
-    
+
     public function beforeAnswerInsert(ModelEvent $event)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $owner = $this->owner;
-        $hasAnswered = AnswerService::checkWhetherHasAnswered($owner->question_id, $owner->created_by);
-        
+        $hasAnswered = AnswerService::getUserAnswerId($owner->question_id, $owner->created_by);
+
         //$owner->is_anonymous = $owner->is_anonymous == 1 ? $owner::STATUS_ANONYMOUS : $owner::STATUS_UNANONYMOUS;
 
         if ($hasAnswered) {
             $event->isValid = false;
             $event->sender->addError('question_id', '一个问题只能回答一次。');
-            
+
             return Error::set(Error::TYPE_ANSWER_ONE_QUESTION_ONE_ANSWER_PER_PEOPLE);
         }
 
         return true;
     }
-    
+
     public function eventAnswerCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //通知
-        $this->dealWithNotification(NotificationService::TYPE_FOLLOW_QUESTION_HAS_NEW_ANSWER);
+        $this->dealWithNotification(NotificationService::TYPE_ANSWER_BE_CREATED);
 
         //关注问题，此方法必须在 dealWithAddCounter 前
         $this->dealWithAddQuestionFollow();
@@ -103,11 +103,11 @@ class AnswerBehavior extends BaseBehavior
         );
     }
 
-    
+
     public function afterAnswerUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $this->dealWithNotification(NotificationService::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
+        $this->dealWithNotification(NotificationService::TYPE_ANSWER_BE_MODIFIED);
         /*#不是本人，或本人，但创建时间已超过 ? 天
         if (Yii::$app->user->id != $this->owner->created_by || $this->owner->created_at <= TimeHelper::getBeforeTime(
                 1
@@ -122,7 +122,7 @@ class AnswerBehavior extends BaseBehavior
         //更新回答缓存
         $this->dealWithUpdateAnswerCache();
     }
-    
+
     public function eventAnswerDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -207,21 +207,21 @@ class AnswerBehavior extends BaseBehavior
             Yii::$app->redis->zRem($cache_key_score, $this->owner->id);
         }
     }
-    
+
     private function dealWithCheckWhetherHasAnswered()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
     }
-    
+
     private function dealWithUpdateQuestionActiveTime()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
         $result = Updater::updateQuestionActiveAt($this->owner->question_id, TimeHelper::getCurrentTime());
-        
+
         Yii::trace(sprintf('Update Active At: %s', var_export($result, true)), 'behavior');
     }
-    
+
     private function dealWithAddCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -235,7 +235,7 @@ class AnswerBehavior extends BaseBehavior
         Counter::userDeleteAnswer($this->owner->created_by);
         Counter::questionDeleteAnswer($this->owner->question_id);
     }
-    
+
     private function dealWithNotification($type)
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -250,34 +250,38 @@ class AnswerBehavior extends BaseBehavior
         }
 
 
-
         if ($user_ids) {
             Yii::trace(sprintf('通知关注此问题的人 %s', implode(',', $user_ids)), 'behavior');
 
             Notifier::build()->from($this->owner->created_by)->to($user_ids)->where
             (
-                AssociateModel::TYPE_QUESTION,
-                $this->owner->question_id,
-                ['answer_id' => $this->owner->id]
+                [
+                    AssociateModel::TYPE_QUESTION,
+                    $this->owner->question_id,
+                ],
+                [
+                    'question_id' => $this->owner->question_id,
+                    'answer_id'   => $this->owner->id,
+                ]
             )->notice(
                 $type
             );
         }
     }
-    
+
     private function dealWithNewAnswerVersion()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         #check whether has exist version
         $result = AnswerService::addNewVersion($this->owner->id, $this->owner->content, $this->owner->update_reason);
-        
+
         if ($result && $this->owner->created_by != Yii::$app->user->id) {
             #count_common_edit
             Counter::userAddCommonEdit(Yii::$app->user->id);
         }
         Yii::trace(sprintf('add New Version: %s', var_export($result, true)), 'behavior');
     }
-    
+
     private function dealWithAddPassiveFollowTag()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -286,11 +290,11 @@ class AnswerBehavior extends BaseBehavior
         $question = $this->owner->question;
 
         $tag_ids = TagService::getTagIdByName($question->tags);
-        
+
         if ($tag_ids) {
             $tag_ids = is_array($tag_ids) ? $tag_ids : [$tag_ids];
             $result = FollowService::addFollowTagPassive($this->owner->created_by, $tag_ids);
-            
+
             Yii::trace(sprintf('Add Passive Follow Tag: %s', var_export($result, true)), 'behavior');
         }
     }

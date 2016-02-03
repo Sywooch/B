@@ -103,7 +103,7 @@ class AnswerController extends BaseController
                         'question_id' => $question_id,
                         'data'        => [$answer_data],
                         'pages'       => null,
-                        'comment_item_html' => '',
+                        'comment_list' => '',
                     ]
                 ),
                 'answer_form' => $this->renderPartial(

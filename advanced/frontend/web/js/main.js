@@ -81,9 +81,9 @@ jQuery(function ($) {
         //评论
         if (that.data('do') == 'comment') {
             //判断是否已经加载过
-            if ($('#comment-pajax-' + that.data('id') + '>div').length != 0) {
-                $('#comment-pajax-' + that.data('id')).toggleClass('hidden');
-                return;
+            if ($('#comment-area-' + that.data('id') + '>div').length != 0) {
+                $('#comment-area-' + that.data('id')).toggleClass('hidden');
+                return false;
             }
         }
 

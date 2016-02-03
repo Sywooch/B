@@ -37,8 +37,7 @@ class BaseNotifier extends Object
     private $method; #通知方法:notice,email,sms,weixin
 
     private $notice_code;
-    private $associate_type;
-    private $associate_id;
+    private $identifier;
     private $associate_data;
 
     public static function build()
@@ -46,12 +45,12 @@ class BaseNotifier extends Object
         if (self::$instance === null) {
             self::$instance = new self;
         }
-        
+
         self::$instance->init();
-        
+
         return self::$instance;
     }
-    
+
     public function init()
     {
         $this->immediate = false;
@@ -60,26 +59,26 @@ class BaseNotifier extends Object
         $this->result = null;
         $this->method = null;
     }
-    
+
     public function sync($immediate = true)
     {
         $this->immediate = $immediate;
 
         return $this;
     }
-    
+
     public function from($sender = null)
     {
         $this->sender = $sender;
 
         return $this;
     }
-    
-    
+
+
     public function to($receiver)
     {
         $user_ids = [];
-        
+
         if (is_array($receiver)) {
             $user_ids = $receiver;
         } elseif (is_numeric($receiver)) {
@@ -87,7 +86,7 @@ class BaseNotifier extends Object
         } elseif (count(explode(',', $receiver))) {
             $user_ids = explode(',', $receiver);
         }
-        
+
         $this->receiver = $user_ids;
 
         return $this;
@@ -102,36 +101,18 @@ class BaseNotifier extends Object
      * @param array $associate_data
      * @return $this
      */
-    public function where($associate_type, $associate_id, $associate_data = [])
+    public function where($identifier, $associate_data = [])
     {
-        $this->associate_type = $this->changeAssociateType($associate_type);
-        $this->associate_id = $associate_id;
+        if (is_array(($identifier))) {
+            $identifier = md5(implode('', $identifier));
+        } else {
+            $identifier = md5($identifier);
+        }
+
+        $this->identifier = $identifier;
         $this->associate_data = $associate_data;
 
         return $this;
-    }
-
-    /**
-     * 因为评论服务做切片化，所以需要对评论做特殊转换，在回答中评论，主题为问题。
-     * @param $associate_type
-     * @return string
-     * @throws Exception
-     */
-    private function changeAssociateType($associate_type)
-    {
-        $result = $associate_type;
-        switch ($associate_type) {
-            case AssociateModel::TYPE_QUESTION:
-            case AssociateModel::TYPE_ANSWER:
-            case AssociateModel::TYPE_COMMENT:
-            case AssociateModel::TYPE_ANSWER_COMMENT:
-                $result = AssociateModel::TYPE_QUESTION;
-                break;
-            default:
-                throw new Exception(sprintf('关注类型:%s 未指定转换业务。', $associate_type));
-        }
-
-        return $result;
     }
 
     /**
@@ -228,8 +209,7 @@ class BaseNotifier extends Object
             $this->sender,
             $this->receiver,
             $this->notice_code,
-            $this->associate_type,
-            $this->associate_id,
+            $this->identifier,
             $this->associate_data,
             TimeHelper::getCurrentTime()
         );
@@ -241,18 +221,13 @@ class BaseNotifier extends Object
         $cache_key = [RedisKey::REDIS_KEY_NOTIFIER, $this->method];
         $this->addSet($this->method);
 
-        return Yii::$app->redis->rPush(
-            $cache_key,
-            [
-                'sender'         => $this->sender,
-                'receiver'       => $this->receiver,
-                'notice_code'    => $this->notice_code,
-                'associate_type' => $this->associate_type,
-                'associate_id'   => $this->associate_id,
-                'associate_data' => $this->associate_data,
-                'status'         => NotificationEntity::STATUS_UNREAD,
-                'created_at'     => TimeHelper::getCurrentTime(),
-            ]
+        return NotificationService::addNotificationToQueue(
+            $this->sender,
+            $this->receiver,
+            $this->notice_code,
+            $this->identifier,
+            $this->associate_data,
+            TimeHelper::getCurrentTime()
         );
     }
 

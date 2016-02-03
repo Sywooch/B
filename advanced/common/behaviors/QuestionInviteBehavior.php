@@ -49,9 +49,17 @@ class QuestionInviteBehavior extends BaseBehavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $result = Notifier::build()->from($this->owner->created_by)
                           ->to($this->owner->invited_user_id)
-                          ->where(AssociateModel::TYPE_QUESTION, $this->owner->question_id)
+                          ->where(
+                              [
+                                  AssociateModel::TYPE_QUESTION,
+                                  $this->owner->question_id,
+                              ],
+                              [
+                                  'question_id' => $this->owner->question_id,
+                              ]
+                          )
                           ->notice(
-                              NotificationService::TYPE_INVITE_ME_TO_ANSWER_QUESTION
+                              NotificationService::TYPE_USER_BE_INVITE_TO_ANSWER
                           );
 
         return $result;

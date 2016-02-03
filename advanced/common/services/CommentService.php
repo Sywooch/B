@@ -88,7 +88,7 @@ class CommentService extends BaseService
 
     /**
      * @param $id
-     * @return array|CommentEntity
+     * @return array|CacheCommentModel
      */
     public static function getCommentByCommentId($id)
     {

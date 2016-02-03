@@ -10,6 +10,7 @@ namespace console\controllers;
 
 
 use common\components\Notifier;
+use common\services\NotificationService;
 use fedemotta\cronjob\models\CronJob;
 use Yii;
 use yii\console\Controller;
@@ -31,26 +32,25 @@ class NotifierCronJobController extends Controller
                 $item = $notifier->popUpQueue($method)) {
                 switch ($method) {
                     case 'notice':
-                        $result = $notifier->sync(true)->from($item['sender'])
-                                           ->to($item['receiver'])
-                                           ->where(
-                                               $item['associate_type'],
-                                               $item['associate_id'],
-                                               $item['associate_data']
-                                           )
-                                           ->notice($item['notice_code']);
-
+                        $result = NotificationService::addNotification(
+                            $item['sender'],
+                            $item['receiver'],
+                            $item['notice_code'],
+                            $item['identifier'],
+                            $item['associate_data'],
+                            $item['created_at']
+                        );
 
                         //消费失败，插入队列
                         if (!$result) {
-                            $notifier->sync(false)->from($item['sender'])
-                                     ->to($item['receiver'])
-                                     ->where(
-                                         $item['associate_type'],
-                                         $item['associate_id'],
-                                         $item['associate_data']
-                                     )
-                                     ->notice($item['notice_code']);
+                            NotificationService::addNotificationToQueue(
+                                $item['sender'],
+                                $item['receiver'],
+                                $item['notice_code'],
+                                $item['identifier'],
+                                $item['associate_data'],
+                                $item['created_at']
+                            );
                         } else {
                             echo sprintf('Notification Notice Code:  %s ', $item['notice_code']) . 'Success', PHP_EOL;
                         }

@@ -37,7 +37,7 @@ class FavoriteBehavior extends BaseBehavior
             ActiveRecord::EVENT_AFTER_UPDATE => 'afterFavoriteUpdate',
         ];
     }
-    
+
     public function afterFavoriteInsert()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -55,9 +55,18 @@ class FavoriteBehavior extends BaseBehavior
 
             //通知问题发布者
             $question = QuestionService::getQuestionByQuestionId($this->owner->associate_id);
-            Notifier::build()->from($this->owner->created_by)->to($question->created_by)
-                    ->where($this->owner->associate_type, $this->owner->associate_id)
-                    ->notice(NotificationService::TYPE_MY_FAVORITE_QUESTION);
+            Notifier::build()->from($this->owner->created_by)
+                    ->to($question->created_by)
+                    ->where(
+                        [
+                            AssociateModel::TYPE_QUESTION,
+                            $this->owner->associate_id,
+                        ],
+                        [
+                            'question_id' => $this->owner->associate_id,
+                        ]
+                    )
+                    ->notice(NotificationService::TYPE_QUESTION_BE_FAVORITE);
         }
 
 

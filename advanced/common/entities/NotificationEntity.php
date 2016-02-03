@@ -9,8 +9,10 @@
 namespace common\entities;
 
 use common\behaviors\NotificationBehavior;
+use common\behaviors\TimestampBehavior;
 use common\models\Notification;
 use Yii;
+use yii\db\ActiveRecord;
 
 class NotificationEntity extends Notification
 {
@@ -20,6 +22,13 @@ class NotificationEntity extends Notification
     public function behaviors()
     {
         return [
+            'timestamp'                => [
+                'class'      => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_at',
+                ],
+            ],
             'notification_behavior' => [
                 'class' => NotificationBehavior::className(),
             ],

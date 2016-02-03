@@ -131,16 +131,23 @@ class TestController extends BaseController
         $to_user_id = 2;
 
         $data = Notifier::build()->from($from_user_id)->to($to_user_id)
-                        ->where(AssociateModel::TYPE_QUESTION, $question_id)
-                        ->notice(NotificationService::TYPE_FOLLOW_QUESTION_MODIFY_ANSWER);
+                        ->where(
+                            [
+                                AssociateModel::TYPE_QUESTION,
+                                $question_id,
+                            ],
+                            [
+                                'question_id' => $question_id,
+                            ]
+                        )
+                        ->notice(NotificationService::TYPE_ANSWER_BE_CREATED);
         print_r($data);
     }
 
     public function actionCounter()
     {
         $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value('count_answer', 1)->execute();
-        $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value('count_question', 1)->execute(
-        );
+        $result = Counter::build()->sync(false)->set('user_profile', 1, 'user_id')->value('count_question', 1)->execute();
 
         $data = Yii::$app->redis->lRange([RedisKey::REDIS_KEY_COUNTER, 'user_profile'], 0, 10);
 

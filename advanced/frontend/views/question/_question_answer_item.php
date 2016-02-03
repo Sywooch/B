@@ -179,8 +179,8 @@ use yii\widgets\LinkPager;
                 </ul>
             </div>
 
-            <div class="widget-comments<?php if(!$comment_item_html){echo ' hidden';}?>" id="comment-area-<?= $item['id'] ?>">
-                <?=$comment_item_html?>
+            <div class="widget-comments<?php if(!$comment_list){echo ' hidden';}?>" id="comment-area-<?= $item['id'] ?>">
+                <?=$comment_list?>
             </div>
             </div>
         </article>

@@ -187,32 +187,33 @@ class AnswerService extends BaseService
      * @param $user_id
      * @return bool
      */
-    public static function checkWhetherHasAnswered($question_id, $user_id)
+    public static function getUserAnswerId($question_id, $user_id)
     {
         if (Yii::$app->user->isGuest) {
-            return false;
+            return 0;
         }
 
         $cache_key = [RedisKey::REDIS_KEY_QUESTION_HAS_ANSWERED, implode(':', [$user_id, $question_id])];
 
-        $cache_data = Yii::$app->redis->get($cache_key);
+        $answer_id = Yii::$app->redis->get($cache_key);
 
-        if ($cache_data === false) {
-            $cache_data = AnswerEntity::find()->select('id')->where(
+        if ($answer_id === false) {
+            $answer_id = AnswerEntity::find()->select('id')->where(
                 [
                     'question_id' => $question_id,
                     'created_by'  => $user_id,
                 ]
             )->scalar();
 
-            //如果没有回答过，则设置answer_id=0
-            if (!$cache_data) {
-                $cache_data = 0;
+            //如果没有回答过，则设置answer_id = 0
+            if (!$answer_id) {
+                $answer_id = 0;
             }
-            Yii::$app->redis->set($cache_key, $cache_data);
+
+            Yii::$app->redis->set($cache_key, $answer_id);
         }
 
-        return $cache_data > 0;
+        return $answer_id;
     }
 
     public static function getAnswerCountByQuestionId($question_id)

@@ -70,9 +70,12 @@ class VoteBehavior extends BaseBehavior
                     Notifier::build()->from($this->owner->created_by)
                             ->to($question->created_by)
                             ->where(
-                                $this->owner->associate_type,
-                                $this->owner->associate_id
-                            )->notice(NotificationService::TYPE_MY_QUESTION_IS_AGREED);
+                                [
+                                    AssociateModel::TYPE_QUESTION,
+                                    $this->owner->associate_id,
+                                ],
+                                ['question_id' => $this->owner->associate_id]
+                            )->notice(NotificationService::TYPE_QUESTION_BE_AGREED);
                     break;
                 case AssociateModel::TYPE_ANSWER:
                     //更新回答投票数
@@ -92,10 +95,15 @@ class VoteBehavior extends BaseBehavior
                     Notifier::build()->from($this->owner->created_by)
                             ->to($answer->created_by)
                             ->where(
-                                $this->owner->associate_type,
-                                $answer->question_id,
-                                ['answer_id' => $this->owner->associate_id]
-                            )->notice(NotificationService::TYPE_MY_ANSWER_IS_AGREED);
+                                [
+                                    AssociateModel::TYPE_QUESTION,
+                                    $answer->question_id,
+                                ],
+                                [
+                                    'question_id' => $answer->question_id,
+                                    'answer_id'   => $this->owner->associate_id,
+                                ]
+                            )->notice(NotificationService::TYPE_ANSWER_BE_AGREED);
                     break;
                 case AssociateModel::TYPE_ANSWER_COMMENT:
                     //更新评论投票数
@@ -113,16 +121,21 @@ class VoteBehavior extends BaseBehavior
 
                     //赞评论通知
                     $comment = CommentService::getCommentByCommentId($this->owner->associate_id);
+
+                    $question_id = $comment->getAnswer()->question_id;
                     Notifier::build()->from($this->owner->created_by)
                             ->to($comment->created_by)
                             ->where(
-                                $this->owner->associate_type,
-                                $comment->getAnswer()->question_id,
                                 [
-                                    'answer_id'  => $comment->associate_id,
-                                    'comment_id' => $this->owner->associate_id,
+                                    AssociateModel::TYPE_QUESTION,
+                                    $question_id,
+                                ],
+                                [
+                                    'question_id' => $question_id,
+                                    'answer_id'   => $comment->associate_id,
+                                    'comment_id'  => $this->owner->associate_id,
                                 ]
-                            )->notice(NotificationService::TYPE_MY_ANSWER_COMMENT_IS_AGREED);
+                            )->notice(NotificationService::TYPE_COMMENT_BE_AGREED_IN_ANSWER);
                     break;
                 default:
                     throw new Exception(sprintf('暂不支持 %s insert 事件', $this->owner->associate_type));

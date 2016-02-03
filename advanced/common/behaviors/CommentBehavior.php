@@ -37,7 +37,7 @@ class CommentBehavior extends BaseBehavior
             ActiveRecord::EVENT_AFTER_DELETE => 'eventCommentDelete',
         ];
     }
-    
+
     public function eventCommentCreate()
     {
         //通知
@@ -89,22 +89,26 @@ class CommentBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-
         $answer_data = AnswerService::getAnswerByAnswerId($this->owner->associate_id);
+
         if ($answer_data && $answer_data->created_by) {
+            $question_id = $this->owner->getAnswer()->question_id;
             Notifier::build()
                     ->from($this->owner->created_by)
                     ->to($answer_data->created_by)
                     ->where(
-                        $this->owner->associate_type,
-                        $this->owner->associate_id,
                         [
-                            'question_id' => $this->owner->getAnswer()->question_id,
+                            $this->owner->associate_type,
+                            $question_id
+                            ,
+                        ],
+                        [
+                            'question_id' => $question_id,
                             'answer_id'   => $answer_data->id,
                             'comment_id'  => $this->owner->id,
                         ]
                     )
-                    ->notice(NotificationService::TYPE_MY_ANSWER_HAS_NEW_COMMENT);
+                    ->notice(NotificationService::TYPE_COMMENT_BE_CREATED_IN_ANSWER);
         }
     }
 
@@ -120,19 +124,22 @@ class CommentBehavior extends BaseBehavior
 
         if ($at_username) {
             $at_user_ids = UserService::getUserIdByUsername($at_username);
-
+            $question_id = $this->owner->getAnswer()->question_id;
             Notifier::build()
                     ->from($this->owner->created_by)
                     ->to($at_user_ids)
                     ->where(
-                        $this->owner->associate_type,
-                        $this->owner->getAnswer()->question_id,
                         [
-                            'user_id'    => $this->owner->id,
-                            'answer_id'  => $this->owner->associate_id,
-                            'comment_id' => $this->owner->id,
+                            AssociateModel::TYPE_QUESTION,
+                            $question_id,
+                        ],
+                        [
+                            'user_id'     => $this->owner->id,
+                            'question_id' => $question_id,
+                            'answer_id'   => $this->owner->associate_id,
+                            'comment_id'  => $this->owner->id,
                         ]
-                    )->notice(NotificationService::TYPE_COMMENT_AT_ME);
+                    )->notice(NotificationService::TYPE_USER_BE_AT_IN_COMMENT);
         }
     }
 

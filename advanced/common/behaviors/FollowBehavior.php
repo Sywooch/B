@@ -9,8 +9,12 @@
 namespace common\behaviors;
 
 use common\components\Counter;
+use common\components\Notifier;
 use common\models\AssociateModel;
 use common\services\FollowService;
+use common\services\NotificationService;
+use common\services\QuestionService;
+use common\services\UserService;
 use Yii;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
@@ -50,6 +54,21 @@ class FollowBehavior extends BaseBehavior
                 Counter::userAddFollowQuestion($this->owner->user_id);
                 Counter::questionAddFollow($this->owner->associate_id);
 
+                //关注问题通知
+                $question = QuestionService::getQuestionByQuestionId($this->owner->associate_id);
+                Notifier::build()->from($this->owner->user_id)
+                        ->to($question->created_by)
+                        ->where(
+                            [
+                                AssociateModel::TYPE_QUESTION,
+                                $this->owner->associate_id,
+                            ],
+                            [
+                                'question_id' => $this->owner->associate_id,
+                            ]
+                        )
+                        ->notice(NotificationService::TYPE_QUESTION_BE_FOLLOWED);
+
                 break;
             case AssociateModel::TYPE_TAG:
 
@@ -73,6 +92,21 @@ class FollowBehavior extends BaseBehavior
                 //关注用户后
                 Counter::userAddFollowUser($this->owner->user_id);
                 Counter::userAddFans($this->owner->associate_id);
+
+                //关注用户通知
+                $user = UserService::getUserById($this->owner->associate_id);
+                Notifier::build()->from($this->owner->user_id)
+                        ->to($user->id)
+                        ->where(
+                            [
+                                AssociateModel::TYPE_USER,
+                                $user->id,
+                            ],
+                            [
+                                'user_id' => $user->id,
+                            ]
+                        )
+                        ->notice(NotificationService::TYPE_USER_BE_FOLLOWED);
                 break;
             default:
                 throw new Exception(sprintf('关注 %s 关联类型 %s 未定义', $this->owner->associate_type, __FUNCTION__));

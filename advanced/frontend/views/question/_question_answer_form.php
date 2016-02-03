@@ -44,10 +44,7 @@ use common\entities\AnswerEntity;
             </div>
         </div>
 
-    <?php elseif ($answer_id = AnswerService::checkWhetherHasAnswered($question_data['id'], Yii::$app->user->id)): ?>
-
-
-
+    <?php elseif ($answer_id = AnswerService::getUserAnswerId($question_data['id'], Yii::$app->user->id)): ?>
         <?= $this->render(
                 '_question_has_answered',
                 [
@@ -55,7 +52,6 @@ use common\entities\AnswerEntity;
                         'answer_id'   => $answer_id,
                 ]
         ); ?>
-
     <?php else: ?>
         <h4>撰写答案</h4>
         <?php $form = ActiveForm::begin(['id' => 'answer_form',]); ?>

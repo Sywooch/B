@@ -160,8 +160,14 @@ app.ajax = {
         //显示评论列表
         'afterShowCommentList': function (response) {
             var comment = $('#comment-area-' + app.ajax.callbacks.target.data('id'));
+
+            if ($('#comment-pajax-' + app.ajax.callbacks.target.data('id')).length > 0) {
+                $('#comment-pajax-' + app.ajax.callbacks.target.data('id')).html(response);
+            } else {
+                comment.html(response);
+            }
             comment.removeClass('hidden');
-            comment.html(response);
+
         },
 
     }

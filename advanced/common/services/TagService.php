@@ -105,9 +105,14 @@ class TagService extends BaseService
 
         $tag_name = array_values(array_unique(array_filter($tag_name)));
         //print_r($tag_name);exit;
-        $data = self::getTagIdByNameUseCache($tag_name);
 
-        $combine_data = array_combine($tag_name, $data);
+        $data = self::getTagIdByNameUseCache($tag_name);
+        if ($data) {
+            $combine_data = array_combine($tag_name, $data);
+        } else {
+            $combine_data = $tag_name;
+        }
+
         if ($multiple) {
             $result = $combine_data;
         } else {
