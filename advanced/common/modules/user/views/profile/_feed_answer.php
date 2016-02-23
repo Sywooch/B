@@ -25,8 +25,8 @@ $answer = AnswerService::getAnswerByAnswerId($item->associate_id)
                 $item->created_at
             ) ?>
 
-            <?php if ($user_event_list[$item->user_event_id]['template'] && !empty($item->associate_data['template'])): ?>
-                <?= vsprintf($user_event_list[$item->user_event_id]['template'], $item->associate_data['template']); ?>
+            <?php if ($user_event_list[$item->user_event_id]['event_template'] && !empty($item->associate_data['event_template'])): ?>
+                <?= vsprintf($user_event_list[$item->user_event_id]['event_template'], $item->associate_data['event_template']); ?>
             <?php else: ?>
                 <?= $user_event_list[$item->user_event_id]['name']; ?>
             <?php endif; ?>

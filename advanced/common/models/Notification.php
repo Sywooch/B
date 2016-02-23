@@ -9,14 +9,14 @@ use Yii;
  *
  * @property string $id
  * @property integer $receiver
- * @property string $notice_code
+ * @property string $user_event_id
  * @property string $date
- * @property string $identifier
- * @property string $associate_data
+ * @property string $associate_type
+ * @property integer $associate_id
+ * @property integer $count_notice
  * @property string $status
- * @property integer $count_number
- * @property string $created_at
- * @property string $updated_at
+ * @property integer $created_at
+ * @property integer $updated_at
  */
 class Notification extends \common\models\BaseActiveRecord
 {
@@ -34,13 +34,12 @@ class Notification extends \common\models\BaseActiveRecord
     public function rules()
     {
         return [
-            [['receiver', 'notice_code', 'date', 'identifier'], 'required'],
-            [['receiver', 'notice_code', 'count_number', 'created_at', 'updated_at'], 'integer'],
+            [['receiver', 'user_event_id', 'date', 'associate_type', 'associate_id'], 'required'],
+            [['receiver', 'user_event_id', 'associate_id', 'count_notice', 'created_at', 'updated_at'], 'integer'],
             [['date'], 'safe'],
             [['status'], 'string'],
-            [['identifier'], 'string', 'max' => 32],
-            [['associate_data'], 'string', 'max' => 255],
-            [['receiver', 'notice_code', 'date', 'identifier'], 'unique', 'targetAttribute' => ['receiver', 'notice_code', 'date', 'identifier'], 'message' => 'The combination of 接收通知的用户ID, 通知类型代码, Date and 标识符，确定某个通知下指定的对象 has already been taken.']
+            [['associate_type'], 'string', 'max' => 45],
+            [['receiver', 'user_event_id', 'date', 'associate_type', 'associate_id'], 'unique', 'targetAttribute' => ['receiver', 'user_event_id', 'date', 'associate_type', 'associate_id'], 'message' => 'The combination of 接收通知的用户ID, 用户事件ID, Date, Associate Type and Associate ID has already been taken.']
         ];
     }
 
@@ -52,12 +51,12 @@ class Notification extends \common\models\BaseActiveRecord
         return [
             'id' => 'ID',
             'receiver' => '接收通知的用户ID',
-            'notice_code' => '通知类型代码',
+            'user_event_id' => '用户事件ID',
             'date' => 'Date',
-            'identifier' => '标识符，确定某个通知下指定的对象',
-            'associate_data' => '关联数据',
+            'associate_type' => 'Associate Type',
+            'associate_id' => 'Associate ID',
+            'count_notice' => '通知次数',
             'status' => 'unread未读,  read已读',
-            'count_number' => '通知数量，用于计算超过多少条后，此类通知不再提醒',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
         ];

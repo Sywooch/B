@@ -1,6 +1,5 @@
 <?php
 /**
- * 每个动态类型使用一种模板，　_feed_???.php
  * User: yuyj
  * Date: 1/14
  * Time: 11:55

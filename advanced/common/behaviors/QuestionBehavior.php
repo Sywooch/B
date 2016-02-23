@@ -20,6 +20,7 @@ use common\entities\UserEventLogEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\helpers\TimeHelper;
 use common\models\AssociateModel;
+use common\models\NoticeDataModel;
 use common\models\xunsearch\QuestionSearch;
 use common\services\FavoriteService;
 use common\services\FollowService;
@@ -43,7 +44,7 @@ class QuestionBehavior extends BaseBehavior
     public function events()
     {
         Yii::trace('Begin ' . $this->className(), 'behavior');
-        
+
         return [
             ActiveRecord::EVENT_AFTER_INSERT   => 'eventQuestionCreate',
             ActiveRecord::EVENT_AFTER_UPDATE   => 'eventQuestionUpdate',
@@ -61,7 +62,7 @@ class QuestionBehavior extends BaseBehavior
         $this->oldAttributes = $this->owner->getOldAttributes();
         $this->dealWithTagsOrder();
     }
-    
+
     public function eventQuestionCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -87,14 +88,15 @@ class QuestionBehavior extends BaseBehavior
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'id'      => $this->owner->id,
-                    'type'    => AssociateModel::TYPE_QUESTION,
-                    'data' => [],
+                    'associate_id'   => $this->owner->id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => [],
+                    'notice_data'    => [],
                 ]
             )
         );
     }
-    
+
     public function eventQuestionUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -109,7 +111,7 @@ class QuestionBehavior extends BaseBehavior
         //处理xunsearch
         $this->dealWithInsertXunSearch();
     }
-    
+
     public function eventQuestionDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -132,9 +134,10 @@ class QuestionBehavior extends BaseBehavior
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'id'      => $this->owner->id,
-                    'type'    => AssociateModel::TYPE_QUESTION,
-                    'data' => [],
+                    'id'         => $this->owner->id,
+                    'type'       => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => [],
+                    'notice_data'    => [],
                 ]
             )
         );
@@ -162,7 +165,7 @@ class QuestionBehavior extends BaseBehavior
             throw new ModelSaveErrorException($model);
         }
     }
-    
+
     /**
      * add question follow
      */
@@ -187,10 +190,10 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $owner = $this->owner;
-        
+
         $new_tags = $owner->tags ? explode(',', $owner->tags) : [];
         $add_tags = $new_tags;
-        
+
         if ($add_tags) {
             $tag_relation = TagService::batchAddTags($add_tags);
             if ($tag_relation) {
@@ -201,7 +204,7 @@ class QuestionBehavior extends BaseBehavior
             }
         }
     }
-    
+
     private function dealWithQuestionVersionUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
@@ -270,7 +273,7 @@ class QuestionBehavior extends BaseBehavior
     {
         return ($change_type_code & $change_type) == $change_type;
     }
-    
+
     /**
      * @var $tag_model \common\entities\TagEntity
      */
@@ -278,18 +281,18 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $owner = $this->owner;
-        
-        
+
+
         $new_tags = $owner->tags ? explode(',', $owner->tags) : [];
         $old_tags = $add_tags = $remove_tags = [];
-        
+
         $tags = QuestionService::getQuestionTagsByQuestionId($this->owner->id);
-        
+
         if (!empty($tags)) {
             foreach ($tags as $tag) {
                 $old_tags[] = $tag['name'];
             }
-            
+
             $add_tags = array_diff($new_tags, $old_tags);
             $remove_tags = array_diff($old_tags, $new_tags);
         } else {
@@ -303,21 +306,21 @@ class QuestionBehavior extends BaseBehavior
                 QuestionService::addQuestionTag($this->owner->created_by, $this->owner->id, $tag_ids);
             }
         }
-        
+
         if ($remove_tags) {
             $tag_relation = TagService::batchGetTagIds($remove_tags);
-            
+
             $tag_ids = ArrayHelper::getColumn($tag_relation, 'id');
             if ($tag_ids) {
                 QuestionService::removeQuestionTag($this->owner->id, $tag_ids);
             }
         }
     }
-    
+
     private function dealWithUserAddQuestionCounter()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        
+
         $result = Counter::userAddQuestion($this->owner->created_by);
 
         return $result;
@@ -331,7 +334,7 @@ class QuestionBehavior extends BaseBehavior
 
         return $result;
     }
-    
+
     /**
      * todo 未完成
      * 将临时上传的图片，转移目录，并写入attachment表
@@ -340,7 +343,7 @@ class QuestionBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         $owner = $this->owner;
-        
+
         #print_r($owner->content);
         if (strpos($owner->content, AttachmentEntity::TEMP_ATTACHMENT_PATH) && preg_match_all(
                 AttachmentEntity::TEMP_FILE_MATCH_REGULAR,
@@ -349,24 +352,24 @@ class QuestionBehavior extends BaseBehavior
             )
         ) {
             $search_rules = $replace_rules = [];
-            
-            
+
+
             foreach ($file_paths[1] as $file_path) {
                 $old_file_physical_path = Yii::$app->basePath . $file_path;
-                
-                
+
+
                 if (file_exists($old_file_physical_path)) {
                     $new_file_path_without_attachment_dir = substr(
                         $file_path,
                         strlen(AttachmentEntity::TEMP_ATTACHMENT_PATH)
                     );
-                    
+
                     $new_file_path = '/' . AttachmentEntity::ATTACHMENT_PATH . '/' . Yii::$app->user->id . $new_file_path_without_attachment_dir;
                     $new_file_physical_path = Yii::$app->basePath . $new_file_path;
-                    
-                    
+
+
                     $file_size = filesize($old_file_physical_path);
-                    
+
                     $attachment = new AttachmentEntity;
                     $attachment->addQuestionAttachment(
                         $this->owner->id,
@@ -380,22 +383,22 @@ class QuestionBehavior extends BaseBehavior
                             $old_file_physical_path,
                             $new_file_physical_path
                         );
-                        
+
                         #
                         $search_rules[] = $file_path;
                         $replace_rules[] = $new_file_path;
                     }
                 }
             }
-            
+
             $this->owner->content = str_replace($search_rules, $replace_rules, $this->owner->content);
             Updater::updateQuestionContent($this->owner->id, $this->owner->content);
-            
+
         } else {
             Yii::trace('No matching data', 'attachment');
         }
     }
-    
+
     private function dealWithFavoriteRecordRemove()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');

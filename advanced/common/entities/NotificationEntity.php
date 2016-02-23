@@ -19,10 +19,14 @@ class NotificationEntity extends Notification
     const STATUS_UNREAD = 'unread';
     const STATUS_READ = 'read';
 
+    const LEVEL_NORMAL = 'normal';
+    const LEVEL_HIGH = 'high';
+    const LEVEL_LOW = 'low';
+
     public function behaviors()
     {
         return [
-            'timestamp'                => [
+            'timestamp'             => [
                 'class'      => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],

@@ -3,9 +3,10 @@
 namespace common\services;
 
 use common\entities\NotificationEntity;
-use common\entities\NotificationSenderEntity;
+use common\entities\NotificationDataEntity;
 use common\exceptions\ModelSaveErrorException;
 use common\helpers\TimeHelper;
+use common\models\AssociateDataModel;
 use common\models\AssociateModel;
 use yii\base\Exception;
 use yii\bootstrap\Html;
@@ -96,29 +97,35 @@ class NotificationService extends BaseService
 
     public static $notice_code;
 
-    public static function addNotification($sender, array $receivers, $notice_code, $identifier, $associate_data, $created_at)
+    public static function addNotification($sender, array $receivers, $user_event_id, $associate_type, $associate_id, AssociateDataModel $associate_data, $created_at)
     {
-        Yii::trace(sprintf('添加站内通知%d，通知用户： %s', $notice_code, implode(',', $receivers)), 'behavior');
+        Yii::trace(sprintf('添加站内通知%d，通知用户： %s', $user_event_id, implode(',', $receivers)), 'behavior');
 
         $transaction = NotificationEntity::getDb()->beginTransaction();
         try {
             foreach ($receivers as $receiver) {
+                //不通知本人
+                if ($sender == $receiver) {
+                    continue;
+                }
+
                 //保存　notification　数据
                 $notification_data = [
                     'receiver'       => $receiver,
-                    'notice_code'    => $notice_code,
-                    'identifier'     => $identifier,
-                    'associate_data' => $associate_data ? Json::encode($associate_data) : null,
+                    'user_event_id'  => $user_event_id,
+                    'associate_type' => $associate_type,
+                    'associate_id'   => $associate_id,
                     'date'           => date('Y-m-d', $created_at),
                     'status'         => NotificationEntity::STATUS_UNREAD,
                 ];
 
                 $notification_model = NotificationEntity::find()->where(
                     [
-                        'receiver'    => $receiver,
-                        'notice_code' => $notice_code,
-                        'identifier'  => $identifier,
-                        'date'        => date('Y-m-d', $created_at),
+                        'receiver'       => $receiver,
+                        'user_event_id'  => $user_event_id,
+                        'associate_type' => $associate_type,
+                        'associate_id'   => $associate_id,
+                        'date'           => date('Y-m-d', $created_at),
                     ]
                 )->one();
 
@@ -127,7 +134,7 @@ class NotificationService extends BaseService
                 }
 
                 //同类型通知数加+1
-                $notification_model->count_number = $notification_model->count_number + 1;
+                $notification_model->count_notice = $notification_model->count_notice + 1;
 
                 if ($notification_model->load($notification_data, '') && $notification_model->save()) {
                     $notification_id = $notification_model->id;
@@ -136,38 +143,38 @@ class NotificationService extends BaseService
                     throw new ModelSaveErrorException($notification_model);
                 }
 
+
                 //同类型通知最多5条
-                if ($notification_model->count_number <= self::MAX_SENDER_NUMBER) {
+                if ($notification_model->count_notice <= self::MAX_SENDER_NUMBER) {
                     //保存　notification_sender　数据
                     $notification_sender_data = [
                         'notification_id' => $notification_id,
                         'sender'          => $sender,
+                        'associate_data'  => Json::encode(array_filter($associate_data->toArray())),
                         'created_at'      => $created_at,
                         'status'          => NotificationEntity::STATUS_UNREAD,
                     ];
 
-                    $notification_sender_model = NotificationSenderEntity::find()->where(
+                    $notification_data_model = NotificationDataEntity::find()->where(
                         [
                             'notification_id' => $notification_id,
                             'sender'          => $sender,
                         ]
                     )->one();
 
-                    if (!$notification_sender_model) {
-                        $notification_sender_model = new NotificationSenderEntity();
+                    if (!$notification_data_model) {
+                        $notification_data_model = new NotificationDataEntity();
                     }
 
-                    if ($notification_sender_model->load($notification_sender_data, '') &&
-                        $notification_sender_model->save()
+                    if ($notification_data_model->load($notification_sender_data, '') &&
+                        $notification_data_model->save()
                     ) {
                         //
                     } else {
                         $transaction->rollBack();
-                        throw new ModelSaveErrorException($notification_sender_model);
+                        throw new ModelSaveErrorException($notification_data_model);
                     }
                 }
-
-
             }
 
             $transaction->commit();
@@ -179,7 +186,7 @@ class NotificationService extends BaseService
         }
     }
 
-    public static function addNotificationToQueue($sender, array $receivers, $notice_code, $identifier, $associate_data, $created_at)
+    public static function addNotificationToQueue($sender, array $receivers, $user_event_id, $associate_type, $associate_id, $associate_data, $created_at)
     {
         $cache_key = [RedisKey::REDIS_KEY_NOTIFIER, 'notice'];
 
@@ -188,8 +195,9 @@ class NotificationService extends BaseService
             [
                 'sender'         => $sender,
                 'receiver'       => $receivers,
-                'notice_code'    => $notice_code,
-                'identifier'     => $identifier,
+                'user_event_id'  => $user_event_id,
+                'associate_type' => $associate_type,
+                'associate_id'   => $associate_id,
                 'associate_data' => $associate_data,
                 'status'         => NotificationEntity::STATUS_UNREAD,
                 'created_at'     => $created_at,
@@ -229,7 +237,7 @@ class NotificationService extends BaseService
 
         $notification_ids = ArrayHelper::getColumn($notification, 'id');
 
-        $notification_senders = NotificationSenderEntity::find()->where(
+        $notification_senders = NotificationDataEntity::find()->where(
             ['notification_id' => $notification_ids]
         )->orderBy('created_at DESC')->orderBy('')->asArray()->limit(5000)->all();
 

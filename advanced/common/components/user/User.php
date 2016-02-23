@@ -11,8 +11,10 @@ namespace common\components\user;
 
 use common\components\Counter;
 use common\components\Error;
+use common\components\Notifier;
 use common\components\Updater;
 use common\config\RedisKey;
+use common\entities\NotificationEntity;
 use common\entities\UserEventEntity;
 use common\entities\UserEventLogEntity;
 use common\entities\UserGradeRuleEntity;
@@ -39,7 +41,7 @@ class User extends \yii\web\User
 
     public $user_step;
 
-    
+
     /**
      * 判断用户当前是否处于注册、登陆环节
      * @return bool
@@ -158,31 +160,60 @@ class User extends \yii\web\User
      */
     public function trigger($name, Event $associate_event = null)
     {
-        //触发框架级用户事件
         if (strpos($name, 'before') === 0 || strpos($name, 'after') === 0) {
+            //触发框架级用户事件
             return parent::trigger($name, $associate_event);
         } else {
             $event_name = Inflector::underscore($name);
 
             //检查事件是否存在
-            if ($user_event = UserEventService::getUserEventByEventName($event_name)) {
+            if ($user_event_model = UserEventService::getUserEventByEventName($event_name)) {
                 //用户动态
-                $user_event_log_id = $this->dealWithUserEventLog($user_event, $associate_event);
+                $user_event_log_id = $this->dealWithUserEventLog($user_event_model, $associate_event);
                 if ($user_event_log_id) {
                     //用户积分
-                    $this->dealWithUserScore($user_event_log_id, $user_event);
+                    $this->dealWithUserScore($user_event_log_id, $user_event_model);
                 }
+
+                //处理事件通知
+                $this->dealWithNotice($user_event_model, $associate_event);
             } elseif (YII_DEBUG) {
                 throw new UserEventDoesNotDefineException($event_name);
             }
         }
     }
 
+    private function dealWithNotice(CacheUserEventModel $user_event_model, UserAssociationEvent $user_association_event)
+    {
+        //如果不需要通知
+        if ($user_event_model->need_notice == UserEventEntity::NO_NEED_NOTICE || empty($user_association_event->notice_data)) {
+            return false;
+        }
+
+        if (empty($user_association_event->notice_data->sender) || empty($user_association_event->notice_data->receiver)) {
+            return false;
+        }
+
+
+        //todo 检查接收方是否允许接收
+
+        //发送
+        Notifier::build()
+                ->from($user_association_event->notice_data->sender)
+                ->to($user_association_event->notice_data->receiver)
+                ->where(
+                    $user_association_event->associate_type,
+                    $user_association_event->associate_id,
+                    $user_association_event->associate_data
+                )
+                ->notice($user_event_model->id);
+    }
+
     /**
      * 处理用户积分变动
      * 一个动作可以有多个积分变动规则
      * @param                     $user_event_log_id 事件ID
-     * @param CacheUserEventModel $user_event 用户事件
+     * @param CacheUserEventModel $user_event        用户事件
      * @return bool
      * @throws ModelSaveErrorException
      */
@@ -206,7 +237,7 @@ class User extends \yii\web\User
 
     /**
      * @param                         $user_event_log_id 用户事件ID
-     * @param CacheUserScoreRuleModel $rule 积分规则
+     * @param CacheUserScoreRuleModel $rule              积分规则
      * @return bool
      * @throws ModelSaveErrorException
      */
@@ -358,7 +389,7 @@ class User extends \yii\web\User
 
     /**
      * 处理用户动态
-     * @param CacheUserEventModel  $user_event 用户事件
+     * @param CacheUserEventModel  $user_event             用户事件
      * @param UserAssociationEvent $user_association_event 关联事件：问题、回答、评论
      * @return bool
      * @throws ModelSaveErrorException
@@ -375,19 +406,19 @@ class User extends \yii\web\User
         $model = UserEventLogEntity::find()->where(
             [
                 'user_event_id'  => $user_event->id,
-                'associate_type' => $user_association_event->type,
-                'associate_id'   => $user_association_event->id,
+                'associate_type' => $user_association_event->associate_type,
+                'associate_id'   => $user_association_event->associate_id,
             ]
         )->one();
 
         if (!$model) {
             $model = new UserEventLogEntity();
             $model->user_event_id = $user_event->id;
-            $model->associate_type = $user_association_event->type;
-            $model->associate_id = $user_association_event->id;
+            $model->associate_type = $user_association_event->associate_type;
+            $model->associate_id = $user_association_event->associate_id;
         }
 
-        $model->associate_data = $user_association_event->data;
+        $model->associate_data = $user_association_event->associate_data;
 
         if ($model->save()) {
             return $model->id;

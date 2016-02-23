@@ -8,9 +8,9 @@
 
 namespace common\entities;
 
-use common\models\NotificationSender;
+use common\models\NotificationData;
 
-class NotificationSenderEntity extends NotificationSender
+class NotificationDataEntity extends NotificationData
 {
     
 }

@@ -34,8 +34,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'event',
             'description',
             'sort',
-            'public',
-            'template',
+            'is_public',
+            'event_template',
             'status',
         ],
     ]) ?>

@@ -14,6 +14,7 @@ use common\components\Error;
 use common\components\Notifier;
 use common\components\Updater;
 use common\components\user\User;
+use common\components\user\UserAssociationEvent;
 use common\config\RedisKey;
 use common\entities\AnswerEntity;
 use common\entities\NotificationEntity;
@@ -24,9 +25,11 @@ use common\entities\VoteEntity;
 use common\helpers\AtHelper;
 use common\helpers\TemplateHelper;
 use common\helpers\TimeHelper;
+use common\models\AssociateDataModel;
 use common\models\AssociateModel;
 use common\models\CacheUserEventModel;
 use common\models\CacheUserGradeModel;
+use common\models\NoticeDataModel;
 use common\models\xunsearch\QuestionSearch;
 use common\services\AnswerService;
 use common\services\FollowService;
@@ -259,6 +262,30 @@ class TestController extends BaseController
          print_r($result);*/
 
 
+    }
+
+    public function actionUserEvent()
+    {
+        //关联数据
+        $associate_data = new AssociateDataModel();
+        $associate_data->answer_id = 1;
+        //通知数据
+        $notice_data = new NoticeDataModel();
+        $notice_data->sender = 1;
+        $notice_data->receiver = [2, 3, 4];
+
+        //触发用户事件
+        Yii::$app->user->trigger(
+            'eventAnswerCreate',
+            new UserAssociationEvent(
+                [
+                    'associate_id'   => 1,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
+                    'notice_data'    => $notice_data,
+                ]
+            )
+        );
     }
 
     public function actionGetUsername()

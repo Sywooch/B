@@ -19,6 +19,9 @@ class UserEventEntity extends UserEvent
     const NEED_RECORD = 'yes';
     const NO_NEED_RECORD = 'no';
 
+    const NEED_NOTICE = 'yes';
+    const NO_NEED_NOTICE = 'no';
+
     const PUBLIC_YES = 'yes';
     const PUBLIC_NO = 'no';
 

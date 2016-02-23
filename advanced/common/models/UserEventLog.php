@@ -6,7 +6,7 @@ use Yii;
 
 /**
  * This is the model class for table "user_event_log".
-
+ *
  * @property string $id
  * @property string $user_event_id
  * @property string $associate_type
@@ -34,7 +34,7 @@ class UserEventLog extends \common\models\BaseActiveRecord
             [['user_event_id', 'associate_type', 'associate_id'], 'required'],
             [['user_event_id', 'associate_id', 'created_at', 'created_by'], 'integer'],
             [['associate_type'], 'string', 'max' => 45],
-            [['associate_data'], 'string', 'max' => 1024],
+            [['associate_data'], 'string', 'max' => 1024]
         ];
     }
 

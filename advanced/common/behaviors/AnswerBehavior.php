@@ -18,9 +18,11 @@ use common\entities\CommentEntity;
 use common\entities\QuestionEntity;
 use common\helpers\StringHelper;
 use common\helpers\TimeHelper;
+use common\models\AssociateDataModel;
 use common\models\AssociateModel;
 use common\models\CacheAnswerModel;
 use common\models\CacheQuestionModel;
+use common\models\NoticeDataModel;
 use common\services\AnswerService;
 use common\services\FollowService;
 use common\services\NotificationService;
@@ -71,8 +73,6 @@ class AnswerBehavior extends BaseBehavior
     public function eventAnswerCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        //通知
-        $this->dealWithNotification(NotificationService::TYPE_ANSWER_BE_CREATED);
 
         //关注问题，此方法必须在 dealWithAddCounter 前
         $this->dealWithAddQuestionFollow();
@@ -89,15 +89,23 @@ class AnswerBehavior extends BaseBehavior
         //计数
         $this->dealWithAddCounter();
 
+        //关联数据
+        $associate_data = new AssociateDataModel();
+        $associate_data->answer_id = $this->owner->id;
+        //通知数据
+        $notice_data = new NoticeDataModel();
+        $notice_data->sender = $this->owner->created_by;
+        $notice_data->receiver = $this->getReceiverUserIds();
+
+        //触发用户事件
         Yii::$app->user->trigger(
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'type' => AssociateModel::TYPE_ANSWER,
-                    'id'   => $this->owner->id,
-                    'data' => [
-                        'question_id' => $this->owner->question_id,
-                    ],
+                    'associate_id'   => $this->owner->question_id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
+                    'notice_data'    => $notice_data,
                 ]
             )
         );
@@ -133,18 +141,41 @@ class AnswerBehavior extends BaseBehavior
         //删除回答评论
         $this->dealWithAnswerCommentDelete();
 
+
+        //关联数据
+        $associate_data = new AssociateDataModel();
+        $associate_data->answer_id = $this->owner->id;
+        //通知数据
+        $notice_data = new NoticeDataModel();
+        $notice_data->sender = Yii::$app->user->id;
+        $notice_data->receiver = $this->getReceiverUserIds();
+
+        //触发用户事件
         Yii::$app->user->trigger(
             __FUNCTION__,
             new UserAssociationEvent(
                 [
-                    'type' => AssociateModel::TYPE_ANSWER,
-                    'id'   => $this->owner->id,
-                    'data' => [
-                        'question_id' => $this->owner->question_id,
-                    ],
+                    'associate_id'   => $this->owner->question_id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
+                    'notice_data'    => $notice_data,
                 ]
             )
         );
+    }
+
+    private function getReceiverUserIds()
+    {
+        #当前回复内容超过指定长度，通知所有关注者，否则只通知提问者
+        if (StringHelper::countStringLength($this->owner->content) >= self::NEED_NOTIFICATION_ANSWER_CONTENT_LENGTH) {
+            $user_ids = FollowService::getFollowQuestionUserIdsByQuestionId($this->owner->question_id);
+        } else {
+            /* @var $question CacheQuestionModel */
+            $question = $this->owner->getQuestion();
+            $user_ids = [$question->created_by];
+        }
+
+        return $user_ids;
     }
 
 
@@ -234,39 +265,6 @@ class AnswerBehavior extends BaseBehavior
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         Counter::userDeleteAnswer($this->owner->created_by);
         Counter::questionDeleteAnswer($this->owner->question_id);
-    }
-
-    private function dealWithNotification($type)
-    {
-        Yii::trace('Process ' . __FUNCTION__, 'behavior');
-
-        #当前回复内容超过指定长度，通知所有关注者，否则只通知提问者
-        if (StringHelper::countStringLength($this->owner->content) >= self::NEED_NOTIFICATION_ANSWER_CONTENT_LENGTH) {
-            $user_ids = FollowService::getFollowQuestionUserIdsByQuestionId($this->owner->question_id);
-        } else {
-            /* @var $question CacheQuestionModel */
-            $question = $this->owner->getQuestion();
-            $user_ids = [$question->created_by];
-        }
-
-
-        if ($user_ids) {
-            Yii::trace(sprintf('通知关注此问题的人 %s', implode(',', $user_ids)), 'behavior');
-
-            Notifier::build()->from($this->owner->created_by)->to($user_ids)->where
-            (
-                [
-                    AssociateModel::TYPE_QUESTION,
-                    $this->owner->question_id,
-                ],
-                [
-                    'question_id' => $this->owner->question_id,
-                    'answer_id'   => $this->owner->id,
-                ]
-            )->notice(
-                $type
-            );
-        }
     }
 
     private function dealWithNewAnswerVersion()

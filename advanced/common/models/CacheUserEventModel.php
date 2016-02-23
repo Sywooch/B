@@ -15,7 +15,9 @@ class CacheUserEventModel extends BaseCacheModel
     public $id;
     public $name;
     public $event;
-    public $public = 'yes';
+    public $is_public = 'yes';
     public $need_record = 'yes';
-    public $template;
+    public $event_template;
+    public $need_notice = 'no';
+    public $notice_template;
 }

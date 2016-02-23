@@ -36,8 +36,9 @@ class BaseNotifier extends Object
     private $receiver; #发送给谁
     private $method; #通知方法:notice,email,sms,weixin
 
-    private $notice_code;
-    private $identifier;
+    private $user_event_id;
+    private $associate_type;
+    private $associate_id;
     private $associate_data;
 
     public static function build()
@@ -101,39 +102,32 @@ class BaseNotifier extends Object
      * @param array $associate_data
      * @return $this
      */
-    public function where($identifier, $associate_data = [])
+    public function where($associate_type, $associate_id, $associate_data = [])
     {
-        if (is_array(($identifier))) {
-            $identifier = md5(implode('', $identifier));
-        } else {
-            $identifier = md5($identifier);
-        }
-
-        $this->identifier = $identifier;
+        $this->associate_type = $associate_type;
+        $this->associate_id = $associate_id;
         $this->associate_data = $associate_data;
 
         return $this;
     }
 
     /**
-     * @param      $type
-     * @param null $associate_data 目前仅支持三种变量 ['tag_id' => 1,'question_id' => 1, 'answer_id' => 1]
+     * @param $user_event_id
      * @return $this
      * @throws ParamsInvalidException
-     * @throws \yii\base\Exception
      */
-    public function notice($type)
+    public function notice($user_event_id)
     {
         $this->method = 'notice';
 
         if (!$this->receiver || !is_array($this->receiver)) {
-            throw new ParamsInvalidException(['user_ids']);
+            throw new ParamsInvalidException(['receiver']);
         }
 
-        if (!$type) {
+        if (!$user_event_id) {
             throw new ParamsInvalidException(['notify_type']);
         } else {
-            $this->notice_code = NotificationService::getNotificationCode($type);
+            $this->user_event_id = $user_event_id;
         }
 
         if (YII_DEBUG) {
@@ -163,7 +157,7 @@ class BaseNotifier extends Object
     {
         $this->method = 'email';
 
-        if (empty($subject) && empty($message) && empty ($template_view) && $this->notice_code) {
+        if (empty($subject) && empty($message) && empty ($template_view) && $this->user_event_id) {
             return false;
         }
 
@@ -208,8 +202,9 @@ class BaseNotifier extends Object
         return NotificationService::addNotification(
             $this->sender,
             $this->receiver,
-            $this->notice_code,
-            $this->identifier,
+            $this->user_event_id,
+            $this->associate_type,
+            $this->associate_id,
             $this->associate_data,
             TimeHelper::getCurrentTime()
         );
@@ -224,8 +219,9 @@ class BaseNotifier extends Object
         return NotificationService::addNotificationToQueue(
             $this->sender,
             $this->receiver,
-            $this->notice_code,
-            $this->identifier,
+            $this->user_event_id,
+            $this->associate_type,
+            $this->associate_id,
             $this->associate_data,
             TimeHelper::getCurrentTime()
         );
