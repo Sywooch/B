@@ -186,14 +186,11 @@ class User extends \yii\web\User
     private function dealWithNotice(CacheUserEventModel $user_event_model, UserAssociationEvent $user_association_event)
     {
         //如果不需要通知
-        if ($user_event_model->need_notice == UserEventEntity::NO_NEED_NOTICE || empty($user_association_event->notice_data)) {
+        if ($user_event_model->need_notice == UserEventEntity::NO_NEED_NOTICE ||
+            empty($user_event_model->notice_template) || empty($user_association_event->notice_data) || empty($user_association_event->notice_data->sender) || empty($user_association_event->notice_data->receiver)
+        ) {
             return false;
         }
-
-        if (empty($user_association_event->notice_data->sender) || empty($user_association_event->notice_data->receiver)) {
-            return false;
-        }
-
 
         //todo 检查接收方是否允许接收
 

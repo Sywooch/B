@@ -545,9 +545,7 @@ class UserService extends BaseService
         $result = [];
         foreach ($user_event_list as $event_id => $item) {
             /* @var $item CacheUserEventModel */
-            if ($item->is_public == UserEventEntity::PUBLIC_YES) {
-                $result[$event_id] = $item;
-            }
+            $result[$event_id] = $item;
         }
 
         return $result;

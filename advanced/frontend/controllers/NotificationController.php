@@ -44,11 +44,11 @@ class NotificationController extends BaseController
         );
 
         if ($count) {
-            $data = NotificationEntity::find()->where(['receiver' => Yii::$app->user->id])->limit(
-                $pages->limit
-            )->offset(
-                $pages->offset
-            )->orderBy('`date` DESC, id DESC')->asArray()->all();
+            $data = NotificationEntity::find()->where(['receiver' => Yii::$app->user->id])
+                                      ->limit($pages->limit)
+                                      ->offset($pages->offset)
+                                      ->orderBy('`date` DESC, id DESC')
+                                      ->all();
 
             //Updater::clearNotifyCount(Yii::$app->user->id);
         } else {

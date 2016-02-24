@@ -13,7 +13,6 @@ use Yii;
  * @property string $event
  * @property string $description
  * @property integer $sort
- * @property string $is_public
  * @property string $need_record
  * @property string $event_template
  * @property string $need_notice
@@ -38,7 +37,7 @@ class UserEvent extends \common\models\BaseActiveRecord
         return [
             [['group', 'name', 'event'], 'required'],
             [['sort'], 'integer'],
-            [['is_public', 'need_record', 'need_notice', 'status'], 'string'],
+            [['need_record', 'need_notice', 'status'], 'string'],
             [['group', 'name', 'event'], 'string', 'max' => 45],
             [['description', 'event_template', 'notice_template'], 'string', 'max' => 1024],
             [['event'], 'unique']
@@ -57,7 +56,6 @@ class UserEvent extends \common\models\BaseActiveRecord
             'event' => '事件名称',
             'description' => '描述',
             'sort' => 'Sort',
-            'is_public' => '是否公开，不公开只能自己可见',
             'need_record' => '是否需要将该事件记录到 user_event_log表中',
             'event_template' => '事件模板',
             'need_notice' => '是否需要通知',

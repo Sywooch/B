@@ -5,7 +5,6 @@ namespace common\services;
 use common\entities\NotificationEntity;
 use common\entities\NotificationDataEntity;
 use common\exceptions\ModelSaveErrorException;
-use common\helpers\TimeHelper;
 use common\models\AssociateDataModel;
 use common\models\AssociateModel;
 use yii\base\Exception;
@@ -19,96 +18,13 @@ class NotificationService extends BaseService
 {
     const MAX_SENDER_NUMBER = 5; //每类通知最多显示多少用户
 
-    //system
-    const TYPE_SYSTEM = 'system:normal';
-
-
-    //question
-    const TYPE_QUESTION_BE_CREATED = 'question:be_created';//谁发布了新问题
-    const TYPE_QUESTION_BE_MODIFIED = 'question:be_modified';//谁修改了你的问题
-    const TYPE_QUESTION_BE_ANSWERED = 'question:be_answered';//谁回答了你的问题
-    const TYPE_QUESTION_BE_FOLLOWED = 'question:be_followed';//谁关注了你的问题
-    const TYPE_QUESTION_BE_FAVORITE = 'question:be_favorite';//谁收藏了你的问题
-    const TYPE_QUESTION_BE_LOCKED = 'question:be_locked';//谁锁定了你的问题
-    const TYPE_QUESTION_BE_CLOSED = 'question:be_closed';//谁关闭了你的问题
-    const TYPE_QUESTION_BE_AGREED = 'question:be_agreed';//谁赞同了你的问题
-
-
-    //answer
-    const TYPE_ANSWER_BE_CREATED = 'answer:be_created';//谁在文章里增加了回答
-    const TYPE_ANSWER_BE_MODIFIED = 'answer:be_modified';//谁修改了你的回答
-    const TYPE_ANSWER_BE_AGREED = 'answer:be_agreed';//谁赞同了你的回答
-    const TYPE_ANSWER_BE_FOLD = 'answer:be_fold';//谁折叠了你的回答
-
-    //comment
-    const TYPE_COMMENT_BE_CREATED_IN_QUESTION = 'comment:be_created_in_questIon';//谁赞同了你的评论
-    const TYPE_COMMENT_BE_CREATED_IN_ANSWER = 'comment:be_created_in_answer';//谁赞同了你的评论
-    const TYPE_COMMENT_BE_CREATED_IN_BLOG = 'comment:be_created_in_blog';//谁赞同了你的评论
-    const TYPE_COMMENT_BE_AGREED_IN_ANSWER = 'comment:be_agreed_in_answer';//谁赞同了你的评论
-    const TYPE_COMMENT_BE_DELETED_IN_ANSWER = 'comment:be_deleted_in_answer';//谁删除了你的评论
-    const TYPE_COMMENT_BE_MODIFIED_IN_ANSWER = 'comment:be_modified_in_answer';//谁修改了你的评论
-
-    //user
-    const TYPE_USER_BE_FOLLOWED = 'user:be_followed';//谁关注你了
-    const TYPE_USER_BE_AT_IN_QUESTION = 'user:be_at_in_question';//谁在问题里AT你了
-    const TYPE_USER_BE_AT_IN_ANSWER = 'user:be_at_in_answer';//谁在问题里AT你了
-    const TYPE_USER_BE_AT_IN_COMMENT = 'user:be_at_in_comment';//谁在评论里AT你了
-    const TYPE_USER_BE_INVITE_TO_ANSWER = 'user:be_invite_to_answer';//谁邀请你回答的问题
-
-
-    /**
-     * 模板中可用的替换变量：{who} {question}
-     * @var array
-     */
-    public static $notice_type = [
-        'question' => [
-            'be_created'  => [100, '{who} 发布了问题 {question}'],
-            'be_modified' => [101, '{who} 修改了你的问题 {question}'],
-            'be_answered' => [102, '{who} 回答了你的问题 {question}'],
-            'be_followed' => [103, '{who} 关注了你的问题 {question}'],
-            'be_favorite' => [104, '{who} 收藏了你的问题 {question}'],
-            'be_locked'   => [105, '{who} 锁定了你的问题 {question}'],
-            'be_closed'   => [106, '{who} 关闭了你的问题 {question}'],
-            'be_agreed'   => [107, '{who} 赞同了你的问题 {question}'],
-
-        ],
-        'answer'   => [
-            'be_created'  => [200, '{who} 回答了问题 {question}'],
-            'be_modified' => [201, '{who} 修改了答案 {question}'],
-            'be_agreed'   => [202, '{who} 赞同了你的回答 {question}'],
-            'be_fold'     => [203, '{who} 折叠了问题 {question}'],
-        ],
-        'comment'  => [
-            'be_created_in_question' => [300, '{who} 评论了你的问题 {question}'],
-            'be_created_in_answer'   => [301, '{who} 评论了你的回答 {question}'],
-            'be_created_in_blog'     => [302, '{who} 评论了你的文章 {blog}'],
-            'be_agreed_in_answer'    => [303, '{who} 赞同了你的评论 {question}'],
-            'be_deleted_in_answer'   => [304, '{who} 删除了你的评论 {question}'],
-            'be_modified_in_answer'  => [305, '{who} 修改了你的评论 {question}'],
-        ],
-        'user'     => [
-            'be_followed'         => [400, '{who} 关注了你'],
-            'be_at_in_question'   => [401, '{who} 在问题里AT你 {question}'],
-            'be_at_in_answer'     => [402, '{who} 在回答里AT你 {question}'],
-            'be_at_in_comment'    => [403, '{who} 在评论里AT你 {question}'],
-            'be_invite_to_answer' => [404, '{who} 邀请你回答问题 {question}'],
-        ],
-    ];
-
-    public static $notice_code;
-
     public static function addNotification($sender, array $receivers, $user_event_id, $associate_type, $associate_id, AssociateDataModel $associate_data, $created_at)
     {
-        Yii::trace(sprintf('添加站内通知%d，通知用户： %s', $user_event_id, implode(',', $receivers)), 'behavior');
+        Yii::trace(sprintf('添加站内通知 user_event_id:%d，通知用户： %s', $user_event_id, implode(',', $receivers)), 'behavior');
 
         $transaction = NotificationEntity::getDb()->beginTransaction();
         try {
             foreach ($receivers as $receiver) {
-                //不通知本人
-                if ($sender == $receiver) {
-                    continue;
-                }
-
                 //保存　notification　数据
                 $notification_data = [
                     'receiver'       => $receiver,
@@ -205,29 +121,9 @@ class NotificationService extends BaseService
         );
     }
 
-    public static function getNotificationCode($type)
-    {
-        list($notice_category, $notice_type) = explode(':', $type);
-
-        if (!$notice_category || !$notice_type || !isset(self::$notice_type[$notice_category]) || !isset(self::$notice_type[$notice_category][$notice_type])) {
-            throw new Exception(sprintf('Undefined Notify Key [%s]', $type));
-        }
-
-        $code = self::$notice_type[$notice_category][$notice_type][0];
-
-        /*if ($params) {
-            $params = is_array($params) ? $params : [$params];
-            $message = vsprintf(self::$notify[$notice_category][$notice_type][1], $params);
-        } else {
-            $message = self::$notify[$notice_category][$notice_type][1];
-        }*/
-
-        return $code;
-    }
 
     public static function makeUpNotification(array $notification)
     {
-
         if (empty($notification)) {
             return [];
         }
@@ -239,43 +135,49 @@ class NotificationService extends BaseService
 
         $notification_senders = NotificationDataEntity::find()->where(
             ['notification_id' => $notification_ids]
-        )->orderBy('created_at DESC')->orderBy('')->asArray()->limit(5000)->all();
+        )->orderBy('created_at DESC')->orderBy('created_at DESC')->asArray()->limit(5000)->all();
 
         //print_r($notification_senders);
         //exit;
 
         $notification_senders_data = ArrayHelper::map($notification_senders, 'created_at', 'sender', 'notification_id');
 
-        foreach ($notification as $notice) {
-            $date = $notice['date'];
+        foreach ($notification as $notice_model) {
+            /* @var $notice_model NotificationEntity */
+            $date = $notice_model->date;
 
-            $associate_data = Json::decode($notice['associate_data'], true);
+            $associate_data = new AssociateDataModel();
 
             //发送者
-            $sender = array_unique(array_values($notification_senders_data[$notice['id']]));
+            $sender = array_unique(array_values($notification_senders_data[$notice_model->id]));
 
             //所有用户，用于预先缓存用户数据
             $user_ids = array_merge($user_ids, $sender);
             //所有发送时间
-            $created_ats = array_keys($notification_senders_data[$notice['id']]);
+            $created_ats = array_keys($notification_senders_data[$notice_model->id]);
 
-            //处理关联数据中支持的三个变量 question_id answer_id tag_id
-            if (isset($associate_data['question_id'])) {
-                $question_ids[] = $associate_data['question_id'];
+            //处理关联数据
+            if ($notice_model->associate_type == AssociateModel::TYPE_QUESTION) {
+                $question_ids[] = $notice_model->associate_id;
+                $associate_data->question_id = $notice_model->associate_id;
             }
-            if (isset($associate_data['answer_id'])) {
-                $answer_ids[] = $associate_data['answer_id'];
+
+            if ($notice_model->associate_type == AssociateModel::TYPE_ANSWER) {
+                $answer_ids[] = $notice_model->associate_id;
+                $associate_data->answer_id = $notice_model->associate_id;
             }
-            if (isset($associate_data['tag_id'])) {
-                $tag_ids[] = $associate_data['tag_id'];
+
+            if ($notice_model->associate_type == AssociateModel::TYPE_TAG) {
+                $tag_ids[] = $notice_model->associate_id;
+                $associate_data->tag_id = $notice_model->associate_id;
             }
 
             $notices[$date][] = [
                 'sender'       => $sender,
-                'template'     => self::getNoticeTemplateByCode($notice['notice_code']),
-                'data'         => $associate_data,
-                'status'       => $notice['status'],
-                'count_number' => $notice['count_number'],
+                'template'     => self::getNoticeTemplateByUserEventId($notice_model->user_event_id),
+                'data'       => $associate_data,
+                'status'       => $notice_model->status,
+                'count_number' => $notice_model->count_notice,
                 'created_at'   => reset($created_ats),//取第一个时间，即最新时间
             ];
         }
@@ -288,9 +190,9 @@ class NotificationService extends BaseService
             $questions = QuestionService::getQuestionListByQuestionIds(array_unique($question_ids));
         }
 
-        if ($tag_ids) {
+        /*if ($tag_ids) {
             $tags = TagService::getTagListByTagIds(array_unique($tag_ids));
-        }
+        }*/
 
         foreach ($notices as $date => &$item) {
             foreach ($item as &$notice) {
@@ -364,26 +266,15 @@ class NotificationService extends BaseService
         return $notices;
     }
 
-    private static function getNoticeTemplateByCode($code)
+    private static function getNoticeTemplateByUserEventId($user_event_id)
     {
-        if (self::$notice_code === null) {
-            foreach (self::$notice_type as $notice_group_key => $notice_group) {
-                foreach ($notice_group as $notice_type => $notice) {
-                    self::$notice_code[$notice[0]] = $notice[1];
-                }
-            }
-        }
+        $user_event = UserEventService::getUserEventByEventId($user_event_id);
 
-        if (isset(self::$notice_code[$code])) {
-            $result = self::$notice_code[$code];
-        } elseif (YII_DEBUG) {
-            throw new Exception(sprintf('Notice Code %d doest not define！', $code));
+        if ($user_event) {
+            return $user_event->notice_template;
         } else {
-            $result = null;
-            Yii::error(sprintf('Notice Code %d doest not define！', $code));
+            return '';
         }
-
-        return $result;
     }
 
     //todo
