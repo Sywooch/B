@@ -12,6 +12,7 @@ use common\components\Counter;
 use common\components\Notifier;
 use common\components\Updater;
 use common\entities\FavoriteEntity;
+use common\events\QuestionEvent;
 use common\helpers\TimeHelper;
 use common\models\AssociateModel;
 use common\services\FavoriteService;
@@ -53,20 +54,8 @@ class FavoriteBehavior extends BaseBehavior
                 Counter::questionAddFavorite($this->owner->associate_id);
             }
 
-            //通知问题发布者
-            $question = QuestionService::getQuestionByQuestionId($this->owner->associate_id);
-            Notifier::build()->from($this->owner->created_by)
-                    ->to($question->created_by)
-                    ->where(
-                        [
-                            AssociateModel::TYPE_QUESTION,
-                            $this->owner->associate_id,
-                        ],
-                        [
-                            'question_id' => $this->owner->associate_id,
-                        ]
-                    )
-                    ->notice(NotificationService::TYPE_QUESTION_BE_FAVORITE);
+            //触发用户动作
+            QuestionEvent::favorite($this->owner);
         }
 
 
@@ -96,6 +85,9 @@ class FavoriteBehavior extends BaseBehavior
             if ($result) {
                 //更新文章被收藏数
                 Counter::questionCancelFavorite($this->owner->associate_id);
+
+                //触发用户动作
+                QuestionEvent::cancelFavorite($this->owner);
             }
         }
 

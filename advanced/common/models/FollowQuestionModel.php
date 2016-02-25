@@ -16,7 +16,7 @@ use common\services\QuestionService;
 use common\services\UserService;
 use Yii;
 
-class FollowQuestionModel extends FollowModel
+class FollowQuestionModel extends FollowBaseModel
 {
     public $model;
 

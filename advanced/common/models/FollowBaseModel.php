@@ -16,7 +16,7 @@ use common\helpers\TimeHelper;
 use Yii;
 use yii\base\Model;
 
-abstract class FollowModel extends Model
+abstract class FollowBaseModel extends Model
 {
     public $associate_type;
     public $associate_id;

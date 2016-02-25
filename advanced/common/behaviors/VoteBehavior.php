@@ -13,6 +13,9 @@ use common\components\Notifier;
 use common\components\user\UserAssociationEvent;
 use common\entities\UserEventLogEntity;
 use common\entities\VoteEntity;
+use common\events\AnswerEvent;
+use common\events\CommentEvent;
+use common\events\QuestionEvent;
 use common\models\AssociateDataModel;
 use common\models\AssociateModel;
 use common\models\NoticeDataModel;
@@ -69,13 +72,10 @@ class VoteBehavior extends BaseBehavior
                     } else {
                         Counter::questionAddHate($this->owner->associate_id);
                     }
-                    //赞问题通知
-                    $question = QuestionService::getQuestionByQuestionId($this->owner->associate_id);
-                    $associate_type = AssociateModel::TYPE_QUESTION;
-                    $associate_id = $this->owner->associate_id;
 
-                    $notice_data->sender = $this->owner->created_by;
-                    $notice_data->receiver = $question->created_by;
+                    //触发用户动作
+                    QuestionEvent::vote($this->owner);
+
                     break;
                 case AssociateModel::TYPE_ANSWER:
                     //更新回答投票数
@@ -85,15 +85,8 @@ class VoteBehavior extends BaseBehavior
                         Counter::answerAddHate($this->owner->associate_id);
                     }
 
-                    //关联数据
-                    $answer = AnswerService::getAnswerByAnswerId($this->owner->associate_id);
-
-                    $associate_type = AssociateModel::TYPE_QUESTION;
-                    $associate_id = $answer->question_id;
-                    $associate_data->answer_id = $this->owner->associate_id;
-
-                    $notice_data->sender = $this->owner->created_by;
-                    $notice_data->receiver = $answer->created_by;
+                    //触发用户动作
+                    AnswerEvent::vote($this->owner);
 
                     break;
                 case AssociateModel::TYPE_ANSWER_COMMENT:
@@ -102,26 +95,14 @@ class VoteBehavior extends BaseBehavior
                         Counter::answerCommentAddLike($this->owner->associate_id);
                     }
 
-                    //关联数据
-                    $comment = CommentService::getCommentByCommentId($this->owner->associate_id);
-                    $answer = AnswerService::getAnswerByAnswerId($comment->associate_id);
-
-                    $associate_type = AssociateModel::TYPE_QUESTION;
-                    $associate_id = $answer->question_id;
-                    $associate_data->answer_id = $answer->id;
-                    $associate_data->comment_id = $this->owner->associate_id;
-
-                    $notice_data->sender = $this->owner->created_by;
-                    $notice_data->receiver = $comment->created_by;
+                    //触发用户动作
+                    CommentEvent::vote($this->owner);
 
                     break;
                 default:
                     throw new Exception(sprintf('暂不支持 %s insert 事件', $this->owner->associate_type));
                     break;
             }
-
-            //触发用户事件
-            $this->triggerUserVoteEvent($associate_type, $associate_id, $associate_data, $notice_data);
         }
     }
 
@@ -153,13 +134,9 @@ class VoteBehavior extends BaseBehavior
                             Counter::questionCancelLike($this->owner->associate_id);
                         }
 
-                        //关联数据
-                        $associate_type = AssociateModel::TYPE_QUESTION;
-                        $associate_id = $this->owner->associate_id;
+                        //触发用户动作
+                        QuestionEvent::vote($this->owner);
 
-                        $question = QuestionService::getQuestionByQuestionId($this->owner->associate_id);
-                        $notice_data->sender = $this->owner->created_by;
-                        $notice_data->receiver = $question->created_by;
                         break;
                     case AssociateModel::TYPE_ANSWER:
                         //更新回答投票数
@@ -171,23 +148,14 @@ class VoteBehavior extends BaseBehavior
                             Counter::answerCancelLike($this->owner->associate_id);
                         }
 
-                        //关联数据
-                        $answer = AnswerService::getAnswerByAnswerId($this->owner->associate_id);
-
-                        $associate_type = AssociateModel::TYPE_QUESTION;
-                        $associate_id = $answer->question_id;
-                        $associate_data->answer_id = $this->owner->associate_id;
-
-                        $notice_data->sender = $this->owner->created_by;
-                        $notice_data->receiver = $answer->created_by;
+                        //触发用户动作
+                        AnswerEvent::vote($this->owner);
 
                         break;
                     default:
                         throw new Exception(sprintf('暂不支持 %s update 事件', $this->owner->associate_type));
                         break;
                 }
-                //触发用户事件
-                $this->triggerUserVoteEvent($associate_type, $associate_id, $associate_data, $notice_data);
             }
         }
     }
@@ -201,23 +169,13 @@ class VoteBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-        $associate_data = new AssociateDataModel();
-        $notice_data = new NoticeDataModel();
-
         switch ($this->owner->associate_type) {
             case AssociateModel::TYPE_ANSWER_COMMENT:
                 //更新回答投票数
                 Counter::answerCommentCancelLike($this->owner->associate_id);
 
-
-                //关联数据
-                $comment = CommentService::getCommentByCommentId($this->owner->associate_id);
-                $answer = AnswerService::getAnswerByAnswerId($comment->associate_id);
-
-                $associate_type = AssociateModel::TYPE_QUESTION;
-                $associate_id = $answer->question_id;
-                $associate_data->answer_id = $answer->id;
-                $associate_data->comment_id = $this->owner->associate_id;
+                //触发用户取消投票事件
+                CommentEvent::cancelVote($this->owner);
 
                 break;
             default:
@@ -225,42 +183,11 @@ class VoteBehavior extends BaseBehavior
                 break;
         }
 
-        $this->triggerUserCancelVoteEvent($associate_type, $associate_id, $associate_data, $notice_data);
+        $this->deleteUserEventLog();
     }
 
-    private function triggerUserVoteEvent($associate_type, $associate_id, AssociateDataModel $associate_data, NoticeDataModel $notice_data)
+    private function deleteUserEventLog()
     {
-        //$associate_data['template'] = [($this->owner->vote == VoteEntity::VOTE_YES) ? '推荐' : '反对'];
-
-        //触发用户投票事件
-        Yii::$app->user->trigger(
-            sprintf('event_%s_vote', $this->owner->associate_type),
-            new UserAssociationEvent(
-                [
-                    'associate_type' => $associate_type,
-                    'associate_id'   => $associate_id,
-                    'associate_data' => $associate_data,
-                    'notice_data'    => $notice_data,
-                ]
-            )
-        );
-    }
-
-    private function triggerUserCancelVoteEvent($associate_type, $associate_id, AssociateDataModel $associate_data, NoticeDataModel $notice_data)
-    {
-        //触发用户取消投票事件
-        Yii::$app->user->trigger(
-            sprintf('event_%s_cancel_vote', $this->owner->associate_type),
-            new UserAssociationEvent(
-                [
-                    'associate_type' => $associate_type,
-                    'associate_id'   => $associate_id,
-                    'associate_data' => $associate_data,
-                    'notice_data'    => $notice_data,
-                ]
-            )
-        );
-
         //删除记录
         $event_name = sprintf('event_%s_vote', $this->owner->associate_type);
         $event = UserEventService::getUserEventByEventName($event_name);

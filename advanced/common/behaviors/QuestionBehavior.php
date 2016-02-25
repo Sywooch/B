@@ -10,17 +10,14 @@ namespace common\behaviors;
 
 use common\components\Counter;
 use common\components\Updater;
-use common\components\user\UserAssociationEvent;
+use common\components\user\UserEvent;
 use common\entities\AttachmentEntity;
 use common\entities\FavoriteEntity;
-use common\entities\QuestionEntity;
 use common\entities\QuestionVersionEntity;
 use common\entities\TagRelationEntity;
-use common\entities\UserEventLogEntity;
+use common\events\QuestionEvent;
 use common\exceptions\ModelSaveErrorException;
 use common\helpers\TimeHelper;
-use common\models\AssociateModel;
-use common\models\NoticeDataModel;
 use common\models\xunsearch\QuestionSearch;
 use common\services\FavoriteService;
 use common\services\FollowService;
@@ -46,10 +43,9 @@ class QuestionBehavior extends BaseBehavior
         Yii::trace('Begin ' . $this->className(), 'behavior');
 
         return [
-            ActiveRecord::EVENT_AFTER_INSERT   => 'eventQuestionCreate',
-            ActiveRecord::EVENT_AFTER_UPDATE   => 'eventQuestionUpdate',
-            ActiveRecord::EVENT_AFTER_DELETE   => 'eventQuestionDelete',
-            //ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeQuestionSave',
+            ActiveRecord::EVENT_AFTER_INSERT   => 'afterQuestionCreate',
+            ActiveRecord::EVENT_AFTER_UPDATE   => 'afterQuestionUpdate',
+            ActiveRecord::EVENT_AFTER_DELETE   => 'afterQuestionDelete',
             ActiveRecord::EVENT_AFTER_VALIDATE => 'afterQuestionValidate',
         ];
     }
@@ -63,7 +59,7 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithTagsOrder();
     }
 
-    public function eventQuestionCreate()
+    public function afterQuestionCreate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //添加问题版本
@@ -84,20 +80,10 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithInsertXunSearch();
 
         //触发用户行为
-        Yii::$app->user->trigger(
-            __FUNCTION__,
-            new UserAssociationEvent(
-                [
-                    'associate_id'   => $this->owner->id,
-                    'associate_type' => AssociateModel::TYPE_QUESTION,
-                    'associate_data' => [],
-                    'notice_data'    => [],
-                ]
-            )
-        );
+        QuestionEvent::create($this->owner);
     }
 
-    public function eventQuestionUpdate()
+    public function afterQuestionUpdate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //处理问题事件　
@@ -110,9 +96,12 @@ class QuestionBehavior extends BaseBehavior
         $this->dealWithRedisCacheUpdate();
         //处理xunsearch
         $this->dealWithInsertXunSearch();
+
+        //触发用户行为
+        QuestionEvent::update($this->owner);
     }
 
-    public function eventQuestionDelete()
+    public function afterQuestionDelete()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
         //删除问题事件记录
@@ -130,17 +119,7 @@ class QuestionBehavior extends BaseBehavior
         #delete notify if operator is not delete by others.
 
         //触发用户行为
-        Yii::$app->user->trigger(
-            __FUNCTION__,
-            new UserAssociationEvent(
-                [
-                    'id'         => $this->owner->id,
-                    'type'       => AssociateModel::TYPE_QUESTION,
-                    'associate_data' => [],
-                    'notice_data'    => [],
-                ]
-            )
-        );
+        QuestionEvent::delete($this->owner);
     }
 
     private function dealWithQuestionVersionCreate()

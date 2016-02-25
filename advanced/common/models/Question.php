@@ -18,9 +18,10 @@ use Yii;
  * @property string $count_follow
  * @property integer $count_like
  * @property integer $count_hate
- * @property string $created_at
- * @property string $created_by
- * @property string $updated_at
+ * @property integer $created_at
+ * @property integer $created_by
+ * @property integer $updated_at
+ * @property integer $updated_by
  * @property string $is_anonymous
  * @property string $is_lock
  * @property string $status
@@ -43,7 +44,7 @@ class Question extends \common\models\BaseActiveRecord
         return [
             [['subject'], 'required'],
             [['content', 'is_anonymous', 'is_lock', 'status'], 'string'],
-            [['count_views', 'count_answer', 'count_favorite', 'count_follow', 'count_like', 'count_hate', 'created_at', 'created_by', 'updated_at'], 'integer'],
+            [['count_views', 'count_answer', 'count_favorite', 'count_follow', 'count_like', 'count_hate', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['subject', 'alias'], 'string', 'max' => 45],
             [['tags'], 'string', 'max' => 255]
         ];
@@ -69,6 +70,7 @@ class Question extends \common\models\BaseActiveRecord
             'created_at' => '创建时间',
             'created_by' => '创建用户',
             'updated_at' => '最后活跃时间',
+            'updated_by' => '修改用户',
             'is_anonymous' => '匿名提问',
             'is_lock' => '是否锁定',
             'status' => 'original原稿 review 审稿 edited已编辑 recommend推荐 disable禁用 lock 锁定 crawl抓取',

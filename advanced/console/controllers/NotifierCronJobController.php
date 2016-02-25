@@ -35,8 +35,9 @@ class NotifierCronJobController extends Controller
                         $result = NotificationService::addNotification(
                             $item['sender'],
                             $item['receiver'],
-                            $item['notice_code'],
-                            $item['identifier'],
+                            $item['user_event_id'],
+                            $item['associate_type'],
+                            $item['associate_id'],
                             $item['associate_data'],
                             $item['created_at']
                         );
@@ -46,8 +47,9 @@ class NotifierCronJobController extends Controller
                             NotificationService::addNotificationToQueue(
                                 $item['sender'],
                                 $item['receiver'],
-                                $item['notice_code'],
-                                $item['identifier'],
+                                $item['user_event_id'],
+                                $item['associate_type'],
+                                $item['associate_id'],
                                 $item['associate_data'],
                                 $item['created_at']
                             );

@@ -17,7 +17,7 @@ use common\services\TagService;
 use common\services\UserService;
 use Yii;
 
-class FollowTagModel extends FollowModel
+class FollowTagModel extends FollowBaseModel
 {
     public $model;
 

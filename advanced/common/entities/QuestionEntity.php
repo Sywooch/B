@@ -53,6 +53,7 @@ class QuestionEntity extends Question
                 'class'      => OperatorBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'created_by',
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_by',
                 ],
             ],
             'timestamp'         => [

@@ -135,21 +135,11 @@ class QuestionInviteEntity extends QuestionInvite
 
     public static function inviteToAnswerByNotice($invite_user_id, $be_invited_user_id, $question_id)
     {
-        return Notifier::build()->from($invite_user_id)->to($be_invited_user_id)->notice(
-            NotificationService::TYPE_INVITE_ME_TO_ANSWER_QUESTION,
-            [
-                'question_id' => $question_id,
-            ]
-        );
+
     }
 
     public static function inviteToAnswerByEmail($question_id, $email)
     {
         $question_data = QuestionService::getQuestionByQuestionId($question_id);
-
-        if ($question_data) {
-            #todo 需要模板支持
-            return Notifier::build()->to($email)->email($question_data['subject'], '内容');
-        }
     }
 }

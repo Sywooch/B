@@ -10,6 +10,8 @@ namespace common\behaviors;
 
 use common\components\Counter;
 use common\components\Notifier;
+use common\events\QuestionEvent;
+use common\events\UserEvent;
 use common\models\AssociateModel;
 use common\services\FollowService;
 use common\services\NotificationService;
@@ -54,20 +56,8 @@ class FollowBehavior extends BaseBehavior
                 Counter::userAddFollowQuestion($this->owner->user_id);
                 Counter::questionAddFollow($this->owner->associate_id);
 
-                //关注问题通知
-                $question = QuestionService::getQuestionByQuestionId($this->owner->associate_id);
-                Notifier::build()->from($this->owner->user_id)
-                        ->to($question->created_by)
-                        ->where(
-                            [
-                                AssociateModel::TYPE_QUESTION,
-                                $this->owner->associate_id,
-                            ],
-                            [
-                                'question_id' => $this->owner->associate_id,
-                            ]
-                        )
-                        ->notice(NotificationService::TYPE_QUESTION_BE_FOLLOWED);
+                //触发用户动作
+                QuestionEvent::follow($this->owner);
 
                 break;
             case AssociateModel::TYPE_TAG:
@@ -93,20 +83,9 @@ class FollowBehavior extends BaseBehavior
                 Counter::userAddFollowUser($this->owner->user_id);
                 Counter::userAddFans($this->owner->associate_id);
 
-                //关注用户通知
-                $user = UserService::getUserById($this->owner->associate_id);
-                Notifier::build()->from($this->owner->user_id)
-                        ->to($user->id)
-                        ->where(
-                            [
-                                AssociateModel::TYPE_USER,
-                                $user->id,
-                            ],
-                            [
-                                'user_id' => $user->id,
-                            ]
-                        )
-                        ->notice(NotificationService::TYPE_USER_BE_FOLLOWED);
+                //触发用户动作
+                UserEvent::follow($this->owner);
+
                 break;
             default:
                 throw new Exception(sprintf('关注 %s 关联类型 %s 未定义', $this->owner->associate_type, __FUNCTION__));
@@ -132,6 +111,9 @@ class FollowBehavior extends BaseBehavior
                 //关注问题后，更新问题被关注的数量，不依赖于是否添加缓存成功
                 Counter::userCancelFollowQuestion($this->owner->user_id);
                 Counter::questionCancelFollow($this->owner->associate_id);
+
+                //触发用户动作
+                QuestionEvent::cancelFollow($this->owner);
 
                 break;
             case AssociateModel::TYPE_TAG:
@@ -160,6 +142,9 @@ class FollowBehavior extends BaseBehavior
                 //取消关注用户后
                 Counter::userCancelFollowUser($this->owner->user_id);
                 Counter::userCancelFans($this->owner->associate_id);
+
+                //触发用户动作
+                UserEvent::cancelFollow($this->owner);
                 break;
             default:
                 throw new Exception(sprintf('关注 %s 关联类型 %s 未定义', $this->owner->associate_type, __FUNCTION__));

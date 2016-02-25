@@ -9,7 +9,7 @@ use common\entities\QuestionEntity;
  *
  * @see Question
  */
-class QuestionQuery extends \yii\db\ActiveQuery
+class QuestionQuery extends BaseActiveQuery
 {
     /*public function active()
     {
