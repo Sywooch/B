@@ -173,9 +173,10 @@ class NotificationService extends BaseService
             }
 
             $notices[$date][] = [
+                'id'           => $notice_model->id,
                 'sender'       => $sender,
                 'template'     => self::getNoticeTemplateByUserEventId($notice_model->user_event_id),
-                'data'       => $associate_data,
+                'data'         => $associate_data,
                 'status'       => $notice_model->status,
                 'count_number' => $notice_model->count_notice,
                 'created_at'   => reset($created_ats),//取第一个时间，即最新时间
@@ -232,7 +233,9 @@ class NotificationService extends BaseService
                                     $question_url_data = [
                                         'question/view',
                                         'id' => $notice['data']['question_id'],
+                                        'ng' => $notice['id'],
                                     ];
+
                                     if (isset($notice['data']['answer_id'])) {
                                         $question_url_data['answer_id'] = $notice['data']['answer_id'];
                                     }
@@ -291,5 +294,26 @@ class NotificationService extends BaseService
             $transaction->rollBack();
             Yii::error(var_export($e, true));
         }
+    }
+
+    public static function getNoticeDataById($id)
+    {
+        $data = NotificationDataEntity::find()->where(
+            [
+                'notification_id' => $id,
+            ]
+        )->all();
+
+        $result = [];
+        foreach ($data as $item) {
+            $associate_data = new AssociateDataModel(Json::decode($item['associate_data']));
+            foreach ($associate_data as $key => $value) {
+                if ($value) {
+                    $result[$key][] = $value;
+                }
+            }
+        }
+
+        return $result;
     }
 }

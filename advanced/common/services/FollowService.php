@@ -111,7 +111,7 @@ class FollowService extends BaseService
      * @param int $limit
      * @return array|bool|\common\models\Follow[]
      */
-    public static function getFollowQuestionUserIdsByQuestionId($question_id, $limit = 100)
+    public static function getFollowQuestionUserIdsByQuestionId($question_id, $limit = 200)
     {
         //todo 未使用缓存
         $user_ids = FollowEntity::find()->select(['user_id'])->where(

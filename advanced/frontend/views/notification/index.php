@@ -19,7 +19,9 @@ use yii\widgets\LinkPager;
                         <h3 class="time"><?= $key ?></h3>
 
                         <? foreach ($item as $section): ?>
-                            <section class="stream-list__item<?= $section['status'] == NotificationEntity::STATUS_READ ? ' viewed' : '' ?> "><?= $section['template'] ?></section>
+                            <section class="stream-list__item<?= $section['status'] == NotificationEntity::STATUS_READ ? ' viewed' : '' ?> ">
+                                <?= $section['template'] ?>
+                            </section>
                         <? endforeach; ?>
                     <? endforeach; ?>
 
@@ -28,26 +30,26 @@ use yii\widgets\LinkPager;
 
                 <div class="text-left">
                     <?php \yii\widgets\Pjax::begin(
-                            [
-                                    'timeout'       => 10000,
-                                    'clientOptions' => [
-                                            'container' => 'pjax-container',
-                                    ],
-                            ]
+                        [
+                            'timeout'       => 10000,
+                            'clientOptions' => [
+                                'container' => 'pjax-container',
+                            ],
+                        ]
                     ); ?>
 
                     <?= $pages ? LinkPager::widget(
-                            [
-                                    'pagination'  => $pages,
-                                    'options'     => [
-                                            'id'    => 'answer-page',
-                                            'class' => 'pagination',
+                        [
+                            'pagination'  => $pages,
+                            'options'     => [
+                                'id'    => 'answer-page',
+                                'class' => 'pagination',
 
-                                    ],
-                                    'linkOptions' => [
-                                            'rel' => 'nofollow',
-                                    ],
-                            ]
+                            ],
+                            'linkOptions' => [
+                                'rel' => 'nofollow',
+                            ],
+                        ]
                     ) : ''; ?>
                     <?php \yii\widgets\Pjax::end(); ?>
                 </div>

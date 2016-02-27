@@ -10,6 +10,7 @@ namespace common\events;
 
 use common\components\user\UserAssociationEvent;
 use common\entities\FollowEntity;
+use common\models\AssociateDataModel;
 use common\models\AssociateModel;
 use common\models\NoticeDataModel;
 use common\services\UserService;
@@ -21,7 +22,9 @@ class UserEvent extends BaseUserEvent
     {
         $user = UserService::getUserById($owner->associate_id);
 
+        $associate_data = new AssociateDataModel();
         $notice_data = new NoticeDataModel();
+
         $notice_data->sender = $owner->user_id;
         $notice_data->receiver = $user->id;
 
@@ -29,9 +32,9 @@ class UserEvent extends BaseUserEvent
             'event_user_follow',
             new UserAssociationEvent(
                 [
-                    'id'             => $user->id,
-                    'type'           => AssociateModel::TYPE_USER,
-                    'associate_data' => [],
+                    'associate_id'   => $user->id,
+                    'associate_type' => AssociateModel::TYPE_USER,
+                    'associate_data' => $associate_data,
                     'notice_data'    => $notice_data,
                 ]
             )
@@ -42,15 +45,16 @@ class UserEvent extends BaseUserEvent
     {
         $user = UserService::getUserById($owner->associate_id);
 
+        $associate_data = new AssociateDataModel();
         $notice_data = new NoticeDataModel();
 
         Yii::$app->user->trigger(
             'event_user_cancel_follow',
             new UserAssociationEvent(
                 [
-                    'id'             => $user->id,
-                    'type'           => AssociateModel::TYPE_USER,
-                    'associate_data' => [],
+                    'associate_id'   => $user->id,
+                    'associate_type' => AssociateModel::TYPE_USER,
+                    'associate_data' => $associate_data,
                     'notice_data'    => $notice_data,
                 ]
             )

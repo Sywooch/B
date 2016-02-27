@@ -1,5 +1,6 @@
 <?php
 
+use common\widgets\UEditor\UEditor;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -17,7 +18,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'alias')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'description')->label('简短介绍')->textarea(['rows' => 2]) ?>
-    <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
+
+    <?= $form->field($model, 'content')->label(false)->widget(UEditor::className()); ?>
 
     <?php if ($model->scenario == 'common_edit'): ?>
         <div class="form-group">

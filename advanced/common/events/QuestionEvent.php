@@ -25,14 +25,17 @@ class QuestionEvent extends BaseUserEvent
 {
     public static function create(QuestionEntity $owner)
     {
+        $associate_data = new AssociateDataModel();
+        $notice_data = new NoticeDataModel();
+
         Yii::$app->user->trigger(
             'event_question_create',
             new UserAssociationEvent(
                 [
-                    'id'             => $owner->id,
-                    'type'           => AssociateModel::TYPE_QUESTION,
-                    'associate_data' => [],
-                    'notice_data'    => [],
+                    'associate_id'   => $owner->id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
+                    'notice_data'    => $notice_data,
                 ]
             )
         );
@@ -40,14 +43,17 @@ class QuestionEvent extends BaseUserEvent
 
     public static function delete(QuestionEntity $owner)
     {
+        $associate_data = new AssociateDataModel();
+        $notice_data = new NoticeDataModel();
+
         Yii::$app->user->trigger(
             'event_question_delete',
             new UserAssociationEvent(
                 [
-                    'id'             => $owner->id,
-                    'type'           => AssociateModel::TYPE_QUESTION,
-                    'associate_data' => [],
-                    'notice_data'    => [],
+                    'associate_id'   => $owner->id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
+                    'notice_data'    => $notice_data,
                 ]
             )
         );
@@ -55,22 +61,24 @@ class QuestionEvent extends BaseUserEvent
 
     public static function update(QuestionEntity $owner)
     {
+        $associate_data = new AssociateDataModel();
+        $notice_data = new NoticeDataModel();
+
         if ($owner->created_by == Yii::$app->user->id) {
             //触发用户自己编辑问题
             Yii::$app->user->trigger(
                 'event_question_update',
                 new UserAssociationEvent(
                     [
-                        'id'             => $owner->id,
-                        'type'           => AssociateModel::TYPE_QUESTION,
-                        'associate_data' => [],
-                        'notice_data'    => [],
+                        'associate_id'   => $owner->id,
+                        'associate_type' => AssociateModel::TYPE_QUESTION,
+                        'associate_data' => $associate_data,
+                        'notice_data'    => $notice_data,
                     ]
                 )
             );
         } else {
             //触发问题公共编辑，通知问题创建者
-            $notice_data = new NoticeDataModel();
             $notice_data->sender = $owner->updated_by;
             $notice_data->receiver = $owner->created_by;
 
@@ -78,9 +86,9 @@ class QuestionEvent extends BaseUserEvent
                 'event_question_common_edit',
                 new UserAssociationEvent(
                     [
-                        'id'             => $owner->id,
-                        'type'           => AssociateModel::TYPE_QUESTION,
-                        'associate_data' => [],
+                        'associate_id'   => $owner->id,
+                        'associate_type' => AssociateModel::TYPE_QUESTION,
+                        'associate_data' => $associate_data,
                         'notice_data'    => $notice_data,
                     ]
                 )
@@ -90,9 +98,10 @@ class QuestionEvent extends BaseUserEvent
 
     public static function favorite(FavoriteEntity $owner)
     {
-        $question = QuestionService::getQuestionByQuestionId($owner->associate_id);
-
+        $associate_data = new AssociateDataModel();
         $notice_data = new NoticeDataModel();
+
+        $question = QuestionService::getQuestionByQuestionId($owner->associate_id);
         $notice_data->sender = $owner->created_by;
         $notice_data->receiver = $question->created_by;
 
@@ -100,9 +109,9 @@ class QuestionEvent extends BaseUserEvent
             'event_question_favorite',
             new UserAssociationEvent(
                 [
-                    'id'             => $owner->associate_id,
-                    'type'           => AssociateModel::TYPE_QUESTION,
-                    'associate_data' => [],
+                    'associate_id'   => $owner->associate_id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
                     'notice_data'    => $notice_data,
                 ]
             )
@@ -111,16 +120,16 @@ class QuestionEvent extends BaseUserEvent
 
     public static function cancelFavorite(FavoriteEntity $owner)
     {
-        //不通知用户
-        $notice_data = [];
+        $associate_data = new AssociateDataModel();
+        $notice_data = new NoticeDataModel();
 
         Yii::$app->user->trigger(
             'event_question_cancel_favorite',
             new UserAssociationEvent(
                 [
-                    'id'             => $owner->associate_id,
-                    'type'           => AssociateModel::TYPE_QUESTION,
-                    'associate_data' => [],
+                    'associate_id'   => $owner->associate_id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
                     'notice_data'    => $notice_data,
                 ]
             )
@@ -129,9 +138,10 @@ class QuestionEvent extends BaseUserEvent
 
     public static function follow(FollowEntity $owner)
     {
-        $question = QuestionService::getQuestionByQuestionId($owner->associate_id);
-
+        $associate_data = new AssociateDataModel();
         $notice_data = new NoticeDataModel();
+
+        $question = QuestionService::getQuestionByQuestionId($owner->associate_id);
         $notice_data->sender = $owner->user_id;
         $notice_data->receiver = $question->created_by;
 
@@ -139,9 +149,9 @@ class QuestionEvent extends BaseUserEvent
             'event_question_follow',
             new UserAssociationEvent(
                 [
-                    'id'             => $owner->associate_id,
-                    'type'           => AssociateModel::TYPE_QUESTION,
-                    'associate_data' => [],
+                    'associate_id'   => $owner->associate_id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
                     'notice_data'    => $notice_data,
                 ]
             )
@@ -150,15 +160,16 @@ class QuestionEvent extends BaseUserEvent
 
     public static function cancelFollow(FollowEntity $owner)
     {
+        $associate_data = new AssociateDataModel();
         $notice_data = new NoticeDataModel();
 
         Yii::$app->user->trigger(
             'event_question_cancel_follow',
             new UserAssociationEvent(
                 [
-                    'id'             => $owner->associate_id,
-                    'type'           => AssociateModel::TYPE_QUESTION,
-                    'associate_data' => [],
+                    'associate_id'   => $owner->associate_id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
                     'notice_data'    => $notice_data,
                 ]
             )
@@ -167,7 +178,9 @@ class QuestionEvent extends BaseUserEvent
 
     public static function invite(QuestionInviteEntity $owner)
     {
+        $associate_data = new AssociateDataModel();
         $notice_data = new NoticeDataModel();
+
         $notice_data->sender = $owner->created_by;
         $notice_data->receiver = $owner->invited_user_id;
 
@@ -175,9 +188,9 @@ class QuestionEvent extends BaseUserEvent
             'event_question_follow',
             new UserAssociationEvent(
                 [
-                    'id'             => $owner->question_id,
-                    'type'           => AssociateModel::TYPE_QUESTION,
-                    'associate_data' => [],
+                    'associate_id'   => $owner->question_id,
+                    'associate_type' => AssociateModel::TYPE_QUESTION,
+                    'associate_data' => $associate_data,
                     'notice_data'    => $notice_data,
                 ]
             )
@@ -186,13 +199,11 @@ class QuestionEvent extends BaseUserEvent
 
     public static function vote(VoteEntity $owner)
     {
-        $question = QuestionService::getQuestionByQuestionId($owner->associate_id);
-
-        //关联数据
         $associate_data = new AssociateDataModel();
-
-        //通知数据
         $notice_data = new NoticeDataModel();
+
+        $question = QuestionService::getQuestionByQuestionId($owner->associate_id);
+        //通知数据
         $notice_data->sender = $owner->created_by;
         $notice_data->receiver = $question->created_by;
 

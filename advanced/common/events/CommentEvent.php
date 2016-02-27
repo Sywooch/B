@@ -25,13 +25,14 @@ class CommentEvent extends BaseUserEvent
 {
     public static function create(CommentEntity $owner)
     {
-        //关联数据
         $associate_data = new AssociateDataModel();
+        $notice_data = new NoticeDataModel();
+
+        //关联数据
         $associate_data->answer_id = $owner->associate_id;
         $associate_data->comment_id = $owner->id;
 
         //通知数据
-        $notice_data = new NoticeDataModel();
         if ($owner->associate_type == AssociateModel::TYPE_ANSWER_COMMENT) {
             $answer_data = AnswerService::getAnswerByAnswerId($owner->associate_id);
             $notice_data->sender = $owner->created_by;
@@ -82,7 +83,6 @@ class CommentEvent extends BaseUserEvent
 
     public static function at(CommentEntity $owner)
     {
-
         $at_username = AtHelper::findAtUsername($owner->content);
         $at_user_ids = UserService::getUserIdByUsername($at_username);
 
@@ -129,7 +129,6 @@ class CommentEvent extends BaseUserEvent
             $notice_data->sender = $owner->created_by;
             $notice_data->receiver = $comment->created_by;
         }
-
 
         Yii::$app->user->trigger(
             sprintf('event_%s_vote', $owner->associate_type),

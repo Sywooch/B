@@ -18,6 +18,7 @@ use common\services\AnswerService;
 use common\services\CommentService;
 use common\services\FavoriteService;
 use common\services\FollowService;
+use common\services\NotificationService;
 use common\services\QuestionService;
 use common\services\UserService;
 use common\services\VoteService;
@@ -260,7 +261,7 @@ class QuestionController extends BaseController
         );
     }
 
-    public function actionView($id, $sort = 'default', $answer_id = null, $comment_id = null)
+    public function actionView($id, $sort = 'default', $answer_id = null, $comment_id = null, $ng = null)
     {
         $question_data = QuestionService::getQuestionByQuestionId($id);
 
@@ -369,6 +370,10 @@ class QuestionController extends BaseController
         #增加查看问题计数
         Counter::questionAddView($id);
 
+        //从通知中心过来
+        if ($ng) {
+            //$all_associate_data = NotificationService::getNoticeDataById($ng);
+        }
 
         return $this->render(
             'view',

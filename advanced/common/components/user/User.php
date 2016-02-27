@@ -179,6 +179,8 @@ class User extends \yii\web\User
                 $this->dealWithNotice($user_event_model, $associate_event);
             } elseif (YII_DEBUG) {
                 throw new UserEventDoesNotDefineException($event_name);
+            } else {
+                Yii::error(sprintf('用户事件: %s 未定义！', $event_name));
             }
         }
     }
@@ -187,13 +189,13 @@ class User extends \yii\web\User
     {
         //如果不需要通知
         if ($user_event_model->need_notice == UserEventEntity::NO_NEED_NOTICE ||
-            empty($user_event_model->notice_template) || empty($user_association_event->notice_data) || empty($user_association_event->notice_data->sender) || empty($user_association_event->notice_data->receiver)
+            empty($user_event_model->notice_template) || empty($user_association_event->notice_data) ||
+            empty($user_association_event->notice_data->sender) || empty($user_association_event->notice_data->receiver)
         ) {
             return false;
         }
 
         //todo 检查接收方是否允许接收
-
         //发送
         Notifier::build()
                 ->from($user_association_event->notice_data->sender)
@@ -417,6 +419,7 @@ class User extends \yii\web\User
 
         $model->associate_data = $user_association_event->associate_data;
 
+        //print_r($model->getAttributes());exit;
         if ($model->save()) {
             return $model->id;
         } else {

@@ -34,7 +34,11 @@ class UserEventLogBehavior extends BaseBehavior
     public function beforeValidate()
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
-        $this->owner->associate_data = Json::encode(array_filter($this->owner->associate_data->toArray()));
+        if ($this->owner->associate_data) {
+            $this->owner->associate_data = Json::encode(array_filter($this->owner->associate_data->toArray()));
+        } else {
+            $this->owner->associate_data = null;
+        }
     }
 
     public function afterFind()

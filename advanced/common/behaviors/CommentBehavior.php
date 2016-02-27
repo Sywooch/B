@@ -82,10 +82,7 @@ class CommentBehavior extends BaseBehavior
     {
         Yii::trace('Process ' . __FUNCTION__, 'behavior');
 
-
-
-            //触发用户动作
-            CommentEvent::at($this->owner);
-
+        //触发用户动作
+        CommentEvent::at($this->owner);
     }
 }
