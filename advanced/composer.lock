@@ -9,21 +9,21 @@
     "packages": [
         {
             "name": "2amigos/yii2-file-upload-widget",
-            "version": "1.0.2",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/2amigos/yii2-file-upload-widget.git",
-                "reference": "2ecf63e5f47e429e95ab598391399e0ed03e716f"
+                "reference": "b8558141a4f340337e9f55e88880872cacc8e44d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/2amigos/yii2-file-upload-widget/zipball/2ecf63e5f47e429e95ab598391399e0ed03e716f",
-                "reference": "2ecf63e5f47e429e95ab598391399e0ed03e716f",
+                "url": "https://api.github.com/repos/2amigos/yii2-file-upload-widget/zipball/b8558141a4f340337e9f55e88880872cacc8e44d",
+                "reference": "b8558141a4f340337e9f55e88880872cacc8e44d",
                 "shasum": ""
             },
             "require": {
                 "2amigos/yii2-gallery-widget": "~1.0",
-                "bower-asset/blueimp-file-upload": "~9.9.0",
+                "bower-asset/blueimp-file-upload": "~9.9",
                 "yiisoft/yii2": "~2.0.0",
                 "yiisoft/yii2-bootstrap": "~2.0.0"
             },
@@ -72,7 +72,7 @@
                 "yii 2",
                 "yii2"
             ],
-            "time": "2015-04-14 19:11:24"
+            "time": "2016-03-07 17:25:38"
         },
         {
             "name": "2amigos/yii2-gallery-widget",
@@ -442,16 +442,16 @@
         },
         {
             "name": "bower-asset/blueimp-file-upload",
-            "version": "9.9.4",
+            "version": "9.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blueimp/jQuery-File-Upload.git",
-                "reference": "ce33e8915c4e4b3e7930c9ed0ae45cf132944a88"
+                "reference": "098b507770581d2c8b037fa0a747ff02eb45a329"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blueimp/jQuery-File-Upload/zipball/ce33e8915c4e4b3e7930c9ed0ae45cf132944a88",
-                "reference": "ce33e8915c4e4b3e7930c9ed0ae45cf132944a88",
+                "url": "https://api.github.com/repos/blueimp/jQuery-File-Upload/zipball/098b507770581d2c8b037fa0a747ff02eb45a329",
+                "reference": "098b507770581d2c8b037fa0a747ff02eb45a329",
                 "shasum": ""
             },
             "require": {
@@ -463,23 +463,7 @@
             "type": "bower-asset-library",
             "extra": {
                 "bower-asset-main": [
-                    "css/jquery.fileupload.css",
-                    "css/jquery.fileupload-ui.css",
-                    "css/jquery.fileupload-noscript.css",
-                    "css/jquery.fileupload-ui-noscript.css",
-                    "js/cors/jquery.postmessage-transport.js",
-                    "js/cors/jquery.xdr-transport.js",
-                    "js/vendor/jquery.ui.widget.js",
-                    "js/jquery.fileupload.js",
-                    "js/jquery.fileupload-process.js",
-                    "js/jquery.fileupload-validate.js",
-                    "js/jquery.fileupload-image.js",
-                    "js/jquery.fileupload-audio.js",
-                    "js/jquery.fileupload-video.js",
-                    "js/jquery.fileupload-ui.js",
-                    "js/jquery.fileupload-jquery-ui.js",
-                    "js/jquery.fileupload-angular.js",
-                    "js/jquery.iframe-transport.js"
+                    "js/jquery.fileupload.js"
                 ],
                 "bower-asset-ignore": [
                     "/*.*",
@@ -493,7 +477,10 @@
                     "test"
                 ]
             },
-            "description": "File Upload widget with multiple file selection, drag&amp;drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads.",
+            "license": [
+                "MIT"
+            ],
+            "description": "File Upload widget with multiple file selection, drag&amp;drop support, progress bar, validation and preview images.",
             "keywords": [
                 "bootstrap",
                 "chunk",
@@ -770,16 +757,16 @@
         },
         {
             "name": "bower-asset/highlightjs",
-            "version": "9.1.0",
+            "version": "9.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/components/highlightjs.git",
-                "reference": "08edd75426b52b165cc2b8a569870df4794c36dc"
+                "reference": "08d860a08b885d78975076cf3f9fb165ed9ff253"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/components/highlightjs/zipball/08edd75426b52b165cc2b8a569870df4794c36dc",
-                "reference": "08edd75426b52b165cc2b8a569870df4794c36dc",
+                "url": "https://api.github.com/repos/components/highlightjs/zipball/08d860a08b885d78975076cf3f9fb165ed9ff253",
+                "reference": "08d860a08b885d78975076cf3f9fb165ed9ff253",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -886,16 +873,16 @@
         },
         {
             "name": "bower-asset/jquery-textcomplete",
-            "version": "v0.8.1",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yuku-t/jquery-textcomplete.git",
-                "reference": "1cd100ec8c6d490e0e6220e3467eecabcfe7c249"
+                "reference": "ec2b9df9ee8285997ed1def66b5fac4cbcb5ee3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yuku-t/jquery-textcomplete/zipball/1cd100ec8c6d490e0e6220e3467eecabcfe7c249",
-                "reference": "1cd100ec8c6d490e0e6220e3467eecabcfe7c249",
+                "url": "https://api.github.com/repos/yuku-t/jquery-textcomplete/zipball/ec2b9df9ee8285997ed1def66b5fac4cbcb5ee3d",
+                "reference": "ec2b9df9ee8285997ed1def66b5fac4cbcb5ee3d",
                 "shasum": ""
             },
             "require": {
@@ -1105,16 +1092,16 @@
         },
         {
             "name": "bower-asset/metisMenu",
-            "version": "v2.4.0",
+            "version": "v2.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/onokumus/metisMenu.git",
-                "reference": "bdee27da30b57550b53d1b2929d2ca355b2869a1"
+                "reference": "b02b482abc4bbd740632ddd1bebed971fbc8402d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onokumus/metisMenu/zipball/bdee27da30b57550b53d1b2929d2ca355b2869a1",
-                "reference": "bdee27da30b57550b53d1b2929d2ca355b2869a1",
+                "url": "https://api.github.com/repos/onokumus/metisMenu/zipball/b02b482abc4bbd740632ddd1bebed971fbc8402d",
+                "reference": "b02b482abc4bbd740632ddd1bebed971fbc8402d",
                 "shasum": ""
             },
             "require": {
@@ -1438,16 +1425,16 @@
         },
         {
             "name": "bower-asset/yii2-pjax",
-            "version": "v2.0.5",
+            "version": "v2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/jquery-pjax.git",
-                "reference": "6818718408086db6bdcf33649cecb86b6b4f9b67"
+                "reference": "60728da6ade5879e807a49ce59ef9a72039b8978"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/jquery-pjax/zipball/6818718408086db6bdcf33649cecb86b6b4f9b67",
-                "reference": "6818718408086db6bdcf33649cecb86b6b4f9b67",
+                "url": "https://api.github.com/repos/yiisoft/jquery-pjax/zipball/60728da6ade5879e807a49ce59ef9a72039b8978",
+                "reference": "60728da6ade5879e807a49ce59ef9a72039b8978",
                 "shasum": ""
             },
             "require": {
@@ -1460,6 +1447,7 @@
                     ".travis.yml",
                     "Gemfile",
                     "Gemfile.lock",
+                    "CONTRIBUTING.md",
                     "vendor/",
                     "script/",
                     "test/"
@@ -1753,16 +1741,16 @@
         },
         {
             "name": "components/flag-icon-css",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lipis/flag-icon-css.git",
-                "reference": "fa5ed396e360c996b6c75f5c78d4bded4a12ca9b"
+                "reference": "f13b77e0323a674e6a56ac4284128ff73a39e115"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lipis/flag-icon-css/zipball/fa5ed396e360c996b6c75f5c78d4bded4a12ca9b",
-                "reference": "fa5ed396e360c996b6c75f5c78d4bded4a12ca9b",
+                "url": "https://api.github.com/repos/lipis/flag-icon-css/zipball/f13b77e0323a674e6a56ac4284128ff73a39e115",
+                "reference": "f13b77e0323a674e6a56ac4284128ff73a39e115",
                 "shasum": ""
             },
             "type": "component",
@@ -1787,7 +1775,7 @@
                 }
             ],
             "description": "CSS for vector based country flags",
-            "time": "2016-02-25 07:34:02"
+            "time": "2016-03-06 17:05:22"
         },
         {
             "name": "crazydb/yii2-ueditor",
@@ -2450,16 +2438,16 @@
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "1.0.3",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "b1e1c0d55f8083c71eda2c28c12a228d708294ea"
+                "reference": "bb9024c526b22f3fe6ae55a561fd70653d470aa8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/b1e1c0d55f8083c71eda2c28c12a228d708294ea",
-                "reference": "b1e1c0d55f8083c71eda2c28c12a228d708294ea",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/bb9024c526b22f3fe6ae55a561fd70653d470aa8",
+                "reference": "bb9024c526b22f3fe6ae55a561fd70653d470aa8",
                 "shasum": ""
             },
             "require": {
@@ -2497,7 +2485,7 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2015-10-15 22:28:00"
+            "time": "2016-03-08 01:15:46"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -2712,22 +2700,22 @@
         },
         {
             "name": "kartik-v/bootstrap-fileinput",
-            "version": "v4.3.0",
+            "version": "v4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/bootstrap-fileinput.git",
-                "reference": "cde72929649da55470e0a81a5e85921f80f28f29"
+                "reference": "32b0ccb2562b9c83f12222ddd1406986a45450d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/cde72929649da55470e0a81a5e85921f80f28f29",
-                "reference": "cde72929649da55470e0a81a5e85921f80f28f29",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/32b0ccb2562b9c83f12222ddd1406986a45450d1",
+                "reference": "32b0ccb2562b9c83f12222ddd1406986a45450d1",
                 "shasum": ""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.2.x-dev"
+                    "dev-master": "4.3.x-dev"
                 }
             },
             "autoload": {
@@ -2761,7 +2749,7 @@
                 "progress",
                 "upload"
             ],
-            "time": "2016-01-25 16:55:20"
+            "time": "2016-02-28 02:23:49"
         },
         {
             "name": "kartik-v/bootstrap-popover-x",
@@ -2809,16 +2797,16 @@
         },
         {
             "name": "kartik-v/bootstrap-star-rating",
-            "version": "v4.0.0",
+            "version": "v4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/bootstrap-star-rating.git",
-                "reference": "c19be9f8bd6b29cee0110e048a2c04bb6f1c4761"
+                "reference": "d66083c14f9386ede23fccb76dea1a380db67ded"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/bootstrap-star-rating/zipball/c19be9f8bd6b29cee0110e048a2c04bb6f1c4761",
-                "reference": "c19be9f8bd6b29cee0110e048a2c04bb6f1c4761",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-star-rating/zipball/d66083c14f9386ede23fccb76dea1a380db67ded",
+                "reference": "d66083c14f9386ede23fccb76dea1a380db67ded",
                 "shasum": ""
             },
             "type": "library",
@@ -2849,7 +2837,7 @@
                 "star",
                 "svg"
             ],
-            "time": "2016-02-18 04:03:30"
+            "time": "2016-02-28 16:13:18"
         },
         {
             "name": "kartik-v/bootstrap-tabs-x",
@@ -4270,16 +4258,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.17",
+            "version": "1.0.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "02f5b6c9a8b9278c8381e3361e7bd9d641c740ca"
+                "reference": "b334d6c5f95364948e06d2f620ab93d084074c6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/02f5b6c9a8b9278c8381e3361e7bd9d641c740ca",
-                "reference": "02f5b6c9a8b9278c8381e3361e7bd9d641c740ca",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/b334d6c5f95364948e06d2f620ab93d084074c6e",
+                "reference": "b334d6c5f95364948e06d2f620ab93d084074c6e",
                 "shasum": ""
             },
             "require": {
@@ -4349,7 +4337,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2016-02-19 15:35:38"
+            "time": "2016-03-07 21:01:43"
         },
         {
             "name": "league/url",
@@ -4736,16 +4724,16 @@
         },
         {
             "name": "react/event-loop",
-            "version": "v0.4.1",
+            "version": "v0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/event-loop.git",
-                "reference": "18c5297087ca01de85518e2b55078f444144aa1b"
+                "reference": "164799f73175e1c80bba92a220ea35df6ca371dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/18c5297087ca01de85518e2b55078f444144aa1b",
-                "reference": "18c5297087ca01de85518e2b55078f444144aa1b",
+                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/164799f73175e1c80bba92a220ea35df6ca371dd",
+                "reference": "164799f73175e1c80bba92a220ea35df6ca371dd",
                 "shasum": ""
             },
             "require": {
@@ -4759,12 +4747,12 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.4-dev"
+                    "dev-master": "0.5-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "React\\EventLoop\\": ""
+                    "React\\EventLoop\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -4773,9 +4761,10 @@
             ],
             "description": "Event loop abstraction layer that libraries can use for evented I/O.",
             "keywords": [
+                "asynchronous",
                 "event-loop"
             ],
-            "time": "2014-02-26 17:36:58"
+            "time": "2016-03-08 02:09:32"
         },
         {
             "name": "rmrevin/yii2-fontawesome",
@@ -4934,7 +4923,7 @@
         },
         {
             "name": "symfony/browser-kit",
-            "version": "v3.0.2",
+            "version": "v3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/browser-kit.git",
@@ -4991,7 +4980,7 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v3.0.2",
+            "version": "v3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
@@ -5044,16 +5033,16 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v3.0.2",
+            "version": "v3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "b693a9650aa004576b593ff2e91ae749dc90123d"
+                "reference": "981c8edb4538f88ba976ed44bdcaa683fce3d6c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/b693a9650aa004576b593ff2e91ae749dc90123d",
-                "reference": "b693a9650aa004576b593ff2e91ae749dc90123d",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/981c8edb4538f88ba976ed44bdcaa683fce3d6c6",
+                "reference": "981c8edb4538f88ba976ed44bdcaa683fce3d6c6",
                 "shasum": ""
             },
             "require": {
@@ -5096,11 +5085,11 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-25 09:56:57"
+            "time": "2016-02-28 16:24:34"
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
@@ -5159,16 +5148,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.0.2",
+            "version": "v3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "3cf0709d7fe936e97bee9e954382e449003f1d9a"
+                "reference": "b5ba64cd67ecd6887f63868fa781ca094bd1377c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/3cf0709d7fe936e97bee9e954382e449003f1d9a",
-                "reference": "3cf0709d7fe936e97bee9e954382e449003f1d9a",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/b5ba64cd67ecd6887f63868fa781ca094bd1377c",
+                "reference": "b5ba64cd67ecd6887f63868fa781ca094bd1377c",
                 "shasum": ""
             },
             "require": {
@@ -5204,7 +5193,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-02-02 13:44:19"
+            "time": "2016-02-23 15:16:06"
         },
         {
             "name": "thamtech/yii2-uuid",

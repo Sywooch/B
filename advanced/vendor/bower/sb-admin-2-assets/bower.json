@@ -1,0 +1,26 @@
+{
+  "name": "sb-admin-2-assets",
+  "version": "1.0.4",
+  "homepage": "https://github.com/forecho/sb-admin-2-assets",
+  "authors": [
+    "forecho <caizhenghai@gmail.com>"
+  ],
+  "description": "A free, open source, Bootstrap admin theme created by Start Bootstra",
+  "main": [
+    "dist/css/sb-admin-2.css",
+    "dist/js/sb-admin-2.js"
+  ],
+  "keywords": [
+    "bootstrap",
+    "theme"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

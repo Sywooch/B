@@ -1,0 +1,26 @@
+{
+  "name": "forecho/sb-admin-2-assets",
+  "version": "0.1",
+  "description": "SB Admin 2 Bootstrap admin theme, dashboard template, or webapp UI starter.",
+  "keywords": [
+    "css",
+    "js",
+    "less",
+    "admin",
+    "sb",
+    "bootstrap"
+  ],
+  "homepage": "http://startbootstrap.com/template-overviews/sb-admin-2/",
+  "authors": [
+    {
+      "name": "forecho",
+      "email": "caizhenghai@gmail.com"
+    }
+  ],
+  "require" : {
+    "fortawesome/font-awesome": "4.2.0",
+    "twitter/bootstrap": "3.2.*",
+    "components/jquery": "1.11.0"
+  },
+  "license": "Apache 2.0"
+}
