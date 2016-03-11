@@ -34,9 +34,7 @@ phpunit.phar
 */config/main-local.php
 
 backend/runtime/*
-
 console/runtime/*
-
 frontend/runtime/*
 frontend/web/uploads/avatars/*
 tests/_output/*
