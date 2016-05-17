@@ -107,12 +107,20 @@ class Connection extends Component
 
     private function getKeyConfig()
     {
-        if (!isset($this->config[$this->cache_category]) || !isset($this->config[$this->cache_category]['server'])) {
+        if (empty($this->config[$this->cache_category])) {
+            throw new Exception("当前redis key：{$this->cache_category} 不存在。");
+        }
+
+        if (!isset($this->config[$this->cache_category]['server'])) {
             throw new Exception("当前key：{$this->cache_category} 的server项未配置。");
         }
 
-        if (!isset($this->config[$this->cache_category]) || !isset($this->config[$this->cache_category]['expire'])) {
+        if (!isset($this->config[$this->cache_category]['expire'])) {
             throw new Exception("当前key：{$this->cache_category} 的expire项未配置。");
+        }
+
+        if (empty($this->config[$this->cache_category]['serializer'])) {
+            $this->config[$this->cache_category]['serializer'] = Redis::SERIALIZER_IGBINARY;
         }
 
         #添加缓存名称

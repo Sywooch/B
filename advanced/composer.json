@@ -77,7 +77,8 @@
     "chrisboulton/php-resque": "1.2.x",
     "fabpot/goutte": "^3.1",
     "vistart/yii2-helpers": "*",
-    "shakura/yii2-gearman": "dev-master"
+    "shakura/yii2-gearman": "dev-master",
+    "chumper/zipper": "^0.6.1"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "*",
